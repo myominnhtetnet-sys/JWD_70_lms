@@ -4,9 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class TeacherBean {
-	
+public class StudentBean {
 	private int id;
-	private String name;
-
 }
