@@ -14,7 +14,7 @@ public class StudentRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public int saveStudent(StudentBean student) {
+    public int createStudent(StudentBean student) {
         String sql = "INSERT INTO users (role_id, full_name, email, phone, password_hash, dob, gender, address, status, created_at, updated_at) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
