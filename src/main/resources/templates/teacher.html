@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher View</title>
+</head>
+<body>
+
+<div th:fragment="teacher" class="space-y-6">
+
+    <!-- Title & Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Teacher Dashboard</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Welcome back, Professor David Vance. Here is your teaching schedule and grading queue.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="openModal('create-course-modal')" class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center gap-2">
+                <i class="fa-solid fa-plus text-indigo-500"></i>
+                New Class Module
+            </button>
+            <button onclick="openModal('assignment-modal')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-file-circle-plus"></i>
+                Create Assignment
+            </button>
+        </div>
+    </div>
+
+    <!-- Teacher Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Enrolled Students</span>
+                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                    <i class="fa-solid fa-graduation-cap text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between">
+                <span class="text-2xl font-bold text-slate-900 dark:text-white">284</span>
+                <span class="text-xs text-slate-400">Across 4 courses</span>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pending Grading</span>
+                <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between">
+                <span class="text-2xl font-bold text-amber-600 dark:text-amber-400">12</span>
+                <span class="text-xs font-semibold text-amber-600 bg-amber-50 dark:bg-amber-950/50 px-2 py-0.5 rounded-full">Requires Action</span>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Avg Class GPA</span>
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <i class="fa-solid fa-chart-line text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between">
+                <span class="text-2xl font-bold text-slate-900 dark:text-white">3.68</span>
+                <span class="text-xs font-semibold text-emerald-600">+0.2 vs last term</span>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Upcoming Lectures</span>
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                    <i class="fa-regular fa-calendar-check text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between">
+                <span class="text-2xl font-bold text-slate-900 dark:text-white">3 Today</span>
+                <span class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">Next @ 2:00 PM</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teacher Section: Active Classes & Grading Queue -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- My Active Classes -->
+        <div class="lg:col-span-2 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-base text-slate-900 dark:text-white">My Managed Courses</h3>
+                <a href="#" onclick="showToast('Redirecting to full course list...')" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">View All Courses</a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Course Card 1 -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="px-2.5 py-1 text-[10px] font-bold uppercase rounded-md bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">CS-301</span>
+                            <span class="text-xs text-slate-400">72 Students</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 dark:text-white text-base">Advanced Data Structures</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Syllabus progression: Week 8 of 14</p>
+                    </div>
+                    <div class="mt-6">
+                        <div class="flex justify-between text-xs font-semibold mb-1 text-slate-600 dark:text-slate-300">
+                            <span>Syllabus Completion</span>
+                            <span>62%</span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-4">
+                            <div class="h-full bg-indigo-600 rounded-full" style="width: 62%"></div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="showToast('Opening module editor...')" class="flex-1 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition">
+                                Edit Syllabus
+                            </button>
+                            <button onclick="showToast('Loading analytics for CS-301')" class="p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course Card 2 -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="px-2.5 py-1 text-[10px] font-bold uppercase rounded-md bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400">AI-402</span>
+                            <span class="text-xs text-slate-400">95 Students</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 dark:text-white text-base">Machine Learning Fundamentals</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Syllabus progression: Week 10 of 14</p>
+                    </div>
+                    <div class="mt-6">
+                        <div class="flex justify-between text-xs font-semibold mb-1 text-slate-600 dark:text-slate-300">
+                            <span>Syllabus Completion</span>
+                            <span>78%</span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-4">
+                            <div class="h-full bg-emerald-500 rounded-full" style="width: 78%"></div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="showToast('Opening module editor...')" class="flex-1 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition">
+                                Edit Syllabus
+                            </button>
+                            <button onclick="showToast('Loading analytics for AI-402')" class="p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grading Submissions Quick Box -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-base text-slate-900 dark:text-white">Grading Queue</h3>
+                    <span class="text-xs bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 font-bold px-2 py-0.5 rounded-full">12 Pending</span>
+                </div>
+                <!-- JS အစား တိုက်ရိုက် Static Data ဖြည့်ထားပါသည် -->
+                <div id="grading-queue-list" class="space-y-3">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl flex items-center justify-between">
+                        <div>
+                            <h5 class="text-xs font-bold text-slate-900 dark:text-white">B-Trees Lab Submission</h5>
+                            <p class="text-[11px] text-slate-500">CS-301 • Submitted by Alex</p>
+                        </div>
+                        <button onclick="showToast('Opening grading modal...')" class="px-2.5 py-1 text-[11px] font-bold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Grade</button>
+                    </div>
+
+                    <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl flex items-center justify-between">
+                        <div>
+                            <h5 class="text-xs font-bold text-slate-900 dark:text-white">Neural Net Notebook</h5>
+                            <p class="text-[11px] text-slate-500">AI-402 • Submitted by Sophia</p>
+                        </div>
+                        <button onclick="showToast('Opening grading modal...')" class="px-2.5 py-1 text-[11px] font-bold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Grade</button>
+                    </div>
+                </div>
+            </div>
+            <button onclick="showToast('Opening full grading suite...')" class="mt-4 w-full py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-xs font-bold text-slate-700 dark:text-slate-200 rounded-lg transition">
+                View Full Submissions Log
+            </button>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
