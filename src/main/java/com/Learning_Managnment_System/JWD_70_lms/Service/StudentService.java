@@ -3,6 +3,9 @@ package com.Learning_Managnment_System.JWD_70_lms.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.Learning_Managnment_System.JWD_70_lms.Repository.StudentRepository;
+import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
+
 @Service
 public class StudentService {
 
