@@ -13,21 +13,23 @@ import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
 @Controller
 public class StudentController {
 
-    @Autowired
-    private StudentService studentService;
+    private final StudentService studentService;
 
+    @Autowired
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
+    }
+
+   
     @GetMapping("/register")
-    public String showRegistrationForm(Model m) {
-        m.addAttribute("student", new StudentBean ());
-        return "register";
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("student", new StudentBean());
+        return "register"; // register.html
     }
 
     @PostMapping("/register")
-    public String registerStudent(@ModelAttribute("student") StudentBean studentBean) {
-        boolean isSaved = studentService.registerStudent(studentBean);
-        if (isSaved) {
-            return "redirect:/register?success";
-        }
-        return "register";
+    public String registerStudent(@ModelAttribute("student") StudentBean student) {
+        studentService.registerStudent(student);
+        return "redirect:/register?success";
     }
 }
