@@ -7,5 +7,6 @@ import lombok.Setter;
 public class TeacherBean {
 	
 	private int id;
+	private String email;
 
 }
