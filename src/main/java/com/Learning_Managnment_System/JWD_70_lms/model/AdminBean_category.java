@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class AdminBean {
+public class AdminBean_category {
 	
 	private int id;
 	private int category_id;
