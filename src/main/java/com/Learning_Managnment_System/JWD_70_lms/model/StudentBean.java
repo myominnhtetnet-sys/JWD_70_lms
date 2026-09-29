@@ -4,8 +4,10 @@ import java.time.LocalDate;
 
 import lombok.Getter;
 import lombok.Setter;
-@Getter
-@Setter
+
+
+@Getter@Setter
+
 public class StudentBean {
 	private int id;
 	private int role_id;
