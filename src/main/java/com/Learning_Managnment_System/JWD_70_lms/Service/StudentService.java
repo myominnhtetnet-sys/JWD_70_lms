@@ -1,5 +1,4 @@
 package com.Learning_Managnment_System.JWD_70_lms.Service;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,7 @@ public class StudentService {
     private StudentRepository studentRepository;
 
     public boolean registerStudent(StudentBean student) {
-        int rowsAffected = studentRepository.saveStudent(student);
+        int rowsAffected = studentRepository.createStudent(student);
         return rowsAffected > 0;
     }
 }
