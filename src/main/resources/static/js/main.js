@@ -45,6 +45,7 @@
                 { icon: 'fa-list-check', label: 'Grading Queue' },
                 { icon: 'fa-graduation-cap', label: 'Student Performance' },
                 { icon: 'fa-folder-tree', label: 'Curriculum Builder' },
+				{ icon: 'fa-database', label: 'Question Bank' },
                 { icon: 'fa-comments', label: 'Messages' }
             ],
             student: [
