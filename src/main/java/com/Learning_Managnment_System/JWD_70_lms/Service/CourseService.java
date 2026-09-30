@@ -1,6 +1,10 @@
 package com.Learning_Managnment_System.JWD_70_lms.Service;
 
 import java.util.List;
+
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -33,4 +37,21 @@ public class CourseService {
         Specification<CourseBean> spec = CourseSpecification.filterBy(filter);
         return courseRepository.findAll(spec);
     }
+ // Inside CourseService.java & CourseServiceImpl.java
+    public Page<CourseBean> filterCourses(CourseBean filter, Pageable pageable) {
+    	 Specification<CourseBean> spec = CourseSpecification.filterBy(filter);
+    	    
+    	    // DIRECT RETURN
+    	    return courseRepository.findAll(spec, pageable);
+    }
+    
+    public CourseBean getCourseById(Integer id) {
+		String sql = "SELECT * FROM lms_db.courses where course_id = ?";
+		try {
+			return jdbcTemplate.queryForObject(sql, new CourseMapper(), id);
+		} catch (EmptyResultDataAccessException e) {
+			return null; 
+		}
+	}
+
 }
