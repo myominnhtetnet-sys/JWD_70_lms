@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Course Catalog Management</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 30px; background-color: #f4f6f9; color: #333; }
+        h2 { color: #2c3e50; margin-bottom: 20px; }
+        .filter-container { background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid #e2e8f0; }
+        .filter-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-size: 12px; font-weight: 600; margin-bottom: 6px; color: #4a5568; text-transform: uppercase; }
+        .form-group input, .form-group select { padding: 10px; border: 1px solid #cbd5e0; border-radius: 5px; font-size: 14px; background-color: #fff; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #3182ce; box-shadow: 0 0 0 3px rgba(66,153,225,0.5); }
+        .button-group { display: flex; gap: 10px; }
+        .btn-submit { background-color: #3182ce; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; flex: 1; transition: background 0.2s; }
+        .btn-submit:hover { background-color: #2b6cb0; }
+        .btn-reset { background-color: #718096; color: white; text-decoration: none; text-align: center; padding: 10px 20px; border-radius: 5px; font-size: 14px; font-weight: bold; flex: 1; transition: background 0.2s; }
+        .btn-reset:hover { background-color: #4a5568; }
+        .table-container { background: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow-x: auto; border: 1px solid #e2e8f0; }
+        table { border-collapse: collapse; width: 100%; font-size: 14px; }
+        th, td { text-align: left; padding: 12px 15px; border-bottom: 1px solid #edf2f7; }
+        th { background-color: #f7fafc; color: #2d3748; font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+        tr:hover { background-color: #f8fafc; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block; }
+        .badge-yes { background-color: #c6f6d5; color: #22543d; }
+        .badge-no { background-color: #fed7d7; color: #742a2a; }
+        .no-data { text-align: center; color: #718096; padding: 30px; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <h2>Course Catalog</h2>
+
+    <div class="filter-container">
+        <form th:action="@{/courses/show}" method="get" class="filter-form">
+            
+            <div class="form-group">
+                <label for="category_id">Category ID</label>
+                <input type="number" id="category_id" name="category_id" th:value="${param.category_id}" placeholder="e.g., 1">
+            </div>
+
+            <div class="form-group">
+                <label for="title">Course Title</label>
+                <input type="text" id="title" name="title" th:value="${param.title}" placeholder="Search title...">
+            </div>
+
+            <div class="form-group">
+                <label for="level">Level</label>
+                <select id="level" name="level">
+                    <option value="">All Levels</option>
+                    <option value="BEGINNER" th:selected="${#strings.equals(param.level, 'BEGINNER')}">Beginner</option>
+                    <option value="INTERMEDIATE" th:selected="${#strings.equals(param.level, 'INTERMEDIATE')}">Intermediate</option>
+                    <option value="ADVANCED" th:selected="${#strings.equals(param.level, 'ADVANCED')}">Advanced</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="price">Max Price ($)</label>
+                <input type="number" step="0.01" id="price" name="price" th:value="${param.price}" placeholder="e.g., 49.99">
+            </div>
+
+            <div class="form-group">
+                <label for="allow_discount">Discount</label>
+                <select id="allow_discount" name="allow_discount">
+                    <!-- FIXED: Added an empty option value to bypass active filter clauses -->
+                    <option value="">All Options</option> 
+                    <option value="1" th:selected="${#strings.equals(param.allow_discount, '1')}">Allowed</option>
+                    <option value="0" th:selected="${#strings.equals(param.allow_discount, '0')}">Not Allowed</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="allow_installment">Installment</label>
+                <select id="allow_installment" name="allow_installment">
+                    <!-- FIXED: Added an empty option value to bypass active filter clauses -->
+                    <option value="">All Options</option> 
+                    <option value="1" th:selected="${#strings.equals(param.allow_installment, '1')}">Allowed</option>
+                    <option value="0" th:selected="${#strings.equals(param.allow_installment, '0')}">Not Allowed</option>
+                </select>
+            </div>
+
+            <div class="form-group button-group">
+                <button type="submit" class="btn-submit">Filter</button>
+                <a th:href="@{/courses/show}" class="btn-reset">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>            
+                    <th>Course ID</th>
+                    <th>Category ID</th>  
+                    <th>Title</th>   
+                    <th>Slug</th>   
+                    <th>Short Description</th>      
+                    <th>Level</th>
+                    <th>Language</th>
+                    <th>Price</th>
+                    <th>Duration</th>
+                    <th>Discount</th>
+                    <th>Installment</th>
+                    <th>Scholarship</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="course, index : ${list}">
+                    <td th:text="${index.count}">No.</td>
+                    <td th:text="${course.course_id}">Course Id</td>
+                    <td th:text="${course.category_id}">Category Id</td>
+                    <td th:text="${course.title}" style="font-weight: 600; color: #2b6cb0;">Title</td>
+                    <td th:text="${course.slug}">Slug</td>
+                    <td th:text="${course.short_description != null ? course.short_description : '-'}">Short Description</td>
+                    <td th:text="${course.level}">Level</td>
+                    <td th:text="${course.language}">Language</td>
+                    <td th:text="${'$' + #numbers.formatDecimal(course.price, 1, 2)}">Price</td>
+                    <td th:text="${course.duration_weeks + ' Weeks'}">Duration Weeks</td>
+                    
+                    <td>
+                        <span th:class="${course.allow_discount == 1} ? 'badge badge-yes' : 'badge badge-no'"
+                              th:text="${course.allow_discount == 1} ? 'Yes' : 'No'"></span>
+                    </td>
+                    <td>
+                        <span th:class="${course.allow_installment == 1} ? 'badge badge-yes' : 'badge badge-no'"
+                              th:text="${course.allow_installment == 1} ? 'Yes' : 'No'"></span>
+                    </td>
+                    <td>
+                        <span th:class="${course.allow_scholarship == 1} ? 'badge badge-yes' : 'badge badge-no'"
+                              th:text="${course.allow_scholarship == 1} ? 'Yes' : 'No'"></span>
+                    </td>
+                </tr>
+                
+                <tr th:if="${#lists.isEmpty(list)}">
+                    <td colspan="13" class="no-data">No courses found matching the filtering criteria.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
