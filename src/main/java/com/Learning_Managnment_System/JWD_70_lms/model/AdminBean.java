@@ -7,5 +7,6 @@ import lombok.Setter;
 public class AdminBean {
 	
 	private int id;
+	private String name;
 
 }

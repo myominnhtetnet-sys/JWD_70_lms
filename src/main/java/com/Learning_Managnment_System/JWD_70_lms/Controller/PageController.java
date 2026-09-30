@@ -4,13 +4,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class Admin_Controller {
+public class PageController {
 	
-//	@GetMapping("/")
-//	public String show() {		
-//		return "dashboard";		
-//	}
-	
+	@GetMapping("/")
+	public String show() {		
+		return "dashboard";		
+	}
+
 }
-
-
