@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PageController {
 	
-	@GetMapping("/")
+	@GetMapping("/page")
 	public String show() {		
 		return "dashboard";		
 	}
