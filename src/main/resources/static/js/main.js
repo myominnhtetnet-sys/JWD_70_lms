@@ -113,11 +113,20 @@
                 navMenus[role].forEach(item => {
                     const navItem = document.createElement('a');
                     navItem.href = '#';
-                    navItem.onclick = (e) => {
+                    /*navItem.onclick = (e) => {
                         e.preventDefault();
                         setActiveNavItem(navItem);
                         showToast(`Navigated to ${item.label}`);
-                    };
+                    };*/
+					navItem.onclick = (e) => {
+					    e.preventDefault();
+					    if (item.label === 'Question Bank') {
+					        window.location.href = '/question-list';
+					        return;
+					    }
+					    setActiveNavItem(navItem);
+					    showToast(`Navigated to ${item.label}`);
+					};
 
                     const baseClasses = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all";
                     const activeClasses = item.active 
