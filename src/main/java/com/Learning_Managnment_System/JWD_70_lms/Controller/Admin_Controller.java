@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class Admin_Controller {
 	
-	@GetMapping("/")
-	public String show() {		
-		return "dashboard";		
-	}
+//	@GetMapping("/")
+//	public String show() {		
+//		return "dashboard";		
+//	}
 	
 }
 
