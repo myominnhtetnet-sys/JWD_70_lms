@@ -99,4 +99,11 @@ public class QuestionController {
 
         return questionService.saveOption(option);
     }
+    @DeleteMapping("/{id}/options")
+    public int deleteOptions(
+            @PathVariable("id") Long questionId) {
+
+        return questionService.deleteOptionsByQuestionId(questionId);
+    }
+   
 }

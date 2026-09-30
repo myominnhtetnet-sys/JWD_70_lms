@@ -7,6 +7,7 @@
 
 <title>Question Bank</title>
 
+
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -141,6 +142,7 @@
 	<!-- =========================
      Add Question Modal
 ========================== -->
+
 <div id="questionModal"
      class="fixed inset-0 bg-black bg-opacity-50 hidden
             items-center justify-center z-50">
@@ -173,20 +175,15 @@
         </div>
 
 
-        <!-- =========================
-             Question Form
-        ========================== -->
+        <!-- Question Form -->
         <form id="questionForm">
-
 
             <!-- Course -->
             <div class="mb-5">
 
                 <label class="block text-sm font-medium
                               text-slate-700 mb-2">
-
                     Course
-
                 </label>
 
                 <select
@@ -200,16 +197,16 @@
                     </option>
 
                     <option value="1">
-                        HTML & CSS
+                        Web Development Bootcamp
                     </option>
 
-                    <option value="2">
+                    <!-- <option value="2">
                         Java Programming
                     </option>
 
                     <option value="3">
                         Spring Boot
-                    </option>
+                    </option> -->
 
                 </select>
 
@@ -221,9 +218,7 @@
 
                 <label class="block text-sm font-medium
                               text-slate-700 mb-2">
-
                     Question
-
                 </label>
 
                 <textarea
@@ -232,14 +227,17 @@
                     placeholder="Enter your question..."
                     class="w-full border border-slate-300
                            rounded-lg px-4 py-3"
-                    required></textarea>
+                    required>
+                </textarea>
 
             </div>
 
 
-            <!-- Question Type -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+            <!-- Question Type + Mark -->
+            <div class="grid grid-cols-1 md:grid-cols-2
+                        gap-4 mb-5">
 
+                <!-- Question Type -->
                 <div>
 
                     <label class="block text-sm font-medium
@@ -317,18 +315,18 @@
                     rows="3"
                     placeholder="Explanation shown after grading..."
                     class="w-full border border-slate-300
-                           rounded-lg px-4 py-3"></textarea>
+                           rounded-lg px-4 py-3">
+                </textarea>
 
             </div>
 
 
-            <!-- =========================
-                 Options Area
-            ========================== -->
+            <!-- Options Area -->
             <div id="optionsSection"
                  class="hidden mb-5">
 
-                <div class="flex justify-between items-center mb-3">
+                <div class="flex justify-between
+                            items-center mb-3">
 
                     <div>
 
@@ -346,9 +344,6 @@
 
 
                 <div id="optionsContainer">
-
-                    <!-- Options will be generated here -->
-
                 </div>
 
             </div>
@@ -360,9 +355,9 @@
                 <button
                     type="button"
                     onclick="closeQuestionForm()"
-                    class="px-5 py-3 border border-slate-300
-                           rounded-lg text-slate-700
-                           hover:bg-slate-50">
+                    class="px-5 py-3 border
+                           border-slate-300 rounded-lg
+                           text-slate-700 hover:bg-slate-50">
 
                     Cancel
 
@@ -389,6 +384,380 @@
 
 </div>
 
+
+<!-- =========================
+     View Question Modal
+========================== -->
+
+<div id="viewQuestionModal"
+     class="fixed inset-0 bg-black bg-opacity-50 hidden
+            items-center justify-center z-50">
+
+    <div class="bg-white rounded-xl shadow-xl
+                w-full max-w-2xl max-h-[90vh]
+                overflow-y-auto p-6">
+
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center mb-6">
+
+            <div>
+
+                <h2 class="text-xl font-bold text-slate-800">
+                    Question Details
+                </h2>
+
+                <p class="text-sm text-slate-500 mt-1">
+                    View question and answer options
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                onclick="closeViewQuestion()"
+                class="text-slate-400
+                       hover:text-slate-700 text-xl">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <!-- Question -->
+        <div class="mb-5">
+
+            <label class="block text-sm font-medium
+                          text-slate-500 mb-2">
+
+                Question
+
+            </label>
+
+            <div
+                id="viewQuestionText"
+                class="bg-slate-50 border rounded-lg
+                       p-4 text-slate-800">
+            </div>
+
+        </div>
+
+
+        <!-- Type + Mark -->
+        <div class="grid grid-cols-2 gap-4 mb-5">
+
+            <!-- Question Type -->
+            <div class="bg-slate-50 rounded-lg p-4">
+
+                <p class="text-sm text-slate-500">
+                    Question Type
+                </p>
+
+                <p
+                    id="viewQuestionType"
+                    class="font-semibold text-slate-800 mt-1">
+                </p>
+
+            </div>
+
+
+            <!-- Mark -->
+            <div class="bg-slate-50 rounded-lg p-4">
+
+                <p class="text-sm text-slate-500">
+                    Mark
+                </p>
+
+                <p
+                    id="viewQuestionMark"
+                    class="font-semibold text-slate-800 mt-1">
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- Answer Options -->
+        <div id="viewOptionsSection">
+
+            <h3 class="font-semibold text-slate-800 mb-3">
+                Answer Options
+            </h3>
+
+            <div id="viewOptionsContainer">
+            </div>
+
+        </div>
+
+
+        <!-- Explanation -->
+        <div class="mt-5">
+
+            <label class="block text-sm font-medium
+                          text-slate-500 mb-2">
+
+                Explanation
+
+            </label>
+
+            <div
+                id="viewExplanation"
+                class="bg-slate-50 border rounded-lg
+                       p-4 text-slate-700">
+            </div>
+
+        </div>
+
+
+        <!-- Close Button -->
+        <div class="flex justify-end mt-6">
+
+            <button
+                type="button"
+                onclick="closeViewQuestion()"
+                class="px-5 py-3 bg-slate-700
+                       hover:bg-slate-800
+                       text-white rounded-lg">
+
+                Close
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================
+     Edit Question Modal
+========================== -->
+
+<div id="editQuestionModal"
+     class="fixed inset-0 bg-black bg-opacity-50 hidden
+            items-center justify-center z-50">
+
+    <div class="bg-white rounded-xl shadow-xl
+                w-full max-w-3xl max-h-[90vh]
+                overflow-y-auto p-6">
+
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+
+            <div>
+                <h2 class="text-xl font-bold text-slate-800">
+                    Edit Question
+                </h2>
+
+                <p class="text-sm text-slate-500 mt-1">
+                    Update question and answer options
+                </p>
+            </div>
+
+            <button
+                type="button"
+                onclick="closeEditQuestion()"
+                class="text-slate-400 hover:text-slate-700 text-xl">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <!-- Edit Form -->
+        <form id="editQuestionForm">
+
+            <!-- Course -->
+            <div class="mb-5">
+
+                <label class="block text-sm font-medium
+                              text-slate-700 mb-2">
+                    Course
+                </label>
+
+                <select
+                    id="editQuestionCourse"
+                    class="w-full border border-slate-300
+                           rounded-lg px-4 py-3"
+                    required>
+
+                    <option value="">
+                        Select Course
+                    </option>
+
+                    <option value="1">
+                        HTML & CSS
+                    </option>
+
+                    <option value="2">
+                        Java Programming
+                    </option>
+
+                    <option value="3">
+                        Spring Boot
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Question -->
+            <div class="mb-5">
+
+                <label class="block text-sm font-medium
+                              text-slate-700 mb-2">
+                    Question
+                </label>
+
+                <textarea
+                    id="editQuestionText"
+                    rows="4"
+                    class="w-full border border-slate-300
+                           rounded-lg px-4 py-3"
+                    required>
+                </textarea>
+
+            </div>
+
+
+            <!-- Type + Mark -->
+            <div class="grid grid-cols-1 md:grid-cols-2
+                        gap-4 mb-5">
+
+                <!-- Type -->
+                <div>
+
+                    <label class="block text-sm font-medium
+                                  text-slate-700 mb-2">
+                        Question Type
+                    </label>
+
+                    <select
+                        id="editQuestionType"
+                        class="w-full border border-slate-300
+                               rounded-lg px-4 py-3"
+                        onchange="changeEditQuestionType()"
+                        required>
+
+                        <option value="">
+                            Select Type
+                        </option>
+
+                        <option value="MCQ">
+                            MCQ
+                        </option>
+
+                        <option value="TRUE_FALSE">
+                            True / False
+                        </option>
+
+                        <option value="SHORT_ANSWER">
+                            Short Answer
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Mark -->
+                <div>
+
+                    <label class="block text-sm font-medium
+                                  text-slate-700 mb-2">
+                        Default Mark
+                    </label>
+
+                    <input
+                        id="editDefaultMark"
+                        type="number"
+                        min="0"
+                        step="0.5"
+                        class="w-full border border-slate-300
+                               rounded-lg px-4 py-3"
+                        required>
+
+                </div>
+
+            </div>
+
+
+            <!-- Explanation -->
+            <div class="mb-5">
+
+                <label class="block text-sm font-medium
+                              text-slate-700 mb-2">
+                    Explanation
+                </label>
+
+                <textarea
+                    id="editExplanation"
+                    rows="3"
+                    class="w-full border border-slate-300
+                           rounded-lg px-4 py-3">
+                </textarea>
+
+            </div>
+
+
+            <!-- Options -->
+            <div id="editOptionsSection"
+                 class="hidden mb-5">
+
+                <h3 class="font-semibold text-slate-800 mb-3">
+                    Answer Options
+                </h3>
+
+                <p class="text-sm text-slate-500 mb-3">
+                    Select the correct answer
+                </p>
+
+                <div id="editOptionsContainer">
+                </div>
+
+            </div>
+
+
+            <!-- Buttons -->
+            <div class="flex justify-end gap-3 mt-6">
+
+                <button
+                    type="button"
+                    onclick="closeEditQuestion()"
+                    class="px-5 py-3 border
+                           border-slate-300 rounded-lg
+                           text-slate-700 hover:bg-slate-50">
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="px-5 py-3 bg-indigo-600
+                           hover:bg-indigo-700
+                           text-white rounded-lg">
+
+                    <i class="fa-solid fa-save mr-2"></i>
+
+                    Update Question
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
 
 	<!-- =========================
          JavaScript
@@ -643,7 +1012,161 @@
 
         }
 
+        /*
+         * =========================
+         * Render View Options
+         * =========================
+         */
+        function renderViewOptions(options) {
 
+            const container =
+                document.getElementById(
+                    'viewOptionsContainer'
+                );
+
+
+            container.innerHTML = '';
+
+
+            /*
+             * No options
+             */
+            if (!options || options.length === 0) {
+
+                container.innerHTML = `
+                    <div class="text-slate-500
+                                bg-slate-50
+                                rounded-lg
+                                p-4">
+
+                        No answer options.
+
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            /*
+             * Display options
+             */
+            options.forEach(option => {
+
+                const optionDiv =
+                    document.createElement('div');
+
+
+                optionDiv.className =
+                    'flex items-center gap-3 border rounded-lg p-4 mb-3';
+
+
+                /*
+                 * Correct / Wrong style
+                 */
+                if (option.isCorrect) {
+
+                    optionDiv.classList.add(
+                        'border-green-400',
+                        'bg-green-50'
+                    );
+
+                }
+
+
+                optionDiv.innerHTML = `
+
+                    <!-- Option Label -->
+                    <div
+                        class="w-9 h-9 flex items-center
+                               justify-center
+                               rounded-full
+                               bg-slate-100
+                               font-semibold">
+
+                        ${option.optionLabel}
+
+                    </div>
+
+
+                    <!-- Option Text -->
+                    <div class="flex-1 text-slate-800">
+
+                        ${option.optionText}
+
+                    </div>
+
+
+                    <!-- Correct -->
+                    ${
+                        option.isCorrect
+                        ?
+                        `
+                        <span class="text-green-600
+                                     font-medium text-sm">
+
+                            <i class="fa-solid fa-circle-check mr-1"></i>
+                            Correct
+
+                        </span>
+                        `
+                        :
+                        ''
+                    }
+
+                `;
+
+
+                container.appendChild(optionDiv);
+
+            });
+
+        }
+        /*
+         * =========================
+         * Close View Question
+         * =========================
+         */
+        function closeViewQuestion() {
+
+            const modal =
+                document.getElementById(
+                    'viewQuestionModal'
+                );
+
+
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+
+
+            /*
+             * Clear old data
+             */
+            document.getElementById(
+                'viewQuestionText'
+            ).textContent = '';
+
+
+            document.getElementById(
+                'viewQuestionType'
+            ).textContent = '';
+
+
+            document.getElementById(
+                'viewQuestionMark'
+            ).textContent = '';
+
+
+            document.getElementById(
+                'viewExplanation'
+            ).textContent = '';
+
+
+            document.getElementById(
+                'viewOptionsContainer'
+            ).innerHTML = '';
+
+        }
         /*
          * =========================
          * Open Question Form
@@ -1083,29 +1606,666 @@
          * View Question
          * =========================
          */
-        function viewQuestion(questionId) {
+         function viewQuestion(questionId) {
 
-            console.log("View Question ID:", questionId);
+        	    console.log("View Question ID:", questionId);
 
-            alert("View Question ID: " + questionId);
+        	    const modal = document.getElementById('viewQuestionModal');
 
-        }
+        	    modal.classList.remove('hidden');
+        	    modal.classList.add('flex');
 
 
+        	    // Get Question
+        	    fetch(`/api/questions/${questionId}`)
+        	        .then(response => {
+
+        	            if (!response.ok) {
+        	                throw new Error('Failed to load question');
+        	            }
+
+        	            return response.json();
+        	        })
+
+        	        .then(question => {
+
+        	            console.log("Question:", question);
+
+        	            document.getElementById('viewQuestionText').textContent =
+        	                question.questionText;
+
+        	            document.getElementById('viewQuestionType').textContent =
+        	                question.questionType;
+
+        	            document.getElementById('viewQuestionMark').textContent =
+        	                question.defaultMark;
+
+        	            document.getElementById('viewExplanation').textContent =
+        	                question.explanation || 'No explanation';
+
+
+        	            // Get Options
+        	            return fetch(`/api/questions/${questionId}/options`);
+        	        })
+
+        	        .then(response => {
+
+        	            if (!response.ok) {
+        	                throw new Error('Failed to load options');
+        	            }
+
+        	            return response.json();
+        	        })
+
+        	        .then(options => {
+
+        	            console.log("Options:", options);
+
+        	            renderViewOptions(options);
+
+        	        })
+
+        	        .catch(error => {
+
+        	            console.error("Error:", error);
+
+        	            alert("Failed to load question details.");
+
+        	        });
+        	}
         /*
          * =========================
          * Edit Question
          * =========================
          */
-        function editQuestion(questionId) {
+         function editQuestion(questionId) {
 
-            console.log("Edit Question ID:", questionId);
+        	    console.log("Edit Question ID:", questionId);
 
-            alert("Edit Question ID: " + questionId);
+        	    const modal =
+        	        document.getElementById('editQuestionModal');
 
-        }
+        	    modal.classList.remove('hidden');
+        	    modal.classList.add('flex');
 
 
+        	    // Load Question
+        	    fetch(`/api/questions/${questionId}`)
+        	        .then(response => {
+
+        	            if (!response.ok) {
+        	                throw new Error('Failed to load question');
+        	            }
+
+        	            return response.json();
+        	        })
+
+        	        .then(question => {
+
+        	            console.log("Edit Question:", question);
+
+        	            // Store question ID
+        	            document
+        	                .getElementById('editQuestionForm')
+        	                .dataset.questionId = questionId;
+
+
+        	            // Fill question data
+
+        	            document.getElementById(
+        	                'editQuestionCourse'
+        	            ).value = question.courseId;
+
+
+        	            document.getElementById(
+        	                'editQuestionText'
+        	            ).value = question.questionText;
+
+
+        	            document.getElementById(
+        	                'editQuestionType'
+        	            ).value = question.questionType;
+
+
+        	            document.getElementById(
+        	                'editDefaultMark'
+        	            ).value = question.defaultMark;
+
+
+        	            document.getElementById(
+        	                'editExplanation'
+        	            ).value = question.explanation || '';
+
+
+        	            // Load options
+
+        	            return fetch(
+        	                `/api/questions/${questionId}/options`
+        	            );
+        	        })
+
+        	        .then(response => {
+
+        	            if (!response.ok) {
+        	                throw new Error('Failed to load options');
+        	            }
+
+        	            return response.json();
+        	        })
+
+        	        .then(options => {
+
+        	            console.log("Edit Options:", options);
+
+        	            renderEditOptions(options);
+
+        	        })
+
+        	        .catch(error => {
+
+        	            console.error(
+        	                "Error loading question:",
+        	                error
+        	            );
+
+        	            alert(
+        	                "Failed to load question."
+        	            );
+
+        	            closeEditQuestion();
+        	        });
+        	}
+
+         function renderEditOptions(options) {
+
+        	    const type =
+        	        document.getElementById(
+        	            'editQuestionType'
+        	        ).value;
+
+
+        	    const section =
+        	        document.getElementById(
+        	            'editOptionsSection'
+        	        );
+
+
+        	    const container =
+        	        document.getElementById(
+        	            'editOptionsContainer'
+        	        );
+
+
+        	    container.innerHTML = '';
+
+
+        	    // SHORT ANSWER
+        	    if (type === 'SHORT_ANSWER') {
+
+        	        section.classList.add('hidden');
+
+        	        return;
+        	    }
+
+
+        	    // MCQ / TRUE_FALSE
+        	    section.classList.remove('hidden');
+
+
+        	    let labels = [];
+
+
+        	    if (type === 'MCQ') {
+
+        	        labels = ['A', 'B', 'C', 'D'];
+
+        	    } else if (type === 'TRUE_FALSE') {
+
+        	        labels = ['A', 'B'];
+        	    }
+
+
+        	    labels.forEach(label => {
+
+        	        const existingOption =
+        	            options.find(
+        	                option =>
+        	                    option.optionLabel === label
+        	            );
+
+
+        	        const optionText =
+        	            existingOption
+        	                ? existingOption.optionText
+        	                : '';
+
+
+        	        const isCorrect =
+        	            existingOption
+        	                ? existingOption.isCorrect
+        	                : false;
+
+
+        	        const optionDiv =
+        	            document.createElement('div');
+
+
+        	        optionDiv.className =
+        	            'flex items-center gap-3 mb-3';
+
+
+        	        optionDiv.innerHTML = `
+
+        	            <input
+        	                type="radio"
+        	                name="editCorrectOption"
+        	                value="${label}"
+        	                class="w-4 h-4 text-indigo-600"
+        	                ${isCorrect ? 'checked' : ''}
+        	                required>
+
+
+        	            <div
+        	                class="w-10 h-10 flex items-center
+        	                       justify-center
+        	                       bg-slate-100
+        	                       rounded-lg
+        	                       font-semibold">
+
+        	                ${label}
+
+        	            </div>
+
+
+        	            <input
+        	                type="text"
+        	                id="editOption_${label}"
+        	                value="${optionText}"
+        	                placeholder="Option ${label}"
+        	                class="flex-1 border border-slate-300
+        	                       rounded-lg px-4 py-3"
+        	                required>
+
+        	        `;
+
+
+        	        container.appendChild(optionDiv);
+
+        	    });
+        	}
+         
+         function changeEditQuestionType() {
+
+        	    const type =
+        	        document.getElementById(
+        	            'editQuestionType'
+        	        ).value;
+
+
+        	    const section =
+        	        document.getElementById(
+        	            'editOptionsSection'
+        	        );
+
+
+        	    const container =
+        	        document.getElementById(
+        	            'editOptionsContainer'
+        	        );
+
+
+        	    container.innerHTML = '';
+
+
+        	    if (type === 'MCQ') {
+
+        	        section.classList.remove('hidden');
+
+        	        createEditOption('A');
+        	        createEditOption('B');
+        	        createEditOption('C');
+        	        createEditOption('D');
+
+        	    }
+
+        	    else if (type === 'TRUE_FALSE') {
+
+        	        section.classList.remove('hidden');
+
+        	        createEditOption('A', 'True');
+        	        createEditOption('B', 'False');
+
+        	    }
+
+        	    else {
+
+        	        section.classList.add('hidden');
+
+        	    }
+        	}
+         
+         function createEditOption(
+        		    label,
+        		    defaultText = ''
+        		) {
+
+        		    const container =
+        		        document.getElementById(
+        		            'editOptionsContainer'
+        		        );
+
+
+        		    const optionDiv =
+        		        document.createElement('div');
+
+
+        		    optionDiv.className =
+        		        'flex items-center gap-3 mb-3';
+
+
+        		    optionDiv.innerHTML = `
+
+        		        <input
+        		            type="radio"
+        		            name="editCorrectOption"
+        		            value="${label}"
+        		            class="w-4 h-4 text-indigo-600"
+        		            required>
+
+
+        		        <div
+        		            class="w-10 h-10 flex items-center
+        		                   justify-center
+        		                   bg-slate-100
+        		                   rounded-lg
+        		                   font-semibold">
+
+        		            ${label}
+
+        		        </div>
+
+
+        		        <input
+        		            type="text"
+        		            id="editOption_${label}"
+        		            value="${defaultText}"
+        		            placeholder="Option ${label}"
+        		            class="flex-1 border border-slate-300
+        		                   rounded-lg px-4 py-3"
+        		            required>
+
+        		    `;
+
+
+        		    container.appendChild(optionDiv);
+        		}
+         
+         
+         function closeEditQuestion() {
+
+        	    const modal =
+        	        document.getElementById('editQuestionModal');
+
+        	    modal.classList.add('hidden');
+        	    modal.classList.remove('flex');
+
+        	    document
+        	        .getElementById('editQuestionForm')
+        	        .reset();
+
+        	    document
+        	        .getElementById('editOptionsContainer')
+        	        .innerHTML = '';
+
+        	    document
+        	        .getElementById('editOptionsSection')
+        	        .classList.add('hidden');
+        	}
+         document
+         .getElementById('editQuestionForm')
+         .addEventListener('submit', function (event) {
+
+             event.preventDefault();
+
+             console.log("========== EDIT FORM SUBMITTED ==========");
+
+             const questionId =
+                 this.dataset.questionId;
+
+             console.log("Question ID:", questionId);
+
+             const courseId =
+                 document.getElementById(
+                     'editQuestionCourse'
+                 ).value;
+
+             const questionText =
+                 document.getElementById(
+                     'editQuestionText'
+                 ).value;
+
+             const questionType =
+                 document.getElementById(
+                     'editQuestionType'
+                 ).value;
+
+             const defaultMark =
+                 document.getElementById(
+                     'editDefaultMark'
+                 ).value;
+
+             const explanation =
+                 document.getElementById(
+                     'editExplanation'
+                 ).value;
+
+             const question = {
+
+                 courseId: Number(courseId),
+
+                 questionText: questionText,
+
+                 questionType: questionType,
+
+                 defaultMark: Number(defaultMark),
+
+                 explanation: explanation,
+
+                 isActive: true
+             };
+
+             console.log(
+                 "Updating Question:",
+                 question
+             );
+
+             fetch(
+                 `/api/questions/${questionId}`,
+                 {
+                     method: 'PUT',
+
+                     headers: {
+                         'Content-Type':
+                             'application/json'
+                     },
+
+                     body:
+                         JSON.stringify(question)
+                 }
+             )
+             .then(response => {
+
+                 console.log(
+                     "PUT Status:",
+                     response.status
+                 );
+
+                 if (!response.ok) {
+
+                     throw new Error(
+                         'Failed to update question'
+                     );
+                 }
+
+                 return response.json();
+             })
+             .then(result => {
+
+                 console.log(
+                     "Question Update Result:",
+                     result
+                 );
+
+                 if (
+                     questionType === 'MCQ' ||
+                     questionType === 'TRUE_FALSE'
+                 ) {
+
+                     return updateOptions(
+                         questionId,
+                         questionType
+                     );
+                 }
+
+                 return null;
+             })
+             .then(() => {
+
+                 alert(
+                     'Question updated successfully!'
+                 );
+
+                 closeEditQuestion();
+
+                 loadQuestions();
+             })
+             .catch(error => {
+
+                 console.error(
+                     'Error updating question:',
+                     error
+                 );
+
+                 alert(
+                     'Failed to update question.'
+                 );
+             });
+         });
+         
+         function updateOptions(
+        		    questionId,
+        		    questionType
+        		) {
+
+        		    let labels = [];
+
+        		    if (questionType === 'MCQ') {
+
+        		        labels = ['A', 'B', 'C', 'D'];
+
+        		    } else if (questionType === 'TRUE_FALSE') {
+
+        		        labels = ['A', 'B'];
+        		    }
+
+        		    const correctOption =
+        		        document.querySelector(
+        		            'input[name="editCorrectOption"]:checked'
+        		        );
+
+        		    if (!correctOption) {
+
+        		        throw new Error(
+        		            'Please select correct answer'
+        		        );
+        		    }
+
+        		    const correctLabel =
+        		        correctOption.value;
+
+        		    console.log(
+        		        "Correct Answer:",
+        		        correctLabel
+        		    );
+
+        		    // Delete old options first
+        		    return fetch(
+        		        `/api/questions/${questionId}/options`,
+        		        {
+        		            method: 'DELETE'
+        		        }
+        		    )
+        		    .then(response => {
+
+        		        console.log(
+        		            "Delete Old Options Status:",
+        		            response.status
+        		        );
+
+        		        if (!response.ok) {
+
+        		            throw new Error(
+        		                'Failed to delete old options'
+        		            );
+        		        }
+
+        		        return response.json();
+        		    })
+        		    .then(() => {
+
+        		        const requests =
+        		            labels.map(label => {
+
+        		                const optionText =
+        		                    document.getElementById(
+        		                        `editOption_${label}`
+        		                    ).value;
+
+        		                const option = {
+
+        		                    optionLabel: label,
+
+        		                    optionText: optionText,
+
+        		                    isCorrect:
+        		                        label === correctLabel
+        		                };
+
+        		                console.log(
+        		                    "Saving Updated Option:",
+        		                    option
+        		                );
+
+        		                return fetch(
+        		                    `/api/questions/${questionId}/options`,
+        		                    {
+        		                        method: 'POST',
+
+        		                        headers: {
+        		                            'Content-Type':
+        		                                'application/json'
+        		                        },
+
+        		                        body:
+        		                            JSON.stringify(option)
+        		                    }
+        		                )
+        		                .then(response => {
+
+        		                    if (!response.ok) {
+
+        		                        throw new Error(
+        		                            `Failed to save option ${label}`
+        		                        );
+        		                    }
+
+        		                    return response.json();
+        		                });
+        		            });
+
+        		        return Promise.all(requests);
+        		    });
+        		}
         /*
          * =========================
          * Delete Question
@@ -1123,7 +2283,6 @@
 
 
             fetch(`/api/questions/${questionId}`, {
-
                 method: 'DELETE'
 
             })

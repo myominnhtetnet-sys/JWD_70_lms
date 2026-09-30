@@ -176,9 +176,6 @@ public class QuestionRepository {
         return questionId;
     }
 
-    // ==========================================
-    // 4. Update Question
-    // ==========================================
     public int updateQuestion(QuestionBean question) {
 
         String sql = """
@@ -192,7 +189,7 @@ public class QuestionRepository {
                 WHERE question_id = ?
                 """;
 
-        return jdbcTemplate.update(
+        int result = jdbcTemplate.update(
                 sql,
                 question.getCourseId(),
                 question.getQuestionText(),
@@ -202,6 +199,8 @@ public class QuestionRepository {
                 question.getIsActive(),
                 question.getQuestionId()
         );
+
+        return result;
     }
 
     // ==========================================
