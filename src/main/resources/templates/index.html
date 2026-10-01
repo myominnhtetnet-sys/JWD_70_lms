@@ -22,11 +22,6 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
-        .course-badge {
-            background-color: #e0e7ff;
-            color: #3730a3;
-            font-weight: 600;
-        }
     </style>
 </head>
 <body class="bg-light">
@@ -34,7 +29,7 @@
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold text-primary" href="#">
+            <a class="navbar-brand fw-bold text-primary" th:href="@{/}">
                 <i class="bi bi-mortarboard-fill me-2"></i> LMS
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -42,9 +37,8 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/}">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="#categories">Categories</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#popular-courses">Popular Courses</a></li>
                 </ul>
                 <div class="d-flex gap-2">
                     <a th:href="@{/login}" class="btn btn-outline-light">Login</a>
@@ -63,7 +57,7 @@
         </div>
     </section>
 
-    <!-- Categories & Included Courses Section -->
+    <!-- Categories Section -->
     <section id="categories" class="py-5">
         <div class="container">
             <h2 class="fw-bold text-center mb-2">Our Training Programs & Courses</h2>
