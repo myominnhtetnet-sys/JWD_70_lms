@@ -21,9 +21,6 @@ public class QuestionRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // ==========================================
-    // 1. Get All Questions
-    // ==========================================
     public List<QuestionBean> getAllQuestions() {
 
         String sql = """
@@ -70,9 +67,6 @@ public class QuestionRepository {
         });
     }
 
-    // ==========================================
-    // 2. Get Question By ID
-    // ==========================================
     public QuestionBean getQuestionById(Long questionId) {
 
         String sql = """
@@ -129,9 +123,6 @@ public class QuestionRepository {
         return list.get(0);
     }
 
-    // ==========================================
-    // 3. Save Question
-    // ==========================================
     public Long saveQuestion(QuestionBean question) {
 
         String sql = """
@@ -203,9 +194,6 @@ public class QuestionRepository {
         return result;
     }
 
-    // ==========================================
-    // 5. Delete Question
-    // ==========================================
     public int deleteQuestion(Long questionId) {
 
         String sql = """
@@ -216,9 +204,6 @@ public class QuestionRepository {
         return jdbcTemplate.update(sql, questionId);
     }
 
-    // ==========================================
-    // 6. Get Options By Question ID
-    // ==========================================
     public List<QuestionOptionBean> getOptionsByQuestionId(Long questionId) {
 
         String sql = """
@@ -250,9 +235,6 @@ public class QuestionRepository {
         );
     }
 
-    // ==========================================
-    // 7. Save Question Option
-    // ==========================================
     public int saveOption(QuestionOptionBean option) {
 
         String sql = """
@@ -275,9 +257,7 @@ public class QuestionRepository {
         );
     }
 
-    // ==========================================
-    // 8. Delete Options By Question ID
-    // ==========================================
+
     public int deleteOptionsByQuestionId(Long questionId) {
 
         String sql = """
