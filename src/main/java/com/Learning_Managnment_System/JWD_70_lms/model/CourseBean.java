@@ -22,7 +22,6 @@ public class CourseBean {
     
     private Long category_id;
     private String title;
-    private String slug;
     private String short_description;
     private String level;
     private String language;
@@ -38,6 +37,10 @@ public class CourseBean {
 
     @Column(name = "status")
     private String status;
+    
+    @Column(name = "slug", nullable = false, unique = true)
+    private String slug;
+
 
 
     public CourseBean() {

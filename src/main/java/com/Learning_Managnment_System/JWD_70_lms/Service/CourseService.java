@@ -1,7 +1,6 @@
 package com.Learning_Managnment_System.JWD_70_lms.Service;
 
 import java.util.List;
-
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,18 +13,22 @@ import com.Learning_Managnment_System.JWD_70_lms.Repository.CourseRepository;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.courseSpecification.CourseSpecification;
 import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
 
-
-
 @Service
 public class CourseService {
 
     private final CourseRepository courseRepository;
     private final JdbcTemplate jdbcTemplate;
 
-    // Use constructor injection instead of field @Autowired (best practice)
+    // Injected single constructor
     public CourseService(CourseRepository courseRepository, JdbcTemplate jdbcTemplate) {
         this.courseRepository = courseRepository;
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    // New: Look up a course by its clean text URL slug using JpaRepository
+    public CourseBean findBySlug(String slug) {
+        return courseRepository.findBySlug(slug)
+                .orElse(null); // Returns null safely if no matching course slug is found
     }
 
     // Your original plain SQL query using JdbcTemplate
@@ -39,24 +42,19 @@ public class CourseService {
         Specification<CourseBean> spec = CourseSpecification.filterBy(filter);
         return courseRepository.findAll(spec);
     }
- // Inside CourseService.java & CourseServiceImpl.java
+
+    // Dynamic filtering method utilizing your Specification with Pagination
     public Page<CourseBean> filterCourses(CourseBean filter, Pageable pageable) {
-    	 Specification<CourseBean> spec = CourseSpecification.filterBy(filter);
-    	    
-    	    // DIRECT RETURN
-    	    return courseRepository.findAll(spec, pageable);
+         Specification<CourseBean> spec = CourseSpecification.filterBy(filter);
+         return courseRepository.findAll(spec, pageable);
     }
     
     public CourseBean getCourseById(Integer id) {
-		String sql = "SELECT * FROM lms_db.courses where course_id = ?";
-		try {
-			return jdbcTemplate.queryForObject(sql, new CourseMapper(), id);
-		} catch (EmptyResultDataAccessException e) {
-			return null; 
-		}
-	}
-    
- 
-
-
+        String sql = "SELECT * FROM lms_db.courses where course_id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, new CourseMapper(), id);
+        } catch (EmptyResultDataAccessException e) {
+            return null; 
+        }
+    }
 }

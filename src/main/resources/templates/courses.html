@@ -724,20 +724,24 @@
                     <span class="course-meta-top" th:text="${'ID: ' + course.course_id}">ID: 101</span>
                 </div>
                 
-                <!-- Main Details -->
                 <div class="card-body">
-                    <h3 class="course-title" th:text="${course.title}">Course Title</h3>
-                    <div class="course-slug" th:text="${course.slug}">course-slug-url</div>
-                    <p class="course-desc" th:text="${course.short_description != null ? course.short_description : 'No description provided for this course.'}">Short Description</p>
-                    
-                    <div class="course-attributes">
-                        <div class="attr-item"><span class="attr-label">Level</span><span class="attr-value" th:text="${course.level}">Beginner</span></div>
-                        <div class="attr-item"><span class="attr-label">Language</span><span class="attr-value" th:text="${course.language}">English</span></div>
-                        <div class="attr-item"><span class="attr-label">Duration</span><span class="attr-value" th:text="${course.duration_weeks + ' Wks'}">12 Wks</span></div>
-                    </div>
-                </div>
-                
-                <!-- Footer -->
+    <h3 class="course-title" th:text="${course.title}">Course Title</h3> 
+    <p class="course-desc" th:text="${course.short_description != null ? course.short_description : 'No description provided for this course.'}">Short Description</p>
+    
+    <div class="course-attributes">
+        <div class="attr-item"><span class="attr-label">Level</span><span class="attr-value" th:text="${course.level}">Beginner</span></div>
+        <div class="attr-item"><span class="attr-label">Language</span><span class="attr-value" th:text="${course.language}">English</span></div>
+        <div class="attr-item"><span class="attr-label">Duration</span><span class="attr-value" th:text="${course.duration_weeks + ' Wks'}">12 Wks</span></div>
+    </div>
+
+    
+    <div style="margin-top: 15px;">
+        <a th:href="@{/courses/detail/{slug}(slug=${course.slug})}" class="btn-view-details" style="display: inline-block; padding: 8px 16px; background-color: #0f172a; color: white; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600;">
+            View Course Details
+        </a>
+    </div>
+</div>
+
                 <div class="card-footer">
                     <div class="course-price" th:text="${'$' + #numbers.formatDecimal(course.price, 1, 2)}">$0.00</div>
                     <div class="badges-container">
@@ -788,15 +792,8 @@
                         </ul>
                     </div>
 
-                    <!-- Tab 3: Preview Lesson -->
-                    <input type="radio" th:id="'tab-preview-' + ${course.course_id}" th:name="'modal-tabs-' + ${course.course_id}" class="tab-radio">
-                    <label th:for="'tab-preview-' + ${course.course_id}" class="tab-label">▶️ Preview Lesson</label>
-                    <div class="tab-panel">
-                        <div class="preview-video-placeholder">
-                            <svg style="width: 32px; height: 32px; color: #94a3b8;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <span>Click to play sample course introductory overview lesson (10:42)</span>
-                        </div>
-                    </div>
+                  
+
 
                     <!-- Tab 4: Batches -->
                     <input type="radio" th:id="'tab-batches-' + ${course.course_id}" th:name="'modal-tabs-' + ${course.course_id}" class="tab-radio">
@@ -852,7 +849,7 @@
 
 <!-- Fallback Alert Box if the user isn't logged in -->
 <div class="add-review-box" th:if="${session.currentUser == null}" style="text-align: center; padding: 15px;">
-    <p style="font-size: 13px; color: #64748b; margin: 0;">Please <a th:href="@{/login}" style="color:#0f172a; font-weight:600;">log in</a> to submit a course review.</p>
+    <p style="font-size: 13px; color: #64748b; margin: 0;">Please <a th:href="@{/register}" style="color:#0f172a; font-weight:600;">log in</a> to submit a course review.</p>
 </div>
 
     </div>
