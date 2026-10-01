@@ -32,8 +32,7 @@ public class QuestionController {
     }
 
     @GetMapping("/{id}")
-    public QuestionBean getQuestionById(
-            @PathVariable("id") Long questionId) {
+    public QuestionBean getQuestionById(@PathVariable("id") Long questionId) {
 
         return questionService.getQuestionById(questionId);
     }
@@ -46,8 +45,7 @@ public class QuestionController {
     }
 
     @PostMapping
-    public Long saveQuestion(
-            @RequestBody QuestionBean question) {
+    public Long saveQuestion(@RequestBody QuestionBean question) {
 
         return questionService.saveQuestion(question);
     }
