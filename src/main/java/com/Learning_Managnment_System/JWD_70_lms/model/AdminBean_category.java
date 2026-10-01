@@ -8,7 +8,7 @@ public class AdminBean_category {
 	
 	private int id;
 	private int category_id;
-	private int parent_id;
+	private Integer parent_id;
 	private String name;
 	private String slug;
 	private String description;
