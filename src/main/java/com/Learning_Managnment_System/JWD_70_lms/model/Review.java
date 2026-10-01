@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "reviews")
+@Table(name = "course_reviews")
 public class Review {
 
     @Id

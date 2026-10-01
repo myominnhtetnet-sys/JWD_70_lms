@@ -73,7 +73,7 @@ public class CourseController {
         model.addAttribute("course", course);
         model.addAttribute("reviews", courseReviews); // Bind reviews to display them inside your template modal
         
-        return "course-details-template"; 
+        return "course-detail"; 
     }
 
     @PostMapping("/{id}/review")

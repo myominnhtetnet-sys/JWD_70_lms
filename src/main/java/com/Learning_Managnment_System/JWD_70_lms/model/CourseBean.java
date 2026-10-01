@@ -3,8 +3,12 @@ package com.Learning_Managnment_System.JWD_70_lms.model;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 
 import lombok.Getter;
@@ -41,6 +45,17 @@ public class CourseBean {
     @Column(name = "slug", nullable = false, unique = true)
     private String slug;
 
+    @Column(name = "thumbnail")
+    private String thumbnail;
+    
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+ // Inside your CourseBean.java file - Add this field mapping:
+
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OrderBy("startDate ASC") // Automatically orders schedules by earliest start date
+    private java.util.List<BatchBean> batches = new java.util.ArrayList<>();
 
 
     public CourseBean() {

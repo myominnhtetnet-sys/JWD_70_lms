@@ -709,7 +709,7 @@
 
 
     <!-- Grid Container Replacing the Table -->
-  <!-- Grid Container -->
+ <!-- Grid Container -->
 <div class="cards-grid" th:if="${!#lists.isEmpty(list)}">
     
     <!-- Iterative Card Component Loop -->
@@ -717,93 +717,141 @@
         
         <!-- Clickable Card Body -->
         <a th:href="'#detailModal-' + ${course.course_id}" class="course-card-link" style="text-decoration: none; color: inherit; display: block;">
-            <div class="course-card">
+            <div class="course-card" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s;">
+                
                 <!-- Header -->
-                <div class="card-header">
+                <div class="card-header" style="padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9;">
                     <span class="course-number" th:text="${'#' + index.count}">#1</span>
                     <span class="course-meta-top" th:text="${'ID: ' + course.course_id}">ID: 101</span>
                 </div>
                 
-                <div class="card-body">
-    <h3 class="course-title" th:text="${course.title}">Course Title</h3> 
-    <p class="course-desc" th:text="${course.short_description != null ? course.short_description : 'No description provided for this course.'}">Short Description</p>
-    
-    <div class="course-attributes">
-        <div class="attr-item"><span class="attr-label">Level</span><span class="attr-value" th:text="${course.level}">Beginner</span></div>
-        <div class="attr-item"><span class="attr-label">Language</span><span class="attr-value" th:text="${course.language}">English</span></div>
-        <div class="attr-item"><span class="attr-label">Duration</span><span class="attr-value" th:text="${course.duration_weeks + ' Wks'}">12 Wks</span></div>
-    </div>
+                <!-- 🟢 DYNAMIC THUMBNAIL COVER DISPLAY (ADDED HERE) -->
+                <div class="course-thumbnail-wrapper" style="width: 100%; height: 160px; background-color: #f8fafc; overflow: hidden; border-bottom: 1px solid #e2e8f0;">
+                    <img th:src="${course.thumbnail != null ? course.thumbnail : '/images/default-course-cover.jpg'}" 
+                         alt="Course Cover Thumbnail" 
+                         style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                </div>
+                
+                <!-- Card Body Details -->
+                <div class="card-body" style="padding: 16px;">
+                    <h3 class="course-title" th:text="${course.title}" style="margin: 0 0 8px 0; font-size: 18px; color: #0f172a;">Course Title</h3> 
+                    <p class="course-desc" th:text="${course.short_description != null ? course.short_description : 'No description provided for this course.'}" style="font-size: 13px; color: #64748b; margin: 0 0 12px 0; line-height: 1.5;">Short Description</p>
+                    
+                    <div class="course-attributes" style="display: flex; gap: 12px; font-size: 12px; color: #475569;">
+                        <div class="attr-item"><span class="attr-label" style="color: #94a3b8; margin-right: 4px;">Level:</span><span class="attr-value" th:text="${course.level}">Beginner</span></div>
+                        <div class="attr-item"><span class="attr-label" style="color: #94a3b8; margin-right: 4px;">Lang:</span><span class="attr-value" th:text="${course.language}">English</span></div>
+                        <div class="attr-item"><span class="attr-label" style="color: #94a3b8; margin-right: 4px;">Duration:</span><span class="attr-value" th:text="${course.duration_weeks + ' Wks'}">12 Wks</span></div>
+                    </div>
 
-    
-    <div style="margin-top: 15px;">
-        <a th:href="@{/courses/detail/{slug}(slug=${course.slug})}" class="btn-view-details" style="display: inline-block; padding: 8px 16px; background-color: #0f172a; color: white; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600;">
-            View Course Details
-        </a>
-    </div>
-</div>
+                    <!-- Direct Sub-Page Navigation Action Button -->
+                    <div style="margin-top: 15px;">
+                        <a th:href="@{/courses/detail/{slug}(slug=${course.slug})}" 
+                           class="btn-view-details" 
+                           style="display: inline-block; padding: 8px 16px; background-color: #0f172a; color: white; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; text-align: center;">
+                            View Course Details
+                        </a>
+                    </div>
+                </div>
 
-                <div class="card-footer">
-                    <div class="course-price" th:text="${'$' + #numbers.formatDecimal(course.price, 1, 2)}">$0.00</div>
-                    <div class="badges-container">
-                        <span th:if="${course.allow_discount == 1}" class="badge badge-yes">% Disc</span>
-                        <span th:if="${course.allow_discount != 1}" class="badge badge-no">% Disc</span>
-                        <span th:if="${course.allow_installment == 1}" class="badge badge-yes">⌛ Inst</span>
-                        <span th:if="${course.allow_scholarship == 1}" class="badge badge-yes">🎓 Schol</span>
+                <!-- Footer -->
+                <div class="card-footer" style="padding: 12px 16px; background-color: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                    <div class="course-price" th:text="${'$' + #numbers.formatDecimal(course.price, 1, 2)}" style="font-size: 16px; font-weight: 700; color: #0f172a;">$0.00</div>
+                    <div class="badges-container" style="display: flex; gap: 6px;">
+                        <span th:if="${course.allow_discount == 1}" class="badge badge-yes" style="font-size: 11px; padding: 2px 6px; background: #dcfce7; color: #16a34a; border-radius: 4px;">% Disc</span>
+                        <span th:if="${course.allow_discount != 1}" class="badge badge-no" style="font-size: 11px; padding: 2px 6px; background: #fee2e2; color: #dc2626; border-radius: 4px;">% Disc</span>
+                        <span th:if="${course.allow_installment == 1}" class="badge badge-yes" style="font-size: 11px; padding: 2px 6px; background: #dcfce7; color: #16a34a; border-radius: 4px;">⌛ Inst</span>
+                        <span th:if="${course.allow_scholarship == 1}" class="badge badge-yes" style="font-size: 11px; padding: 2px 6px; background: #dcfce7; color: #16a34a; border-radius: 4px;">🎓 Schol</span>
                     </div>
                 </div>
             </div>
         </a>
 
+        <!-- Modal boxes segment continues underneath... -->
+
         <!-- ========================================== -->
         <!-- PREMIUM DYNAMIC MODAL BOX OVERLAY          -->
-        <!-- ========================================== -->
-        <div th:id="'detailModal-' + ${course.course_id}" class="modal-overlay">
-            <a th:href="@{/courses/show}" class="modal-close-backdrop"></a>
+       <!-- ========================================== -->
+<!-- PREMIUM DYNAMIC MODAL BOX OVERLAY          -->
+<!-- ========================================== -->
+<div th:id="'detailModal-' + ${course.course_id}" class="modal-overlay">
+    <a th:href="@{/courses/show}" class="modal-close-backdrop"></a>
+    
+    <div class="modal-content">
+        <!-- Modal Close Header -->
+        <div class="modal-header">
+            <div>
+                <!-- 🟢 FIXED: Kept the title but completely removed the raw slug text display -->
+                <h2 th:text="${course.title}" style="margin:0; font-size: 22px;">Dynamic Course Details</h2>
+            </div>
+            <a th:href="@{/courses/show}" class="modal-close-btn">&times;</a>
+        </div>
+        
+        <!-- Modal Navigation Matrix (Pure HTML Radio-Driven Tabs) -->
+        <div class="modal-tabs">
+    <!-- Tab 1: Overview -->
+    <input type="radio" th:id="'tab-overview-' + ${course.course_id}" th:name="'modal-tabs-' + ${course.course_id}" checked class="tab-radio">
+    <label th:for="'tab-overview-' + ${course.course_id}" class="tab-label">Overview</label>
+    <div class="tab-panel">
+        <h4 style="margin-top:0;">Course Description</h4>
+        <p th:text="${course.short_description != null ? course.short_description : 'No description structural setup.'}">Detailed info goes here...</p>
+        <div style="font-size: 24px; font-weight: 700; margin-top:20px;" th:text="${'$' + #numbers.formatDecimal(course.price, 1, 2)}">$0.00</div>
+    </div>
+
+    <!-- Tab 2: Dynamic Outline -->
+    <input type="radio" th:id="'tab-outline-' + ${course.course_id}" th:name="'modal-tabs-' + ${course.course_id}" class="tab-radio">
+    <label th:for="'tab-outline-' + ${course.course_id}" class="tab-label">📋 Outline</label>
+    <div class="tab-panel">
+        <!-- 🟢 DYNAMICALLY RENDER LABELS BASED ON THE COURSE STATUS OR TITLE -->
+        <h4 style="margin-top:0;">Curriculum Specification</h4>
+        <p style="font-size: 13px; color: #64748b; margin-bottom: 12px;">
+            This program covers targeted industry execution paths optimized for <span th:text="${course.level}">Beginner</span> level.
+        </p>
+        <ul class="nested-content-list">
+            <li><strong>Phase 1:</strong> Intro to <span th:text="${course.title}">Course Title</span> Basics & Workspace Installation</li>
+            <li><strong>Phase 2:</strong> Core Implementation, Program Lifecycle Loops & State Control</li>
+            <li><strong>Phase 3:</strong> Testing Strategies, Optimizations, and Production System Architecture</li>
+        </ul>
+    </div>
+
+   <!-- Tab 4: Live Dynamic Database Batches -->
+<input type="radio" th:id="'tab-batches-' + ${course.course_id}" th:name="'modal-tabs-' + ${course.course_id}" class="tab-radio">
+<label th:for="'tab-batches-' + ${course.course_id}" class="tab-label">🗓️ Batches</label>
+<div class="tab-panel">
+    <h4 style="margin-top:0; color: #0f172a;">Active Enrollment Schedules</h4>
+    
+    <!-- State A: No batch schedules available in the database for this course -->
+    <div th:if="${#lists.isEmpty(course.batches)}" style="padding: 15px; text-align: center; color: #64748b; font-size: 13px;">
+        No active enrollment slots or batches found for this track.
+    </div>
+
+    <!-- State B: Loop and list real database batch records -->
+    <ul th:unless="${#lists.isEmpty(course.batches)}" class="nested-content-list" style="padding-left: 20px; margin: 0; line-height: 1.6;">
+        <li th:each="batch : ${course.batches}" style="margin-bottom: 12px; font-size: 13px; color: #334155; list-style-type: none; border-bottom: 1px dashed #e2e8f0; padding-bottom: 10px;">
             
-            <div class="modal-content">
-                <!-- Modal Close Header -->
-                <div class="modal-header">
-                    <div>
-                        <h2 th:text="${course.title}" style="margin:0 0 4px 0; font-size: 22px;">Dynamic Course Details</h2>
-                        <span class="course-slug" th:text="${course.slug}">course-slug-url</span>
-                    </div>
-                    <a th:href="@{/courses/show}" class="modal-close-btn">&times;</a>
-                </div>
-                
-                <!-- Modal Navigation Matrix (Pure HTML Radio-Driven Tabs) -->
-                <div class="modal-tabs">
-                    <!-- Tab 1: Overview -->
-                    <input type="radio" th:id="'tab-overview-' + ${course.course_id}" th:name="'modal-tabs-' + ${course.course_id}" checked class="tab-radio">
-                    <label th:for="'tab-overview-' + ${course.course_id}" class="tab-label">Overview</label>
-                    <div class="tab-panel">
-                        <h4 style="margin-top:0;">Course Description</h4>
-                        <p th:text="${course.short_description != null ? course.short_description : 'No description structural setup.'}">Detailed info goes here...</p>
-                        <div style="font-size: 24px; font-weight: 700; margin-top:20px;" th:text="${'$' + #numbers.formatDecimal(course.price, 1, 2)}">$0.00</div>
-                    </div>
+            <!-- Status Badge Custom Styling Logic -->
+            <span th:text="${batch.status}" 
+                  th:style="'display: inline-block; padding: 2px 6px; font-size: 10px; font-weight: 700; border-radius: 4px; margin-right: 6px; ' + 
+                            (${batch.status == 'OPEN' || batch.status == 'UPCOMING'} ? 'background-color: #dcfce7; color: #16a34a;' : 'background-color: #f1f5f9; color: #64748b;')">
+                UPCOMING
+            </span>
 
-                    <!-- Tab 2: Outline -->
-                    <input type="radio" th:id="'tab-outline-' + ${course.course_id}" th:name="'modal-tabs-' + ${course.course_id}" class="tab-radio">
-                    <label th:for="'tab-outline-' + ${course.course_id}" class="tab-label">📋 Outline</label>
-                    <div class="tab-panel">
-                        <ul class="nested-content-list">
-                            <li><strong>Module 1:</strong> Foundational Systems & Architecture Environment Configuration</li>
-                            <li><strong>Module 2:</strong> Core Program Structures, Lifecycle Hooks, & Memory management</li>
-                            <li><strong>Module 3:</strong> Advanced Implementations, System Integrations & Production Deployments</li>
-                        </ul>
-                    </div>
+            <!-- Batch Code Reference Tracking Label -->
+            <strong th:text="${batch.title + ' (' + batch.batchCode + ')'}" style="color: #0f172a;">Batch Title (CODE-101)</strong>
+            
+            <!-- Schedule Note Text (e.g. Mon/Wed/Fri 7-9 PM) -->
+            <div style="color: #475569; margin-top: 4px; font-size: 12.5px;">
+                ⏰ <span th:text="${batch.schedule_note != null ? batch.schedule_note : 'Schedule timings to be announced'}">Mon/Wed/Fri 7-9 PM</span>
+            </div>
 
-                  
+            <!-- Date Range Timeline Tracking Label -->
+            <div style="color: #94a3b8; font-size: 11.5px; margin-top: 2px;">
+                Timeline: <span th:text="${batch.startDate}">2026-01-01</span> to <span th:text="${batch.endDate}">2026-04-01</span>
+            </div>
+            
+        </li>
+    </ul>
+</div>
 
-
-                    <!-- Tab 4: Batches -->
-                    <input type="radio" th:id="'tab-batches-' + ${course.course_id}" th:name="'modal-tabs-' + ${course.course_id}" class="tab-radio">
-                    <label th:for="'tab-batches-' + ${course.course_id}" class="tab-label">🗓️ Batches</label>
-                    <div class="tab-panel">
-                        <ul class="nested-content-list">
-                            <li>🟢 <strong>Weekend Batch A:</strong> Sat & Sun (9:00 AM - 12:00 PM) - <span style="color:#16a34a; font-weight:600;">Seats Available</span></li>
-                            <li>🟢 <strong>Weekday Batch B:</strong> Mon & Wed (7:00 PM - 9:30 PM) - <span style="color:#16a34a; font-weight:600;">Seats Available</span></li>
-                        </ul>
-                    </div>
 
                 <!-- 2. Write a Review Form Submission Block Linked to Session User -->
 <div class="add-review-box" th:if="${session.currentUser != null}">
