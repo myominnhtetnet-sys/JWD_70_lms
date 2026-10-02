@@ -1,8 +1,7 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository.courseSpecification;
 
-import java.util.ArrayList;
+import java.util.ArrayList; 
 import java.util.List;
-
 import org.springframework.data.jpa.domain.Specification;
 import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
 import jakarta.persistence.criteria.Predicate;
@@ -13,27 +12,27 @@ public class CourseSpecification {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // 1. Category ID Filter
+            // 1. Category ID
             if (filter.getCategory_id() != null) {
                 predicates.add(cb.equal(root.get("category_id"), filter.getCategory_id()));
             }
             
-            // 2. Title Filter (Case-Insensitive wildcards)
+            // 2. Title Filter Keyword Search
             if (filter.getTitle() != null && !filter.getTitle().trim().isEmpty()) {
                 predicates.add(cb.like(cb.lower(root.get("title")), "%" + filter.getTitle().trim().toLowerCase() + "%"));
             }
             
-            // 3. Level Filter
+            // 3. Level Dropdown Selection
             if (filter.getLevel() != null && !filter.getLevel().trim().isEmpty()) {
                 predicates.add(cb.equal(root.get("level"), filter.getLevel().trim()));
             }
             
-            // 4. Maximum Price Bound
-            if (filter.getPrice() != null) {
+            // 4. Max Price Constraint
+            if (filter.getPrice() != null && filter.getPrice() > 0) { 
                 predicates.add(cb.lessThanOrEqualTo(root.get("price"), filter.getPrice()));
             }
             
-            // 5. Binary Integer Flags
+            // 5. Binary Option Options (🟢 Safe non-null explicit evaluations)
             if (filter.getAllow_discount() != null) {
                 predicates.add(cb.equal(root.get("allow_discount"), filter.getAllow_discount()));
             }
@@ -44,11 +43,11 @@ public class CourseSpecification {
                 predicates.add(cb.equal(root.get("allow_scholarship"), filter.getAllow_scholarship()));
             }
 
-            // 6. Exclude Soft-Deleted Entries
+            // 6. Exclude Soft-Deleted and ensure status is PUBLISHED
             predicates.add(cb.isNull(root.get("deleted_at"))); 
+            predicates.add(cb.equal(root.get("status"), "PUBLISHED"));
 
             return cb.and(predicates.toArray(new Predicate[0]));
-
         };
     }
 }

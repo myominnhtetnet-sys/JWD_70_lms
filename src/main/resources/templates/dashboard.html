@@ -815,7 +815,7 @@
                 { icon: 'fa-book-bookmark', label: 'My Courses' },
                 { icon: 'fa-pencil', label: 'Assignments' },
                 { icon: 'fa-trophy', label: 'Grades & Certificates' },
-                { icon: 'fa-box-archive', label: 'Resources' },
+                { icon: 'fa-box-archive', label: 'Availiable Courses', path: '/courses/show', active: true  },
                 { icon: 'fa-calendar', label: 'Schedule' }
             ]
         };
@@ -869,7 +869,7 @@
             showToast(`Switched to ${role.toUpperCase()} View`);
         }
 
-        // Render Dynamic Sidebar Menu
+     // Render Dynamic Sidebar Menu Connected to Backend
         function renderSidebar(role) {
             const menuContainer = document.getElementById('sidebar-menu');
             const categoryLabel = document.getElementById('sidebar-category');
@@ -877,25 +877,32 @@
             categoryLabel.innerText = `${role.toUpperCase()} MENU`;
             menuContainer.innerHTML = '';
 
+            // Get the current path in the browser bar (e.g., "/courses/show")
+            const currentPath = window.location.pathname;
+
             navMenus[role].forEach(item => {
                 const navItem = document.createElement('a');
-                navItem.href = '#';
-                navItem.onclick = (e) => {
-                    e.preventDefault();
-                    setActiveNavItem(navItem);
-                    showToast(`Navigated to ${item.label}`);
-                };
+                
+                // FIXED: Assign the real backend URL path from your array definition
+                navItem.href = item.path || '#'; 
+                
+                // Determine active highlighting by matching the item's path with the current browser URL
+                const isCurrentPage = currentPath === item.path;
 
                 const baseClasses = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all";
-                const activeClasses = item.active 
+                
+                // FIXED: Applies styling dynamically depending on what page the browser is currently rendering
+                const activeClasses = isCurrentPage 
                     ? "bg-indigo-600 text-white font-semibold shadow-md shadow-indigo-600/30" 
                     : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/80";
 
                 navItem.className = `${baseClasses} ${activeClasses}`;
                 navItem.innerHTML = `<i class="fa-solid ${item.icon} w-4 text-center"></i> <span>${item.label}</span>`;
+                
                 menuContainer.appendChild(navItem);
             });
         }
+
 
         function setActiveNavItem(selectedItem) {
             const items = document.querySelectorAll('#sidebar-menu a');

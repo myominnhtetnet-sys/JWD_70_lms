@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>LMS - Login</title>
+
+<!-- Font Awesome -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	background: #ffffff;
+	width: 100%;
+	min-width: 1000px;
+	height: 100vh;
+	overflow: hidden;
+}
+
+/* =========================
+           NAVBAR
+           ========================= */
+.navbar {
+	width: 100%;
+	height: 60px;
+	background: #f4e9ff;
+	border-bottom: 2px solid #8e44ad;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-left: 60px;
+	padding-right: 60px;
+}
+
+.logo {
+	display: flex;
+	align-items: center;
+	font-size: 22px;
+	font-weight: bold;
+	color: #6c3483;
+}
+
+.logo-icon {
+	font-size: 25px;
+	margin-right: 8px;
+}
+
+.nav-links {
+	display: flex;
+	align-items: center;
+	gap: 35px;
+}
+
+.nav-links a {
+	text-decoration: none;
+	color: #5b2c6f;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.nav-links a i {
+	margin-right: 6px;
+}
+
+.nav-links a:hover {
+	color: #8e44ad;
+}
+
+/* =========================
+           MAIN CONTAINER
+           ========================= */
+.main-container {
+	width: 100%;
+	height: calc(100vh - 60px);
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+/* =========================
+           LOGIN BOX
+           ========================= */
+.login-box {
+	width: 420px;
+	min-height: 390px;
+	padding: 40px 38px 38px;
+	background: #ffffff;
+	border: 1px solid #eeeeee;
+	border-radius: 8px;
+	box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* =========================
+           TITLE
+           ========================= */
+.login-title {
+	text-align: center;
+	font-size: 24px;
+	font-weight: bold;
+	color: #5b2c6f;
+	margin-bottom: 10px;
+}
+
+.login-subtitle {
+	text-align: center;
+	font-size: 13px;
+	color: #777777;
+	margin-bottom: 32px;
+}
+
+/* =========================
+           FORM
+           ========================= */
+.form-group {
+	margin-bottom: 22px;
+}
+
+.form-group label {
+	display: block;
+	height: 20px;
+	font-size: 13px;
+	font-weight: bold;
+	color: #555555;
+	margin-bottom: 8px;
+}
+
+.form-group label i {
+	color: #8e44ad;
+	margin-right: 6px;
+}
+
+/* =========================
+           EMAIL INPUT
+           ========================= */
+.form-group input[type="email"] {
+	width: 100%;
+	height: 42px;
+	padding-left: 12px;
+	padding-right: 12px;
+	border: 1px solid #cccccc;
+	border-radius: 5px;
+	outline: none;
+	font-size: 13px;
+	color: #333333;
+}
+
+.form-group input[type="email"]:focus {
+	border-color: #8e44ad;
+}
+
+/* =========================
+           PASSWORD BOX
+           ========================= */
+.password-box {
+	position: relative;
+	width: 100%;
+}
+
+.password-box input {
+	width: 100%;
+	height: 42px;
+	padding-left: 12px;
+	padding-right: 45px;
+	border: 1px solid #cccccc;
+	border-radius: 5px;
+	outline: none;
+	font-size: 13px;
+	color: #333333;
+}
+
+.password-box input:focus {
+	border-color: #8e44ad;
+}
+
+/* =========================
+           EYE BUTTON
+           ========================= */
+.eye-button {
+	position: absolute;
+	right: 8px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 32px;
+	height: 32px;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.eye-button i {
+	font-size: 15px;
+	color: #777777;
+}
+
+.eye-button:hover i {
+	color: #8e44ad;
+}
+
+.forgot-password {
+	text-align: right;
+	margin-top: 5px;
+	margin-bottom: 15px;
+}
+
+.forgot-password a {
+	font-size: 12px !important;
+	color: #4f46e5;
+	text-decoration: none;
+}
+
+.forgot-password a:hover {
+	text-decoration: underline;
+}
+
+/* =========================
+           LOGIN BUTTON
+           ========================= */
+.login-button {
+	width: 100%;
+	height: 42px;
+	margin-top: 3px;
+	border: none;
+	border-radius: 5px;
+	background: #8e44ad;
+	color: #ffffff;
+	font-size: 14px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.login-button i {
+	margin-right: 7px;
+}
+
+.login-button:hover {
+	background: #6c3483;
+}
+
+/* =========================
+           ERROR MESSAGE
+           ========================= */
+.error-message {
+	width: 100%;
+	padding: 10px 12px;
+	margin-bottom: 20px;
+	background: #fdecec;
+	border: 1px solid #f5b7b1;
+	border-radius: 5px;
+	color: #c0392b;
+	font-size: 12px;
+	display: flex;
+	align-items: center;
+}
+
+.error-message i {
+	margin-right: 7px;
+}
+
+/* =========================
+           LOGOUT MESSAGE
+           ========================= */
+.logout-message {
+	width: 100%;
+	padding: 10px 12px;
+	margin-bottom: 20px;
+	background: #eafaf1;
+	border: 1px solid #a9dfbf;
+	border-radius: 5px;
+	color: #239b56;
+	font-size: 12px;
+	display: flex;
+	align-items: center;
+}
+
+.logout-message i {
+	margin-right: 7px;
+}
+
+/* =========================
+           LMS BOTTOM TEXT
+           ========================= */
+.lms-text {
+	position: absolute;
+	left: 50%;
+	bottom: 28px;
+	width: 300px;
+	transform: translateX(-50%);
+	text-align: center;
+}
+</style>
+
+</head>
+
+
+<body>
+
+
+	<!-- =========================
+         NAVBAR
+         ========================= -->
+
+	<nav class="navbar">
+
+		<div class="logo">
+
+			<span class="logo-icon">🎓</span> <span>LMS</span>
+
+		</div>
+
+
+		<div class="nav-links">
+
+			<a th:href="@{/}"> <i class="fa-solid fa-house"></i> Home
+			</a> <a th:href="@{/login}"> <i class="fa-solid fa-right-to-bracket"></i>
+				Login
+			</a>
+
+		</div>
+
+	</nav>
+
+
+
+	<!-- =========================
+         MAIN
+         ========================= -->
+
+	<div class="main-container">
+
+
+		<!-- =========================
+             LOGIN BOX
+             ========================= -->
+
+		<div class="login-box">
+
+
+			<h1 class="login-title">Welcome Back</h1>
+
+
+			<p class="login-subtitle">Login to Learning Management System</p>
+
+
+
+			<!-- =========================
+                 ERROR MESSAGE
+                 ========================= -->
+
+			<div th:if="${error != null}" class="error-message">
+
+				<i class="fa-solid fa-circle-exclamation"></i> <span
+					th:text="${error}"> Invalid email or password. </span>
+
+			</div>
+
+
+
+			<!-- =========================
+                 LOGOUT MESSAGE
+                 ========================= -->
+
+			<div th:if="${param.logout}" class="logout-message">
+
+				<i class="fa-solid fa-circle-check"></i> <span> Logout
+					successful. </span>
+
+			</div>
+
+
+
+
+
+			<form th:action="@{/login}" method="post">
+
+
+				<!-- EMAIL -->
+
+				<div class="form-group">
+
+					<label for="email"> <i class="fa-solid fa-envelope"></i>
+
+						Email
+
+					</label> <input type="email" id="email" name="email"
+						placeholder="Enter email" required>
+
+				</div>
+
+
+
+				<!-- PASSWORD -->
+
+				<div class="form-group">
+
+					<label for="password"> <i class="fa-solid fa-lock"></i>
+
+						Password
+
+					</label>
+
+
+					<div class="password-box">
+
+						<input type="password" id="password" name="password_hash"
+							placeholder="Enter password" required>
+
+
+						<!-- EYE BUTTON -->
+
+						<button type="button" class="eye-button"
+							onclick="togglePassword()">
+
+							<i class="fa-solid fa-eye" id="eyeIcon"></i>
+
+						</button>
+
+					</div>
+
+					<div class="forgot-password">
+						<a th:href="@{/forgot-password}"> Forgot Password? </a>
+					</div>
+
+
+
+				</div>
+
+
+
+				<!-- LOGIN BUTTON -->
+
+				<button type="submit" class="login-button">
+
+					<i class="fa-solid fa-right-to-bracket"></i> Login
+
+				</button>
+
+
+			</form>
+
+
+		</div>
+
+
+
+
+	</div>
+
+
+	<script>
+		function togglePassword() {
+
+			const passwordInput = document.getElementById("password");
+
+			const eyeIcon = document.getElementById("eyeIcon");
+
+			if (passwordInput.type === "password") {
+
+				passwordInput.type = "text";
+
+				eyeIcon.classList.remove("fa-eye");
+
+				eyeIcon.classList.add("fa-eye-slash");
+
+			} else {
+
+				passwordInput.type = "password";
+
+				eyeIcon.classList.remove("fa-eye-slash");
+
+				eyeIcon.classList.add("fa-eye");
+
+			}
+
+		}
+	</script>
+
+
+</body>
+
+</html>
