@@ -51,17 +51,6 @@ public class LoginController {
 	}
 	
 	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	@GetMapping("/teacher")
 	public String teacherPage(HttpSession session) {
