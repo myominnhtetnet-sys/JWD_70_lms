@@ -2,7 +2,7 @@ package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import com.Learning_Managnment_System.JWD_70_lms.Repository.LoginRepository;
 import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
-import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
+
 
 import jakarta.servlet.http.HttpSession;
 
