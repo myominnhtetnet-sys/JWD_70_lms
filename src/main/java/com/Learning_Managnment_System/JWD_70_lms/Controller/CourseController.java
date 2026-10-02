@@ -47,7 +47,7 @@ public class CourseController {
         int pageSize = 6;
         
         // 🟢 FIXED: Using pure JDBC offset-driven filtering methods instead of Spring Data Pageable
-        List<CourseBean> courseList = courseService.filterCoursesJdbc(filters, page, pageSize);
+        List<CourseBean> courseList = courseService.getFilteredCourses(filters, page, pageSize);
         int totalPages = courseService.getTotalPagesForFilters(filters, pageSize);
         
         model.addAttribute("list", courseList);              

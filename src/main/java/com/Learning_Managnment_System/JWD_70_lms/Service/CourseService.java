@@ -21,7 +21,7 @@ public class CourseService {
     // Shared SQL definition constant
     private static final String BASE_BATCH_SQL = "SELECT * FROM lms_db.batches WHERE course_id = ? ORDER BY start_date ASC";
 
-    public List<CourseBean> filterCoursesJdbc(CourseBean filter, int page, int pageSize) {
+    public List<CourseBean> getFilteredCourses(CourseBean filter, int page, int pageSize) {
         StringBuilder sql = new StringBuilder("SELECT * FROM lms_db.courses WHERE deleted_at IS NULL AND status = 'PUBLISHED'");
         List<Object> params = new ArrayList<>();
 
