@@ -8,13 +8,17 @@ import lombok.Setter;
 @Setter
 public class BatchBean {
 
-    private Integer batchId;
-    private String batchCode;
+    private Long batch_id;
+    private Long course_id;
+    private String batch_code;
     private String title;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private String scheduleNote;
-    private Integer maxSeats;
+    private LocalDate start_date;
+    private LocalDate end_date;
+    
+    // 🟢 IDENTICAL TO SCHEMA: Changed from scheduleNote to schedule_note
+    private String schedule_note; 
+    
+    private Integer max_seats;
     private String status;
-    private Long courseId; // Maps direct relational key id reference directly
+    private Integer created_by;
 }

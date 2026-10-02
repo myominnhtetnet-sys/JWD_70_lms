@@ -41,24 +41,28 @@ public class CourseController {
     @GetMapping("/show")
     public String showAndFilterCourses(
             @ModelAttribute CourseBean filters, 
+            @RequestParam(value = "batchStatus", required = false) String batchStatus, // 🟢 READS URL ?batchStatus=
             @RequestParam(value = "page", defaultValue = "0") int page, 
             Model model) {
         
         int pageSize = 6;
         
-        // 🟢 FIXED: Using pure JDBC offset-driven filtering methods instead of Spring Data Pageable
-        List<CourseBean> courseList = courseService.getFilteredCourses(filters, page, pageSize);
-        int totalPages = courseService.getTotalPagesForFilters(filters, pageSize);
+        // Pass the explicit URL string parameter directly into your service layer methods
+        List<CourseBean> courseList = courseService.getFilteredCourses(filters, batchStatus, page, pageSize);
+        int totalPages = courseService.getTotalPagesForFilters(filters, batchStatus, pageSize);
         
         model.addAttribute("list", courseList);              
         model.addAttribute("currentPage", page);                           
         model.addAttribute("totalPages", totalPages);      
-        
-        // Binds your active pagination link params state mapping
         model.addAttribute("courseBean", filters); 
+        
+        // 🟢 CRITICAL: Send the selected status back to the page so the dropdown stays selected!
+        model.addAttribute("selectedBatchStatus", batchStatus); 
         
         return "courses"; 
     }
+
+
 
     @GetMapping("/detail/{slug}")
     public String getCourseDetails(@PathVariable("slug") String slug, Model model) {

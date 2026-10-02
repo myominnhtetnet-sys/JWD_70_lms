@@ -21,20 +21,19 @@ public class CourseService {
     // Shared SQL definition constant
     private static final String BASE_BATCH_SQL = "SELECT * FROM lms_db.batches WHERE course_id = ? ORDER BY start_date ASC";
 
-    public List<CourseBean> getFilteredCourses(CourseBean filter, int page, int pageSize) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM lms_db.courses WHERE deleted_at IS NULL AND status = 'PUBLISHED'");
+    public List<CourseBean> getFilteredCourses(CourseBean filter, String batchStatus, int page, int pageSize) {
+        // 🟢 FIXED: Added explicit table alias "c" to courses table row records
+        StringBuilder sql = new StringBuilder("SELECT c.* FROM lms_db.courses c WHERE c.deleted_at IS NULL AND c.status = 'PUBLISHED'");
         List<Object> params = new ArrayList<>();
 
-        buildDynamicQuery(filter, sql, params);
+        buildDynamicQuery(filter, batchStatus, sql, params);
 
         sql.append(" LIMIT ? OFFSET ?");
         params.add(pageSize);
         params.add(page * pageSize);
 
-        // 🟢 INSTANTIATED INLINE: Matches your exact 'new UserRowMapper()' parameter style
         List<CourseBean> courses = jdbcTemplate.query(sql.toString(), new CourseMapper(), params.toArray());
 
-        // Enrich rows with dynamic batch collection arrays sequentially
         for (CourseBean course : courses) {
             List<BatchBean> courseBatches = jdbcTemplate.query(BASE_BATCH_SQL, new BatchMapper(), course.getCourse_id());
             course.setBatches(courseBatches);
@@ -43,11 +42,12 @@ public class CourseService {
         return courses;
     }
 
-    public int getTotalPagesForFilters(CourseBean filter, int pageSize) {
-        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM lms_db.courses WHERE deleted_at IS NULL AND status = 'PUBLISHED'");
+    public int getTotalPagesForFilters(CourseBean filter, String batchStatus, int pageSize) {
+        // 🟢 FIXED: Added explicit table alias "c" to courses count tracker rows
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM lms_db.courses c WHERE c.deleted_at IS NULL AND c.status = 'PUBLISHED'");
         List<Object> params = new ArrayList<>();
 
-        buildDynamicQuery(filter, sql, params);
+        buildDynamicQuery(filter, batchStatus, sql, params);
 
         Integer totalRows = jdbcTemplate.queryForObject(sql.toString(), Integer.class, params.toArray());
         if (totalRows == null || totalRows == 0) {
@@ -74,38 +74,54 @@ public class CourseService {
 
     public List<CourseBean> showAllCourses() {
         String sql = "SELECT * FROM lms_db.courses WHERE deleted_at IS NULL AND status = 'PUBLISHED'";
-        // 🟢 INSTANTIATED INLINE: Matches your exact 'new UserRowMapper()' parameter style
-        return jdbcTemplate.query(sql, new CourseMapper());
-    }
-
-    private void buildDynamicQuery(CourseBean filter, StringBuilder sql, List<Object> params) {
-        if (filter == null) {
-            return;
+        
+        // 1. Fetch flat course records safely
+        List<CourseBean> courses = jdbcTemplate.query(sql, new CourseMapper());
+        
+        // 2. 🟢 FIXED: Loop and fetch ALL batches using the service's working jdbcTemplate
+        for (CourseBean course : courses) {
+            List<BatchBean> courseBatches = jdbcTemplate.query(BASE_BATCH_SQL, new BatchMapper(), course.getCourse_id());
+            course.setBatches(courseBatches);
         }
         
-        if (filter.getTitle() != null && !filter.getTitle().trim().isEmpty()) {
-            sql.append(" AND LOWER(title) LIKE ?");
-            params.add("%" + filter.getTitle().trim().toLowerCase() + "%");
+        return courses;
+    }
+
+
+
+    private void buildDynamicQuery(CourseBean filter, String batchStatus, StringBuilder sql, List<Object> params) {
+        if (filter != null) {
+            // 🟢 FIXED: Appended "c." table alias indicators to all flat columns to match the main query scopes
+            if (filter.getTitle() != null && !filter.getTitle().trim().isEmpty()) {
+                sql.append(" AND LOWER(c.title) LIKE ?");
+                params.add("%" + filter.getTitle().trim().toLowerCase() + "%");
+            }
+            if (filter.getLevel() != null && !filter.getLevel().trim().isEmpty()) {
+                sql.append(" AND c.level = ?");
+                params.add(filter.getLevel().trim());
+            }
+            if (filter.getPrice() != null) {
+                sql.append(" AND c.price <= ?");
+                params.add(filter.getPrice());
+            }
+            if (filter.getAllow_discount() != null) {
+                sql.append(" AND c.allow_discount = ?");
+                params.add(filter.getAllow_discount());
+            }
+            if (filter.getAllow_installment() != null) {
+                sql.append(" AND c.allow_installment = ?");
+                params.add(filter.getAllow_installment());
+            }
+            if (filter.getAllow_scholarship() != null) {
+                sql.append(" AND c.allow_scholarship = ?");
+                params.add(filter.getAllow_scholarship());
+            }
         }
-        if (filter.getLevel() != null && !filter.getLevel().trim().isEmpty()) {
-            sql.append(" AND level = ?");
-            params.add(filter.getLevel().trim());
-        }
-        if (filter.getPrice() != null) {
-            sql.append(" AND price <= ?");
-            params.add(filter.getPrice());
-        }
-        if (filter.getAllow_discount() != null) {
-            sql.append(" AND allow_discount = ?");
-            params.add(filter.getAllow_discount());
-        }
-        if (filter.getAllow_installment() != null) {
-            sql.append(" AND allow_installment = ?");
-            params.add(filter.getAllow_installment());
-        }
-        if (filter.getAllow_scholarship() != null) {
-            sql.append(" AND allow_scholarship = ?");
-            params.add(filter.getAllow_scholarship());
+
+        // 🟢 FIXED: Uses explicit aliases "b.course_id = c.course_id" to force an accurate relational inner check loop step!
+        if (batchStatus != null && !batchStatus.trim().isEmpty()) {
+            sql.append(" AND EXISTS (SELECT 1 FROM lms_db.batches b WHERE b.course_id = c.course_id AND b.status = ?)");
+            params.add(batchStatus.trim());
         }
     }
 }

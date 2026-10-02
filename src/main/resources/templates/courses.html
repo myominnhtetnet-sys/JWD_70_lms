@@ -696,6 +696,22 @@
             </div>
         </div>
         
+        <!-- 🗓️ Batch Status Option (Added) -->
+<!-- 🗓️ Dynamic Batch Status Filter Dropdown -->
+<div class="form-group">
+    <label for="batchStatus">Batch Status</label>
+    <div class="input-wrapper">
+        <select id="batchStatus" name="batchStatus">
+            <option value="">All Statuses</option> 
+            <option value="UPCOMING" th:selected="${selectedBatchStatus == 'UPCOMING'}">Upcoming</option>
+            <option value="OPEN" th:selected="${selectedBatchStatus == 'OPEN'}">Open / Enrolling</option>
+            <option value="ONGOING" th:selected="${selectedBatchStatus == 'ONGOING'}">Ongoing</option>
+        </select>
+    </div>
+</div>
+
+        
+        
         <!-- Inline Integrated Actions -->
         <div class="button-group">
             <a th:href="@{/courses/show}" class="btn-reset">Reset</a>
@@ -836,7 +852,9 @@
             </span>
 
             <!-- Batch Code Reference Tracking Label -->
-            <strong th:text="${batch.title + ' (' + batch.batchCode + ')'}" style="color: #0f172a;">Batch Title (CODE-101)</strong>
+          
+			<strong th:text="${batch.title + ' (' + batch.batch_code + ')'}" style="color: #0f172a;">Batch Title (CODE-101)</strong>
+
             
             <!-- Schedule Note Text (e.g. Mon/Wed/Fri 7-9 PM) -->
             <div style="color: #475569; margin-top: 4px; font-size: 12.5px;">
@@ -844,9 +862,11 @@
             </div>
 
             <!-- Date Range Timeline Tracking Label -->
-            <div style="color: #94a3b8; font-size: 11.5px; margin-top: 2px;">
-                Timeline: <span th:text="${batch.startDate}">2026-01-01</span> to <span th:text="${batch.endDate}">2026-04-01</span>
-            </div>
+           <!-- Ensure these lines use underscores instead of camelCase -->
+			<div style="color: #94a3b8; font-size: 11.5px; margin-top: 2px;">
+			    Timeline: <span th:text="${batch.start_date}">2026-01-01</span> to <span th:text="${batch.end_date}">2026-04-01</span>
+			</div>
+
             
         </li>
     </ul>
