@@ -6,11 +6,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
 import com.Learning_Managnment_System.JWD_70_lms.Service.StudentService;
 
 @Controller
+@RequestMapping("/student")
 public class StudentController {
 
     private final StudentService studentService;
