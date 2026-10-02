@@ -6,29 +6,36 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
+import com.Learning_Managnment_System.JWD_70_lms.Service.StudentService;
 
 @Controller
+@RequestMapping("/student")
 public class StudentController {
 
-    private final com.Learning_Managnment_System.JWD_70_lms.Service.StudentService studentService;
+    private final StudentService studentService;
 
     @Autowired
-    public StudentController(com.Learning_Managnment_System.JWD_70_lms.Service.StudentService studentService) {
+    public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
 
+  
     @GetMapping("/register")
-    public String showRegistrationForm(Model model) {
+    public String showRegisterPage(Model model) {
         model.addAttribute("student", new StudentBean());
-        return "register";
+        return "register"; 
     }
 
+   
     @PostMapping("/register")
-    public String registerStudent(@ModelAttribute("student") StudentBean student) {
-        studentService.registerStudent(student);
+    public String processRegistration(@ModelAttribute("student") StudentBean student) {
+
+       
+        studentService.registerStudent(student); 
+
         return "redirect:/register?success";
     }
 }

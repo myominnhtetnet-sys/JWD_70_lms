@@ -2,16 +2,22 @@ package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.Learning_Managnment_System.JWD_70_lms.Service.CourseService;
+import com.Learning_Managnment_System.JWD_70_lms.Service.ReviewService;
+import com.Learning_Managnment_System.JWD_70_lms.Repository.CourseRepository;
 import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.Review;
+import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
+
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/courses")
@@ -19,6 +25,12 @@ public class CourseController {
 
     @Autowired
     private CourseService courseService;
+
+    @Autowired
+    private ReviewService reviewService;
+
+    @Autowired
+    private CourseRepository courseRepository; 
 
     @InitBinder
     public void initBinder(WebDataBinder dataBinder) {
@@ -32,47 +44,77 @@ public class CourseController {
             @RequestParam(value = "page", defaultValue = "0") int page, 
             Model model) {
         
-        Pageable pageable = PageRequest.of(page, 6);
-        Page<CourseBean> coursePage = courseService.filterCourses(filters, pageable);
+        int pageSize = 6;
         
-        model.addAttribute("list", coursePage.getContent());              
+        // 🟢 FIXED: Using pure JDBC offset-driven filtering methods instead of Spring Data Pageable
+        List<CourseBean> courseList = courseService.getFilteredCourses(filters, page, pageSize);
+        int totalPages = courseService.getTotalPagesForFilters(filters, pageSize);
+        
+        model.addAttribute("list", courseList);              
         model.addAttribute("currentPage", page);                           
-        model.addAttribute("totalPages", coursePage.getTotalPages());      
+        model.addAttribute("totalPages", totalPages);      
         
-        // 🟢 CRITICAL: Binds your active pagination link params state mapping
+        // Binds your active pagination link params state mapping
         model.addAttribute("courseBean", filters); 
         
         return "courses"; 
     }
 
-    
-    @GetMapping("/detail/{id}")
-    public String showCourseDetail(@PathVariable("id") int id, Model model) {
-        // Fetch the single target record from your backend storage layer
-        // Example: CourseBean course = courseService.findById(id);
-        CourseBean course = courseService.getCourseById(id); 
+    @GetMapping("/detail/{slug}")
+    public String getCourseDetails(@PathVariable("slug") String slug, Model model) {
+        // Safe mapping using the rewritten class Optional structure container
+        Optional<CourseBean> courseOpt = courseRepository.findBySlug(slug);
         
-        if (course == null) {
-            return "redirect:/courses/show"; // Safe structural fallback redirect
+        if (courseOpt.isEmpty()) {
+            return "error/404"; 
         }
         
+        CourseBean course = courseOpt.get();
+        
+        // Fetch corresponding user reviews using our pure JDBC repository method mapping
+        List<Review> courseReviews = courseRepository.findReviewsByCourseId(course.getCourse_id());
+        
         model.addAttribute("course", course);
-        return "course-detail"; // Directs to your new comprehensive view file
+        model.addAttribute("reviews", courseReviews); 
+        
+        return "course-detail"; 
     }
-       
-   @PostMapping("/{id}/review")
+
+    @PostMapping("/{id}/review")
     public String saveCourseReview(
             @PathVariable("id") Long courseId,
-            @RequestParam("userId") Long userId, // Captures primary key matching your users schema
             @RequestParam("rating") int rating,
-            @RequestParam("comment") String comment) {
+            @RequestParam("comment") String comment,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
             
-        // Execute target query mapping record logic inside your service layer 
-        // e.g., courseService.addReview(courseId, userId, rating, comment);
+        // 1. Backend Security Check: Verify user session exists
+        StudentBean currentUser = (StudentBean) session.getAttribute("currentUser");
+        if (currentUser == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to leave a review.");
+            return "redirect:/login";
+        }
+
+        // 2. 🟢 FIXED: Replaced .findById() with getCourseById from your service layer
+        CourseBean course = courseService.getCourseById(courseId.intValue());
+        if (course == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "The target course data record was not found.");
+            return "redirect:/courses/show";
+        }
+
+        // 3. Build and map your concrete data POJO structure fields
+        Review review = new Review();
+        review.setRating(rating);
+        review.setComment(comment);
+        review.setUser(currentUser); 
+        review.setCourse(course);    
+
+        // 4. Save review instance via raw JDBC write queries
+        reviewService.saveReview(review);
+
+        redirectAttributes.addFlashAttribute("successMessage", "Thank you! Your feedback has been published.");
         
-        // Auto-refresh layout while holding the current active modal tab anchor view open
+        // 5. Auto-refresh page view layout while keeping active modal open natively
         return "redirect:/courses/show#detailModal-" + courseId;
     }
-
-
 }
