@@ -1,0 +1,58 @@
+package com.Learning_Managnment_System.JWD_70_lms.Controller;
+
+import com.Learning_Managnment_System.JWD_70_lms.Repository.LoginRepository;
+import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
+
+import jakarta.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+public class LoginController {
+	@Autowired
+	private LoginRepository loginRepo;
+
+	@GetMapping("/login")
+	public String showLogin(Model model) {
+		model.addAttribute("login", new LoginBean());
+		return "login";
+	}
+
+	@PostMapping("/login")
+	public String login(@ModelAttribute("login") LoginBean login, HttpSession session,
+			RedirectAttributes redirectAttributes) {
+		LoginBean user = loginRepo.login(login.getEmail(), login.getPassword_hash());
+		if (user == null) {
+			redirectAttributes.addFlashAttribute("error", "Invalid email or password.");
+			return "redirect:/login";
+		}
+		session.setAttribute("userId", user.getRole_id());
+		session.setAttribute("fullName", user.getFull_name());
+		session.setAttribute("email", user.getEmail());
+		session.setAttribute("roleId", user.getPassword_hash());
+		return "redirect:/dashboard";
+	}
+
+	@GetMapping("/dashboard")
+	public String dashboard(HttpSession session, Model model) {
+		Object userId = session.getAttribute("userId");
+		if (userId == null) {
+			return "redirect:/login";
+		}
+		model.addAttribute("fullName", session.getAttribute("fullName"));
+		model.addAttribute("roleName", session.getAttribute("roleName"));
+		return "dashboard";
+	}
+
+	@GetMapping("/logout")
+	public String logout(HttpSession session) {
+		session.invalidate();
+		return "redirect:/login";
+	}
+}
