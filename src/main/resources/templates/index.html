@@ -1,31 +1,50 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JWD Learning Management System</title>
 
-    <!-- Bootstrap 5 CSS & Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>Learning Management System</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
-    <!-- Template CSS -->
-    <link rel="stylesheet" th:href="@{/css/style.css}" href="css/style.css">
+    <!-- Your CSS -->
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
 
     <style>
+
         body {
             font-family: 'Inter', sans-serif;
         }
 
-        /* Hero Carousel Styling */
+        /* Hero Carousel */
+
         .hero-carousel .carousel-item {
             height: 500px;
             min-height: 400px;
-            background: no-repeat center center;
+            background-repeat: no-repeat;
+            background-position: center;
             background-size: cover;
             position: relative;
         }
@@ -33,8 +52,17 @@
         .hero-carousel .carousel-item::before {
             content: "";
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 58, 138, 0.75) 100%);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            background: linear-gradient(
+                135deg,
+                rgba(15, 23, 42, 0.85) 0%,
+                rgba(30, 58, 138, 0.75) 100%
+            );
+
             z-index: 1;
         }
 
@@ -43,388 +71,1308 @@
             bottom: 25%;
         }
 
-        .category-card, .course-card, .feature-card, .review-card, .announcement-card {
+        /* Cards */
+
+        .category-card,
+        .course-card,
+        .feature-card,
+        .review-card {
             border-radius: 12px;
             transition: all 0.3s ease;
         }
-        .category-card:hover, .course-card:hover, .feature-card:hover {
+
+        .category-card:hover,
+        .course-card:hover,
+        .feature-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
         }
+
+        /* Step Number */
+
         .step-number {
             width: 45px;
             height: 45px;
+
             background-color: #0d6efd;
             color: white;
+
             font-weight: bold;
+
             border-radius: 50%;
+
             display: flex;
             align-items: center;
             justify-content: center;
+
             margin: 0 auto 15px auto;
         }
+
     </style>
+
 </head>
+
+
 <body class="bg-light">
 
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-primary fs-4" th:href="@{/}">
-                <i class="fa-solid fa-graduation-cap me-2 text-warning"></i> LMS
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+
+<!-- ========================================================= -->
+<!-- NAVIGATION BAR -->
+<!-- ========================================================= -->
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+
+    <div class="container">
+
+        <!-- Logo -->
+
+        <a class="navbar-brand fw-bold text-primary fs-4"
+           th:href="@{/}">
+
+            <i class="fa-solid fa-graduation-cap me-2 text-warning"></i>
+
+            LMS
+
+        </a>
+
+
+        <!-- Mobile Button -->
+
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+
+        <!-- Menu -->
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item">
+
+                    <a class="nav-link active"
+                       href="#home">
+
+                        Home
+
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="#categories">
+
+                        Categories
+
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="#courses">
+
+                        Courses
+
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="#about">
+
+                        Why Choose Us
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+
+            <!-- Login / Register -->
+
+            <div class="d-flex gap-2">
+
+                <a th:href="@{/login}"
+                   class="btn btn-outline-light fw-bold px-3">
+
+                    Login
+
+                </a>
+
+
+                <a th:href="@{/register}"
+                   class="btn btn-warning fw-bold px-3">
+
+                    Register
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+<!-- ========================================================= -->
+<!-- HERO SECTION -->
+<!-- ========================================================= -->
+
+<section id="home">
+
+    <div id="heroCarousel"
+         class="carousel slide carousel-fade hero-carousel"
+         data-bs-ride="carousel"
+         data-bs-interval="4000">
+
+
+        <!-- Indicators -->
+
+        <div class="carousel-indicators">
+
+            <button
+                type="button"
+                data-bs-target="#heroCarousel"
+                data-bs-slide-to="0"
+                class="active">
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#home">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#categories">Categories</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#courses">Courses</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#about">Why Choose Us</a>
-                    </li>
-                </ul>
-                <div class="d-flex gap-2">
-                    <a th:href="@{/login}" class="btn btn-outline-light fw-bold px-3">Login</a>
-                    <a th:href="@{/register}" class="btn btn-warning fw-bold px-3">Register</a>
-                </div>
-            </div>
-        </div>
-    </nav>
 
-    <!-- 1. Motion Slide Hero Section -->
-    <section id="home">
-        <div id="heroCarousel" class="carousel slide carousel-fade hero-carousel" data-bs-ride="carousel" data-bs-interval="4000">
-            <!-- Indicators -->
-            <div class="carousel-indicators">
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
-            </div>
-
-            <div class="carousel-inner">
-                <!-- Slide 1 -->
-                <div class="carousel-item active" style="background-image: url('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1350&q=80');">
-                    <div class="carousel-caption container text-center">
-                        <h1 class="display-4 fw-bold mb-3">Learn New Skills.<br>Build Your Future.</h1>
-                        <p class="lead mb-4 mx-auto" style="max-width: 700px;">
-                            Advance your career with expert-led IT, Programming, and Software Engineering courses designed for modern career growth.
-                        </p>
-                        <div class="d-flex justify-content-center gap-3">
-                            <a th:href="@{/register}" class="btn btn-warning btn-lg px-4 fw-bold">Get Started Now</a>
-                            <a href="#courses" class="btn btn-outline-light btn-lg px-4 fw-bold">Explore Courses</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Slide 2 -->
-                <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1350&q=80');">
-                    <div class="carousel-caption container text-center">
-                        <h1 class="display-4 fw-bold mb-3">Master Web Development</h1>
-                        <p class="lead mb-4 mx-auto" style="max-width: 700px;">
-                            Learn Full-Stack Development with Modern Technologies: Java, Spring Boot, React, and Database Architecture.
-                        </p>
-                        <div class="d-flex justify-content-center gap-3">
-                            <a th:href="@{/register}" class="btn btn-warning btn-lg px-4 fw-bold">Join Today</a>
-                            <a href="#categories" class="btn btn-outline-light btn-lg px-4 fw-bold">View Categories</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Slide 3 -->
-                <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1350&q=80');">
-                    <div class="carousel-caption container text-center">
-                        <h1 class="display-4 fw-bold mb-3">Interactive Learning Experience</h1>
-                        <p class="lead mb-4 mx-auto" style="max-width: 700px;">
-                            Get hands-on projects, instructor guidance, real-world assignments, and industry-recognized certifications.
-                        </p>
-                        <div class="d-flex justify-content-center gap-3">
-                            <a th:href="@{/login}" class="btn btn-warning btn-lg px-4 fw-bold">Login to Access</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Controls -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon"></span>
-                <span class="visually-hidden">Previous</span>
+            <button
+                type="button"
+                data-bs-target="#heroCarousel"
+                data-bs-slide-to="1">
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon"></span>
-                <span class="visually-hidden">Next</span>
+
+            <button
+                type="button"
+                data-bs-target="#heroCarousel"
+                data-bs-slide-to="2">
             </button>
-        </div>
-    </section>
 
-    <!-- 2. Course Categories Section -->
-    <section id="categories" class="py-5">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold">Explore Categories</h2>
-                <p class="text-muted">Choose from a wide variety of topics to jumpstart your career</p>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 category-card shadow-sm border-0 p-3">
-                        <div class="card-body text-center">
-                            <i class="fa-solid fa-code text-primary fs-1 mb-3"></i>
-                            <h5 class="fw-bold">Programming</h5>
-                            <p class="text-muted mb-0">Java, C++, Python & Logic</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 category-card shadow-sm border-0 p-3">
-                        <div class="card-body text-center">
-                            <i class="fa-solid fa-laptop-code text-primary fs-1 mb-3"></i>
-                            <h5 class="fw-bold">Web Development</h5>
-                            <p class="text-muted mb-0">HTML, CSS, Spring Boot, .NET</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 category-card shadow-sm border-0 p-3">
-                        <div class="card-body text-center">
-                            <i class="fa-solid fa-database text-primary fs-1 mb-3"></i>
-                            <h5 class="fw-bold">Database</h5>
-                            <p class="text-muted mb-0">MySQL, PostgreSQL, Oracle</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 category-card shadow-sm border-0 p-3">
-                        <div class="card-body text-center">
-                            <i class="fa-solid fa-compass-drafting text-primary fs-1 mb-3"></i>
-                            <h5 class="fw-bold">UI/UX Design</h5>
-                            <p class="text-muted mb-0">Figma, Adobe XD, Wireframing</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 category-card shadow-sm border-0 p-3">
-                        <div class="card-body text-center">
-                            <i class="fa-solid fa-brain text-primary fs-1 mb-3"></i>
-                            <h5 class="fw-bold">AI & Technology</h5>
-                            <p class="text-muted mb-0">Machine Learning, AI Basics</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 category-card shadow-sm border-0 p-3">
-                        <div class="card-body text-center">
-                            <i class="fa-solid fa-briefcase text-primary fs-1 mb-3"></i>
-                            <h5 class="fw-bold">Software Engineering</h5>
-                            <p class="text-muted mb-0">OOP, System Architecture, IT Ethics</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
-    </section>
 
-    <!-- 3. Courses Section -->
-    <section id="courses" class="py-5 bg-white">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold">Explore Our Courses</h2>
-                <p class="text-muted">Explore popular courses to enhance your IT skills</p>
+
+        <!-- Slides -->
+
+        <div class="carousel-inner">
+
+
+            <!-- Slide 1 -->
+
+            <div class="carousel-item active"
+                 style="background-image: url('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1350&q=80');">
+
+                <div class="carousel-caption container text-center">
+
+                    <h1 class="display-4 fw-bold mb-3">
+
+                        Learn New Skills.
+                        <br>
+                        Build Your Future.
+
+                    </h1>
+
+
+                    <p class="lead mb-4 mx-auto"
+                       style="max-width: 700px;">
+
+                        Advance your career with expert-led IT,
+                        Programming, and Software Engineering courses
+                        designed for modern career growth.
+
+                    </p>
+
+
+                    <div class="d-flex justify-content-center gap-3">
+
+                        <a th:href="@{/register}"
+                           class="btn btn-warning btn-lg px-4 fw-bold">
+
+                            Get Started Now
+
+                        </a>
+
+
+                        <a href="#courses"
+                           class="btn btn-outline-light btn-lg px-4 fw-bold">
+
+                            Explore Courses
+
+                        </a>
+
+                    </div>
+
+                </div>
+
             </div>
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-3">
-                    <div class="card h-100 course-card shadow-sm border-0">
-                        <div class="card-body p-4">
-                            <span class="badge bg-primary mb-2">Available</span>
-                            <h5 class="fw-bold">Java Programming</h5>
-                            <p class="text-muted small mb-2"><i class="fa-regular fa-user me-1"></i> Instructor: LMS Expert</p>
-                            <div class="d-flex justify-content-between align-items-center small text-muted mb-3">
-                                <span><i class="fa-regular fa-clock me-1"></i> 2 Months</span>
-                                <span class="text-warning"><i class="fa-solid fa-star me-1"></i> 4.9</span>
-                            </div>
-                            <a th:href="@{/login}" class="btn btn-outline-primary w-100">Learn More</a>
+
+
+
+            <!-- Slide 2 -->
+
+            <div class="carousel-item"
+                 style="background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1350&q=80');">
+
+                <div class="carousel-caption container text-center">
+
+                    <h1 class="display-4 fw-bold mb-3">
+
+                        Master Web Development
+
+                    </h1>
+
+
+                    <p class="lead mb-4 mx-auto"
+                       style="max-width: 700px;">
+
+                        Learn Full-Stack Development with Modern
+                        Technologies: Java, Spring Boot, React,
+                        and Database Architecture.
+
+                    </p>
+
+
+                    <div class="d-flex justify-content-center gap-3">
+
+                        <a th:href="@{/register}"
+                           class="btn btn-warning btn-lg px-4 fw-bold">
+
+                            Join Today
+
+                        </a>
+
+
+                        <a href="#categories"
+                           class="btn btn-outline-light btn-lg px-4 fw-bold">
+
+                            View Categories
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Slide 3 -->
+
+            <div class="carousel-item"
+                 style="background-image: url('https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1350&q=80');">
+
+                <div class="carousel-caption container text-center">
+
+                    <h1 class="display-4 fw-bold mb-3">
+
+                        Interactive Learning Experience
+
+                    </h1>
+
+
+                    <p class="lead mb-4 mx-auto"
+                       style="max-width: 700px;">
+
+                        Get hands-on projects, instructor guidance,
+                        real-world assignments, and
+                        industry-recognized certifications.
+
+                    </p>
+
+
+                    <div class="d-flex justify-content-center gap-3">
+
+                        <a th:href="@{/login}"
+                           class="btn btn-warning btn-lg px-4 fw-bold">
+
+                            Login to Access
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Previous -->
+
+        <button
+            class="carousel-control-prev"
+            type="button"
+            data-bs-target="#heroCarousel"
+            data-bs-slide="prev">
+
+            <span class="carousel-control-prev-icon"></span>
+
+            <span class="visually-hidden">
+                Previous
+            </span>
+
+        </button>
+
+
+        <!-- Next -->
+
+        <button
+            class="carousel-control-next"
+            type="button"
+            data-bs-target="#heroCarousel"
+            data-bs-slide="next">
+
+            <span class="carousel-control-next-icon"></span>
+
+            <span class="visually-hidden">
+                Next
+            </span>
+
+        </button>
+
+    </div>
+
+</section>
+
+
+
+<!-- ========================================================= -->
+<!-- CATEGORIES -->
+<!-- ========================================================= -->
+
+<section id="categories" class="py-5">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h2 class="fw-bold">
+                Explore Categories
+            </h2>
+
+            <p class="text-muted">
+
+                Choose from a wide variety of topics
+                to jumpstart your career
+
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+
+            <!-- Programming -->
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card h-100 category-card shadow-sm border-0 p-3">
+
+                    <div class="card-body text-center">
+
+                        <i class="fa-solid fa-code text-primary fs-1 mb-3"></i>
+
+                        <h5 class="fw-bold">
+                            Programming
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            Java, C++, Python & Logic
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Web Development -->
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card h-100 category-card shadow-sm border-0 p-3">
+
+                    <div class="card-body text-center">
+
+                        <i class="fa-solid fa-laptop-code text-primary fs-1 mb-3"></i>
+
+                        <h5 class="fw-bold">
+                            Web Development
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            HTML, CSS, Spring Boot, .NET
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Database -->
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card h-100 category-card shadow-sm border-0 p-3">
+
+                    <div class="card-body text-center">
+
+                        <i class="fa-solid fa-database text-primary fs-1 mb-3"></i>
+
+                        <h5 class="fw-bold">
+                            Database
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            MySQL, PostgreSQL, Oracle
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- UI UX -->
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card h-100 category-card shadow-sm border-0 p-3">
+
+                    <div class="card-body text-center">
+
+                        <i class="fa-solid fa-compass-drafting text-primary fs-1 mb-3"></i>
+
+                        <h5 class="fw-bold">
+                            UI/UX Design
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            Figma, Adobe XD, Wireframing
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- AI -->
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card h-100 category-card shadow-sm border-0 p-3">
+
+                    <div class="card-body text-center">
+
+                        <i class="fa-solid fa-brain text-primary fs-1 mb-3"></i>
+
+                        <h5 class="fw-bold">
+                            AI & Technology
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            Machine Learning, AI Basics
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Software Engineering -->
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card h-100 category-card shadow-sm border-0 p-3">
+
+                    <div class="card-body text-center">
+
+                        <i class="fa-solid fa-briefcase text-primary fs-1 mb-3"></i>
+
+                        <h5 class="fw-bold">
+                            Software Engineering
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            OOP, System Architecture, IT Ethics
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ========================================================= -->
+<!-- COURSES -->
+<!-- ========================================================= -->
+
+<section id="courses" class="py-5 bg-white">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h2 class="fw-bold">
+                Explore Our Courses
+            </h2>
+
+            <p class="text-muted">
+                Explore popular courses to enhance your IT skills
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+
+            <!-- Java -->
+
+            <div class="col-md-6 col-lg-3">
+
+                <div class="card h-100 course-card shadow-sm border-0">
+
+                    <div class="card-body p-4">
+
+                        <span class="badge bg-primary mb-2">
+                            Available
+                        </span>
+
+                        <h5 class="fw-bold">
+                            Java Programming
+                        </h5>
+
+                        <p class="text-muted small mb-2">
+
+                            <i class="fa-regular fa-user me-1"></i>
+
+                            Instructor: LMS Expert
+
+                        </p>
+
+
+                        <div class="d-flex justify-content-between align-items-center small text-muted mb-3">
+
+                            <span>
+
+                                <i class="fa-regular fa-clock me-1"></i>
+
+                                2 Months
+
+                            </span>
+
+
+                            <span class="text-warning">
+
+                                <i class="fa-solid fa-star me-1"></i>
+
+                                4.9
+
+                            </span>
+
                         </div>
+
+
+                        <a th:href="@{/login}"
+                           class="btn btn-outline-primary w-100">
+
+                            Learn More
+
+                        </a>
+
                     </div>
+
                 </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="card h-100 course-card shadow-sm border-0">
-                        <div class="card-body p-4">
-                            <span class="badge bg-primary mb-2">Available</span>
-                            <h5 class="fw-bold">Web Development</h5>
-                            <p class="text-muted small mb-2"><i class="fa-regular fa-user me-1"></i> Instructor: LMS Expert</p>
-                            <div class="d-flex justify-content-between align-items-center small text-muted mb-3">
-                                <span><i class="fa-regular fa-clock me-1"></i> 4 Months</span>
-                                <span class="text-warning"><i class="fa-solid fa-star me-1"></i> 4.8</span>
-                            </div>
-                            <a th:href="@{/login}" class="btn btn-outline-primary w-100">Learn More</a>
+
+            </div>
+
+
+
+            <!-- Web Development -->
+
+            <div class="col-md-6 col-lg-3">
+
+                <div class="card h-100 course-card shadow-sm border-0">
+
+                    <div class="card-body p-4">
+
+                        <span class="badge bg-primary mb-2">
+                            Available
+                        </span>
+
+                        <h5 class="fw-bold">
+                            Web Development
+                        </h5>
+
+                        <p class="text-muted small mb-2">
+
+                            <i class="fa-regular fa-user me-1"></i>
+
+                            Instructor: LMS Expert
+
+                        </p>
+
+
+                        <div class="d-flex justify-content-between align-items-center small text-muted mb-3">
+
+                            <span>
+
+                                <i class="fa-regular fa-clock me-1"></i>
+
+                                4 Months
+
+                            </span>
+
+
+                            <span class="text-warning">
+
+                                <i class="fa-solid fa-star me-1"></i>
+
+                                4.8
+
+                            </span>
+
                         </div>
+
+
+                        <a th:href="@{/login}"
+                           class="btn btn-outline-primary w-100">
+
+                            Learn More
+
+                        </a>
+
                     </div>
+
                 </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="card h-100 course-card shadow-sm border-0">
-                        <div class="card-body p-4">
-                            <span class="badge bg-primary mb-2">Available</span>
-                            <h5 class="fw-bold">Database Systems</h5>
-                            <p class="text-muted small mb-2"><i class="fa-regular fa-user me-1"></i> Instructor: LMS Expert</p>
-                            <div class="d-flex justify-content-between align-items-center small text-muted mb-3">
-                                <span><i class="fa-regular fa-clock me-1"></i> 2 Months</span>
-                                <span class="text-warning"><i class="fa-solid fa-star me-1"></i> 4.7</span>
-                            </div>
-                            <a th:href="@{/login}" class="btn btn-outline-primary w-100">Learn More</a>
+
+            </div>
+
+
+
+            <!-- Database -->
+
+            <div class="col-md-6 col-lg-3">
+
+                <div class="card h-100 course-card shadow-sm border-0">
+
+                    <div class="card-body p-4">
+
+                        <span class="badge bg-primary mb-2">
+                            Available
+                        </span>
+
+                        <h5 class="fw-bold">
+                            Database Systems
+                        </h5>
+
+                        <p class="text-muted small mb-2">
+
+                            <i class="fa-regular fa-user me-1"></i>
+
+                            Instructor: LMS Expert
+
+                        </p>
+
+
+                        <div class="d-flex justify-content-between align-items-center small text-muted mb-3">
+
+                            <span>
+
+                                <i class="fa-regular fa-clock me-1"></i>
+
+                                2 Months
+
+                            </span>
+
+
+                            <span class="text-warning">
+
+                                <i class="fa-solid fa-star me-1"></i>
+
+                                4.7
+
+                            </span>
+
                         </div>
+
+
+                        <a th:href="@{/login}"
+                           class="btn btn-outline-primary w-100">
+
+                            Learn More
+
+                        </a>
+
                     </div>
+
                 </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="card h-100 course-card shadow-sm border-0">
-                        <div class="card-body p-4">
-                            <span class="badge bg-primary mb-2">Available</span>
-                            <h5 class="fw-bold">UI/UX Design</h5>
-                            <p class="text-muted small mb-2"><i class="fa-regular fa-user me-1"></i> Instructor: LMS Expert</p>
-                            <div class="d-flex justify-content-between align-items-center small text-muted mb-3">
-                                <span><i class="fa-regular fa-clock me-1"></i> 2.5 Months</span>
-                                <span class="text-warning"><i class="fa-solid fa-star me-1"></i> 4.9</span>
-                            </div>
-                            <a th:href="@{/login}" class="btn btn-outline-primary w-100">Learn More</a>
+
+            </div>
+
+
+
+            <!-- UI UX -->
+
+            <div class="col-md-6 col-lg-3">
+
+                <div class="card h-100 course-card shadow-sm border-0">
+
+                    <div class="card-body p-4">
+
+                        <span class="badge bg-primary mb-2">
+                            Available
+                        </span>
+
+                        <h5 class="fw-bold">
+                            UI/UX Design
+                        </h5>
+
+                        <p class="text-muted small mb-2">
+
+                            <i class="fa-regular fa-user me-1"></i>
+
+                            Instructor: LMS Expert
+
+                        </p>
+
+
+                        <div class="d-flex justify-content-between align-items-center small text-muted mb-3">
+
+                            <span>
+
+                                <i class="fa-regular fa-clock me-1"></i>
+
+                                2.5 Months
+
+                            </span>
+
+
+                            <span class="text-warning">
+
+                                <i class="fa-solid fa-star me-1"></i>
+
+                                4.9
+
+                            </span>
+
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- 4. Why Choose Us Section -->
-    <section id="about" class="py-5 bg-light">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold">Why Choose Us</h2>
-                <p class="text-muted">Discover why thousands of students trust our platform for their education</p>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-3 text-center">
-                    <div class="feature-card p-4 rounded shadow-sm bg-white h-100">
-                        <i class="fa-solid fa-chalkboard-user text-primary fs-1 mb-3"></i>
-                        <h5 class="fw-bold">Experienced Teachers</h5>
-                        <p class="text-muted small mb-0">Learn directly from industry experts with years of real-world experience.</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 text-center">
-                    <div class="feature-card p-4 rounded shadow-sm bg-white h-100">
-                        <i class="fa-solid fa-book-open text-primary fs-1 mb-3"></i>
-                        <h5 class="fw-bold">Quality Courses</h5>
-                        <p class="text-muted small mb-0">Up-to-date curriculum aligned with modern IT and career requirements.</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 text-center">
-                    <div class="feature-card p-4 rounded shadow-sm bg-white h-100">
-                        <i class="fa-solid fa-list-check text-primary fs-1 mb-3"></i>
-                        <h5 class="fw-bold">Assignments & Quizzes</h5>
-                        <p class="text-muted small mb-0">Practice with hands-on exercises and evaluate your skill growth regularly.</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 text-center">
-                    <div class="feature-card p-4 rounded shadow-sm bg-white h-100">
-                        <i class="fa-solid fa-certificate text-primary fs-1 mb-3"></i>
-                        <h5 class="fw-bold">Certificate on Completion</h5>
-                        <p class="text-muted small mb-0">Get recognized certifications to showcase on your CV and LinkedIn profile.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- 5. How It Works Section -->
-    <section class="py-5 bg-white">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold">How It Works</h2>
-                <p class="text-muted">Your simple 5-step learning path to successful graduation</p>
-            </div>
-            <div class="row text-center g-4">
-                <div class="col">
-                    <div class="step-number">1</div>
-                    <h6 class="fw-bold">Register</h6>
-                    <small class="text-muted">Create account</small>
-                </div>
-                <div class="col">
-                    <div class="step-number">2</div>
-                    <h6 class="fw-bold">Choose Course</h6>
-                    <small class="text-muted">Select program</small>
-                </div>
-                <div class="col">
-                    <div class="step-number">3</div>
-                    <h6 class="fw-bold">Start Learning</h6>
-                    <small class="text-muted">Watch lessons</small>
-                </div>
-                <div class="col">
-                    <div class="step-number">4</div>
-                    <h6 class="fw-bold">Complete Exam</h6>
-                    <small class="text-muted">Pass final tests</small>
-                </div>
-                <div class="col">
-                    <div class="step-number">5</div>
-                    <h6 class="fw-bold">Get Certificate</h6>
-                    <small class="text-muted">Achieve credential</small>
-                </div>
-            </div>
-        </div>
-    </section>
+                        <a th:href="@{/login}"
+                           class="btn btn-outline-primary w-100">
 
-    <!-- 6. Student Reviews Section -->
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold">Student Reviews</h2>
-                <p class="text-muted">See what our successful students have to say about us</p>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card review-card border-0 shadow-sm p-4 h-100 bg-white">
-                        <div class="text-warning mb-2"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-                        <p class="text-muted fst-italic">"The Web Development course was incredible. It covered everything from basic HTML to practical frameworks!"</p>
-                        <h6 class="fw-bold mb-0">Min Khant</h6>
-                        <small class="text-muted">Software Student</small>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card review-card border-0 shadow-sm p-4 h-100 bg-white">
-                        <div class="text-warning mb-2"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-                        <p class="text-muted fst-italic">"The Software Engineering and Web Training helped me prepare perfectly for my future career goals."</p>
-                        <h6 class="fw-bold mb-0">Thiha</h6>
-                        <small class="text-muted">IT Student</small>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card review-card border-0 shadow-sm p-4 h-100 bg-white">
-                        <div class="text-warning mb-2"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-                        <p class="text-muted fst-italic">"Great platform! The assignments and quizzes helped me understand complex Java OOP concepts easily."</p>
-                        <h6 class="fw-bold mb-0">Aung Kyaw</h6>
-                        <small class="text-muted">Java Developer</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                            Learn More
 
-   
-    
-    <!-- 8. Call To Action (CTA) Section -->
-    <section class="py-5 bg-dark text-white text-center">
-        <div class="container">
-            <h2 class="display-6 fw-bold mb-3">Ready to Start Learning?</h2>
-            <p class="lead mb-4 text-secondary">Join our learning community and start building your practical skills today.</p>
-            <a th:href="@{/register}" class="btn btn-warning btn-lg px-4 fw-bold">Register Now</a>
-        </div>
-    </section>
+                        </a>
 
-    <!-- Bootstrap 5 JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Template JS -->
-    <script th:src="@{/js/main.js}" src="js/main.js"></script>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ========================================================= -->
+<!-- WHY CHOOSE US -->
+<!-- ========================================================= -->
+
+<section id="about" class="py-5 bg-light">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h2 class="fw-bold">
+                Why Choose Us
+            </h2>
+
+            <p class="text-muted">
+                Discover why students choose our platform
+                for their education
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+
+            <div class="col-md-6 col-lg-3 text-center">
+
+                <div class="feature-card p-4 rounded shadow-sm bg-white h-100">
+
+                    <i class="fa-solid fa-chalkboard-user text-primary fs-1 mb-3"></i>
+
+                    <h5 class="fw-bold">
+                        Experienced Teachers
+                    </h5>
+
+                    <p class="text-muted small mb-0">
+
+                        Learn directly from industry experts
+                        with real-world experience.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6 col-lg-3 text-center">
+
+                <div class="feature-card p-4 rounded shadow-sm bg-white h-100">
+
+                    <i class="fa-solid fa-book-open text-primary fs-1 mb-3"></i>
+
+                    <h5 class="fw-bold">
+                        Quality Courses
+                    </h5>
+
+                    <p class="text-muted small mb-0">
+
+                        Up-to-date curriculum aligned with
+                        modern IT and career requirements.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6 col-lg-3 text-center">
+
+                <div class="feature-card p-4 rounded shadow-sm bg-white h-100">
+
+                    <i class="fa-solid fa-list-check text-primary fs-1 mb-3"></i>
+
+                    <h5 class="fw-bold">
+                        Assignments & Quizzes
+                    </h5>
+
+                    <p class="text-muted small mb-0">
+
+                        Practice with hands-on exercises
+                        and evaluate your skill growth.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6 col-lg-3 text-center">
+
+                <div class="feature-card p-4 rounded shadow-sm bg-white h-100">
+
+                    <i class="fa-solid fa-certificate text-primary fs-1 mb-3"></i>
+
+                    <h5 class="fw-bold">
+                        Certificate on Completion
+                    </h5>
+
+                    <p class="text-muted small mb-0">
+
+                        Get recognized certifications to
+                        showcase your achievements.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ========================================================= -->
+<!-- HOW IT WORKS -->
+<!-- ========================================================= -->
+
+<section class="py-5 bg-white">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h2 class="fw-bold">
+                How It Works
+            </h2>
+
+            <p class="text-muted">
+                Your simple 5-step learning path
+            </p>
+
+        </div>
+
+
+        <div class="row text-center g-4">
+
+
+            <div class="col">
+
+                <div class="step-number">
+                    1
+                </div>
+
+                <h6 class="fw-bold">
+                    Register
+                </h6>
+
+                <small class="text-muted">
+                    Create account
+                </small>
+
+            </div>
+
+
+            <div class="col">
+
+                <div class="step-number">
+                    2
+                </div>
+
+                <h6 class="fw-bold">
+                    Choose Course
+                </h6>
+
+                <small class="text-muted">
+                    Select program
+                </small>
+
+            </div>
+
+
+            <div class="col">
+
+                <div class="step-number">
+                    3
+                </div>
+
+                <h6 class="fw-bold">
+                    Start Learning
+                </h6>
+
+                <small class="text-muted">
+                    Watch lessons
+                </small>
+
+            </div>
+
+
+            <div class="col">
+
+                <div class="step-number">
+                    4
+                </div>
+
+                <h6 class="fw-bold">
+                    Complete Exam
+                </h6>
+
+                <small class="text-muted">
+                    Pass final tests
+                </small>
+
+            </div>
+
+
+            <div class="col">
+
+                <div class="step-number">
+                    5
+                </div>
+
+                <h6 class="fw-bold">
+                    Get Certificate
+                </h6>
+
+                <small class="text-muted">
+                    Achieve credential
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ========================================================= -->
+<!-- STUDENT REVIEWS -->
+<!-- ========================================================= -->
+
+<section class="py-5 bg-light">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h2 class="fw-bold">
+                Student Reviews
+            </h2>
+
+            <p class="text-muted">
+                See what our students have to say
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+
+            <!-- Review 1 -->
+
+            <div class="col-md-4">
+
+                <div class="card review-card border-0 shadow-sm p-4 h-100 bg-white">
+
+                    <div class="text-warning mb-2">
+
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+
+                    </div>
+
+
+                    <p class="text-muted fst-italic">
+
+                        "The Web Development course was incredible.
+                        It covered everything from basic HTML
+                        to practical frameworks!"
+
+                    </p>
+
+
+                    <h6 class="fw-bold mb-0">
+                        Min Khant
+                    </h6>
+
+                    <small class="text-muted">
+                        Software Student
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Review 2 -->
+
+            <div class="col-md-4">
+
+                <div class="card review-card border-0 shadow-sm p-4 h-100 bg-white">
+
+                    <div class="text-warning mb-2">
+
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+
+                    </div>
+
+
+                    <p class="text-muted fst-italic">
+
+                        "The Software Engineering and Web Training
+                        helped me prepare for my future career goals."
+
+                    </p>
+
+
+                    <h6 class="fw-bold mb-0">
+                        Thiha
+                    </h6>
+
+                    <small class="text-muted">
+                        IT Student
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Review 3 -->
+
+            <div class="col-md-4">
+
+                <div class="card review-card border-0 shadow-sm p-4 h-100 bg-white">
+
+                    <div class="text-warning mb-2">
+
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+
+                    </div>
+
+
+                    <p class="text-muted fst-italic">
+
+                        "Great platform!
+                        The assignments and quizzes helped me
+                        understand Java OOP concepts easily."
+
+                    </p>
+
+
+                    <h6 class="fw-bold mb-0">
+                        Aung Kyaw
+                    </h6>
+
+                    <small class="text-muted">
+                        Java Developer
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ========================================================= -->
+<!-- CALL TO ACTION -->
+<!-- ========================================================= -->
+
+<section class="py-5 bg-dark text-white text-center">
+
+    <div class="container">
+
+        <h2 class="display-6 fw-bold mb-3">
+            Ready to Start Learning?
+        </h2>
+
+        <p class="lead mb-4 text-secondary">
+
+            Join our learning community and
+            start building your practical skills today.
+
+        </p>
+
+
+        <a th:href="@{/register}"
+           class="btn btn-warning btn-lg px-4 fw-bold">
+
+            Register Now
+
+        </a>
+
+    </div>
+
+</section>
+
+
+
+<!-- ========================================================= -->
+<!-- FOOTER -->
+<!-- ========================================================= -->
+
+<footer class="bg-dark text-white border-top border-secondary py-4 text-center">
+
+    <div class="container">
+
+        <p class="mb-0 text-secondary">
+
+            &copy; 2026  Learning Management System.
+            All rights reserved.
+
+        </p>
+
+    </div>
+
+</footer>
+
+
+
+<!-- Bootstrap JS -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+<!-- Your JS -->
+
+<script
+    th:src="@{/js/main.js}">
+</script>
+
+
 </body>
+
 </html>
