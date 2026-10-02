@@ -86,18 +86,22 @@ public class LoginController {
 
 	@GetMapping("/dashboard")
 	public String dashboard(HttpSession session, Model model) {
-		Object userId = session.getAttribute("userId");
-		if (userId == null) {
-			return "redirect:/login";
-		}
-		model.addAttribute("fullName", session.getAttribute("fullName"));
-		model.addAttribute("roleName", session.getAttribute("roleName"));
-		return "dashboard";
-	}
 
-	@GetMapping("/logout")
-	public String logout(HttpSession session) {
-		session.invalidate();
-		return "redirect:/login";
+	    Object roleId = session.getAttribute("roleId");
+
+	    if (roleId == null) {
+	        return "redirect:/login";
+	    }
+
+	    model.addAttribute("fullName",
+	            session.getAttribute("fullName"));
+
+	    model.addAttribute("email",
+	            session.getAttribute("email"));
+
+	    model.addAttribute("roleId",
+	            session.getAttribute("roleId"));
+
+	    return "dashboard";
 	}
 }
