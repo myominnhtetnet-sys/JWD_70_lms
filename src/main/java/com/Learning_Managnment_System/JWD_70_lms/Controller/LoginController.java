@@ -32,12 +32,54 @@ public class LoginController {
 			redirectAttributes.addFlashAttribute("error", "Invalid email or password.");
 			return "redirect:/login";
 		}
-		session.setAttribute("userId", user.getRole_id());
+		session.setAttribute("roleId", user.getRole_id());
 		session.setAttribute("fullName", user.getFull_name());
 		session.setAttribute("email", user.getEmail());
-		session.setAttribute("roleId", user.getPassword_hash());
-		return "redirect:/dashboard";
+		session.setAttribute("password_hash", user.getPassword_hash());
+		
+		if (user.getRole_id() == 1) {
+		    return "redirect:/admin";
+		} else if (user.getRole_id() == 2) {
+		    return "redirect:/teacher";
+		} else if (user.getRole_id() == 3) {
+		    return "redirect:/student";
+		}
+
+		return "redirect:/login";
+//		return "redirect:/dashboard";
 	}
+	
+	@GetMapping("/teacher")
+	public String teacherPage(HttpSession session) {
+
+		if (session.getAttribute("roleId") == null) {
+	        return "redirect:/login";
+	    }
+
+	    if ((int) session.getAttribute("roleId") != 2) {
+	        return "redirect:/login";
+	    }
+
+	    return "teacher";
+	}
+	
+	
+	@GetMapping("/student")
+	public String studentPage(HttpSession session) {
+
+		if (session.getAttribute("roleId") == null) {
+	        return "redirect:/login";
+	    }
+
+	    if ((int) session.getAttribute("roleId") != 3) {
+	        return "redirect:/login";
+	    }
+
+	    return "student";
+	}
+	
+	
+	
 
 	@GetMapping("/dashboard")
 	public String dashboard(HttpSession session, Model model) {
