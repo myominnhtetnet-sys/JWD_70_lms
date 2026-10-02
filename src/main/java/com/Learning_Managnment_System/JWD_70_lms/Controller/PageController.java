@@ -8,7 +8,7 @@ public class PageController {
 	
 	@GetMapping("/page")
 	public String show() {		
-		return "dashboard";		
+		return "studentdashboard";		
 	}
 
 }
