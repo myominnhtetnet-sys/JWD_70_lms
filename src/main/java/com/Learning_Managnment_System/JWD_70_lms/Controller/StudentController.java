@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
 import com.Learning_Managnment_System.JWD_70_lms.Service.StudentService;
@@ -27,13 +28,13 @@ public class StudentController {
         return "register"; 
     }
 
-   
     @PostMapping("/register")
-    public String processRegistration(@ModelAttribute("student") StudentBean student) {
+    public String processRegistration(@ModelAttribute("student") StudentBean student, RedirectAttributes redirectAttributes) {
 
-       
+      
         studentService.registerStudent(student); 
 
-        return "redirect:/register?success";
+        redirectAttributes.addFlashAttribute("success", "Registration successful! Please login.");
+        return "redirect:/login";
     }
 }

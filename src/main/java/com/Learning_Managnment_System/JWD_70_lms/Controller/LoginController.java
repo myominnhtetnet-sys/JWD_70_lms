@@ -2,6 +2,7 @@ package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import com.Learning_Managnment_System.JWD_70_lms.Repository.LoginRepository;
 import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -66,21 +67,22 @@ public class LoginController {
 	    return "teacher";
 	}
 	
-	
 	@GetMapping("/student")
-	public String studentPage(HttpSession session) {
+	public String studentPage(HttpSession session, Model model) {
 
-		if (session.getAttribute("roleId") == null) {
+	  
+	    if (session.getAttribute("roleId") == null || (int) session.getAttribute("roleId") != 3) {
 	        return "redirect:/login";
 	    }
 
-	    if ((int) session.getAttribute("roleId") != 3) {
-	        return "redirect:/login";
-	    }
+	  
+	    model.addAttribute("fullName", session.getAttribute("fullName"));
+	    model.addAttribute("studentId", session.getAttribute("studentId"));
+	    
+	    
 
-	    return "student";
+	    return "studentdashboard"; 
 	}
-	
 	
 	
 
