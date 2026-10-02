@@ -28,6 +28,7 @@ const studentDeadlines = [
     { course: 'AI-402', title: 'Linear Regression Notebook', due: 'Oct 2, 2026', badgeBg: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' }
 ];
 
+<<<<<<< Updated upstream
 // Sidebar Navigation Definitions
 const navMenus = {
     admin: [
@@ -56,6 +57,36 @@ const navMenus = {
         { icon: 'fa-calendar', label: 'Schedule' }
     ]
 };
+=======
+        // Sidebar Navigation Definitions
+        const navMenus = {
+            admin: [
+                { icon: 'fa-chart-pie', label: 'Dashboard', active: true },
+                { icon: 'fa-users', label: 'Users & Roles' },
+                { icon: 'fa-book-open', label: 'Global Courses' },
+                { icon: 'fa-chart-line', label: 'Analytics' },
+                { icon: 'fa-file-invoice-dollar', label: 'Financials' },
+				{ icon: 'fa-book-open', label: 'Category' },
+                { icon: 'fa-gear', label: 'System Settings' }
+            ],
+            teacher: [
+                { icon: 'fa-house', label: 'Overview', active: true },
+                { icon: 'fa-chalkboard', label: 'My Classes' },
+                { icon: 'fa-list-check', label: 'Grading Queue' },
+                { icon: 'fa-graduation-cap', label: 'Student Performance' },
+                { icon: 'fa-folder-tree', label: 'Curriculum Builder' },
+                { icon: 'fa-comments', label: 'Messages' }
+            ],
+            student: [
+                { icon: 'fa-compass', label: 'Dashboard', active: true },
+                { icon: 'fa-book-bookmark', label: 'My Courses' },
+                { icon: 'fa-pencil', label: 'Assignments' },
+                { icon: 'fa-trophy', label: 'Grades & Certificates' },
+                { icon: 'fa-box-archive', label: 'Resources' },
+                { icon: 'fa-calendar', label: 'Schedule' }
+            ]
+        };
+>>>>>>> Stashed changes
 
 // User Profiles Mapping
 const profiles = {
@@ -113,6 +144,7 @@ function renderSidebar(role) {
             const navItem = document.createElement('a');
             navItem.href = item.path || '#';
 
+<<<<<<< Updated upstream
             navItem.onclick = (e) => {
                 if (item.path) {
                     window.location.href = item.path;
@@ -122,6 +154,15 @@ function renderSidebar(role) {
                 setActiveNavItem(navItem);
                 showToast(`Navigated to ${item.label}`);
             };
+=======
+                    navItem.className = `${baseClasses} ${activeClasses}`;
+                    navItem.innerHTML = `<i class="fa-solid ${item.icon} w-4 text-center"></i> <span>${item.label}</span>`;
+                    menuContainer.appendChild(navItem);
+                });
+            }
+			
+        }
+>>>>>>> Stashed changes
 
             const baseClasses = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all";
             const activeClasses = item.active
@@ -388,6 +429,152 @@ function initCharts() {
                 x: { grid: { display: false } }
             }
         }
+<<<<<<< Updated upstream
     });
 }
 /*]]>*/
+=======
+
+        function openModal(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        }
+
+        function handleAddUser(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-user-name').value;
+            const email = document.getElementById('new-user-email').value;
+            const role = document.getElementById('new-user-role').value;
+
+            usersData.unshift({
+                id: Date.now(),
+                name,
+                email,
+                role,
+                status: 'Active',
+                joined: 'Just now',
+                avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120'
+            });
+
+            renderUserTable();
+            closeModal('user-modal');
+            showToast(`User ${name} created as ${role}!`);
+            e.target.reset();
+        }
+
+        function handleCreateAssignment(e) {
+            e.preventDefault();
+            closeModal('assignment-modal');
+            showToast('Assignment successfully published to students!');
+        }
+
+        function handleSubmitAssignment(e) {
+            e.preventDefault();
+            closeModal('submit-work-modal');
+            showToast('Homework file uploaded successfully!');
+        }
+
+        function handleSendAnnouncement(e) {
+            e.preventDefault();
+            closeModal('announcement-modal');
+            showToast('Broadcast notification sent to all users!');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            if (toast && msgEl) {
+                msgEl.innerText = message;
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                
+                setTimeout(() => {
+                    toast.classList.add('translate-y-20', 'opacity-0');
+                }, 3000);
+            }
+        }
+		function showSection(sectionName) {
+			      // 1. Hide all page sections
+			      const sections = document.querySelectorAll('.page-section');
+			      sections.forEach(section => {
+			        section.style.display = 'none';
+			      });
+
+			      // 2. Show the clicked section
+			      const targetSection = document.getElementById(sectionName + '-section');
+			      if (targetSection) {
+			        targetSection.style.display = 'block';
+			      }
+			    }
+
+
+        function toggleNotifications() {
+            const el = document.getElementById('notif-dropdown');
+            if (el) el.classList.toggle('hidden');
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const themeIcon = document.getElementById('theme-icon');
+            if (themeIcon) {
+                if (document.documentElement.classList.contains('dark')) {
+                    themeIcon.className = "fa-solid fa-sun text-amber-400 text-lg";
+                } else {
+                    themeIcon.className = "fa-solid fa-moon text-lg";
+                }
+            }
+        }
+
+        function initCharts() {
+            const canvas = document.getElementById('adminEnrollmentChart');
+            if (!canvas || typeof Chart === 'undefined') return;
+            const ctx = canvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Student Registrations',
+                        data: [650, 720, 800, 890, 960, 1050],
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+		
+
+		
+		    function showSection(sectionName) {
+		      // 1. Hide all page sections
+		      const sections = document.querySelectorAll('.page-section');
+		      sections.forEach(section => {
+		        section.style.display = 'none';
+		      });
+
+		      // 2. Show the clicked section
+		      const targetSection = document.getElementById(sectionName + '-section');
+		      if (targetSection) {
+		        targetSection.style.display = 'block';
+		      }
+		    }
+		
+   
+>>>>>>> Stashed changes

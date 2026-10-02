@@ -1,0 +1,2658 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      class="h-full bg-slate-50">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>EduPulse LMS - Enterprise Learning Platform</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <script>
+
+        tailwind.config = {
+
+            darkMode: 'class',
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81'
+                        }
+
+                    },
+
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+
+                }
+
+            }
+
+        };
+
+    </script>
+
+    <style>
+
+        *::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        *::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body class="h-full font-sans text-slate-800
+             dark:text-slate-100
+             dark:bg-slate-900
+             transition-colors duration-200">
+
+
+<div id="app" class="min-h-screen flex flex-col">
+
+
+    <!-- ========================================================= -->
+    <!-- HEADER -->
+    <!-- ========================================================= -->
+
+    <header class="bg-white dark:bg-slate-800
+                   border-b border-slate-200 dark:border-slate-700
+                   sticky top-0 z-30 shadow-sm">
+
+        <div class="px-4 sm:px-6 lg:px-8 py-3
+                    flex items-center justify-between gap-4">
+
+
+            <!-- LOGO + SEARCH -->
+
+            <div class="flex items-center gap-6 flex-1 max-w-xl">
+
+                <div class="flex items-center gap-3 cursor-pointer"
+                     onclick="switchRole('admin')">
+
+                    <div class="h-10 w-10 rounded-xl
+                                bg-gradient-to-tr from-indigo-600 to-indigo-400
+                                flex items-center justify-center
+                                text-white font-bold text-xl shadow-md">
+
+                        <i class="fa-solid fa-e"></i>
+
+                    </div>
+
+                    <div>
+
+                        <span class="font-extrabold text-lg
+                                     tracking-tight
+                                     text-indigo-600">
+
+                            EduPulse
+
+                        </span>
+
+                        <span class="text-xs px-2 py-0.5 ml-1
+                                     rounded-full
+                                     bg-indigo-50
+                                     text-indigo-600
+                                     font-semibold
+                                     border border-indigo-200">
+
+                            LMS
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SEARCH -->
+
+                <div class="relative flex-1 hidden md:block">
+
+                    <i class="fa-solid fa-magnifying-glass
+                              absolute left-3.5 top-1/2
+                              -translate-y-1/2
+                              text-slate-400 text-sm">
+                    </i>
+
+                    <input id="globalSearch"
+                           type="text"
+                           placeholder="Search courses, users, materials..."
+                           class="w-full pl-10 pr-4 py-2
+                                  text-sm
+                                  bg-slate-100
+                                  border border-transparent
+                                  rounded-lg
+                                  focus:outline-none
+                                  focus:bg-white
+                                  focus:border-indigo-500">
+
+                </div>
+
+            </div>
+
+
+            <!-- ROLE SWITCHER -->
+
+            <div class="bg-slate-100
+                        p-1 rounded-xl
+                        border border-slate-200
+                        flex items-center gap-1">
+
+                <button onclick="switchRole('admin')"
+                        id="role-btn-admin"
+                        class="role-btn">
+
+                    <i class="fa-solid fa-user-shield"></i>
+
+                    <span class="hidden sm:inline">
+                        Admin
+                    </span>
+
+                </button>
+
+
+                <button onclick="switchRole('teacher')"
+                        id="role-btn-teacher"
+                        class="role-btn">
+
+                    <i class="fa-solid fa-chalkboard-user"></i>
+
+                    <span class="hidden sm:inline">
+                        Teacher
+                    </span>
+
+                </button>
+
+
+                <button onclick="switchRole('student')"
+                        id="role-btn-student"
+                        class="role-btn">
+
+                    <i class="fa-solid fa-user-graduate"></i>
+
+                    <span class="hidden sm:inline">
+                        Student
+                    </span>
+
+                </button>
+
+            </div>
+
+
+            <!-- RIGHT SIDE -->
+
+            <div class="flex items-center gap-3">
+
+                <!-- DARK MODE -->
+
+                <button onclick="toggleDarkMode()"
+                        class="p-2
+                               text-slate-500
+                               hover:text-slate-700
+                               rounded-lg
+                               hover:bg-slate-100">
+
+                    <i id="theme-icon"
+                       class="fa-solid fa-moon text-lg">
+                    </i>
+
+                </button>
+
+
+                <!-- NOTIFICATION -->
+
+                <div class="relative">
+
+                    <button onclick="toggleNotifications()"
+                            class="p-2
+                                   text-slate-500
+                                   rounded-lg
+                                   hover:bg-slate-100
+                                   relative">
+
+                        <i class="fa-regular fa-bell text-lg"></i>
+
+                        <span class="absolute top-1.5 right-1.5
+                                     w-2 h-2
+                                     bg-indigo-600
+                                     rounded-full">
+                        </span>
+
+                    </button>
+
+
+                    <div id="notif-dropdown"
+                         class="hidden absolute right-0 mt-2 w-80
+                                bg-white rounded-xl
+                                shadow-xl
+                                border border-slate-200
+                                py-2 z-50">
+
+                        <div class="px-4 py-2
+                                    border-b
+                                    flex justify-between">
+
+                            <span class="font-bold text-sm">
+                                Notifications
+                            </span>
+
+                            <span class="text-xs text-indigo-600 cursor-pointer"
+                                  onclick="showToast('All marked as read')">
+
+                                Mark read
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="divide-y
+                                    max-h-64
+                                    overflow-y-auto">
+
+                            <div class="p-3 hover:bg-slate-50">
+
+                                <p class="text-xs font-semibold">
+                                    Assignment Submitted
+                                </p>
+
+                                <p class="text-xs text-slate-500">
+                                    Alex Morgan submitted Physics Lab 3
+                                </p>
+
+                                <span class="text-[10px] text-slate-400">
+                                    10 mins ago
+                                </span>
+
+                            </div>
+
+
+                            <div class="p-3 hover:bg-slate-50">
+
+                                <p class="text-xs font-semibold">
+                                    System Maintenance
+                                </p>
+
+                                <p class="text-xs text-slate-500">
+                                    Scheduled downtime tonight at 02:00 AM
+                                </p>
+
+                                <span class="text-[10px] text-slate-400">
+                                    1 hour ago
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- USER -->
+
+                <div class="flex items-center gap-3
+                            pl-2
+                            border-l border-slate-200">
+
+                    <img id="user-avatar"
+                         src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120"
+                         alt="Avatar"
+                         class="w-9 h-9 rounded-full object-cover">
+
+                    <div class="hidden lg:block">
+
+                        <div id="user-name"
+                             class="text-xs font-bold">
+
+                            Sarah Jenkins
+
+                        </div>
+
+                        <div id="user-role-label"
+                             class="text-[11px] text-slate-500">
+
+                            Administrator
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ========================================================= -->
+    <!-- MAIN AREA -->
+    <!-- ========================================================= -->
+
+    <div class="flex-1 flex overflow-hidden">
+
+
+        <!-- ===================================================== -->
+        <!-- SIDEBAR -->
+        <!-- ===================================================== -->
+
+        <aside id="sidebar"
+               class="w-64
+                      bg-slate-900
+                      text-slate-300
+                      flex-shrink-0
+                      border-r border-slate-800
+                      flex flex-col
+                      justify-between">
+
+
+            <!-- SIDEBAR MENU -->
+
+            <div class="p-4">
+
+                <div id="sidebar-category"
+                     class="text-[11px]
+                            font-bold
+                            uppercase
+                            tracking-wider
+                            text-slate-500
+                            px-3
+                            mb-3">
+
+                    ADMIN MENU
+
+                </div>
+
+
+                <!-- IMPORTANT:
+                     JavaScript will create the menu here -->
+
+                <nav id="sidebar-menu"
+                     class="space-y-1">
+
+                </nav>
+
+            </div>
+
+
+            <!-- SIDEBAR FOOTER -->
+
+            <div class="p-4
+                        border-t border-slate-800">
+
+                <div class="p-3
+                            rounded-xl
+                            bg-slate-800/60
+                            border border-slate-700/50">
+
+                    <div class="flex items-center gap-3">
+
+                        <div class="w-2 h-2
+                                    rounded-full
+                                    bg-emerald-500
+                                    animate-pulse">
+                        </div>
+
+                        <span class="text-xs font-medium">
+                            EduPulse v2.4 Active
+                        </span>
+
+                    </div>
+
+                    <p class="text-[11px]
+                              text-slate-500
+                              mt-1">
+
+                        All systems operational
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- ===================================================== -->
+        <!-- MAIN CONTENT -->
+        <!-- ===================================================== -->
+
+        <main class="flex-1
+                     overflow-y-auto
+                     p-4 sm:p-6 lg:p-8
+                     bg-slate-50
+                     dark:bg-slate-900">
+
+
+            <!-- ================================================= -->
+            <!-- ADMIN VIEW -->
+            <!-- ================================================= -->
+
+            <div id="view-admin"
+                 class="role-view space-y-6">
+
+
+                <!-- TITLE -->
+
+                <div class="flex flex-col sm:flex-row
+                            sm:items-center
+                            justify-between gap-4">
+
+                    <div>
+
+                        <h1 class="text-2xl font-bold
+                                   text-slate-900">
+
+                            Admin Dashboard
+
+                        </h1>
+
+                        <p class="text-sm text-slate-500">
+
+                            Overview of platform metrics,
+                            global users, and institution performance.
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="flex items-center gap-3">
+
+                        <button onclick="openModal('announcement-modal')"
+                                class="px-4 py-2
+                                       bg-white
+                                       border border-slate-200
+                                       rounded-lg
+                                       text-xs font-semibold
+                                       flex items-center gap-2">
+
+                            <i class="fa-solid fa-bullhorn text-indigo-500"></i>
+
+                            New Announcement
+
+                        </button>
+
+
+                        <button onclick="openModal('user-modal')"
+                                class="px-4 py-2
+                                       bg-indigo-600
+                                       hover:bg-indigo-700
+                                       text-white
+                                       rounded-lg
+                                       text-xs font-semibold
+                                       flex items-center gap-2">
+
+                            <i class="fa-solid fa-user-plus"></i>
+
+                            Add New User
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STAT CARDS -->
+
+                <div class="grid grid-cols-1
+                            sm:grid-cols-2
+                            lg:grid-cols-4
+                            gap-4 sm:gap-6">
+
+
+                    <!-- USERS -->
+
+                    <div class="bg-white
+                                p-5 rounded-2xl
+                                border border-slate-200
+                                shadow-sm">
+
+                        <span class="text-xs
+                                     font-semibold
+                                     text-slate-500
+                                     uppercase">
+
+                            Total Users
+
+                        </span>
+
+                        <div class="mt-4">
+
+                            <span class="text-2xl
+                                         font-bold">
+
+                                1,248
+
+                            </span>
+
+                            <span class="text-xs
+                                         text-emerald-600
+                                         ml-3">
+
+                                +12%
+
+                            </span>
+
+                        </div>
+
+                        <p class="text-xs
+                                  text-slate-400
+                                  mt-1">
+
+                            1,050 Students • 198 Teachers
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- COURSES -->
+
+                    <div class="bg-white
+                                p-5 rounded-2xl
+                                border border-slate-200
+                                shadow-sm">
+
+                        <span class="text-xs
+                                     font-semibold
+                                     text-slate-500
+                                     uppercase">
+
+                            Active Courses
+
+                        </span>
+
+                        <div class="mt-4">
+
+                            <span class="text-2xl
+                                         font-bold">
+
+                                64
+
+                            </span>
+
+                            <span class="text-xs
+                                         text-emerald-600
+                                         ml-3">
+
+                                +4 new
+
+                            </span>
+
+                        </div>
+
+                        <p class="text-xs
+                                  text-slate-400
+                                  mt-1">
+
+                            Across 12 departments
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- REVENUE -->
+
+                    <div class="bg-white
+                                p-5 rounded-2xl
+                                border border-slate-200
+                                shadow-sm">
+
+                        <span class="text-xs
+                                     font-semibold
+                                     text-slate-500
+                                     uppercase">
+
+                            Monthly Revenue
+
+                        </span>
+
+                        <div class="mt-4">
+
+                            <span class="text-2xl
+                                         font-bold">
+
+                                $42,850
+
+                            </span>
+
+                            <span class="text-xs
+                                         text-emerald-600
+                                         ml-3">
+
+                                +8.4%
+
+                            </span>
+
+                        </div>
+
+                        <p class="text-xs
+                                  text-slate-400
+                                  mt-1">
+
+                            98.2% invoice collection rate
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- SYSTEM -->
+
+                    <div class="bg-white
+                                p-5 rounded-2xl
+                                border border-slate-200
+                                shadow-sm">
+
+                        <span class="text-xs
+                                     font-semibold
+                                     text-slate-500
+                                     uppercase">
+
+                            System Health
+
+                        </span>
+
+                        <div class="mt-4">
+
+                            <span class="text-2xl
+                                         font-bold">
+
+                                99.98%
+
+                            </span>
+
+                            <span class="text-xs
+                                         text-slate-500
+                                         ml-3">
+
+                                Normal
+
+                            </span>
+
+                        </div>
+
+                        <p class="text-xs
+                                  text-slate-400
+                                  mt-1">
+
+                            Server load: 24%
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- CHART -->
+                <!-- ================================================= -->
+
+                <div class="grid grid-cols-1
+                            lg:grid-cols-3
+                            gap-6">
+
+
+                    <div class="lg:col-span-2
+                                bg-white
+                                p-6
+                                rounded-2xl
+                                border
+                                border-slate-200
+                                shadow-sm">
+
+                        <div class="mb-4">
+
+                            <h3 class="font-bold text-base">
+
+                                Enrollment Growth
+
+                            </h3>
+
+                            <p class="text-xs text-slate-500">
+
+                                New student registrations
+                                over the last 6 months
+
+                            </p>
+
+                        </div>
+
+
+                        <div class="h-64">
+
+                            <canvas id="adminEnrollmentChart"></canvas>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- RESOURCE -->
+
+                    <div class="bg-white
+                                p-6
+                                rounded-2xl
+                                border
+                                border-slate-200
+                                shadow-sm">
+
+                        <h3 class="font-bold text-base">
+
+                            System Resource Usage
+
+                        </h3>
+
+                        <p class="text-xs
+                                  text-slate-500
+                                  mb-6">
+
+                            Realtime server & cloud storage distribution
+
+                        </p>
+
+
+                        <div class="space-y-4">
+
+
+                            <div>
+
+                                <div class="flex justify-between
+                                            text-xs
+                                            font-semibold
+                                            mb-1">
+
+                                    <span>
+                                        Cloud Storage
+                                    </span>
+
+                                    <span>
+                                        70%
+                                    </span>
+
+                                </div>
+
+                                <div class="w-full h-2
+                                            bg-slate-100
+                                            rounded-full">
+
+                                    <div class="h-full
+                                                bg-indigo-600
+                                                rounded-full"
+                                         style="width:70%">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div>
+
+                                <div class="flex justify-between
+                                            text-xs
+                                            font-semibold
+                                            mb-1">
+
+                                    <span>
+                                        Database Capacity
+                                    </span>
+
+                                    <span>
+                                        42%
+                                    </span>
+
+                                </div>
+
+                                <div class="w-full h-2
+                                            bg-slate-100
+                                            rounded-full">
+
+                                    <div class="h-full
+                                                bg-emerald-500
+                                                rounded-full"
+                                         style="width:42%">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div>
+
+                                <div class="flex justify-between
+                                            text-xs
+                                            font-semibold
+                                            mb-1">
+
+                                    <span>
+                                        Active Bandwidth
+                                    </span>
+
+                                    <span>
+                                        85%
+                                    </span>
+
+                                </div>
+
+                                <div class="w-full h-2
+                                            bg-slate-100
+                                            rounded-full">
+
+                                    <div class="h-full
+                                                bg-amber-500
+                                                rounded-full"
+                                         style="width:85%">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- USER TABLE -->
+                <!-- ================================================= -->
+
+                <div class="bg-white
+                            rounded-2xl
+                            border border-slate-200
+                            shadow-sm
+                            overflow-hidden">
+
+
+                    <div class="p-6
+                                border-b
+                                flex flex-col
+                                sm:flex-row
+                                justify-between
+                                gap-4">
+
+                        <div>
+
+                            <h3 class="font-bold text-base">
+
+                                User Management
+
+                            </h3>
+
+                            <p class="text-xs
+                                      text-slate-500">
+
+                                Filter, edit, and manage accounts
+
+                            </p>
+
+                        </div>
+
+
+                        <div class="flex items-center gap-3">
+
+                            <input type="text"
+                                   id="userTableSearch"
+                                   onkeyup="filterUserTable()"
+                                   placeholder="Filter users..."
+                                   class="text-xs
+                                          px-3 py-2
+                                          bg-slate-100
+                                          border
+                                          rounded-lg">
+
+
+                            <select id="roleFilter"
+                                    onchange="filterUserTable()"
+                                    class="text-xs
+                                           px-3 py-2
+                                           bg-slate-100
+                                           border
+                                           rounded-lg">
+
+                                <option value="all">
+                                    All Roles
+                                </option>
+
+                                <option value="Student">
+                                    Students
+                                </option>
+
+                                <option value="Teacher">
+                                    Teachers
+                                </option>
+
+                                <option value="Admin">
+                                    Admins
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="overflow-x-auto">
+
+                        <table class="w-full text-left text-sm">
+
+                            <thead class="text-xs
+                                          uppercase
+                                          bg-slate-50
+                                          text-slate-500">
+
+                            <tr>
+
+                                <th class="px-6 py-3.5">
+                                    User
+                                </th>
+
+                                <th class="px-6 py-3.5">
+                                    Role
+                                </th>
+
+                                <th class="px-6 py-3.5">
+                                    Status
+                                </th>
+
+                                <th class="px-6 py-3.5">
+                                    Joined Date
+                                </th>
+
+                                <th class="px-6 py-3.5 text-right">
+                                    Actions
+                                </th>
+
+                            </tr>
+
+                            </thead>
+
+
+                            <tbody id="userTableBody"
+                                   class="divide-y">
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- TEACHER VIEW -->
+            <!-- ================================================= -->
+
+            <div id="view-teacher"
+                 class="role-view space-y-6 hidden">
+
+                <div>
+
+                    <h1 class="text-2xl font-bold">
+                        Teacher Dashboard
+                    </h1>
+
+                    <p class="text-sm text-slate-500">
+                        Welcome back, Professor David Vance.
+                    </p>
+
+                </div>
+
+
+                <div class="grid grid-cols-1
+                            sm:grid-cols-2
+                            lg:grid-cols-4
+                            gap-6">
+
+
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
+
+                        <span class="text-xs text-slate-500">
+                            Enrolled Students
+                        </span>
+
+                        <div class="text-2xl font-bold mt-4">
+                            284
+                        </div>
+
+                    </div>
+
+
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
+
+                        <span class="text-xs text-slate-500">
+                            Pending Grading
+                        </span>
+
+                        <div class="text-2xl font-bold mt-4">
+                            12
+                        </div>
+
+                    </div>
+
+
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
+
+                        <span class="text-xs text-slate-500">
+                            Avg Class GPA
+                        </span>
+
+                        <div class="text-2xl font-bold mt-4">
+                            3.68
+                        </div>
+
+                    </div>
+
+
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
+
+                        <span class="text-xs text-slate-500">
+                            Upcoming Lectures
+                        </span>
+
+                        <div class="text-2xl font-bold mt-4">
+                            3 Today
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bg-white p-6 rounded-2xl border shadow-sm">
+
+                    <h3 class="font-bold">
+                        Grading Queue
+                    </h3>
+
+                    <div id="grading-queue-list"
+                         class="space-y-3 mt-4">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- STUDENT VIEW -->
+            <!-- ================================================= -->
+
+            <div id="view-student"
+                 class="role-view space-y-6 hidden">
+
+                <div>
+
+                    <h1 class="text-2xl font-bold">
+                        Welcome Back, Alex!
+                    </h1>
+
+                    <p class="text-sm text-slate-500">
+                        You have 2 assignments due this week.
+                    </p>
+
+                </div>
+
+
+                <div class="grid grid-cols-1
+                            sm:grid-cols-2
+                            lg:grid-cols-4
+                            gap-6">
+
+
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
+
+                        <span class="text-xs text-slate-500">
+                            Enrolled Courses
+                        </span>
+
+                        <div class="text-2xl font-bold mt-4">
+                            5 Courses
+                        </div>
+
+                    </div>
+
+
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
+
+                        <span class="text-xs text-slate-500">
+                            Completed Hours
+                        </span>
+
+                        <div class="text-2xl font-bold mt-4">
+                            48.5 hrs
+                        </div>
+
+                    </div>
+
+
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
+
+                        <span class="text-xs text-slate-500">
+                            Overall GPA
+                        </span>
+
+                        <div class="text-2xl font-bold mt-4">
+                            3.85 / 4.0
+                        </div>
+
+                    </div>
+
+
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
+
+                        <span class="text-xs text-slate-500">
+                            Upcoming Deadlines
+                        </span>
+
+                        <div class="text-2xl font-bold mt-4">
+                            2 Due Soon
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bg-white
+                            p-6
+                            rounded-2xl
+                            border
+                            shadow-sm">
+
+                    <h3 class="font-bold mb-4">
+                        Continue Learning
+                    </h3>
+
+                    <div id="student-courses-container"
+                         class="grid grid-cols-1
+                                sm:grid-cols-2
+                                gap-4">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- USER MODAL -->
+<!-- ========================================================= -->
+
+<div id="user-modal"
+     class="hidden fixed inset-0
+            bg-slate-900/60
+            z-50
+            flex items-center
+            justify-center p-4">
+
+    <div class="bg-white
+                rounded-2xl
+                max-w-md
+                w-full
+                p-6
+                shadow-2xl">
+
+        <div class="flex justify-between
+                    items-center mb-4">
+
+            <h3 class="font-bold text-lg">
+                Add New User
+            </h3>
+
+            <button onclick="closeModal('user-modal')">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <form onsubmit="handleAddUser(event)"
+              class="space-y-4">
+
+
+            <input type="text"
+                   id="new-user-name"
+                   required
+                   placeholder="Full Name"
+                   class="w-full px-3 py-2
+                          bg-slate-100
+                          rounded-lg">
+
+
+            <input type="email"
+                   id="new-user-email"
+                   required
+                   placeholder="Email Address"
+                   class="w-full px-3 py-2
+                          bg-slate-100
+                          rounded-lg">
+
+
+            <select id="new-user-role"
+                    class="w-full px-3 py-2
+                           bg-slate-100
+                           rounded-lg">
+
+                <option value="Student">
+                    Student
+                </option>
+
+                <option value="Teacher">
+                    Teacher
+                </option>
+
+                <option value="Admin">
+                    Admin
+                </option>
+
+            </select>
+
+
+            <div class="flex justify-end gap-2">
+
+                <button type="button"
+                        onclick="closeModal('user-modal')"
+                        class="px-4 py-2
+                               text-sm
+                               rounded-lg">
+
+                    Cancel
+
+                </button>
+
+
+                <button type="submit"
+                        class="px-4 py-2
+                               bg-indigo-600
+                               text-white
+                               rounded-lg">
+
+                    Create Account
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- ANNOUNCEMENT MODAL -->
+<!-- ========================================================= -->
+
+<div id="announcement-modal"
+     class="hidden fixed inset-0
+            bg-slate-900/60
+            z-50
+            flex items-center
+            justify-center p-4">
+
+    <div class="bg-white
+                rounded-2xl
+                max-w-md
+                w-full
+                p-6
+                shadow-2xl">
+
+        <div class="flex justify-between
+                    items-center mb-4">
+
+            <h3 class="font-bold text-lg">
+                Broadcast Announcement
+            </h3>
+
+            <button onclick="closeModal('announcement-modal')">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <form onsubmit="handleSendAnnouncement(event)"
+              class="space-y-4">
+
+            <input type="text"
+                   required
+                   placeholder="Announcement title"
+                   class="w-full px-3 py-2
+                          bg-slate-100
+                          rounded-lg">
+
+
+            <textarea rows="4"
+                      required
+                      placeholder="Announcement message"
+                      class="w-full px-3 py-2
+                             bg-slate-100
+                             rounded-lg"></textarea>
+
+
+            <div class="flex justify-end gap-2">
+
+                <button type="button"
+                        onclick="closeModal('announcement-modal')"
+                        class="px-4 py-2 rounded-lg">
+
+                    Cancel
+
+                </button>
+
+
+                <button type="submit"
+                        class="px-4 py-2
+                               bg-indigo-600
+                               text-white
+                               rounded-lg">
+
+                    Send Broadcast
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- TOAST -->
+<!-- ========================================================= -->
+
+<div id="toast"
+     class="fixed
+            bottom-6
+            right-6
+            bg-slate-900
+            text-white
+            px-5 py-3
+            rounded-xl
+            shadow-2xl
+            z-50
+            transform
+            translate-y-20
+            opacity-0
+            transition-all">
+
+    <i class="fa-solid fa-circle-check
+              text-emerald-400 mr-2">
+    </i>
+
+    <span id="toast-message">
+        Notification message
+    </span>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- JAVASCRIPT -->
+<!-- ========================================================= -->
+
+<script>
+
+
+/* ============================================================
+   DATA
+   ============================================================ */
+
+
+let currentRole = 'admin';
+
+
+let usersData = [
+
+    {
+        id: 1,
+        name: 'Sarah Jenkins',
+        email: 'sarah.j@edupulse.edu',
+        role: 'Admin',
+        status: 'Active',
+        joined: 'Jan 12, 2024',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120'
+    },
+
+    {
+        id: 2,
+        name: 'Dr. David Vance',
+        email: 'david.vance@edupulse.edu',
+        role: 'Teacher',
+        status: 'Active',
+        joined: 'Mar 04, 2023',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120'
+    },
+
+    {
+        id: 3,
+        name: 'Alex Morgan',
+        email: 'alex.m@student.edu',
+        role: 'Student',
+        status: 'Active',
+        joined: 'Sep 01, 2025',
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120'
+    },
+
+    {
+        id: 4,
+        name: 'Prof. Marcus Brody',
+        email: 'm.brody@edupulse.edu',
+        role: 'Teacher',
+        status: 'Active',
+        joined: 'Nov 18, 2022',
+        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=120'
+    },
+
+    {
+        id: 5,
+        name: 'Chloe Zhao',
+        email: 'chloe.z@student.edu',
+        role: 'Student',
+        status: 'Suspended',
+        joined: 'Oct 14, 2025',
+        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=120'
+    }
+
+];
+
+
+const teacherGradingQueue = [
+
+    {
+        id: 101,
+        student: 'Alex Morgan',
+        course: 'CS-301',
+        title: 'B-Tree Indexing Project',
+        submitted: '2 hours ago'
+    },
+
+    {
+        id: 102,
+        student: 'Liam Neeson',
+        course: 'AI-402',
+        title: 'Gradient Descent Analysis',
+        submitted: '5 hours ago'
+    },
+
+    {
+        id: 103,
+        student: 'Emma Watson',
+        course: 'CS-301',
+        title: 'Hash Collisions Lab',
+        submitted: 'Yesterday'
+    }
+
+];
+
+
+const studentCourses = [
+
+    {
+        id: 'CS-301',
+        title: 'Advanced Data Structures',
+        instructor: 'Prof. David Vance',
+        progress: 78,
+        nextLesson: 'B-Trees & Indexing'
+    },
+
+    {
+        id: 'AI-402',
+        title: 'Machine Learning Fundamentals',
+        instructor: 'Prof. Marcus Brody',
+        progress: 45,
+        nextLesson: 'Neural Networks Basics'
+    },
+
+    {
+        id: 'ENG-201',
+        title: 'Technical Writing for Engineers',
+        instructor: 'Dr. Linda Carter',
+        progress: 90,
+        nextLesson: 'Final Research Paper'
+    }
+
+];
+
+
+/* ============================================================
+   IMPORTANT SIDEBAR CONFIGURATION
+   ============================================================ */
+
+const navMenus = {
+
+    admin: [
+
+        {
+            icon: 'fa-chart-pie',
+            label: 'Dashboard',
+            path: '/admin'
+        },
+
+        {
+            icon: 'fa-users',
+            label: 'Users & Roles',
+            path: '/admin/users'
+        },
+
+        {
+            icon: 'fa-book-open',
+            label: 'Global Courses',
+            path: '/admin/courses'
+        },
+
+        {
+            icon: 'fa-chart-line',
+            label: 'Analytics',
+            path: '/admin/analytics'
+        },
+
+        /* =====================================================
+           THIS IS THE IMPORTANT CATEGORY LINK
+           ===================================================== */
+
+        {
+            icon: 'fa-folder',
+            label: 'Category',
+            path: '/admin/category'
+        },
+
+        {
+            icon: 'fa-file-invoice-dollar',
+            label: 'Financials',
+            path: '/admin/financials'
+        },
+
+        {
+            icon: 'fa-gear',
+            label: 'System Settings',
+            path: '/admin/settings'
+        }
+
+    ],
+
+
+    teacher: [
+
+        {
+            icon: 'fa-house',
+            label: 'Overview',
+            path: '/teacher'
+        },
+
+        {
+            icon: 'fa-chalkboard',
+            label: 'My Classes',
+            path: '/teacher/classes'
+        },
+
+        {
+            icon: 'fa-list-check',
+            label: 'Grading Queue',
+            path: '/teacher/grading'
+        },
+
+        {
+            icon: 'fa-graduation-cap',
+            label: 'Student Performance',
+            path: '/teacher/students'
+        },
+
+        {
+            icon: 'fa-folder-tree',
+            label: 'Curriculum Builder',
+            path: '/teacher/curriculum'
+        },
+
+        {
+            icon: 'fa-comments',
+            label: 'Messages',
+            path: '/teacher/messages'
+        }
+
+    ],
+
+
+    student: [
+
+        {
+            icon: 'fa-compass',
+            label: 'Dashboard',
+            path: '/student'
+        },
+
+        {
+            icon: 'fa-book-bookmark',
+            label: 'My Courses',
+            path: '/student/courses'
+        },
+
+        {
+            icon: 'fa-pencil',
+            label: 'Assignments',
+            path: '/student/assignments'
+        },
+
+        {
+            icon: 'fa-trophy',
+            label: 'Grades & Certificates',
+            path: '/student/grades'
+        },
+
+        {
+            icon: 'fa-box-archive',
+            label: 'Available Courses',
+            path: '/courses/show'
+        },
+
+        {
+            icon: 'fa-calendar',
+            label: 'Schedule',
+            path: '/student/schedule'
+        }
+
+    ]
+
+};
+
+
+/* ============================================================
+   USER PROFILES
+   ============================================================ */
+
+const profiles = {
+
+    admin: {
+
+        name: 'Sarah Jenkins',
+
+        role: 'Administrator',
+
+        avatar:
+            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120'
+
+    },
+
+    teacher: {
+
+        name: 'Prof. David Vance',
+
+        role: 'Senior Lecturer',
+
+        avatar:
+            'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120'
+
+    },
+
+    student: {
+
+        name: 'Alex Morgan',
+
+        role: 'Computer Science Major',
+
+        avatar:
+            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120'
+
+    }
+
+};
+
+
+/* ============================================================
+   PAGE LOAD
+   ============================================================ */
+
+window.addEventListener('load', function () {
+
+    switchRole('admin');
+
+    renderUserTable();
+
+    renderTeacherGradingQueue();
+
+    renderStudentViews();
+
+    initCharts();
+
+});
+
+
+/* ============================================================
+   ROLE SWITCH
+   ============================================================ */
+
+function switchRole(role) {
+
+    currentRole = role;
+
+
+    document.querySelectorAll('.role-btn').forEach(function (btn) {
+
+        btn.className =
+            "role-btn text-xs font-semibold px-3 sm:px-4 py-1.5 " +
+            "rounded-lg flex items-center gap-2 " +
+            "transition-all text-slate-600 " +
+            "hover:bg-slate-200";
+
+    });
+
+
+    const activeBtn =
+        document.getElementById('role-btn-' + role);
+
+
+    if (activeBtn) {
+
+        activeBtn.className =
+            "role-btn text-xs font-bold px-3 sm:px-4 py-1.5 " +
+            "rounded-lg flex items-center gap-2 " +
+            "transition-all bg-white text-indigo-600 shadow-sm";
+
+    }
+
+
+    const profile = profiles[role];
+
+
+    document.getElementById('user-name').innerText =
+        profile.name;
+
+
+    document.getElementById('user-role-label').innerText =
+        profile.role;
+
+
+    document.getElementById('user-avatar').src =
+        profile.avatar;
+
+
+    renderSidebar(role);
+
+
+    document.querySelectorAll('.role-view')
+        .forEach(function (view) {
+
+            view.classList.add('hidden');
+
+        });
+
+
+    const targetView =
+        document.getElementById('view-' + role);
+
+
+    if (targetView) {
+
+        targetView.classList.remove('hidden');
+
+        targetView.classList.add('fade-in');
+
+    }
+
+}
+
+
+/* ============================================================
+   RENDER SIDEBAR
+   ============================================================ */
+
+function renderSidebar(role) {
+
+    const menuContainer =
+        document.getElementById('sidebar-menu');
+
+
+    const categoryLabel =
+        document.getElementById('sidebar-category');
+
+
+    if (!menuContainer || !categoryLabel) {
+        return;
+    }
+
+
+    categoryLabel.innerText =
+        role.toUpperCase() + ' MENU';
+
+
+    menuContainer.innerHTML = '';
+
+
+    const currentPath =
+        window.location.pathname;
+
+
+    navMenus[role].forEach(function (item) {
+
+
+        const navItem =
+            document.createElement('a');
+
+
+        /*
+         * THIS LINE CONNECTS THE SIDEBAR
+         * TO THE SPRING BOOT CONTROLLER
+         */
+
+        navItem.href =
+            item.path || '#';
+
+
+        const isCurrentPage =
+            currentPath === item.path;
+
+
+        const baseClasses =
+            "flex items-center gap-3 " +
+            "px-3 py-2.5 rounded-xl " +
+            "text-xs font-medium transition-all";
+
+
+        const activeClasses =
+            isCurrentPage
+
+                ? "bg-indigo-600 text-white font-semibold shadow-md"
+
+                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800";
+
+
+        navItem.className =
+            baseClasses + " " + activeClasses;
+
+
+        navItem.innerHTML = `
+
+            <i class="fa-solid ${item.icon}
+                      w-4 text-center">
+            </i>
+
+            <span>
+                ${item.label}
+            </span>
+
+        `;
+
+
+        menuContainer.appendChild(navItem);
+
+    });
+
+}
+
+
+/* ============================================================
+   USER TABLE
+   ============================================================ */
+
+function renderUserTable(filteredData = usersData) {
+
+    const tbody =
+        document.getElementById('userTableBody');
+
+
+    if (!tbody) {
+        return;
+    }
+
+
+    tbody.innerHTML = '';
+
+
+    filteredData.forEach(function (user) {
+
+
+        const tr =
+            document.createElement('tr');
+
+
+        tr.className =
+            "hover:bg-slate-50 transition";
+
+
+        const roleColor =
+            user.role === 'Admin'
+
+                ? 'bg-purple-100 text-purple-700'
+
+                : user.role === 'Teacher'
+
+                    ? 'bg-blue-100 text-blue-700'
+
+                    : 'bg-slate-100 text-slate-700';
+
+
+        const statusColor =
+            user.status === 'Active'
+
+                ? 'bg-emerald-500'
+
+                : 'bg-rose-500';
+
+
+        tr.innerHTML = `
+
+            <td class="px-6 py-4">
+
+                <div class="flex items-center gap-3">
+
+                    <img
+                        src="${user.avatar}"
+                        class="w-8 h-8 rounded-full object-cover"
+                    >
+
+                    <div>
+
+                        <div class="font-bold">
+                            ${user.name}
+                        </div>
+
+                        <div class="text-xs text-slate-400">
+                            ${user.email}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </td>
+
+
+            <td class="px-6 py-4">
+
+                <span class="text-[10px]
+                             font-bold
+                             px-2.5 py-1
+                             rounded-full
+                             ${roleColor}">
+
+                    ${user.role}
+
+                </span>
+
+            </td>
+
+
+            <td class="px-6 py-4">
+
+                <span class="flex items-center gap-2 text-xs">
+
+                    <span class="w-1.5 h-1.5
+                                 rounded-full
+                                 ${statusColor}">
+                    </span>
+
+                    ${user.status}
+
+                </span>
+
+            </td>
+
+
+            <td class="px-6 py-4
+                       text-xs
+                       text-slate-400">
+
+                ${user.joined}
+
+            </td>
+
+
+            <td class="px-6 py-4 text-right">
+
+                <button
+                    onclick="deleteUser(${user.id})"
+                    class="text-slate-400
+                           hover:text-rose-500
+                           p-1">
+
+                    <i class="fa-solid fa-trash"></i>
+
+                </button>
+
+            </td>
+
+        `;
+
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* ============================================================
+   FILTER USER
+   ============================================================ */
+
+function filterUserTable() {
+
+    const searchVal =
+        document.getElementById('userTableSearch')
+            .value
+            .toLowerCase();
+
+
+    const roleVal =
+        document.getElementById('roleFilter').value;
+
+
+    const filtered =
+        usersData.filter(function (user) {
+
+
+            const matchesSearch =
+                user.name
+                    .toLowerCase()
+                    .includes(searchVal)
+
+                ||
+
+                user.email
+                    .toLowerCase()
+                    .includes(searchVal);
+
+
+            const matchesRole =
+                roleVal === 'all'
+                ||
+                user.role === roleVal;
+
+
+            return matchesSearch && matchesRole;
+
+        });
+
+
+    renderUserTable(filtered);
+
+}
+
+
+/* ============================================================
+   DELETE USER
+   ============================================================ */
+
+function deleteUser(userId) {
+
+    usersData =
+        usersData.filter(function (user) {
+
+            return user.id !== userId;
+
+        });
+
+
+    renderUserTable();
+
+    showToast('User removed successfully');
+
+}
+
+
+/* ============================================================
+   TEACHER QUEUE
+   ============================================================ */
+
+function renderTeacherGradingQueue() {
+
+    const list =
+        document.getElementById('grading-queue-list');
+
+
+    if (!list) {
+        return;
+    }
+
+
+    list.innerHTML = '';
+
+
+    teacherGradingQueue.forEach(function (item) {
+
+
+        const div =
+            document.createElement('div');
+
+
+        div.className =
+            "p-3 bg-slate-50 rounded-xl " +
+            "flex items-center justify-between";
+
+
+        div.innerHTML = `
+
+            <div>
+
+                <div class="text-xs font-bold">
+                    ${item.student}
+                </div>
+
+                <div class="text-[11px] text-slate-500">
+                    ${item.course}: ${item.title}
+                </div>
+
+                <div class="text-[10px] text-slate-400">
+                    ${item.submitted}
+                </div>
+
+            </div>
+
+
+            <button
+                onclick="gradeSubmission(${item.id})"
+                class="px-3 py-1.5
+                       bg-indigo-600
+                       text-white
+                       rounded-lg
+                       text-xs">
+
+                Grade
+
+            </button>
+
+        `;
+
+
+        list.appendChild(div);
+
+    });
+
+}
+
+
+/* ============================================================
+   GRADE
+   ============================================================ */
+
+function gradeSubmission(id) {
+
+    showToast(
+        'Grade submitted for assignment #' + id
+    );
+
+}
+
+
+/* ============================================================
+   STUDENT
+   ============================================================ */
+
+function renderStudentViews() {
+
+    const container =
+        document.getElementById(
+            'student-courses-container'
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML = '';
+
+
+    studentCourses.forEach(function (course) {
+
+
+        const div =
+            document.createElement('div');
+
+
+        div.className =
+            "bg-slate-50 p-5 rounded-xl border";
+
+
+        div.innerHTML = `
+
+            <div class="flex justify-between">
+
+                <span class="px-2 py-1
+                             text-[10px]
+                             font-bold
+                             rounded
+                             bg-indigo-50
+                             text-indigo-600">
+
+                    ${course.id}
+
+                </span>
+
+
+                <span class="text-xs
+                             font-bold
+                             text-indigo-600">
+
+                    ${course.progress}%
+
+                </span>
+
+            </div>
+
+
+            <h4 class="font-bold mt-3">
+
+                ${course.title}
+
+            </h4>
+
+
+            <p class="text-xs
+                      text-slate-400
+                      mt-1">
+
+                ${course.instructor}
+
+            </p>
+
+
+            <div class="mt-5">
+
+                <div class="w-full h-2
+                            bg-slate-200
+                            rounded-full">
+
+                    <div
+                        class="h-full
+                               bg-indigo-600
+                               rounded-full"
+                        style="width:${course.progress}%">
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+
+function openModal(id) {
+
+    const modal =
+        document.getElementById(id);
+
+
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+
+}
+
+
+function closeModal(id) {
+
+    const modal =
+        document.getElementById(id);
+
+
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+
+}
+
+
+/* ============================================================
+   ADD USER
+   ============================================================ */
+
+function handleAddUser(event) {
+
+    event.preventDefault();
+
+
+    const name =
+        document.getElementById('new-user-name').value;
+
+
+    const email =
+        document.getElementById('new-user-email').value;
+
+
+    const role =
+        document.getElementById('new-user-role').value;
+
+
+    usersData.unshift({
+
+        id: Date.now(),
+
+        name: name,
+
+        email: email,
+
+        role: role,
+
+        status: 'Active',
+
+        joined: 'Just now',
+
+        avatar:
+            'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120'
+
+    });
+
+
+    renderUserTable();
+
+
+    closeModal('user-modal');
+
+
+    showToast(
+        'User ' + name +
+        ' created as ' + role + '!'
+    );
+
+
+    event.target.reset();
+
+}
+
+
+/* ============================================================
+   ANNOUNCEMENT
+   ============================================================ */
+
+function handleSendAnnouncement(event) {
+
+    event.preventDefault();
+
+
+    closeModal('announcement-modal');
+
+
+    showToast(
+        'Broadcast notification sent!'
+    );
+
+
+    event.target.reset();
+
+}
+
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+
+function showToast(message) {
+
+    const toast =
+        document.getElementById('toast');
+
+
+    const messageElement =
+        document.getElementById('toast-message');
+
+
+    messageElement.innerText =
+        message;
+
+
+    toast.classList.remove(
+        'translate-y-20',
+        'opacity-0'
+    );
+
+
+    setTimeout(function () {
+
+        toast.classList.add(
+            'translate-y-20',
+            'opacity-0'
+        );
+
+    }, 3000);
+
+}
+
+
+/* ============================================================
+   NOTIFICATION
+   ============================================================ */
+
+function toggleNotifications() {
+
+    const dropdown =
+        document.getElementById('notif-dropdown');
+
+
+    dropdown.classList.toggle('hidden');
+
+}
+
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+
+function toggleDarkMode() {
+
+    document.documentElement
+        .classList
+        .toggle('dark');
+
+
+    const icon =
+        document.getElementById('theme-icon');
+
+
+    if (
+        document.documentElement
+            .classList
+            .contains('dark')
+    ) {
+
+        icon.className =
+            'fa-solid fa-sun text-amber-400 text-lg';
+
+    } else {
+
+        icon.className =
+            'fa-solid fa-moon text-lg';
+
+    }
+
+}
+
+
+/* ============================================================
+   CHART
+   ============================================================ */
+
+function initCharts() {
+
+    const canvas =
+        document.getElementById(
+            'adminEnrollmentChart'
+        );
+
+
+    if (!canvas) {
+        return;
+    }
+
+
+    const ctx =
+        canvas.getContext('2d');
+
+
+    new Chart(ctx, {
+
+        type: 'line',
+
+        data: {
+
+            labels: [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'May',
+                'Jun'
+            ],
+
+            datasets: [
+
+                {
+
+                    label:
+                        'Student Registrations',
+
+                    data: [
+                        650,
+                        720,
+                        800,
+                        890,
+                        960,
+                        1050
+                    ],
+
+                    borderColor:
+                        '#4f46e5',
+
+                    backgroundColor:
+                        'rgba(79, 70, 229, 0.1)',
+
+                    fill: true,
+
+                    tension: 0.4
+
+                }
+
+            ]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            plugins: {
+
+                legend: {
+                    display: false
+                }
+
+            }
+
+        }
+
+    });
+
+}
+
+</script>
+
+</body>
+
+</html>
