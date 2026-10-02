@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*<![CDATA[*/
 // State Management
 let currentRole = 'admin';
@@ -58,6 +59,39 @@ const navMenus = {
     ]
 };
 =======
+=======
+
+        /*<![CDATA[*/
+        // State Management
+        let currentRole = 'admin';
+        
+        // Mock Data
+        let usersData = [
+            { id: 1, name: 'Sarah Jenkins', email: 'sarah.j@edupulse.edu', role: 'Admin', status: 'Active', joined: 'Jan 12, 2024', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120' },
+            { id: 2, name: 'Dr. David Vance', email: 'david.vance@edupulse.edu', role: 'Teacher', status: 'Active', joined: 'Mar 04, 2023', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120' },
+            { id: 3, name: 'Alex Morgan', email: 'alex.m@student.edu', role: 'Student', status: 'Active', joined: 'Sep 01, 2025', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120' },
+            { id: 4, name: 'Prof. Marcus Brody', email: 'm.brody@edupulse.edu', role: 'Teacher', status: 'Active', joined: 'Nov 18, 2022', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=120' },
+            { id: 5, name: 'Chloe Zhao', email: 'chloe.z@student.edu', role: 'Student', status: 'Suspended', joined: 'Oct 14, 2025', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=120' }
+        ];
+
+        const teacherGradingQueue = [
+            { id: 101, student: 'Alex Morgan', course: 'CS-301', title: 'B-Tree Indexing Project', submitted: '2 hours ago' },
+            { id: 102, student: 'Liam Neeson', course: 'AI-402', title: 'Gradient Descent Analysis', submitted: '5 hours ago' },
+            { id: 103, student: 'Emma Watson', course: 'CS-301', title: 'Hash Collisions Lab', submitted: 'Yesterday' }
+        ];
+
+        const studentCourses = [
+            { id: 'CS-301', title: 'Advanced Data Structures', instructor: 'Prof. David Vance', progress: 78, nextLesson: 'B-Trees & Indexing' },
+            { id: 'AI-402', title: 'Machine Learning Fundamentals', instructor: 'Prof. Marcus Brody', progress: 45, nextLesson: 'Neural Networks Basics' },
+            { id: 'ENG-201', title: 'Technical Writing for Engineers', instructor: 'Dr. Linda Carter', progress: 90, nextLesson: 'Final Research Paper' }
+        ];
+
+        const studentDeadlines = [
+            { course: 'CS-301', title: 'B-Trees Implementation Lab', due: 'Today, 11:59 PM', badgeBg: 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300' },
+            { course: 'AI-402', title: 'Linear Regression Notebook', due: 'Oct 2, 2026', badgeBg: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' }
+        ];
+
+>>>>>>> PaingGyii
         // Sidebar Navigation Definitions
         const navMenus = {
             admin: [
@@ -66,7 +100,10 @@ const navMenus = {
                 { icon: 'fa-book-open', label: 'Global Courses' },
                 { icon: 'fa-chart-line', label: 'Analytics' },
                 { icon: 'fa-file-invoice-dollar', label: 'Financials' },
+<<<<<<< HEAD
 				{ icon: 'fa-book-open', label: 'Category' },
+=======
+>>>>>>> PaingGyii
                 { icon: 'fa-gear', label: 'System Settings' }
             ],
             teacher: [
@@ -86,6 +123,7 @@ const navMenus = {
                 { icon: 'fa-calendar', label: 'Schedule' }
             ]
         };
+<<<<<<< HEAD
 >>>>>>> Stashed changes
 
 // User Profiles Mapping
@@ -155,11 +193,81 @@ function renderSidebar(role) {
                 showToast(`Navigated to ${item.label}`);
             };
 =======
+=======
+
+        // User Profiles Mapping
+        const profiles = {
+            admin: { name: 'Sarah Jenkins', role: 'Administrator', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120' },
+            teacher: { name: 'Prof. David Vance', role: 'Senior Lecturer', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120' },
+            student: { name: 'Alex Morgan', role: 'Computer Science Major', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120' }
+        };
+
+        // Initialize App
+        window.onload = function() {
+            switchRole('admin');
+            renderUserTable();
+            renderTeacherGradingQueue();
+            renderStudentViews();
+            initCharts();
+        };
+
+        // Role Switching Logic
+        function switchRole(role) {
+            currentRole = role;
+
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.className = "role-btn text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-600";
+            });
+            const activeBtn = document.getElementById(`role-btn-${role}`);
+            if (activeBtn) {
+                activeBtn.className = "role-btn text-xs font-bold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm border border-slate-200/50 dark:border-slate-700";
+            }
+
+            const p = profiles[role];
+            if (document.getElementById('user-name')) document.getElementById('user-name').innerText = p.name;
+            if (document.getElementById('user-role-label')) document.getElementById('user-role-label').innerText = p.role;
+            if (document.getElementById('user-avatar')) document.getElementById('user-avatar').src = p.avatar;
+
+            renderSidebar(role);
+
+            document.querySelectorAll('.role-view').forEach(v => v.classList.add('hidden'));
+            const targetView = document.getElementById(`view-${role}`);
+            if (targetView) {
+                targetView.classList.remove('hidden');
+                targetView.classList.add('fade-in');
+            }
+
+            showToast(`Switched to ${role.toUpperCase()} View`);
+        }
+
+        function renderSidebar(role) {
+            const menuContainer = document.getElementById('sidebar-menu');
+            const categoryLabel = document.getElementById('sidebar-category');
+            
+            if (categoryLabel) categoryLabel.innerText = `${role.toUpperCase()} MENU`;
+            if (menuContainer) {
+                menuContainer.innerHTML = '';
+                navMenus[role].forEach(item => {
+                    const navItem = document.createElement('a');
+                    navItem.href = '#';
+                    navItem.onclick = (e) => {
+                        e.preventDefault();
+                        setActiveNavItem(navItem);
+                        showToast(`Navigated to ${item.label}`);
+                    };
+
+                    const baseClasses = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all";
+                    const activeClasses = item.active 
+                        ? "bg-indigo-600 text-white font-semibold shadow-md shadow-indigo-600/30" 
+                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/80";
+
+>>>>>>> PaingGyii
                     navItem.className = `${baseClasses} ${activeClasses}`;
                     navItem.innerHTML = `<i class="fa-solid ${item.icon} w-4 text-center"></i> <span>${item.label}</span>`;
                     menuContainer.appendChild(navItem);
                 });
             }
+<<<<<<< HEAD
 			
         }
 >>>>>>> Stashed changes
@@ -200,6 +308,34 @@ function renderUserTable(filteredData = usersData) {
         const statusColor = user.status === 'Active' ? 'bg-emerald-500' : 'bg-rose-500';
 
         tr.innerHTML = `
+=======
+        }
+
+        function setActiveNavItem(selectedItem) {
+            const items = document.querySelectorAll('#sidebar-menu a');
+            items.forEach(el => {
+                el.className = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 transition-all";
+            });
+            selectedItem.className = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition-all";
+        }
+
+        function renderUserTable(filteredData = usersData) {
+            const tbody = document.getElementById('userTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            filteredData.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-700/30 transition";
+
+                const roleColor = user.role === 'Admin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' :
+                                  user.role === 'Teacher' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' :
+                                  'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
+
+                const statusColor = user.status === 'Active' ? 'bg-emerald-500' : 'bg-rose-500';
+
+                tr.innerHTML = `
+>>>>>>> PaingGyii
                     <td class="px-6 py-4 flex items-center gap-3">
                         <img src="${user.avatar}" class="w-8 h-8 rounded-full object-cover">
                         <div>
@@ -220,6 +356,7 @@ function renderUserTable(filteredData = usersData) {
                         <button onclick="deleteUser(${user.id})" class="text-slate-400 hover:text-rose-500 transition p-1"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 `;
+<<<<<<< HEAD
         tbody.appendChild(tr);
     });
 }
@@ -256,6 +393,44 @@ function renderTeacherGradingQueue() {
         const div = document.createElement('div');
         div.className = "p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl flex items-center justify-between border border-slate-100 dark:border-slate-700";
         div.innerHTML = `
+=======
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterUserTable() {
+            const searchInput = document.getElementById('userTableSearch');
+            const roleSelect = document.getElementById('roleFilter');
+            if (!searchInput || !roleSelect) return;
+
+            const searchVal = searchInput.value.toLowerCase();
+            const roleVal = roleSelect.value;
+
+            const filtered = usersData.filter(user => {
+                const matchesSearch = user.name.toLowerCase().includes(searchVal) || user.email.toLowerCase().includes(searchVal);
+                const matchesRole = (roleVal === 'all') || (user.role === roleVal);
+                return matchesSearch && matchesRole;
+            });
+
+            renderUserTable(filtered);
+        }
+
+        function deleteUser(userId) {
+            usersData = usersData.filter(u => u.id !== userId);
+            renderUserTable();
+            showToast('User removed successfully');
+        }
+
+        function renderTeacherGradingQueue() {
+            const list = document.getElementById('grading-queue-list');
+            if (!list) return;
+            list.innerHTML = '';
+
+            teacherGradingQueue.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl flex items-center justify-between border border-slate-100 dark:border-slate-700";
+                div.innerHTML = `
+>>>>>>> PaingGyii
                     <div>
                         <div class="text-xs font-bold text-slate-900 dark:text-white">${item.student}</div>
                         <div class="text-[11px] text-slate-500">${item.course}: ${item.title}</div>
@@ -265,6 +440,7 @@ function renderTeacherGradingQueue() {
                         Grade
                     </button>
                 `;
+<<<<<<< HEAD
         list.appendChild(div);
     });
 }
@@ -281,6 +457,24 @@ function renderStudentViews() {
             const div = document.createElement('div');
             div.className = "bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between";
             div.innerHTML = `
+=======
+                list.appendChild(div);
+            });
+        }
+
+        function gradeSubmission(id) {
+            showToast('Grade submitted for assignment #' + id);
+        }
+
+        function renderStudentViews() {
+            const coursesContainer = document.getElementById('student-courses-container');
+            if (coursesContainer) {
+                coursesContainer.innerHTML = '';
+                studentCourses.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = "bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between";
+                    div.innerHTML = `
+>>>>>>> PaingGyii
                         <div>
                             <div class="flex justify-between items-start mb-2">
                                 <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">${c.id}</span>
@@ -299,6 +493,7 @@ function renderStudentViews() {
                             </button>
                         </div>
                     `;
+<<<<<<< HEAD
             coursesContainer.appendChild(div);
         });
     }
@@ -310,12 +505,26 @@ function renderStudentViews() {
             const div = document.createElement('div');
             div.className = "p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl flex items-center justify-between";
             div.innerHTML = `
+=======
+                    coursesContainer.appendChild(div);
+                });
+            }
+
+            const deadlinesList = document.getElementById('student-deadlines-list');
+            if (deadlinesList) {
+                deadlinesList.innerHTML = '';
+                studentDeadlines.forEach(d => {
+                    const div = document.createElement('div');
+                    div.className = "p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl flex items-center justify-between";
+                    div.innerHTML = `
+>>>>>>> PaingGyii
                         <div>
                             <div class="text-xs font-bold text-slate-900 dark:text-white">${d.title}</div>
                             <div class="text-[11px] text-slate-500">${d.course}</div>
                         </div>
                         <span class="text-[10px] font-bold px-2 py-1 rounded ${d.badgeBg}">${d.due}</span>
                     `;
+<<<<<<< HEAD
             deadlinesList.appendChild(div);
         });
     }
@@ -434,6 +643,12 @@ function initCharts() {
 }
 /*]]>*/
 =======
+=======
+                    deadlinesList.appendChild(div);
+                });
+            }
+        }
+>>>>>>> PaingGyii
 
         function openModal(id) {
             const el = document.getElementById(id);
@@ -497,6 +712,7 @@ function initCharts() {
                 }, 3000);
             }
         }
+<<<<<<< HEAD
 		function showSection(sectionName) {
 			      // 1. Hide all page sections
 			      const sections = document.querySelectorAll('.page-section');
@@ -511,6 +727,8 @@ function initCharts() {
 			      }
 			    }
 
+=======
+>>>>>>> PaingGyii
 
         function toggleNotifications() {
             const el = document.getElementById('notif-dropdown');
@@ -559,6 +777,7 @@ function initCharts() {
                 }
             });
         }
+<<<<<<< HEAD
 		
 
 		
@@ -578,3 +797,7 @@ function initCharts() {
 		
    
 >>>>>>> Stashed changes
+=======
+        /*]]>*/
+   
+>>>>>>> PaingGyii

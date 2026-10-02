@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       class="h-full bg-slate-50">
@@ -2655,4 +2656,253 @@ function initCharts() {
 
 </body>
 
+=======
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin View</title>
+</head>
+<body>
+
+<div th:fragment="admin" class="space-y-6">
+
+    <!-- Title & Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Admin Dashboard</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Overview of platform metrics, global users, and institution performance.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="openModal('announcement-modal')" class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center gap-2">
+                <i class="fa-solid fa-bullhorn text-indigo-500"></i>
+                New Announcement
+            </button>
+            <button onclick="openModal('user-modal')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-user-plus"></i>
+                Add New User
+            </button>
+        </div>
+    </div>
+
+    <!-- Admin Stat Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Users</span>
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                    <i class="fa-solid fa-users text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between">
+                <span class="text-2xl font-bold text-slate-900 dark:text-white">1,248</span>
+                <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-trend-up"></i> +12%
+                </span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">1,050 Students • 198 Teachers</p>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active Courses</span>
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <i class="fa-solid fa-book-open text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between">
+                <span class="text-2xl font-bold text-slate-900 dark:text-white">64</span>
+                <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <i class="fa-solid fa-plus"></i> 4 new
+                </span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">across 12 departments</p>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Monthly Revenue</span>
+                <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                    <i class="fa-solid fa-dollar-sign text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between">
+                <span class="text-2xl font-bold text-slate-900 dark:text-white">$42,850</span>
+                <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-trend-up"></i> +8.4%
+                </span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">98.2% invoice collection rate</p>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">System Health</span>
+                <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                    <i class="fa-solid fa-server text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between">
+                <span class="text-2xl font-bold text-slate-900 dark:text-white">99.98%</span>
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Normal</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">Server load: 24%</p>
+        </div>
+    </div>
+
+    <!-- Visual Analytics Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="font-bold text-base text-slate-900 dark:text-white">Enrollment Growth</h3>
+                    <p class="text-xs text-slate-500">New student registrations over the last 6 months</p>
+                </div>
+                <select class="text-xs bg-slate-100 dark:bg-slate-700 border-none rounded-lg px-3 py-1.5 font-medium">
+                    <option>2026 Academic Year</option>
+                    <option>2025 Academic Year</option>
+                </select>
+            </div>
+            <div class="h-64 relative">
+                <canvas id="adminEnrollmentChart"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
+            <div>
+                <h3 class="font-bold text-base text-slate-900 dark:text-white mb-1">System Resource Usage</h3>
+                <p class="text-xs text-slate-500 mb-6">Realtime server & cloud storage distribution</p>
+                
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span>Cloud Storage (AWS S3)</span>
+                            <span>1.4 TB / 2.0 TB</span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-indigo-600 rounded-full" style="width: 70%"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span>Database Capacity</span>
+                            <span>42%</span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-emerald-500 rounded-full" style="width: 42%"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span>Active Bandwidth</span>
+                            <span>810 Mbps</span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-amber-500 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
+                <button onclick="showToast('Initiating server diagnostic backup...')" class="w-full py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 transition">
+                    Run System Diagnostic
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Management Table -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h3 class="font-bold text-base text-slate-900 dark:text-white">User Management</h3>
+                <p class="text-xs text-slate-500">Filter, edit, and manage accounts and permissions</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <input type="text" id="userTableSearch" onkeyup="filterUserTable()" placeholder="Filter users..." class="text-xs px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-transparent rounded-lg focus:outline-none focus:bg-white dark:focus:bg-slate-800 border-slate-200 dark:border-slate-600">
+                <select id="roleFilter" onchange="filterUserTable()" class="text-xs px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg font-medium">
+                    <option value="all">All Roles</option>
+                    <option value="Student">Students</option>
+                    <option value="Teacher">Teachers</option>
+                    <option value="Admin">Admins</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-700">
+                    <tr>
+                        <th class="px-6 py-3.5">User</th>
+                        <th class="px-6 py-3.5">Role</th>
+                        <th class="px-6 py-3.5">Status</th>
+                        <th class="px-6 py-3.5">Joined Date</th>
+                        <th class="px-6 py-3.5 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody" class="divide-y divide-slate-100 dark:divide-slate-700/60 font-medium">
+                    <!-- User Row 1 -->
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                        <td class="px-6 py-4 font-semibold text-slate-900 dark:text-white">
+                            Elena Rostova
+                            <div class="text-xs text-slate-400 font-normal">elena@edupulse.edu</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300">Student</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-50 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-300">Active</span>
+                        </td>
+                        <td class="px-6 py-4 text-xs text-slate-500 dark:text-slate-400">Jan 15, 2026</td>
+                        <td class="px-6 py-4 text-right">
+                            <button onclick="showToast('Editing Elena Rostova...')" class="text-slate-400 hover:text-indigo-600 transition p-1"><i class="fa-solid fa-pen-to-square"></i></button>
+                        </td>
+                    </tr>
+
+                    <!-- User Row 2 -->
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                        <td class="px-6 py-4 font-semibold text-slate-900 dark:text-white">
+                            Prof. David Vance
+                            <div class="text-xs text-slate-400 font-normal">david.vance@edupulse.edu</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-50 dark:bg-amber-900/50 text-amber-600 dark:text-amber-300">Teacher</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-50 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-300">Active</span>
+                        </td>
+                        <td class="px-6 py-4 text-xs text-slate-500 dark:text-slate-400">Nov 20, 2025</td>
+                        <td class="px-6 py-4 text-right">
+                            <button onclick="showToast('Editing David Vance...')" class="text-slate-400 hover:text-indigo-600 transition p-1"><i class="fa-solid fa-pen-to-square"></i></button>
+                        </td>
+                    </tr>
+
+                    <!-- User Row 3 -->
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                        <td class="px-6 py-4 font-semibold text-slate-900 dark:text-white">
+                            Sarah Jenkins
+                            <div class="text-xs text-slate-400 font-normal">sarah.j@edupulse.edu</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-purple-50 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300">Admin</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-50 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-300">Active</span>
+                        </td>
+                        <td class="px-6 py-4 text-xs text-slate-500 dark:text-slate-400">Aug 10, 2025</td>
+                        <td class="px-6 py-4 text-right">
+                            <button onclick="showToast('Editing Sarah Jenkins...')" class="text-slate-400 hover:text-indigo-600 transition p-1"><i class="fa-solid fa-pen-to-square"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+</body>
+>>>>>>> PaingGyii
 </html>

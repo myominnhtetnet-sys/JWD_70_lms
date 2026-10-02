@@ -1,5 +1,6 @@
 package com.Learning_Managnment_System.JWD_70_lms.model;
 
+<<<<<<< HEAD
 import java.sql.Timestamp;
 
 
@@ -13,6 +14,16 @@ public class AdminBean_category {
 	
 	private int id;
 	private Integer category_id;
+=======
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
+public class AdminBean_category {
+	
+	private int id;
+	private int category_id;
+>>>>>>> PaingGyii
 	private Integer parent_id;
 	private String name;
 	private String slug;
@@ -20,6 +31,7 @@ public class AdminBean_category {
 	private String is_active;
 	private String created_at;
 	private String updated_at;
+<<<<<<< HEAD
 =======
 >>>>>>> Stashed changes
 
@@ -37,3 +49,7 @@ public class AdminBean_category {
     private boolean is_new;
     private boolean is_edited;
 }
+=======
+
+}
+>>>>>>> PaingGyii

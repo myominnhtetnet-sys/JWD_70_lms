@@ -1,5 +1,6 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
+
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -16,19 +17,38 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.Admin_Repository;
 import com.Learning_Managnment_System.JWD_70_lms.model.AdminBean_category;
 
+=======
+import com.Learning_Managnment_System.JWD_70_lms.Repository.Admin_Repository;
+import com.Learning_Managnment_System.JWD_70_lms.model.AdminBean_category;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+
+
 @Controller
 @RequestMapping("/admin")
 public class Admin_Controller {
 
-<<<<<<< Updated upstream
+
     @Autowired
     private Admin_Repository categoryRepository;
 
  
+
+    @Autowired
+    private Admin_Repository adminRepository;
+
+
     @GetMapping({"", "/", "/dashboard"})
     public String showDashboard(Model model) {
         model.addAttribute("totalUsers", 1248);
         model.addAttribute("activeCourses", 64);
+
         model.addAttribute("categories", categoryRepository.getAllCategories());
 
         // Assumes template is at: src/main/resources/templates/dashboard.html
@@ -48,16 +68,36 @@ public class Admin_Controller {
     @GetMapping({"/categories", "/category-list"})
     public String listCategories(Model model) {
         List<AdminBean_category> categories = categoryRepository.getAllCategories();
+=======
+        model.addAttribute("categories", adminRepository.getAllCategories());
+        return "dashboard"; 
+    }
+
+    // 2. Secondary Admin View
+    @GetMapping("/admin")
+    public String showAdminView(Model model) {
+        model.addAttribute("categories", adminRepository.getAllCategories());
+        return "admin";
+    }
+
+    
+    @GetMapping({"/categories", "/category-list"})
+    public String listCategories(Model model) {
+        List<AdminBean_category> categories = adminRepository.getAllCategories();
+>>>>>>> PaingGyii
         model.addAttribute("categories", categories);
         return "category-list";
     }
 
+
     
+
     @GetMapping("/categories/new")
     public String showAddForm(Model model) {
         model.addAttribute("category", new AdminBean_category());
         return "category-form";
     }
+
 
   
     @PostMapping("/categories/save")
@@ -81,16 +121,52 @@ public class Admin_Controller {
     @GetMapping("/categories/edit/{id}")
     public String showEditForm(@PathVariable("id") Integer id, Model model) {
         AdminBean_category category = categoryRepository.getCategoryById(id);
+=======
+ 
+    @PostMapping("/categories/save")
+    public String saveCategory(
+            @ModelAttribute("category") AdminBean_category category,
+            RedirectAttributes redirectAttributes) {
+
+        boolean isNew = category.getCategory_id() <= 0;
+
+        if (isNew) {
+            int newId = adminRepository.saveCategory(category);
+
+            redirectAttributes.addFlashAttribute("activeId", newId);
+            redirectAttributes.addFlashAttribute("actionType", "new");
+
+        } else {
+            adminRepository.updateCategory(category);
+
+            redirectAttributes.addFlashAttribute(
+                    "activeId",
+                    category.getCategory_id()
+            );
+        }
+
+        return "redirect:/categories";
+    }
+
+   
+    @GetMapping("/categories/edit/{id}")
+    public String showEditForm(@PathVariable("id") Integer id, Model model) {
+        AdminBean_category category = adminRepository.getCategoryById(id);
+        if (category == null) {
+            return "redirect:/admin/categories";
+        }
+>>>>>>> PaingGyii
         model.addAttribute("category", category);
         return "category-form";
     }
+
 
     // 7. Delete Category
     @GetMapping("/categories/delete/{id}")
     public String deleteCategory(@PathVariable("id") Integer id) {
         categoryRepository.deleteCategory(id);
         return "redirect:/admin/categories";
-=======
+
     private static final Logger log =
             LoggerFactory.getLogger(Admin_Controller.class);
 
@@ -406,6 +482,11 @@ public class Admin_Controller {
         }
 
         return "redirect:/admin/category/list";
->>>>>>> Stashed changes
+
+    @GetMapping("/categories/delete/{id}")
+    public String deleteCategory(@PathVariable("id") Integer id) {
+        adminRepository.deleteCategory(id);
+        return "redirect:/admin/categories";
+
     }
 }
