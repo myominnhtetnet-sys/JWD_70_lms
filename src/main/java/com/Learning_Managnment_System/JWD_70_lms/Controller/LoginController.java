@@ -6,6 +6,7 @@ import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,6 +49,19 @@ public class LoginController {
 		return "redirect:/login";
 //		return "redirect:/dashboard";
 	}
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	@GetMapping("/teacher")
 	public String teacherPage(HttpSession session) {
