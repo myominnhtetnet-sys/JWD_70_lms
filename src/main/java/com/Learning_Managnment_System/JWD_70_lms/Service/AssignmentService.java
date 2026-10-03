@@ -12,13 +12,9 @@ public class AssignmentService {
     private final AssignmentRepository assignmentRepository;
 
     // Constructor Injection
-    public AssignmentService(
-            AssignmentRepository assignmentRepository) {
-
+    public AssignmentService(AssignmentRepository assignmentRepository) {
         this.assignmentRepository = assignmentRepository;
     }
-  
-
 
     // =====================================
     // 1. CREATE ASSIGNMENT
@@ -27,19 +23,16 @@ public class AssignmentService {
     public int createAssignment(AssignmentBean assignment) {
 
         // Title Validation
-        if (assignment.getTitle() == null ||
-                assignment.getTitle().isBlank()) {
+        if (assignment.getTitle() == null || assignment.getTitle().isBlank()) {
 
-            throw new IllegalArgumentException(
-                    "Assignment title is required");
+            throw new IllegalArgumentException("Assignment title is required");
         }
 
         // Total Mark Validation
         if (assignment.getTotalMark() == null ||
                 assignment.getTotalMark().signum() <= 0) {
 
-            throw new IllegalArgumentException(
-                    "Total mark must be greater than zero");
+            throw new IllegalArgumentException("Total mark must be greater than zero");
         }
 
         // Pass Mark Validation
@@ -48,8 +41,7 @@ public class AssignmentService {
                 assignment.getPassMark()
                         .compareTo(assignment.getTotalMark()) > 0) {
 
-            throw new IllegalArgumentException(
-                    "Invalid pass mark");
+            throw new IllegalArgumentException("Invalid pass mark");
         }
 
         // Save to Database
@@ -65,6 +57,13 @@ public class AssignmentService {
         return assignmentRepository.findAll();
     }
 
+    public List<AssignmentBean> searchAssignments(
+            String title,
+            Integer batchId,
+            String status) {
+
+        return assignmentRepository.search(title,batchId,status);
+    }
     // =====================================
     // 3. GET ASSIGNMENT BY ID
     // =====================================
@@ -73,10 +72,7 @@ public class AssignmentService {
 
         return assignmentRepository.findById(id)
                 .orElseThrow(() ->
-                    new IllegalArgumentException(
-                        "Assignment not found: " + id
-                    )
-                );
+                    new IllegalArgumentException("Assignment not found: " + id));
     }
 
 
@@ -93,8 +89,7 @@ public class AssignmentService {
         int result = assignmentRepository.update(assignment);
 
         if (result == 0) {
-            throw new IllegalArgumentException(
-                    "Assignment update failed");
+            throw new IllegalArgumentException("Assignment update failed");
         }
     }
 
@@ -105,12 +100,8 @@ public class AssignmentService {
 
     public void deleteAssignment(Integer id) {
 
-        // Check whether assignment exists
         getAssignmentById(id);
-
-        // Delete
         int result = assignmentRepository.deleteById(id);
-
         if (result == 0) {
             throw new IllegalArgumentException("Assignment delete failed");
         }

@@ -73,6 +73,36 @@
         padding: 12px;
         margin-bottom: 15px;
     }
+    .search-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.search-form input,
+.search-form select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.search-btn {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.reset-btn {
+    background: #6b7280;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 5px;
+    text-decoration: none;
+}
 </style>
 
 </head>
@@ -93,8 +123,36 @@
 </div>
 
 <a th:href="@{/teacher/assignments/create}" class="create-btn"> + Create Assignment</a>
+<!-- SEARCH & FILTER FORM -->
 
-<table>
+		<form th:action="@{/teacher/assignments/search}" method="get" class="search-form">
+
+			<!-- Search by Title -->
+			<input type="text" name="title" placeholder="Search assignment title..." th:value="${title}">
+
+			<!-- Filter by Batch -->
+			<select name="batchId">
+				<option value="">All Batches</option>
+				<option th:each="batch : ${batches}" th:value="${batch.batchId}"
+					th:text="${batch.batchCode + ' - ' + batch.title}"
+					th:selected="${selectedBatchId != null and selectedBatchId == batch.batchId}">
+				</option>
+			</select>
+
+			<!-- Filter by Status -->
+			<select name="status">
+				<option value="">All Status</option>
+				<option value="ACTIVE" th:selected="${selectedStatus == 'ACTIVE'}">ACTIVE</option>
+				<option value="INACTIVE"th:selected="${selectedStatus == 'INACTIVE'}">INACTIVE</option>
+				<option value="CLOSED" th:selected="${selectedStatus == 'CLOSED'}">CLOSED</option>
+			</select>
+
+			<button type="submit" class="search-btn">Search</button>
+			<a th:href="@{/teacher/assignments}" class="reset-btn"> Reset </a>
+
+		</form>
+
+		<table>
     <thead>
         <tr>
             <th>ID</th>

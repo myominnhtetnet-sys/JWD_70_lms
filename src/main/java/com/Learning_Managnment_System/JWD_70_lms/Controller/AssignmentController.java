@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -45,6 +46,30 @@ public class AssignmentController {
 
         model.addAttribute("assignments", assignments);
 
+        return "assignment-list";
+    }
+    
+ // SEARCH & FILTER ASSIGNMENTS
+
+    @GetMapping("/assignments/search")
+    public String searchAssignments(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Integer batchId,
+            @RequestParam(required = false) String status,
+            Model model) {
+
+        List<AssignmentBean> assignments =
+                assignmentService.searchAssignments(
+                        title,
+                        batchId,
+                        status
+                );
+
+        model.addAttribute("assignments", assignments);
+        model.addAttribute("title", title);
+        model.addAttribute("selectedBatchId", batchId);
+        model.addAttribute("selectedStatus", status);
+        loadDropdownData(model);
         return "assignment-list";
     }
 
@@ -87,13 +112,9 @@ public class AssignmentController {
 
     // 4. SHOW EDIT FORM
     @GetMapping("/assignments/edit/{id}")
-    public String showEditForm(
-            @PathVariable Integer id,
-            Model model) {
+    public String showEditForm(@PathVariable Integer id,Model model) {
 
-        AssignmentBean assignment =
-                assignmentService.getAssignmentById(id);
-
+        AssignmentBean assignment =assignmentService.getAssignmentById(id);
         model.addAttribute("assignment", assignment);
         loadDropdownData(model);
         return "assignment-form";
@@ -109,7 +130,6 @@ public class AssignmentController {
         try {
 
             assignmentService.updateAssignment(assignment);
-
             redirectAttributes.addFlashAttribute(
                     "successMessage",
                     "Assignment updated successfully!"
@@ -121,7 +141,6 @@ public class AssignmentController {
 
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("assignment", assignment);
-
             return "assignment-form";
         }
     }
@@ -133,16 +152,13 @@ public class AssignmentController {
             RedirectAttributes redirectAttributes) {
 
         try {
-
             assignmentService.deleteAssignment(id);
-
             redirectAttributes.addFlashAttribute(
                     "successMessage",
                     "Assignment deleted successfully!"
             );
 
-        } catch (IllegalArgumentException e) {
-
+        } catch (IllegalArgumentException e) {	
             redirectAttributes.addFlashAttribute(
                     "errorMessage",
                     e.getMessage()
@@ -160,4 +176,5 @@ public class AssignmentController {
         m.addAttribute("batches", batches);
         m.addAttribute("lessons", lessons);
     }
+    
 }
