@@ -11,18 +11,29 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.Learning_Managnment_System.JWD_70_lms.Repository.BatchRepository;
+import com.Learning_Managnment_System.JWD_70_lms.Repository.LessonRepository;
 import com.Learning_Managnment_System.JWD_70_lms.Service.AssignmentService;
 import com.Learning_Managnment_System.JWD_70_lms.model.AssignmentBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.BatchBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.LessonBean;
 
 @Controller
 @RequestMapping("/teacher")
 public class AssignmentController {
 
-    private final AssignmentService assignmentService;
+	private final AssignmentService assignmentService;
+    private final BatchRepository batchRepository;
+    private final LessonRepository lessonRepository;
 
-    // Constructor Injection
-    public AssignmentController(AssignmentService assignmentService) {
+    public AssignmentController(
+            AssignmentService assignmentService,
+            BatchRepository batchRepository,
+            LessonRepository lessonRepository) {
+
         this.assignmentService = assignmentService;
+        this.batchRepository = batchRepository;
+        this.lessonRepository = lessonRepository;
     }
 
     // 1. SHOW ALL ASSIGNMENTS
@@ -42,7 +53,7 @@ public class AssignmentController {
     public String showCreateForm(Model model) {
 
         model.addAttribute("assignment", new AssignmentBean());
-
+        loadDropdownData(model);
         return "assignment-form";
     }
 
@@ -84,7 +95,7 @@ public class AssignmentController {
                 assignmentService.getAssignmentById(id);
 
         model.addAttribute("assignment", assignment);
-
+        loadDropdownData(model);
         return "assignment-form";
     }
 
@@ -139,5 +150,14 @@ public class AssignmentController {
         }
 
         return "redirect:/teacher/assignments";
+    }
+    
+    private void loadDropdownData(Model m) {
+
+        List<BatchBean> batches = batchRepository.findAll();
+        List<LessonBean> lessons = lessonRepository.findAll();
+
+        m.addAttribute("batches", batches);
+        m.addAttribute("lessons", lessons);
     }
 }

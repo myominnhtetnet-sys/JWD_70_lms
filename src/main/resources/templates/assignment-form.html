@@ -10,7 +10,6 @@ body {
 	background: #f4f6f9;
 	padding: 30px;
 }
-
 .container {
 	width: 600px;
 	margin: auto;
@@ -18,24 +17,20 @@ body {
 	padding: 25px;
 	border-radius: 10px;
 }
-
 h2 {
 	text-align: center;
 }
-
 label {
 	display: block;
 	margin-top: 15px;
 	font-weight: bold;
 }
-
 input, textarea, select {
 	width: 100%;
 	padding: 10px;
 	margin-top: 5px;
 	box-sizing: border-box;
 }
-
 button {
 	margin-top: 20px;
 	padding: 10px 20px;
@@ -44,11 +39,9 @@ button {
 	border: none;
 	cursor: pointer;
 }
-
 .error {
 	color: red;
 }
-
 .back {
 	display: inline-block;
 	margin-top: 15px;
@@ -60,8 +53,7 @@ button {
 
 	<div class="container">
 
-		<h2
-			th:text="${assignment.assignmentId == null} ? 'Create Assignment' : 'Edit Assignment'">
+		<h2 th:text="${assignment.assignmentId == null} ? 'Create Assignment' : 'Edit Assignment'">
 			Assignment Form</h2>
 		<p class="error" th:if="${errorMessage}" th:text="${errorMessage}"></p>
 
@@ -71,25 +63,34 @@ button {
           : @{/teacher/assignments/update}"
 			method="post">
 
-			<input type="hidden" th:field="*{assignmentId}"> <label>Batch
-				ID</label> <input type="number" th:field="*{batchId}" required> <label>Lesson
-				ID</label> <input type="number" th:field="*{lessonId}" required> <label>Title</label>
-			<input type="text" th:field="*{title}" required> <label>Description</label>
+			<input type="hidden" th:field="*{assignmentId}"> 
+			
+			<label>Batch</label> 
+			<select th:field="*{batchId}" required>
+				<option value="">-- Select Batch --</option>
+				<option th:each="batch : ${batches}" th:value="${batch.batchId}"
+					th:text="${batch.batchCode + ' - ' + batch.title}"></option>
+			</select> 
+			
+			<label>Lesson</label> 
+			<select th:field="*{lessonId}" required>
+				<option value="">-- Select Lesson --</option>
+				<option th:each="lesson : ${lessons}" th:value="${lesson.lessonId}"
+					th:text="${lesson.title}"></option>
+			</select> 
+			
+			<label>Title</label> <input type="text" th:field="*{title}" required> <label>Description</label>
 			<textarea th:field="*{description}" rows="4"></textarea>
-
 			<label>Attachment</label> <input type="text" th:field="*{attachment}">
-
-			<label>Start At</label> <input type="datetime-local"
-				th:field="*{startAt}"> <label>Due At</label> <input
-				type="datetime-local" th:field="*{dueAt}"> <label> <input
-				type="checkbox" th:field="*{allowLateSubmit}" style="width: auto;">
+			<label>Start At</label> <input type="datetime-local"th:field="*{startAt}"> 
+			<label>Due At</label> <input type="datetime-local" th:field="*{dueAt}"> 
+			<label> <input type="checkbox" th:field="*{allowLateSubmit}" style="width: auto;">
 				Allow Late Submit
-			</label> <label>Late Deadline</label> <input type="datetime-local"
-				th:field="*{lateDeadline}"> <label>Total Mark</label> <input
-				type="number" step="0.01" th:field="*{totalMark}" required>
+			</label> <label>Late Deadline</label> <input type="datetime-local" th:field="*{lateDeadline}"> 
+			<label>Total Mark</label> <input type="number" step="0.01" th:field="*{totalMark}" required>
 
-			<label>Pass Mark</label> <input type="number" step="0.01"
-				th:field="*{passMark}" required> <label>Status</label> <select
+			<label>Pass Mark</label> <input type="number" step="0.01" th:field="*{passMark}" required>
+			 <label>Status</label> <select
 				th:field="*{status}">
 				<option value="DRAFT">DRAFT</option>
 				<option value="PUBLISHED">PUBLISHED</option>
@@ -101,7 +102,7 @@ button {
 				th:text="${assignment.assignmentId == null}
                 ? 'Save Assignment' : 'Update Assignment'">
 				Save</button>
-
+				
 		</form>
 
 		<a class="back" th:href="@{/teacher/assignments}"> Back to

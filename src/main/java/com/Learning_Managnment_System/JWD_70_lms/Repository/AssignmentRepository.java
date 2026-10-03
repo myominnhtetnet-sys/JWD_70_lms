@@ -126,6 +126,25 @@ public class AssignmentRepository {
 
         return jdbcTemplate.query(sql, assignmentRowMapper);
     }
+ // =====================================
+ // 2. SEARCH & FILTER ASSIGNMENTS
+ // =====================================
+
+	public List<AssignmentBean> search(String title, Integer batchId, String status) {
+
+		String sql = """
+				SELECT * FROM assignments
+				WHERE
+				    (? IS NULL OR title LIKE ?)
+				    AND (? IS NULL OR batch_id = ?)
+				    AND (? IS NULL OR status = ?)
+				ORDER BY assignment_id DESC
+				""";
+
+		String searchTitle = (title == null || title.isBlank()) ? null : "%" + title.trim() + "%";
+
+		return jdbcTemplate.query(sql, assignmentRowMapper, searchTitle, searchTitle, batchId, batchId, status, status);
+	}
 
     // =====================================
     // 3. READ ONE - FIND BY ID
@@ -210,4 +229,5 @@ public class AssignmentRepository {
         return jdbcTemplate.update(sql, id);
     }
 
+   
 }

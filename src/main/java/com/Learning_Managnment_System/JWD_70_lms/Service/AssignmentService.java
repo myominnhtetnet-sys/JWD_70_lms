@@ -17,6 +17,7 @@ public class AssignmentService {
 
         this.assignmentRepository = assignmentRepository;
     }
+  
 
 
     // =====================================
@@ -61,10 +62,8 @@ public class AssignmentService {
     // =====================================
 
     public List<AssignmentBean> getAllAssignments() {
-
         return assignmentRepository.findAll();
     }
-
 
     // =====================================
     // 3. GET ASSIGNMENT BY ID
@@ -113,8 +112,7 @@ public class AssignmentService {
         int result = assignmentRepository.deleteById(id);
 
         if (result == 0) {
-            throw new IllegalArgumentException(
-                    "Assignment delete failed");
+            throw new IllegalArgumentException("Assignment delete failed");
         }
     }
 }
