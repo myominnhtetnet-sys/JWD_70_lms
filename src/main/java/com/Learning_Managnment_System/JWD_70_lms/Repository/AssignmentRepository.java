@@ -117,15 +117,34 @@ public class AssignmentRepository {
     // =====================================
 
     public List<AssignmentBean> findAll() {
-
         String sql = """
             SELECT *
             FROM assignments
             ORDER BY assignment_id DESC
             """;
-
         return jdbcTemplate.query(sql, assignmentRowMapper);
     }
+    
+    public List<AssignmentBean> findAll(int page, int size) {
+        int offset = (page - 1) * size;
+        String sql = """
+                SELECT *
+                FROM assignments
+                ORDER BY assignment_id DESC
+                LIMIT ? OFFSET ?
+                """;
+
+        return jdbcTemplate.query(sql,assignmentRowMapper,size, offset);
+    }
+    
+    
+    public int countAll() {
+        String sql = "SELECT COUNT(*) FROM assignments";
+        return jdbcTemplate.queryForObject(sql, Integer.class);
+    }
+    
+    
+    
  // =====================================
  // 2. SEARCH & FILTER ASSIGNMENTS
  // =====================================

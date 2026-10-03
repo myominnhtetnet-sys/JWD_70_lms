@@ -1,6 +1,7 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -25,11 +26,28 @@ public class BatchRepository {
     public List<BatchBean> findAll() {
 
         String sql = """
+            SELECT batch_id, batch_code, title
+            FROM batches
+            ORDER BY batch_id
+            """;
+
+        List<BatchBean> batches =
+                jdbcTemplate.query(sql, batchRowMapper);
+
+        System.out.println("Total Batches: " + batches.size());
+
+        return batches;
+    }
+    
+    public Optional<BatchBean> findById(Integer id) {
+
+        String sql = """
                 SELECT batch_id, batch_code, title
                 FROM batches
-                ORDER BY batch_id
+                WHERE batch_id = ?
                 """;
 
-        return jdbcTemplate.query(sql, batchRowMapper);
+        List<BatchBean> batches = jdbcTemplate.query(sql, batchRowMapper, id);
+        return batches.stream().findFirst();
     }
 }

@@ -38,14 +38,59 @@ public class AssignmentController {
     }
 
     // 1. SHOW ALL ASSIGNMENTS
+	/*
+	 * @GetMapping("/assignments") public String listAssignments(Model model) {
+	 * List<AssignmentBean> assignments =assignmentService.getAllAssignments();
+	 * model.addAttribute("assignments", assignments); loadDropdownData(model);
+	 * return "assignment-list"; }
+	 */
+	/*
+	 * @GetMapping("/assignments") public String listAssignments(Model model) {
+	 * List<AssignmentBean> assignments = assignmentService.getAllAssignments();
+	 * List<BatchBean> batches = batchRepository.findAll(); List<LessonBean> lessons
+	 * = lessonRepository.findAll(); model.addAttribute("assignments", assignments);
+	 * model.addAttribute("batches", batches); model.addAttribute("lessons",
+	 * lessons);
+	 * 
+	 * return "assignment-list"; }
+	 */
+    
     @GetMapping("/assignments")
-    public String listAssignments(Model model) {
+    public String listAssignments(
+            @RequestParam(defaultValue = "1") int page,
+            Model model) {
 
+        // တစ်မျက်နှာမှာ ပြမယ့် အရေအတွက်
+        int size = 5;
+
+        // Assignment စုစုပေါင်း
+        int totalItems = assignmentService.getTotalAssignments();
+
+        // စာမျက်နှာ စုစုပေါင်း
+        int totalPages = (int) Math.ceil((double) totalItems / size);
+
+        if (totalPages == 0) {
+            totalPages = 1;
+        }
+
+        // Page number ကို စစ်ဆေးခြင်း
+        if (page < 1) {
+            page = 1;
+        }
+
+        if (page > totalPages) {
+            page = totalPages;
+        }
+
+        // လက်ရှိ Page အတွက် Assignment များယူခြင်း
         List<AssignmentBean> assignments =
-                assignmentService.getAllAssignments();
-
+                assignmentService.getAssignmentsByPage(page, size);
         model.addAttribute("assignments", assignments);
-
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalItems", totalItems);
+        model.addAttribute("pageSize", size);
+        loadDropdownData(model);
         return "assignment-list";
     }
     
@@ -58,12 +103,7 @@ public class AssignmentController {
             @RequestParam(required = false) String status,
             Model model) {
 
-        List<AssignmentBean> assignments =
-                assignmentService.searchAssignments(
-                        title,
-                        batchId,
-                        status
-                );
+        List<AssignmentBean> assignments =assignmentService.searchAssignments(title,batchId,status);
 
         model.addAttribute("assignments", assignments);
         model.addAttribute("title", title);
@@ -72,6 +112,7 @@ public class AssignmentController {
         loadDropdownData(model);
         return "assignment-list";
     }
+    
 
     // 2. SHOW CREATE FORM
     @GetMapping("/assignments/create")
@@ -83,44 +124,85 @@ public class AssignmentController {
     }
 
     // 3. SAVE NEW ASSIGNMENT
+
     @PostMapping("/assignments/save")
     public String saveAssignment(
             @ModelAttribute("assignment") AssignmentBean assignment,
+            Model model,
             RedirectAttributes redirectAttributes) {
 
         try {
 
             int newId = assignmentService.createAssignment(assignment);
-
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Assignment created successfully! ID: " + newId
+            redirectAttributes.addFlashAttribute("successMessage",
+            		"Assignment created successfully! ID: " + newId
             );
-
             return "redirect:/teacher/assignments";
-
+            
         } catch (IllegalArgumentException e) {
-
-            redirectAttributes.addFlashAttribute(
-                    "errorMessage",
-                    e.getMessage()
-            );
-
-            return "redirect:/teacher/assignments/create";
+            model.addAttribute("errorMessage", e.getMessage());
+            loadDropdownData(model);
+            return "assignment-form";
         }
     }
+//    @GetMapping("/assignments/{id}")
+//    public String viewAssignment(@PathVariable Integer id,Model model) {
+//        AssignmentBean assignment =assignmentService.getAssignmentById(id);
+//        model.addAttribute("assignment", assignment);
+//        return "assignment-detail";
+//    }
 
+    @GetMapping("/assignments/{id}")
+    public String viewAssignment( @PathVariable Integer id,Model model) {
+        AssignmentBean assignment =assignmentService.getAssignmentById(id);
+        BatchBean batch = batchRepository.findById(assignment.getBatchId())
+                .orElseThrow(() -> new IllegalArgumentException("Batch not found"));
+
+        LessonBean lesson = lessonRepository.findById(assignment.getLessonId())
+                .orElseThrow(() ->new IllegalArgumentException("Lesson not found"));
+
+        model.addAttribute("assignment", assignment);
+        model.addAttribute("batch", batch);
+        model.addAttribute("lesson", lesson);
+        return "assignment-detail";
+    }
+    
     // 4. SHOW EDIT FORM
     @GetMapping("/assignments/edit/{id}")
     public String showEditForm(@PathVariable Integer id,Model model) {
-
         AssignmentBean assignment =assignmentService.getAssignmentById(id);
         model.addAttribute("assignment", assignment);
         loadDropdownData(model);
         return "assignment-form";
     }
 
-    // 5. UPDATE ASSIGNMENT
+//    // 5. UPDATE ASSIGNMENT
+//    @PostMapping("/assignments/update")
+//    public String updateAssignment(
+//            @ModelAttribute("assignment") AssignmentBean assignment,
+//            Model model,
+//            RedirectAttributes redirectAttributes) {
+//
+//        try {
+//
+//            assignmentService.updateAssignment(assignment);
+//            redirectAttributes.addFlashAttribute(
+//                    "successMessage",
+//                    "Assignment updated successfully!"
+//            );
+//
+//            return "redirect:/teacher/assignments";
+//
+//        } catch (IllegalArgumentException e) {
+//
+//            model.addAttribute("errorMessage", e.getMessage());
+//            model.addAttribute("assignment", assignment);
+//            return "assignment-form";
+//        }
+//    }
+
+ // 5. UPDATE ASSIGNMENT
+
     @PostMapping("/assignments/update")
     public String updateAssignment(
             @ModelAttribute("assignment") AssignmentBean assignment,
@@ -128,41 +210,29 @@ public class AssignmentController {
             RedirectAttributes redirectAttributes) {
 
         try {
-
             assignmentService.updateAssignment(assignment);
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Assignment updated successfully!"
-            );
-
+            redirectAttributes.addFlashAttribute("successMessage","Assignment updated successfully!");
             return "redirect:/teacher/assignments";
 
         } catch (IllegalArgumentException e) {
-
             model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("assignment", assignment);
+            loadDropdownData(model);
             return "assignment-form";
         }
     }
-
     // 6. DELETE ASSIGNMENT
     @PostMapping("/assignments/delete/{id}")
-    public String deleteAssignment(
-            @PathVariable Integer id,
+    public String deleteAssignment(@PathVariable Integer id,
             RedirectAttributes redirectAttributes) {
 
         try {
             assignmentService.deleteAssignment(id);
             redirectAttributes.addFlashAttribute(
                     "successMessage",
-                    "Assignment deleted successfully!"
-            );
+                    "Assignment deleted successfully!");
 
         } catch (IllegalArgumentException e) {	
-            redirectAttributes.addFlashAttribute(
-                    "errorMessage",
-                    e.getMessage()
-            );
+            redirectAttributes.addFlashAttribute("errorMessage",e.getMessage());
         }
 
         return "redirect:/teacher/assignments";
@@ -172,9 +242,9 @@ public class AssignmentController {
 
         List<BatchBean> batches = batchRepository.findAll();
         List<LessonBean> lessons = lessonRepository.findAll();
-
         m.addAttribute("batches", batches);
         m.addAttribute("lessons", lessons);
     }
+   
     
 }

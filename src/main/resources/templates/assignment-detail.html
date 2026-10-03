@@ -1,10 +1,181 @@
+
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Assignment Details</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
 </head>
+
 <body>
+
+<div class="container detail-container">
+
+    <div class="detail-header">
+        <div>
+            <h2>Assignment Details</h2>
+            <p>View complete assignment information.</p>
+        </div>
+
+        <span class="status-badge"
+              th:classappend="${assignment.status == 'PUBLISHED'} ? 'status-published' :
+                              (${assignment.status == 'DRAFT'} ? 'status-draft' :
+                              (${assignment.status == 'CLOSED'} ? 'status-closed' : ''))"
+              th:text="${assignment.status}">
+            DRAFT
+        </span>
+    </div>
+
+    <div class="detail-card">
+
+        <!-- Basic Information -->
+        <div class="detail-section">
+            <h3>Basic Information</h3>
+
+            <div class="detail-grid">
+
+                <div class="detail-item">
+                    <div class="detail-label">Assignment ID</div>
+                    <div class="detail-value"
+                         th:text="${assignment.assignmentId}"></div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Title</div>
+                    <div class="detail-value"
+                         th:text="${assignment.title}"></div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Batch</div>
+                    <div class="detail-value"
+                         th:text="${batch.batchCode + ' - ' + batch.title}"></div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Lesson</div>
+                    <div class="detail-value"
+                         th:text="${lesson.title}"></div>
+                </div>
+
+                <div class="detail-item full">
+                    <div class="detail-label">Description</div>
+                    <div class="detail-value"
+                         th:text="${assignment.description ?: 'No description provided'}"></div>
+                </div>
+
+                <div class="detail-item full">
+                    <div class="detail-label">Attachment</div>
+                    <div class="detail-value"
+                         th:text="${assignment.attachment ?: 'No attachment'}"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Schedule -->
+        <div class="detail-section">
+            <h3>Assignment Schedule</h3>
+
+            <div class="detail-grid">
+
+                <div class="detail-item">
+                    <div class="detail-label">Start At</div>
+                    <div class="detail-value"
+                         th:text="${assignment.startAt}"></div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Due At</div>
+                    <div class="detail-value"
+                         th:text="${assignment.dueAt}"></div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Allow Late Submit</div>
+                    <div class="detail-value"
+                         th:text="${assignment.allowLateSubmit ? 'Yes' : 'No'}"></div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Late Deadline</div>
+                    <div class="detail-value"
+                         th:text="${assignment.lateDeadline ?: 'Not set'}"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Marking -->
+        <div class="detail-section">
+            <h3>Marking Information</h3>
+
+            <div class="detail-grid">
+
+                <div class="detail-item">
+                    <div class="detail-label">Total Mark</div>
+                    <div class="detail-value"
+                         th:text="${assignment.totalMark}"></div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Pass Mark</div>
+                    <div class="detail-value"
+                         th:text="${assignment.passMark}"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Audit Information -->
+        <div class="detail-section">
+            <h3>Other Information</h3>
+
+            <div class="detail-grid">
+
+                <div class="detail-item">
+                    <div class="detail-label">Created By</div>
+                    <div class="detail-value"
+                         th:text="${assignment.createdBy}"></div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Created At</div>
+                    <div class="detail-value"
+                         th:text="${assignment.createdAt}"></div>
+                </div>
+
+                <div class="detail-item full">
+                    <div class="detail-label">Updated At</div>
+                    <div class="detail-value"
+                         th:text="${assignment.updatedAt}"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="detail-actions">
+
+            <a class="btn-back"
+               th:href="@{/teacher/assignments}">
+                Back to List
+            </a>
+
+            <a class="btn-edit"
+               th:href="@{/teacher/assignments/edit/{id}(id=${assignment.assignmentId})}">
+                Edit Assignment
+            </a>
+
+        </div>
+
+    </div>
+</div>
 
 </body>
 </html>
