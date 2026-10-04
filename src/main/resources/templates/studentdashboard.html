@@ -33,29 +33,29 @@
                     <div>
                         <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Learning</div>
                         <div class="space-y-1">
-                            <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600/90 shadow-sm transition">
+                            <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600/90 shadow-sm transition">
                                 <i class="fa-solid fa-border-all text-base"></i> Dashboard
                             </a>
-                            <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/student/courses}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
                                 <i class="fa-solid fa-book-open text-base"></i> My Courses
                             </a>
-                            <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/student/classroom}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
                                 <i class="fa-solid fa-display text-base"></i> Classroom
                             </a>
-                            <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/student/schedule}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
                                 <i class="fa-regular fa-calendar-check text-base"></i> Schedule
                             </a>
-                            <a href="#" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/student/assignments}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
                                 <div class="flex items-center gap-3">
                                     <i class="fa-regular fa-file-lines text-base"></i> Assignments
                                 </div>
                                 <span class="px-2 py-0.5 text-[10px] font-bold bg-rose-500/20 text-rose-400 rounded-full">2</span>
                             </a>
-                            <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/student/exams}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
                                 <i class="fa-solid fa-square-check text-base"></i> Exams
                             </a>
-                            <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
-                                <i class="fa-solid fa-award text-base"></i> Grades & Certificates
+                            <a th:href="@{/certificate/verify}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                                <i class="fa-solid fa-award text-base"></i> Certificates
                             </a>
                         </div>
                     </div>
@@ -63,22 +63,10 @@
                     <div>
                         <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Account</div>
                         <div class="space-y-1">
-                            <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/student/checkout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
                                 <i class="fa-regular fa-credit-card text-base"></i> Payments
                             </a>
-                            <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
-                                <i class="fa-solid fa-star text-base"></i> Scholarships
-                            </a>
-                            <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
-                                <i class="fa-solid fa-magnifying-glass text-base"></i> Browse Courses
-                            </a>
-                            <a href="#" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
-                                <div class="flex items-center gap-3">
-                                    <i class="fa-regular fa-bell text-base"></i> Notifications
-                                </div>
-                                <span class="px-2 py-0.5 text-[10px] font-bold bg-indigo-500/20 text-indigo-400 rounded-full">3</span>
-                            </a>
-                            <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/student/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
                                 <i class="fa-regular fa-user text-base"></i> My Profile
                             </a>
                         </div>
@@ -88,12 +76,6 @@
 
             <!-- Side Card & Logout Link -->
             <div class="p-4 border-t border-slate-800 space-y-3">
-                <div class="bg-slate-800/60 border border-slate-700/50 rounded-xl p-3.5 text-xs text-slate-300">
-                    <strong class="block text-white font-semibold mb-1">Find your next course</strong>
-                    <p class="text-slate-400 text-[11px] mb-2 leading-relaxed">New Python batch starts 2 Nov. Early Bird 10% off.</p>
-                    <button class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-1.5 px-3 rounded-lg text-xs transition">Browse courses</button>
-                </div>
-
                 <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
                     <i class="fa-solid fa-right-from-bracket text-base"></i> Logout
                 </a>
@@ -103,7 +85,7 @@
         <!-- Main Content Area -->
         <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
 
-           
+            <!-- Top Header -->
             <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-10 shadow-sm">
                 <div>
                     <h2 class="text-lg font-bold text-slate-900 leading-tight">Dashboard</h2>
@@ -111,25 +93,13 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <!-- Search Bar -->
-                    <div class="hidden sm:flex items-center gap-2 bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 w-64 text-slate-400 focus-within:border-indigo-500 focus-within:bg-white transition">
-                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                        <input type="text" placeholder="Search lessons, assignments…" class="bg-transparent border-none outline-none text-xs text-slate-700 w-full placeholder:text-slate-400">
-                    </div>
-
-                    <!-- Notification Bell -->
-                    <button class="relative w-9 h-9 border border-slate-200 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-50 transition">
-                        <i class="fa-regular fa-bell text-sm"></i>
-                        <span class="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white font-bold text-[10px] rounded-full flex items-center justify-center border-2 border-white">3</span>
-                    </button>
-
                     <!-- User Info -->
                     <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
                         <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-rose-400 to-pink-500 text-white font-bold text-xs flex items-center justify-center shadow-sm">
-                            <span th:text="${fullName != null ? #strings.substring(fullName,0,2) : (session.fullName != null ? #strings.substring(session.fullName,0,2) : 'AR')}">AR</span>
+                            <span th:text="${fullName != null ? #strings.substring(fullName,0,2) : 'AR'}">AR</span>
                         </div>
                         <div class="hidden lg:block">
-                            <b class="block text-xs font-bold text-slate-800 leading-none" th:text="${fullName != null ? fullName : (session.fullName != null ? session.fullName : 'Aris')}">Aris</b>
+                            <b class="block text-xs font-bold text-slate-800 leading-none" th:text="${fullName != null ? fullName : 'Student'}">Student</b>
                             <small class="text-[11px] text-slate-400 font-medium">Student</small>
                         </div>
                     </div>
@@ -142,25 +112,14 @@
                 <div class="bg-indigo-600 rounded-2xl p-6 text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                     <div class="space-y-1">
                         <h1 class="text-xl lg:text-2xl font-bold tracking-tight">
-                            Mingalabar, <span th:text="${fullName != null ? fullName : (session.fullName != null ? session.fullName : 'Aris')}">Aris</span>! 👋
+                            Mingalabar, <span th:text="${fullName != null ? fullName : 'Student'}">Student</span>! 👋
                         </h1>
-                        <p class="text-sm text-indigo-100 font-normal">
-                            You have <b>1 class today</b> and <b>2 tasks due</b> this week. ID: <span th:text="${studentId != null ? studentId : (session.studentId != null ? session.studentId : 'STU-2026-0042')}">STU-2026-0042</span>
-                        </p>
-                    </div>
-                    <div class="flex flex-wrap gap-3 w-full md:w-auto">
-                        <a href="#" class="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-white text-indigo-700 font-semibold px-4 py-2.5 rounded-xl text-xs hover:bg-slate-50 transition shadow-sm">
-                            <i class="fa-solid fa-video text-xs"></i> Join class · 7:00 PM
-                        </a>
-                        <a href="#" class="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-indigo-700 hover:bg-indigo-800 text-white font-semibold px-4 py-2.5 rounded-xl text-xs transition">
-                            <i class="fa-solid fa-play text-xs"></i> Resume lesson
-                        </a>
+                        
                     </div>
                 </div>
 
                 <!-- Stats Overview Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Stat 1 -->
                     <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
                         <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
                             <i class="fa-solid fa-book"></i>
@@ -168,135 +127,8 @@
                         <div>
                             <span class="text-xs font-medium text-slate-400 block">Active courses</span>
                             <span class="text-xl font-bold text-slate-800">2</span>
-                            <span class="text-[11px] text-slate-400 block">1 completed · 1 certificate</span>
                         </div>
                     </div>
-                    <!-- Stat 2 -->
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
-                        <div class="w-11 h-11 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-lg">
-                            <i class="fa-solid fa-chart-line"></i>
-                        </div>
-                        <div>
-                            <span class="text-xs font-medium text-slate-400 block">Overall progress</span>
-                            <span class="text-xl font-bold text-slate-800">24%</span>
-                            <span class="text-[11px] text-slate-400 block">8 of 34 lessons done</span>
-                        </div>
-                    </div>
-                    <!-- Stat 3 -->
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
-                        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
-                            <i class="fa-solid fa-user-check"></i>
-                        </div>
-                        <div>
-                            <span class="text-xs font-medium text-slate-400 block">Attendance</span>
-                            <span class="text-xl font-bold text-slate-800">100%</span>
-                            <span class="text-[11px] text-slate-400 block">5 of 5 classes attended</span>
-                        </div>
-                    </div>
-                    <!-- Stat 4 -->
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
-                        <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
-                            <i class="fa-solid fa-wallet"></i>
-                        </div>
-                        <div>
-                            <span class="text-xs font-medium text-slate-400 block">Balance due</span>
-                            <span class="text-xl font-bold text-slate-800">81,000 <small class="text-xs font-semibold">Ks</small></span>
-                            <span class="text-[11px] text-slate-400 block">Next: 40,500 Ks on 22 Oct</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Main Grid Section -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    
-                    <!-- Continue Learning Section (2 Columns) -->
-                    <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-sm font-bold text-slate-800">Continue learning</h3>
-                            <a href="#" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700">All courses</a>
-                        </div>
-
-                        <!-- Course item 1 -->
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-3 border-t border-slate-100">
-                            <div class="w-14 h-14 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white font-bold flex items-center justify-center text-base shadow-sm shrink-0">
-                                Java
-                            </div>
-                            <div class="flex-1 space-y-1.5 w-full">
-                                <h4 class="text-sm font-bold text-slate-800">Java Programming</h4>
-                                <p class="text-[11px] text-slate-400">JAVA-2026-01 · Daw Khin · Mon / Wed / Fri 7–9 PM</p>
-                                <p class="text-xs text-slate-600">Next up: <b>Module 1 · Lesson 3 — Operators</b></p>
-                                <div class="flex items-center gap-3">
-                                    <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                        <div class="h-full bg-indigo-600 rounded-full w-[8%]"></div>
-                                    </div>
-                                    <span class="text-[11px] font-semibold text-slate-500">2/24 lessons · 8%</span>
-                                </div>
-                            </div>
-                            <button class="w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition shrink-0">Resume</button>
-                        </div>
-
-                        <!-- Course item 2 -->
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-3 border-t border-slate-100">
-                            <div class="w-14 h-14 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white font-bold flex items-center justify-center text-base shadow-sm shrink-0">
-                                EN
-                            </div>
-                            <div class="flex-1 space-y-1.5 w-full">
-                                <h4 class="text-sm font-bold text-slate-800">English for IT Professionals</h4>
-                                <p class="text-[11px] text-slate-400">ENG-2026-03 · U Zaw Min · Tue / Thu 6–7:30 PM</p>
-                                <p class="text-xs text-slate-600">Next up: <b>Module 2 · Lesson 3 — Writing Clear Emails</b></p>
-                                <div class="flex items-center gap-3">
-                                    <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                        <div class="h-full bg-emerald-500 rounded-full w-[60%]"></div>
-                                    </div>
-                                    <span class="text-[11px] font-semibold text-slate-500">6/10 lessons · 60%</span>
-                                </div>
-                            </div>
-                            <button class="w-full sm:w-auto px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-semibold text-xs rounded-xl transition shrink-0">Start</button>
-                        </div>
-                    </div>
-
-                    <!-- Class Schedule Section (1 Column) -->
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-sm font-bold text-slate-800">Class schedule</h3>
-                            <a href="#" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700">Full schedule</a>
-                        </div>
-
-                        <div class="space-y-3">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Today · Fri 2 Oct</span>
-                            
-                            <!-- Live Slot -->
-                            <div class="p-3.5 rounded-xl bg-indigo-50/70 border border-indigo-100 flex gap-3">
-                                <div class="text-center font-bold text-xs text-indigo-900 border-r border-indigo-200/60 pr-3 my-auto shrink-0">
-                                    7:00 PM
-                                    <span class="block text-[10px] font-normal text-indigo-500">2 hrs</span>
-                                </div>
-                                <div class="space-y-1 flex-1">
-                                    <h5 class="text-xs font-bold text-indigo-950 leading-snug">Java · Class 2 — Variables</h5>
-                                    <span class="text-[11px] text-slate-500 block">Google Meet · Daw Khin</span>
-                                    <div class="flex items-center justify-between pt-1">
-                                        <span class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 text-indigo-700 rounded-full">Starts in 3 hrs</span>
-                                        <button class="px-3 py-1 bg-indigo-600 text-white font-semibold text-[11px] rounded-lg hover:bg-indigo-700 transition">Join</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block pt-2">Coming up</span>
-
-                            <!-- Normal Slot 1 -->
-                            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex gap-3">
-                                <div class="text-center font-bold text-xs text-slate-700 border-r border-slate-200 pr-3 my-auto shrink-0">
-                                    Mon 5
-                                    <span class="block text-[10px] font-normal text-slate-400">7:00 PM</span>
-                                </div>
-                                <div>
-                                    <h5 class="text-xs font-bold text-slate-800">Java · Class 3 — Operators</h5>
-                                    <span class="text-[11px] text-slate-400 block">Google Meet · Daw Khin</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
 
             </main>
