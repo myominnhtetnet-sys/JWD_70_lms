@@ -11,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -35,11 +34,9 @@ public class LoginController {
             return "redirect:/login";
         }
         
-       
         session.setAttribute("roleId", user.getRole_id());
         session.setAttribute("fullName", user.getFull_name());
         session.setAttribute("email", user.getEmail());
-        
         
 
         if (user.getRole_id() == 1) {
@@ -63,36 +60,15 @@ public class LoginController {
 
     @GetMapping("/student")
     public String studentPage(HttpSession session, Model model) {
-        // Role check
         if (session.getAttribute("roleId") == null || (int) session.getAttribute("roleId") != 3) {
             return "redirect:/login";
         }
 
-       
         model.addAttribute("fullName", session.getAttribute("fullName"));
-        
-        
         Object studentId = session.getAttribute("studentId");
         model.addAttribute("studentId", studentId != null ? studentId : "STU-2026-0042");
 
         return "studentdashboard"; 
-    }
-    
-    @GetMapping("/profile")
-    public String studentProfile(HttpSession session, Model model) {
-       
-        if (session.getAttribute("roleId") == null || (int) session.getAttribute("roleId") != 3) {
-            return "redirect:/login";
-        }
-
-        
-        model.addAttribute("fullName", session.getAttribute("fullName"));
-        model.addAttribute("email", session.getAttribute("email"));
-        
-        Object studentId = session.getAttribute("studentId");
-        model.addAttribute("studentId", studentId != null ? studentId : "STU-2026-0042");
-
-        return "profile"; 
     }
 
     @GetMapping("/dashboard")
@@ -109,6 +85,4 @@ public class LoginController {
 
         return "dashboard";
     }
-
-   
 }
