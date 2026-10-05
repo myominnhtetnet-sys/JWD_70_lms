@@ -37,8 +37,7 @@ public class LessonRepository {
                 WHERE lesson_id = ?
                 """;
 
-        List<LessonBean> lessons =
-                jdbcTemplate.query(sql, lessonRowMapper, id);
+        List<LessonBean> lessons =jdbcTemplate.query(sql, lessonRowMapper, id);
 
         return lessons.stream().findFirst();
     }

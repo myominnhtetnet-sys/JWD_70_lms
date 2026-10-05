@@ -18,45 +18,34 @@ public class QuestionService {
     }
 
     public List<QuestionBean> getAllQuestions() {
-
         return questionRepository.getAllQuestions();
     }
 
     public QuestionBean getQuestionById(Long questionId) {
-
         return questionRepository.getQuestionById(questionId);
     }
 
     public List<QuestionOptionBean> getOptionsByQuestionId(Long questionId) {
-
         return questionRepository.getOptionsByQuestionId(questionId);
     }
 
-
     public Long saveQuestion(QuestionBean question) {
-
         return questionRepository.saveQuestion(question);
     }
 
- 
     public int saveOption(QuestionOptionBean option) {
-
         return questionRepository.saveOption(option);
     }
 
     public int updateQuestion(QuestionBean question) {
-
         return questionRepository.updateQuestion(question);
     }
-  
-    public int deleteQuestion(Long questionId) {
 
+    public int deleteQuestion(Long questionId) {
         return questionRepository.deleteQuestion(questionId);
     }
 
     public int deleteOptionsByQuestionId(Long questionId) {
-
         return questionRepository.deleteOptionsByQuestionId(questionId);
     }
-   
 }

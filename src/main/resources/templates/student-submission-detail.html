@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>My Assignment Result</title>
-
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
@@ -14,7 +12,6 @@
 
 <div class="result-container">
 
-    <!-- Header -->
     <div class="result-header">
         <div>
             <h1>My Assignment Result</h1>
@@ -26,12 +23,9 @@
         </a>
     </div>
 
-    <!-- Assignment Information -->
     <div class="result-card">
 
-        <h2 th:text="${submission.assignmentTitle}">
-            Assignment Title
-        </h2>
+        <h2 th:text="${submission.assignmentTitle}"> Assignment Title </h2>
 
         <div class="result-info-grid">
 
@@ -76,21 +70,17 @@
         </div>
     </div>
 
-    <!-- Score -->
     <div class="result-card score-card">
 
         <h2>My Score</h2>
 
         <div th:if="${submission.status == 'GRADED'}">
-
             <div class="score-display">
                 <span th:text="${submission.score}">95</span>
                 <span class="score-divider">/</span>
                 <span th:text="${submission.totalMark}">100</span>
             </div>
-
             <p class="score-label">Your Assignment Mark</p>
-
         </div>
 
         <div th:unless="${submission.status == 'GRADED'}">
@@ -100,30 +90,22 @@
 
     </div>
 
-    <!-- Submitted Answer -->
     <div class="result-card">
-
         <h2>My Submitted Answer</h2>
-
         <div class="answer-content"
              th:text="${submission.answerText}">
             Student Answer
         </div>
-
     </div>
 
-    <!-- Teacher Feedback -->
     <div class="result-card">
-
         <h2>Teacher Feedback</h2>
 
         <div th:if="${submission.status == 'GRADED'}">
-
             <div class="feedback-content"
                  th:text="${submission.feedback != null and !submission.feedback.isEmpty() ? submission.feedback : 'No feedback provided.'}">
                 Teacher Feedback
             </div>
-
         </div>
 
         <div th:unless="${submission.status == 'GRADED'}">
@@ -131,7 +113,6 @@
                 Feedback will be available after grading.
             </p>
         </div>
-
     </div>
 
 </div>

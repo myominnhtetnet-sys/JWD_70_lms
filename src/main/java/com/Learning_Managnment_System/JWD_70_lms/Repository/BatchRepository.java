@@ -31,16 +31,12 @@ public class BatchRepository {
             ORDER BY batch_id
             """;
 
-        List<BatchBean> batches =
-                jdbcTemplate.query(sql, batchRowMapper);
-
+        List<BatchBean> batches =jdbcTemplate.query(sql, batchRowMapper);
         System.out.println("Total Batches: " + batches.size());
-
         return batches;
     }
     
     public Optional<BatchBean> findById(Integer id) {
-
         String sql = """
                 SELECT batch_id, batch_code, title
                 FROM batches

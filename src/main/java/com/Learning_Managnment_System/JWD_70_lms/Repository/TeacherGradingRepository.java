@@ -25,7 +25,6 @@ public class TeacherGradingRepository {
         this.submissionRowMapper = submissionRowMapper;
     }
 
-    // Get all student submissions
     public List<SubmissionBean> findAllSubmissions() {
 
         String sql = """
@@ -53,11 +52,8 @@ public class TeacherGradingRepository {
         return jdbcTemplate.query(sql, submissionRowMapper);
     }
     
-    public int gradeSubmission(
-            Integer submissionId,
-            BigDecimal score,
-            String feedback,
-            Integer gradedBy) {
+    public int gradeSubmission(Integer submissionId,
+            BigDecimal score,String feedback,Integer gradedBy) {
 
         String sql = """
                 UPDATE submissions
@@ -71,12 +67,8 @@ public class TeacherGradingRepository {
                 """;
 
         return jdbcTemplate.update(
-                sql,
-                score,
-                feedback,
-                gradedBy,
-                submissionId
-        );
+                sql,score,feedback,
+                gradedBy,submissionId);
     }
     
     public Optional<SubmissionBean> findSubmissionById(Integer submissionId) {
@@ -104,10 +96,8 @@ public class TeacherGradingRepository {
                 """;
 
         List<SubmissionBean> result = jdbcTemplate.query(
-                sql,
-                submissionRowMapper,
-                submissionId
-        );
+                sql,submissionRowMapper,
+                submissionId);
 
         return result.stream().findFirst();
     }

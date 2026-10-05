@@ -36,22 +36,9 @@ public class StudentAssignmentController {
     @GetMapping("/assignments")
     public String showAssignments(Model model) {
 
-        model.addAttribute(
-                "assignments",
-                service.getAllAssignments()
-        );
-
-        // Testing အတွက် Enrollment ID = 1
-        model.addAttribute(
-                "submittedAssignmentIds",
-                service.getSubmittedAssignmentIds(1)
-        );
-
-        model.addAttribute(
-                "lateAssignmentIds",
-                service.getLateAssignmentIds(1)
-        );
-
+        model.addAttribute( "assignments",service.getAllAssignments());
+        model.addAttribute("submittedAssignmentIds", service.getSubmittedAssignmentIds(1));
+        model.addAttribute( "lateAssignmentIds",service.getLateAssignmentIds(1));
         return "student-assignment-list";
     }
    
@@ -62,6 +49,7 @@ public class StudentAssignmentController {
         model.addAttribute("submission", submission);
         return "student-submit-form";
     }
+    
     @PostMapping("/assignments/submit")
     public String submitAssignment(
             @ModelAttribute SubmissionBean submission,
@@ -74,23 +62,18 @@ public class StudentAssignmentController {
 
             if (originalName != null && originalName.contains(".")) {
                 extension = originalName.substring(
-                        originalName.lastIndexOf(".")
-                ).toLowerCase();
+                        originalName.lastIndexOf(".")).toLowerCase();
             }
 
             if (!List.of(".pdf", ".docx", ".zip", ".txt").contains(extension)) {
-                redirectAttributes.addFlashAttribute(
-                        "errorMessage",
+                redirectAttributes.addFlashAttribute("errorMessage",
                         "Only PDF, DOCX, ZIP and TXT files are allowed.");
-
                 return "redirect:/student/assignments";
             }
 
             if (file.getSize() > 5 * 1024 * 1024) {
-                redirectAttributes.addFlashAttribute(
-                        "errorMessage",
+                redirectAttributes.addFlashAttribute("errorMessage",
                         "File size must be 5MB or less.");
-
                 return "redirect:/student/assignments";
             }
 
@@ -105,60 +88,24 @@ public class StudentAssignmentController {
 
         try {
             service.submitAssignment(submission);
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
+            redirectAttributes.addFlashAttribute("successMessage",
                     "Assignment submitted successfully!");
 
         } catch (IllegalArgumentException e) {
-
-            redirectAttributes.addFlashAttribute(
-                    "errorMessage",
-                    e.getMessage() );
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage() );
         }
-
         return "redirect:/student/assignments";
         
     }
+    
     @GetMapping("/assignments/submission/{id}")
-    public String showMySubmission(
-            @PathVariable Integer id,
-            Model model) {
+    public String showMySubmission( @PathVariable Integer id, Model model) {
 
-        Optional<SubmissionBean> submission =
-                service.getMySubmission(id, 1);
-
+        Optional<SubmissionBean> submission = service.getMySubmission(id, 1);
         if (submission.isEmpty()) {
             return "redirect:/student/assignments";
         }
-
         model.addAttribute("submission", submission.get());
         return "student-submission-detail";
     }
-    
-	/* for assignment download */
-	/*
-	 * @GetMapping("/assignments/attachment/{submissionId}") public
-	 * ResponseEntity<Resource> downloadAttachment(
-	 * 
-	 * @PathVariable Integer submissionId) throws IOException { Optional<String>
-	 * attachmentPath = service.getAttachmentPath(submissionId, 1); if
-	 * (attachmentPath.isEmpty()) { return ResponseEntity.notFound().build(); } Path
-	 * uploadDir = Paths.get("uploads") .toAbsolutePath() .normalize(); Path
-	 * filePath = Paths.get(attachmentPath.get()) .toAbsolutePath() .normalize(); if
-	 * (!filePath.startsWith(uploadDir) || !Files.exists(filePath) ||
-	 * !Files.isRegularFile(filePath)) {
-	 * 
-	 * return ResponseEntity.notFound().build(); }
-	 * 
-	 * Resource resource = new FileSystemResource(filePath);
-	 * 
-	 * HttpHeaders headers = new HttpHeaders();
-	 * 
-	 * headers.setContentDisposition( ContentDisposition.attachment()
-	 * .filename(filePath.getFileName().toString()) .build() );
-	 * 
-	 * return ResponseEntity.ok() .headers(headers)
-	 * .contentLength(Files.size(filePath))
-	 * .contentType(MediaType.APPLICATION_OCTET_STREAM) .body(resource); }
-	 */
 }

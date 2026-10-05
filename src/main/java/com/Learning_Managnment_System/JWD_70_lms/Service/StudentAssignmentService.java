@@ -31,52 +31,32 @@ public class StudentAssignmentService {
 
     public int submitAssignment(SubmissionBean submission) {
 
-        // 1. Get Assignment Information
         AssignmentBean assignment = repository
                 .findAssignmentById(submission.getAssignmentId())
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Assignment not found!")
-                );
+                        new IllegalArgumentException("Assignment not found!"));
 
-        // 2. Get Current Time
         LocalDateTime now = LocalDateTime.now();
-
-        // 3. Check Due Date
         boolean isLate = now.isAfter(assignment.getDueAt());
 
-        // 4. Check Late Submission Permission
         if (isLate) {
-
             if (!Boolean.TRUE.equals(assignment.getAllowLateSubmit())) {
                 throw new IllegalArgumentException(
-                        "Assignment deadline has passed. Late submission is not allowed."
-                );
+                        "Assignment deadline has passed. Late submission is not allowed.");
             }
-
-            // Check Late Deadline
-            if (assignment.getLateDeadline() == null
-                    || now.isAfter(assignment.getLateDeadline())) {
-
-                throw new IllegalArgumentException(
-                        "Late submission deadline has passed!"
-                );
+            if (assignment.getLateDeadline() == null || now.isAfter(assignment.getLateDeadline())) {
+                throw new IllegalArgumentException("Late submission deadline has passed!");
             }
         }
 
-        // 5. Prevent Duplicate Submission
         Optional<SubmissionBean> existingSubmission =
                 submissionRepository.findByAssignmentAndEnrollment(
-                        submission.getAssignmentId(),
-                        submission.getEnrollmentId()
-                );
+                        submission.getAssignmentId(),submission.getEnrollmentId());
 
         if (existingSubmission.isPresent()) {
-            throw new IllegalArgumentException(
-                    "You have already submitted this assignment!"
-            );
+            throw new IllegalArgumentException("You have already submitted this assignment!");
         }
-
-        // 6. Save Submission
+        
         submission.setAttemptNo(1);
         submission.setSubmittedAt(now);
         submission.setIsLate(isLate);
@@ -90,23 +70,13 @@ public class StudentAssignmentService {
     }
     
     public Optional<SubmissionBean> getMySubmission(
-            Integer assignmentId,
-            Integer enrollmentId) {
+            Integer assignmentId,Integer enrollmentId) {
 
         return submissionRepository.findByAssignmentAndEnrollment(
-                assignmentId,
-                enrollmentId
-        );
+                assignmentId,enrollmentId);
     }
     
     public List<Integer> getLateAssignmentIds(Integer enrollmentId) {
         return repository.findLateAssignmentIds(enrollmentId);
     }
-    
-	/* for assignment download
-	 * 
-	 * public Optional<String> getAttachmentPath(Integer submissionId, Integer
-	 * enrollmentId) { return submissionRepository.findAttachmentBySubmissionId(
-	 * submissionId, enrollmentId ); }
-	 */
 }

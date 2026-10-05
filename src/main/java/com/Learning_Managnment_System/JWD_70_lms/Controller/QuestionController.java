@@ -25,15 +25,14 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
-    
-    
     @GetMapping
     public List<QuestionBean> getAllQuestions() {
         return questionService.getAllQuestions();
     }
 
     @GetMapping("/{id}")
-    public QuestionBean getQuestionById(@PathVariable("id") Long questionId) {
+    public QuestionBean getQuestionById(
+            @PathVariable("id") Long questionId) {
         return questionService.getQuestionById(questionId);
     }
 
@@ -49,7 +48,8 @@ public class QuestionController {
     }
 
     @PutMapping("/{id}")
-    public int updateQuestion(@PathVariable("id") Long questionId,
+    public int updateQuestion(
+            @PathVariable("id") Long questionId,
             @RequestBody QuestionBean question) {
 
         question.setQuestionId(questionId);
@@ -57,21 +57,22 @@ public class QuestionController {
     }
 
     @DeleteMapping("/{id}")
-    public int deleteQuestion(@PathVariable("id") Long questionId) {
-
+    public int deleteQuestion(
+            @PathVariable("id") Long questionId) {
         return questionService.deleteQuestion(questionId);
     }
 
     @PostMapping("/{id}/options")
-    public int saveOption(@PathVariable("id") Long questionId,
+    public int saveOption(
+            @PathVariable("id") Long questionId,
             @RequestBody QuestionOptionBean option) {
-
         option.setQuestionId(questionId);
         return questionService.saveOption(option);
     }
+
     @DeleteMapping("/{id}/options")
-    public int deleteOptions(@PathVariable("id") Long questionId) {
+    public int deleteOptions( @PathVariable("id") Long questionId) {
         return questionService.deleteOptionsByQuestionId(questionId);
     }
-   
 }
+

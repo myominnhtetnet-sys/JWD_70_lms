@@ -16,11 +16,10 @@ import org.springframework.stereotype.Repository;
 import com.Learning_Managnment_System.JWD_70_lms.Mapper.AssignmentRowMapper;
 import com.Learning_Managnment_System.JWD_70_lms.model.AssignmentBean;
 
-
 @Repository
 public class AssignmentRepository {
+	
 	private final JdbcTemplate jdbcTemplate;
-
     private final AssignmentRowMapper assignmentRowMapper;
 
     public AssignmentRepository(
@@ -30,10 +29,6 @@ public class AssignmentRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.assignmentRowMapper = assignmentRowMapper;
     }
-
-    // =====================================
-    // 1. CREATE - INSERT ASSIGNMENT
-    // =====================================
 
     public int save(AssignmentBean assignment) {
 
@@ -60,11 +55,8 @@ public class AssignmentRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-
-            PreparedStatement ps = connection.prepareStatement(
-                sql,
-                Statement.RETURN_GENERATED_KEYS
-            );
+           PreparedStatement ps = connection.prepareStatement(
+                sql,Statement.RETURN_GENERATED_KEYS);
 
             ps.setObject(1, assignment.getBatchId());
             ps.setObject(2, assignment.getLessonId());
@@ -73,15 +65,13 @@ public class AssignmentRepository {
             ps.setString(5, assignment.getAttachment());
 
             if (assignment.getStartAt() != null) {
-                ps.setTimestamp(6,
-                    Timestamp.valueOf(assignment.getStartAt()));
+                ps.setTimestamp(6,Timestamp.valueOf(assignment.getStartAt()));
             } else {
                 ps.setNull(6, Types.TIMESTAMP);
             }
 
             if (assignment.getDueAt() != null) {
-                ps.setTimestamp(7,
-                    Timestamp.valueOf(assignment.getDueAt()));
+                ps.setTimestamp(7,Timestamp.valueOf(assignment.getDueAt()));
             } else {
                 ps.setNull(7, Types.TIMESTAMP);
             }
@@ -93,8 +83,7 @@ public class AssignmentRepository {
             }
 
             if (assignment.getLateDeadline() != null) {
-                ps.setTimestamp(9,
-                    Timestamp.valueOf(assignment.getLateDeadline()));
+                ps.setTimestamp(9,Timestamp.valueOf(assignment.getLateDeadline()));
             } else {
                 ps.setNull(9, Types.TIMESTAMP);
             }
@@ -110,11 +99,6 @@ public class AssignmentRepository {
 
         return keyHolder.getKey().intValue();
     }
-
-
-    // =====================================
-    // 2. READ ALL - SELECT ALL ASSIGNMENTS
-    // =====================================
 
     public List<AssignmentBean> findAll() {
         String sql = """
@@ -136,21 +120,13 @@ public class AssignmentRepository {
 
         return jdbcTemplate.query(sql,assignmentRowMapper,size, offset);
     }
-    
-    
+     
     public int countAll() {
         String sql = "SELECT COUNT(*) FROM assignments";
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
     
-    
-    
- // =====================================
- // 2. SEARCH & FILTER ASSIGNMENTS
- // =====================================
-
 	public List<AssignmentBean> search(String title, Integer batchId, String status) {
-
 		String sql = """
 				SELECT * FROM assignments
 				WHERE
@@ -161,38 +137,21 @@ public class AssignmentRepository {
 				""";
 
 		String searchTitle = (title == null || title.isBlank()) ? null : "%" + title.trim() + "%";
-
 		return jdbcTemplate.query(sql, assignmentRowMapper, searchTitle, searchTitle, batchId, batchId, status, status);
 	}
 
-    // =====================================
-    // 3. READ ONE - FIND BY ID
-    // =====================================
-
     public Optional<AssignmentBean> findById(Integer id) {
-
         String sql = """
             SELECT *
             FROM assignments
             WHERE assignment_id = ?
             """;
 
-        List<AssignmentBean> result =
-                jdbcTemplate.query(
-                        sql,
-                        assignmentRowMapper,
-                        id
-                );
-
+        List<AssignmentBean> result =jdbcTemplate.query(sql,assignmentRowMapper,id);
         return result.stream().findFirst();
     }
 
-    // =====================================
-    // 4. UPDATE - EDIT ASSIGNMENT
-    // =====================================
-
     public int update(AssignmentBean assignment) {
-
         String sql = """
             UPDATE assignments
             SET
@@ -233,29 +192,18 @@ public class AssignmentRepository {
         );
     }
 
-
-    // =====================================
-    // 5. DELETE - DELETE ASSIGNMENT
-    // =====================================
-
     public boolean hasSubmissions(Integer assignmentId) {
-
         String sql = """
             SELECT COUNT(*)
             FROM submissions
             WHERE assignment_id = ?
             """;
 
-        Integer count = jdbcTemplate.queryForObject(
-                sql,
-                Integer.class,
-                assignmentId
-        );
-
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class,assignmentId);
         return count != null && count > 0;
     }
+    
     public int deleteById(Integer id) {
-
         String sql = """
             DELETE FROM assignments
             WHERE assignment_id = ?
@@ -263,6 +211,5 @@ public class AssignmentRepository {
 
         return jdbcTemplate.update(sql, id);
     }
-
    
 }

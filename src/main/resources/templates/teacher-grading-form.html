@@ -1,11 +1,10 @@
-
+<!-- Submission page မှသုံးမယ် -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Grade Submission</title>
 
     <link rel="stylesheet" th:href="@{/css/style.css}">
@@ -14,8 +13,6 @@
 <body class="grading-page">
 
     <div class="grading-container">
-
-        <!-- Header -->
         <div class="grading-header">
             <div>
                 <span class="page-label">TEACHER PORTAL</span>
@@ -28,20 +25,16 @@
             </a>
         </div>
 
-        <!-- Error Message -->
         <div th:if="${error}" class="alert-error"
              th:text="${error}">
         </div>
 
-        <!-- Student Information Card -->
         <div class="grading-card">
-
             <div class="card-heading">
                 <div>
                     <h2>Student Information</h2>
                     <p>Assignment and submission details</p>
                 </div>
-
                 <span class="status-badge"
                       th:classappend="${submission.status == 'GRADED'} ? ' badge-graded' : ' badge-pending'"
                       th:text="${submission.status}">
@@ -100,7 +93,6 @@
 
         </div>
 
-        <!-- Student Answer -->
         <div class="grading-card">
 
             <div class="card-heading">

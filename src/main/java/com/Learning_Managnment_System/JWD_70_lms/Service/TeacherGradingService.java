@@ -12,79 +12,47 @@ import com.Learning_Managnment_System.JWD_70_lms.model.SubmissionBean;
 @Service
 public class TeacherGradingService {
 
-    private final TeacherGradingRepository repository;
+	private final TeacherGradingRepository repository;
 
-    public TeacherGradingService(TeacherGradingRepository repository) {
-        this.repository = repository;
-    }
+	public TeacherGradingService(TeacherGradingRepository repository) {
+		this.repository = repository;
+	}
 
-    // Get all student submissions
-    public List<SubmissionBean> getAllSubmissions() {
-        return repository.findAllSubmissions();
-    }
+	public List<SubmissionBean> getAllSubmissions() {
+		return repository.findAllSubmissions();
+	}
 
-    // Grade student submission
+	public void gradeSubmission(Integer submissionId, BigDecimal score, String feedback) {
 
-public void gradeSubmission(
-        Integer submissionId,
-        BigDecimal score,
-        String feedback) {
+		if (score == null || score.compareTo(BigDecimal.ZERO) < 0) {
+			throw new IllegalArgumentException("Mark must be 0 or greater!");
+		}
 
-    // 1. Check score
-    if (score == null || score.compareTo(BigDecimal.ZERO) < 0) {
-        throw new IllegalArgumentException(
-                "Mark must be 0 or greater!"
-        );
-    }
+		if (feedback == null || feedback.isBlank()) {
+			throw new IllegalArgumentException("Feedback cannot be empty!");
+		}
 
-    // 2. Check feedback
-    if (feedback == null || feedback.isBlank()) {
-        throw new IllegalArgumentException(
-                "Feedback cannot be empty!"
-        );
-    }
+		SubmissionBean submission = getSubmissionById(submissionId);
+		BigDecimal totalMark = submission.getTotalMark();
 
-    // 3. Get submission information
-    SubmissionBean submission = getSubmissionById(submissionId);
+		if (totalMark == null) {
+			throw new IllegalArgumentException("Assignment total mark is missing!");
+		}
 
-    // 4. Check total mark
-    BigDecimal totalMark = submission.getTotalMark();
+		if (score.compareTo(totalMark) > 0) {
+			throw new IllegalArgumentException("Mark cannot be greater than total mark (" + totalMark + ")!");
+		}
 
-    if (totalMark == null) {
-        throw new IllegalArgumentException(
-                "Assignment total mark is missing!"
-        );
-    }
+		Integer gradedBy = 1;
+		int result = repository.gradeSubmission(submissionId, score, feedback, gradedBy);
+		if (result == 0) {
+			throw new IllegalArgumentException("Submission not found!");
+		}
+	}
 
-    // 5. Prevent mark greater than total mark
-    if (score.compareTo(totalMark) > 0) {
-        throw new IllegalArgumentException(
-                "Mark cannot be greater than total mark (" + totalMark + ")!"
-        );
-    }
+	public SubmissionBean getSubmissionById(Integer submissionId) {
 
-    // Temporary Teacher ID
-    Integer gradedBy = 1;
-
-    // 6. Save grade
-    int result = repository.gradeSubmission(
-            submissionId,
-            score,
-            feedback,
-            gradedBy
-    );
-
-    if (result == 0) {
-        throw new IllegalArgumentException(
-                "Submission not found!"
-        );
-    }
-}
-    public SubmissionBean getSubmissionById(Integer submissionId) {
-
-        return repository.findSubmissionById(submissionId)
-                .orElseThrow(() ->
-                    new IllegalArgumentException("Submission not found!")
-                );
-    }
+		return repository.findSubmissionById(submissionId)
+				.orElseThrow(() -> new IllegalArgumentException("Submission not found!"));
+	}
 }

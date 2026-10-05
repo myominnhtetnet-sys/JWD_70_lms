@@ -44,15 +44,10 @@ public class StudentAssignmentRepository {
             WHERE enrollment_id = ?
         """;
 
-        return jdbcTemplate.queryForList(
-                sql,
-                Integer.class,
-                enrollmentId
-        );
+        return jdbcTemplate.queryForList(sql,Integer.class,enrollmentId);
     }
     
     public Optional<AssignmentBean> findAssignmentById(Integer assignmentId) {
-
         String sql = """
                 SELECT *
                 FROM assignments
@@ -61,16 +56,11 @@ public class StudentAssignmentRepository {
                 """;
 
         List<AssignmentBean> result = jdbcTemplate.query(
-                sql,
-                assignmentRowMapper,
-                assignmentId
-        );
-
+                sql,assignmentRowMapper,assignmentId);
         return result.stream().findFirst();
     }
     
     public List<Integer> findLateAssignmentIds(Integer enrollmentId) {
-
         String sql = """
                 SELECT DISTINCT assignment_id
                 FROM submissions
@@ -78,10 +68,6 @@ public class StudentAssignmentRepository {
                 AND is_late = TRUE
                 """;
 
-        return jdbcTemplate.queryForList(
-                sql,
-                Integer.class,
-                enrollmentId
-        );
+        return jdbcTemplate.queryForList(sql,Integer.class,enrollmentId);
     }
 }	

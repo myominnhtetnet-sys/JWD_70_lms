@@ -25,30 +25,20 @@ public class TeacherGradingController {
         this.service = service;
     }
 
-    // Show all submissions
     @GetMapping("/submissions")
     public String showSubmissions(Model model) {
-
-        model.addAttribute("submissions",
-                service.getAllSubmissions());
-
+        model.addAttribute("submissions", service.getAllSubmissions());
         return "teacher-submission-list";
     }
 
-    // Open grading form
     @GetMapping("/submissions/grade/{id}")
-    public String showGradingForm(
-            @PathVariable Integer id,
-            Model model) {
-
+    public String showGradingForm(@PathVariable Integer id,Model model) {
+    	
         SubmissionBean submission = service.getSubmissionById(id);
-
         model.addAttribute("submission", submission);
-
         return "teacher-grading-form";
     }
 
-    // Save grading
     @PostMapping("/submissions/grade")
     public String gradeSubmission(
             @RequestParam Integer submissionId,
@@ -57,25 +47,12 @@ public class TeacherGradingController {
             RedirectAttributes redirectAttributes) {
 
         try {
-
-            service.gradeSubmission(
-                    submissionId,
-                    score,
-                    feedback
-            );
-
-            redirectAttributes.addFlashAttribute(
-                    "success",
-                    "Student submission graded successfully!"
-            );
+            service.gradeSubmission(submissionId, score,feedback);
+            redirectAttributes.addFlashAttribute("success",
+                    "Student submission graded successfully!");
 
         } catch (IllegalArgumentException e) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    e.getMessage()
-            );
-
+            redirectAttributes.addFlashAttribute("error",e.getMessage());
             return "redirect:/teacher/submissions/grade/" + submissionId;
         }
 

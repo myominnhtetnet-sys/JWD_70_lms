@@ -5,11 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Assignment Details</title>
-
     <link rel="stylesheet" th:href="@{/css/style.css}">
-
 </head>
 
 <body>
@@ -32,13 +29,10 @@
     </div>
 
     <div class="detail-card">
-
-        <!-- Basic Information -->
         <div class="detail-section">
             <h3>Basic Information</h3>
-
+            
             <div class="detail-grid">
-
                 <div class="detail-item">
                     <div class="detail-label">Assignment ID</div>
                     <div class="detail-value"
@@ -69,16 +63,26 @@
                          th:text="${assignment.description ?: 'No description provided'}"></div>
                 </div>
 
-                <div class="detail-item full">
-                    <div class="detail-label">Attachment</div>
-                    <div class="detail-value"
-                         th:text="${assignment.attachment ?: 'No attachment'}"></div>
-                </div>
+					<div th:if="${assignment.attachment != null and !assignment.attachment.isBlank()}">
+					
+						<label><strong>Attachment</strong></label>
 
-            </div>
+						<div style="margin-top: 8px;">
+							<a th:href="@{${assignment.attachment}}" target="_blank"
+								class="btn btn-primary"> View Attachment </a>
+
+							<a th:href="@{${assignment.attachment}}" download
+								class="btn btn-success"> Download </a>
+						</div>
+					</div>
+
+					<div th:unless="${assignment.attachment != null 
+                 and !assignment.attachment.isBlank()}">
+						<p>No attachment available.</p>
+					</div>
+				</div>
         </div>
 
-        <!-- Schedule -->
         <div class="detail-section">
             <h3>Assignment Schedule</h3>
 
@@ -111,7 +115,6 @@
             </div>
         </div>
 
-        <!-- Marking -->
         <div class="detail-section">
             <h3>Marking Information</h3>
 
@@ -159,11 +162,8 @@
             </div>
         </div>
 
-        <!-- Actions -->
         <div class="detail-actions">
-
-            <a class="btn-back"
-               th:href="@{/teacher/assignments}">
+            <a class="btn-back"th:href="@{/teacher/assignments}">
                 Back to List
             </a>
 
@@ -173,7 +173,6 @@
             </a>
 
         </div>
-
     </div>
 </div>
 

@@ -9,6 +9,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import com.Learning_Managnment_System.JWD_70_lms.Mapper.QuestionOptionRowMapper;
+import com.Learning_Managnment_System.JWD_70_lms.Mapper.QuestionRowMapper;
 import com.Learning_Managnment_System.JWD_70_lms.model.QuestionBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.QuestionOptionBean;
 
@@ -17,114 +19,64 @@ public class QuestionRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    private final QuestionRowMapper questionRowMapper =
+            new QuestionRowMapper();
+
+    private final QuestionOptionRowMapper questionOptionRowMapper =
+            new QuestionOptionRowMapper();
+
     public QuestionRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     public List<QuestionBean> getAllQuestions() {
-
         String sql = """
-                SELECT question_id,
-                       course_id,
-                       question_text,
-                       question_type,
-                       default_mark,
-                       explanation,
-                       is_active,
-                       created_by,
-                       created_at,
-                       updated_at
+                SELECT
+                    question_id,
+                    course_id,
+                    question_text,
+                    question_type,
+                    default_mark,
+                    explanation,
+                    is_active,
+                    created_by,
+                    created_at,
+                    updated_at
                 FROM questions
                 ORDER BY question_id DESC
                 """;
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-
-            QuestionBean question = new QuestionBean();
-
-            question.setQuestionId(rs.getLong("question_id"));
-            question.setCourseId(rs.getLong("course_id"));
-            question.setQuestionText(rs.getString("question_text"));
-            question.setQuestionType(rs.getString("question_type"));
-            question.setDefaultMark(rs.getBigDecimal("default_mark"));
-            question.setExplanation(rs.getString("explanation"));
-            question.setIsActive(rs.getBoolean("is_active"));
-            question.setCreatedBy(rs.getLong("created_by"));
-
-            if (rs.getTimestamp("created_at") != null) {
-                question.setCreatedAt(
-                    rs.getTimestamp("created_at").toLocalDateTime()
-                );
-            }
-
-            if (rs.getTimestamp("updated_at") != null) {
-                question.setUpdatedAt(
-                    rs.getTimestamp("updated_at").toLocalDateTime()
-                );
-            }
-
-            return question;
-        });
+        return jdbcTemplate.query(sql, questionRowMapper);
     }
 
-    public QuestionBean getQuestionById(Long questionId) {
 
+    public QuestionBean getQuestionById(Long questionId) {
         String sql = """
-                SELECT question_id,
-                       course_id,
-                       question_text,
-                       question_type,
-                       default_mark,
-                       explanation,
-                       is_active,
-                       created_by,
-                       created_at,
-                       updated_at
+                SELECT
+                    question_id,
+                    course_id,
+                    question_text,
+                    question_type,
+                    default_mark,
+                    explanation,
+                    is_active,
+                    created_by,
+                    created_at,
+                    updated_at
                 FROM questions
                 WHERE question_id = ?
                 """;
 
         List<QuestionBean> list = jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> {
-
-                    QuestionBean question = new QuestionBean();
-
-                    question.setQuestionId(rs.getLong("question_id"));
-                    question.setCourseId(rs.getLong("course_id"));
-                    question.setQuestionText(rs.getString("question_text"));
-                    question.setQuestionType(rs.getString("question_type"));
-                    question.setDefaultMark(rs.getBigDecimal("default_mark"));
-                    question.setExplanation(rs.getString("explanation"));
-                    question.setIsActive(rs.getBoolean("is_active"));
-                    question.setCreatedBy(rs.getLong("created_by"));
-
-                    if (rs.getTimestamp("created_at") != null) {
-                        question.setCreatedAt(
-                            rs.getTimestamp("created_at").toLocalDateTime()
-                        );
-                    }
-
-                    if (rs.getTimestamp("updated_at") != null) {
-                        question.setUpdatedAt(
-                            rs.getTimestamp("updated_at").toLocalDateTime()
-                        );
-                    }
-
-                    return question;
-                },
-                questionId
-        );
-
+                        sql,questionRowMapper,questionId);
+        
         if (list.isEmpty()) {
             return null;
         }
-
         return list.get(0);
     }
 
     public Long saveQuestion(QuestionBean question) {
-
         String sql = """
                 INSERT INTO questions
                 (
@@ -140,13 +92,10 @@ public class QuestionRepository {
                 """;
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-
         jdbcTemplate.update(connection -> {
 
-            PreparedStatement ps = connection.prepareStatement(
-                    sql,
-                    Statement.RETURN_GENERATED_KEYS
-            );
+            PreparedStatement ps =connection.prepareStatement(
+                            sql,Statement.RETURN_GENERATED_KEYS);
 
             ps.setLong(1, question.getCourseId());
             ps.setString(2, question.getQuestionText());
@@ -157,21 +106,18 @@ public class QuestionRepository {
             ps.setLong(7, question.getCreatedBy());
 
             return ps;
-
         }, keyHolder);
 
-        Long questionId = keyHolder.getKey().longValue();
-
-        question.setQuestionId(questionId);
-
-        return questionId;
+        Long generatedId = keyHolder.getKey().longValue();
+        question.setQuestionId(generatedId);
+        return generatedId;
     }
 
     public int updateQuestion(QuestionBean question) {
-
         String sql = """
                 UPDATE questions
-                SET course_id = ?,
+                SET
+                    course_id = ?,
                     question_text = ?,
                     question_type = ?,
                     default_mark = ?,
@@ -180,7 +126,7 @@ public class QuestionRepository {
                 WHERE question_id = ?
                 """;
 
-        int result = jdbcTemplate.update(
+        return jdbcTemplate.update(
                 sql,
                 question.getCourseId(),
                 question.getQuestionText(),
@@ -190,12 +136,9 @@ public class QuestionRepository {
                 question.getIsActive(),
                 question.getQuestionId()
         );
-
-        return result;
     }
 
     public int deleteQuestion(Long questionId) {
-
         String sql = """
                 DELETE FROM questions
                 WHERE question_id = ?
@@ -203,40 +146,24 @@ public class QuestionRepository {
 
         return jdbcTemplate.update(sql, questionId);
     }
-
+    
     public List<QuestionOptionBean> getOptionsByQuestionId(Long questionId) {
-
         String sql = """
-                SELECT option_id,
-                       question_id,
-                       option_label,
-                       option_text,
-                       is_correct
+                SELECT
+                    option_id,
+                    question_id,
+                    option_label,
+                    option_text,
+                    is_correct
                 FROM question_options
                 WHERE question_id = ?
                 ORDER BY option_label
                 """;
 
-        return jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> {
-
-                    QuestionOptionBean option = new QuestionOptionBean();
-
-                    option.setOptionId(rs.getLong("option_id"));
-                    option.setQuestionId(rs.getLong("question_id"));
-                    option.setOptionLabel(rs.getString("option_label"));
-                    option.setOptionText(rs.getString("option_text"));
-                    option.setIsCorrect(rs.getBoolean("is_correct"));
-
-                    return option;
-                },
-                questionId
-        );
+        return jdbcTemplate.query(sql, questionOptionRowMapper,questionId);
     }
 
     public int saveOption(QuestionOptionBean option) {
-
         String sql = """
                 INSERT INTO question_options
                 (
@@ -257,9 +184,7 @@ public class QuestionRepository {
         );
     }
 
-
     public int deleteOptionsByQuestionId(Long questionId) {
-
         String sql = """
                 DELETE FROM question_options
                 WHERE question_id = ?
@@ -268,3 +193,4 @@ public class QuestionRepository {
         return jdbcTemplate.update(sql, questionId);
     }
 }
+
