@@ -59,6 +59,24 @@ public class LoginRepository {
 		return count != null && count > 0;
 	}
 
+	 public int updatePassword(String email, String newPassword) {
+
+	        String sql = """
+	                UPDATE users
+	                SET password_hash = ?,
+	                    updated_at = NOW()
+	                WHERE email = ?
+	                """;
+
+	        return jdbcTemplate.update(
+	                sql,
+	                newPassword,
+	                email
+	        );
+	    }
+	
+	
+	
 	public int resetPassword(String email, String newPassword) {
 		String sql = """
 

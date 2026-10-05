@@ -1,6 +1,7 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,5 +36,24 @@ public class StudentRepository {
             now
         );
     }
+    public Map<String, Object> findByEmail(String email) {
+        String sql = "SELECT * FROM users WHERE email = ?";
+        try {
+            return jdbcTemplate.queryForMap(sql, email);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
+    
+    public int updateProfile(String email, String fullName, String phone, String address) {
+        String sql = "UPDATE users SET full_name = ?, phone = ?, address = ?, updated_at = ? WHERE email = ?";
+        return jdbcTemplate.update(sql, fullName, phone, address, LocalDateTime.now(), email);
+    }
+
+   
+    public int updatePassword(String email, String newPasswordHash) {
+        String sql = "UPDATE users SET password_hash = ?, updated_at = ? WHERE email = ?";
+        return jdbcTemplate.update(sql, newPasswordHash, LocalDateTime.now(), email);
+    }
 }
