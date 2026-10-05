@@ -78,7 +78,7 @@ public class LoginController {
         return "studentdashboard"; 
     }
     
-    @GetMapping("/student/profile")
+    @GetMapping("/profile")
     public String studentProfile(HttpSession session, Model model) {
        
         if (session.getAttribute("roleId") == null || (int) session.getAttribute("roleId") != 3) {
