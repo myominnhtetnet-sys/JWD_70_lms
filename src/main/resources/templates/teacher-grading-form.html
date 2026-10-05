@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Grade Submission</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body class="grading-page">
+
+    <div class="grading-container">
+
+        <!-- Header -->
+        <div class="grading-header">
+            <div>
+                <span class="page-label">TEACHER PORTAL</span>
+                <h1>Grade Submission</h1>
+                <p>Review student work and provide feedback.</p>
+            </div>
+
+            <a th:href="@{/teacher/submissions}" class="back-btn">
+                ← Back to Submissions
+            </a>
+        </div>
+
+        <!-- Error Message -->
+        <div th:if="${error}" class="alert-error"
+             th:text="${error}">
+        </div>
+
+        <!-- Student Information Card -->
+        <div class="grading-card">
+
+            <div class="card-heading">
+                <div>
+                    <h2>Student Information</h2>
+                    <p>Assignment and submission details</p>
+                </div>
+
+                <span class="status-badge"
+                      th:classappend="${submission.status == 'GRADED'} ? ' badge-graded' : ' badge-pending'"
+                      th:text="${submission.status}">
+                </span>
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <span>Submission ID</span>
+                    <strong th:text="${submission.submissionId}"></strong>
+                </div>
+
+                <div class="info-item">
+                    <span>Student Name</span>
+                    <strong th:text="${submission.studentName}"></strong>
+                </div>
+
+                <div class="info-item">
+                    <span>Assignment Title</span>
+                    <strong th:text="${submission.assignmentTitle}"></strong>
+                </div>
+
+                <div class="info-item">
+                    <span>Enrollment ID</span>
+                    <strong th:text="${submission.enrollmentId}"></strong>
+                </div>
+
+                <div class="info-item">
+                    <span>Total Mark</span>
+                    <strong class="total-mark"
+                            th:text="${submission.totalMark}">
+                    </strong>
+                </div>
+
+                <div class="info-item">
+                    <span>Submitted Date</span>
+                    <strong th:text="${submission.submittedAt}"></strong>
+                </div>
+
+            </div>
+
+            <div class="late-info">
+                <span>Submission Timing</span>
+
+                <span th:if="${submission.isLate}"
+                      class="timing-badge late-badge">
+                    LATE SUBMISSION
+                </span>
+
+                <span th:unless="${submission.isLate}"
+                      class="timing-badge ontime-badge">
+                    ON TIME
+                </span>
+            </div>
+
+        </div>
+
+        <!-- Student Answer -->
+        <div class="grading-card">
+
+            <div class="card-heading">
+                <div>
+                    <h2>Student Answer</h2>
+                    <p>Review the submitted work</p>
+                </div>
+            </div>
+
+            <div class="answer-box"
+                 th:text="${submission.answerText}">
+            </div>
+
+        </div>
+
+        <!-- Grading Form -->
+        <div class="grading-card">
+
+            <div class="card-heading">
+                <div>
+                    <h2>Give Mark & Feedback</h2>
+                    <p>Evaluate the student's submission</p>
+                </div>
+            </div>
+
+            <form th:action="@{/teacher/submissions/grade}"
+                  method="post"
+                  class="grading-form">
+
+                <input type="hidden"
+                       name="submissionId"
+                       th:value="${submission.submissionId}">
+
+                <div class="form-group">
+
+                    <label for="score">Mark</label>
+
+                    <div class="mark-input-wrapper">
+
+                        <input type="number"
+                               id="score"
+                               name="score"
+                               min="0"
+                               step="0.01"
+                               th:attr="max=${submission.totalMark}"
+                               th:value="${submission.score}"
+                               placeholder="Enter student mark"
+                               required>
+
+                        <span th:text="'/ ' + ${submission.totalMark}">
+                        </span>
+
+                    </div>
+
+                    <small>
+                        Enter a mark between 0 and the total mark.
+                    </small>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="feedback">Teacher Feedback</label>
+
+                    <textarea id="feedback"
+                              name="feedback"
+                              rows="5"
+                              placeholder="Write your feedback here..."
+                              required
+                              th:text="${submission.feedback}"></textarea>
+
+                </div>
+
+                <div class="form-actions">
+
+                    <a th:href="@{/teacher/submissions}"
+                       class="cancel-btn">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="save-btn">
+                        ✓ Save Grade
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

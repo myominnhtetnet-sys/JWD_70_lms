@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<title>Submit Assignment</title>
+
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+	<div class="container">
+
+		<h2>Submit Assignment</h2>
+
+		<!-- <form th:action="@{/student/assignments/submit}"
+			th:object="${submission}" method="post">
+			<input type="hidden" th:field="*{assignmentId}"> <label>Answer</label>
+			<textarea th:field="*{answerText}" rows="5" required></textarea>
+			<button type="submit">Submit Assignment</button>
+		</form> -->
+
+		<form th:action="@{/student/assignments/submit}"
+			th:object="${submission}" method="post" enctype="multipart/form-data">
+
+			<input type="hidden" th:field="*{assignmentId}"> <label>Answer</label>
+			<textarea th:field="*{answerText}" rows="5" required></textarea>
+
+			<br>
+			<br> <label>Attachment</label> <input type="file" name="file"
+				accept=".pdf,.docx,.zip,.txt"> <br>
+			<br>
+			<button type="submit">Submit Assignment</button>
+		</form>
+
+	</div>
+
+</body>
+</html>

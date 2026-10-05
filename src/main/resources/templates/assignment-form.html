@@ -106,13 +106,13 @@
                     <div class="form-group">
                         <label>Start At</label>
                         <input type="datetime-local"
-                               th:field="*{startAt}">
+                               th:field="*{startAt}" required="required">
                     </div>
 
                     <div class="form-group">
                         <label>Due At</label>
                         <input type="datetime-local"
-                               th:field="*{dueAt}">
+                               th:field="*{dueAt}" required="required">
                     </div>
 
                     <div class="form-group full">
@@ -122,14 +122,15 @@
                             Allow Late Submit
                         </label>
                     </div>
+						<div class="form-group full">
 
-                    <div class="form-group full">
-                        <label>Late Deadline</label>
-                        <input type="datetime-local"
-                               th:field="*{lateDeadline}">
-                    </div>
+							<label>Late Deadline</label> <input type="datetime-local"
+								th:field="*{lateDeadline}"> <small> Required
+								when Allow Late Submit is enabled. </small>
 
-                </div>
+						</div>
+
+					</div>
             </div>
 
             <!-- Marking -->
@@ -139,7 +140,7 @@
                 <div class="form-grid">
 
                     <div class="form-group">
-                        <label>Total Mark</label>
+                        <label>Total Mark</label>	
                         <input type="number"
                                step="0.01"
                                th:field="*{totalMark}"

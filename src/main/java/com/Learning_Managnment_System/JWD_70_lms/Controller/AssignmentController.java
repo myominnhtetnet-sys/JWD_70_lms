@@ -96,6 +96,24 @@ public class AssignmentController {
     
  // SEARCH & FILTER ASSIGNMENTS
 
+	/*
+	 * @GetMapping("/assignments/search") public String searchAssignments(
+	 * 
+	 * @RequestParam(required = false) String title,
+	 * 
+	 * @RequestParam(required = false) Integer batchId,
+	 * 
+	 * @RequestParam(required = false) String status, Model model) {
+	 * 
+	 * List<AssignmentBean> assignments
+	 * =assignmentService.searchAssignments(title,batchId,status);
+	 * 
+	 * model.addAttribute("assignments", assignments); model.addAttribute("title",
+	 * title); model.addAttribute("selectedBatchId", batchId);
+	 * model.addAttribute("selectedStatus", status); loadDropdownData(model); return
+	 * "assignment-list"; }
+	 */
+    
     @GetMapping("/assignments/search")
     public String searchAssignments(
             @RequestParam(required = false) String title,
@@ -103,13 +121,22 @@ public class AssignmentController {
             @RequestParam(required = false) String status,
             Model model) {
 
-        List<AssignmentBean> assignments =assignmentService.searchAssignments(title,batchId,status);
+        List<AssignmentBean> assignments =
+                assignmentService.searchAssignments(title, batchId, status);
 
         model.addAttribute("assignments", assignments);
+
         model.addAttribute("title", title);
         model.addAttribute("selectedBatchId", batchId);
         model.addAttribute("selectedStatus", status);
+
+        // Pagination data
+        model.addAttribute("currentPage", 1);
+        model.addAttribute("totalPages", 1);
+        model.addAttribute("totalItems", assignments.size());
+
         loadDropdownData(model);
+
         return "assignment-list";
     }
     

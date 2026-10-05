@@ -238,6 +238,22 @@ public class AssignmentRepository {
     // 5. DELETE - DELETE ASSIGNMENT
     // =====================================
 
+    public boolean hasSubmissions(Integer assignmentId) {
+
+        String sql = """
+            SELECT COUNT(*)
+            FROM submissions
+            WHERE assignment_id = ?
+            """;
+
+        Integer count = jdbcTemplate.queryForObject(
+                sql,
+                Integer.class,
+                assignmentId
+        );
+
+        return count != null && count > 0;
+    }
     public int deleteById(Integer id) {
 
         String sql = """
