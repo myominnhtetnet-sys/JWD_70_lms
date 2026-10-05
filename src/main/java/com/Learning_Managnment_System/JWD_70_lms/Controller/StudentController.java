@@ -35,13 +35,13 @@ public class StudentController {
         return "register"; 
     }
 
-   
     @PostMapping("/register")
-    public String processRegistration(@ModelAttribute("student") StudentBean student) {
+    public String processRegistration(@ModelAttribute("student") StudentBean student, RedirectAttributes redirectAttributes) {
 
-       
+      
         studentService.registerStudent(student); 
 
-        return "redirect:/register?success";
+        redirectAttributes.addFlashAttribute("success", "Registration successful! Please login.");
+        return "redirect:/login";
     }
 }
