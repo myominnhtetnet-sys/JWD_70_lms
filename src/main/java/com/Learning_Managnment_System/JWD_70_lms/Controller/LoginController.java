@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -19,10 +20,31 @@ public class LoginController {
 	@Autowired
 	private LoginRepository loginRepo;
 
+//	@GetMapping("/login")
+//	public String showLogin(Model model) {
+//		model.addAttribute("login", new LoginBean());
+//		return "login";
+//	}
+	
+	
 	@GetMapping("/login")
-	public String showLogin(Model model) {
-		model.addAttribute("login", new LoginBean());
-		return "login";
+	public String loginPage(
+	        @RequestParam(
+	                value = "resetSuccess",
+	                required = false
+	        ) Boolean resetSuccess,
+
+	        Model model) {
+
+	    if (Boolean.TRUE.equals(resetSuccess)) {
+
+	        model.addAttribute(
+	                "success",
+	                "Password reset successfully. Please login."
+	        );
+	    }
+
+	    return "login";
 	}
 
 	@PostMapping("/login")
