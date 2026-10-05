@@ -57,6 +57,177 @@
             from { opacity: 0; transform: translateY(4px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
+        
+        
+        
+        
+        .user-management {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    margin-top: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    color: #4b176b;
+    margin: 0;
+}
+
+.section-header p {
+    color: #777;
+}
+
+.add-user-btn {
+    background: #8e44ad;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 7px;
+    text-decoration: none;
+}
+
+.search-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search-form input {
+    flex: 1;
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+}
+
+.search-form button {
+    background: #8e44ad;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.search-form a {
+    padding: 10px 18px;
+    background: #eee;
+    border-radius: 7px;
+    text-decoration: none;
+    color: #333;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th,
+table td {
+    padding: 13px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+table th {
+    background: #f8f0fc;
+    color: #4b176b;
+}
+
+.status {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status.active {
+    background: #dff5e5;
+    color: #198754;
+}
+
+.status.inactive {
+    background: #eee;
+    color: #666;
+}
+
+.status.suspended {
+    background: #ffe0e0;
+    color: #c0392b;
+}
+
+.actions {
+    white-space: nowrap;
+}
+
+.actions a,
+.actions button {
+    border: none;
+    margin-right: 5px;
+    padding: 7px 9px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.view-btn {
+    background: #eee;
+    color: #333;
+}
+
+.edit-btn {
+    background: #f4e9ff;
+    color: #8e44ad;
+}
+
+.suspend-btn {
+    background: #fff0d5;
+    color: #d68910;
+}
+
+.activate-btn {
+    background: #dff5e5;
+    color: #198754;
+}
+
+.delete-btn {
+    background: #ffe0e0;
+    color: #c0392b;
+}
+
+.alert {
+    padding: 12px;
+    border-radius: 7px;
+    margin-bottom: 15px;
+}
+
+.alert.success {
+    background: #dff5e5;
+    color: #198754;
+}
+
+.alert.error {
+    background: #ffe0e0;
+    color: #c0392b;
+}
+        
+        
+        
+        
+        
+        
+        
     </style>
 </head>
 <body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
@@ -326,7 +497,7 @@
                     </div>
 
                     <!-- User Management Table -->
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm overflow-hidden">
+                   <!--  <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm overflow-hidden">
                         <div class="p-6 border-b border-slate-100 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
                                 <h3 class="font-bold text-base text-slate-900 dark:text-white">User Management</h3>
@@ -355,12 +526,301 @@
                                     </tr>
                                 </thead>
                                 <tbody id="userTableBody" class="divide-y divide-slate-100 dark:divide-slate-700/60 font-medium">
-                                    <!-- Dynamic rows via JavaScript -->
+                                    Dynamic rows via JavaScript
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                </div>
+                </div> -->
+
+
+
+<!-- =====================================================
+     USER MANAGEMENT
+===================================================== -->
+
+<div class="user-management">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                <i class="fa-solid fa-users"></i>
+                User Management
+            </h2>
+
+            <p>
+                Manage LMS users
+            </p>
+
+        </div>
+
+        <a
+            th:href="@{/admin/users/add}"
+            class="add-user-btn">
+
+            <i class="fa-solid fa-user-plus"></i>
+            Add User
+
+        </a>
+
+    </div>
+
+
+    <!-- SUCCESS MESSAGE -->
+
+    <div
+        th:if="${success}"
+        class="alert success"
+        th:text="${success}">
+    </div>
+
+
+    <!-- ERROR MESSAGE -->
+
+    <div
+        th:if="${error}"
+        class="alert error"
+        th:text="${error}">
+    </div>
+
+
+    <!-- SEARCH -->
+
+    <form
+        th:action="@{/admin/users/search}"
+        method="get"
+        class="search-form">
+
+        <input
+            type="text"
+            name="keyword"
+            th:value="${keyword}"
+            placeholder="Search name, email, phone, role or status...">
+
+        <button type="submit">
+
+            <i class="fa-solid fa-search"></i>
+            Search
+
+        </button>
+
+        <a
+            th:href="@{/admin}">
+
+            Reset
+
+        </a>
+
+    </form>
+
+
+    <!-- USER TABLE -->
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Full Name</th>
+
+                    <th>Email</th>
+
+                    <th>Role</th>
+
+                    <th>Status</th>
+
+                    <th>Created At</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <tr th:each="user : ${users}">
+
+                    <td
+                        th:text="${user.userId}">
+                        1
+                    </td>
+
+
+                    <td
+                        th:text="${user.fullName}">
+                        
+                    </td>
+
+
+                    <td
+                        th:text="${user.email}">
+                   
+                    </td>
+
+
+                    <td
+                        th:text="${user.roleName}">
+                 
+                    </td>
+
+
+                    <td>
+
+                        <span
+                            th:text="${user.status}"
+                            th:class="'status ' + ${#strings.toLowerCase(user.status)}">
+                            ACTIVE
+                        </span>
+
+                    </td>
+
+
+                    <td
+                        th:text="${user.createdAt}">
+                        2026-10-01
+                    </td>
+
+
+                    <td class="actions">
+
+                        <!-- VIEW -->
+
+                        <a
+                            th:href="@{/admin/users/view/{id}(id=${user.userId})}"
+                            class="view-btn"
+                            title="View">
+
+                            <i class="fa-solid fa-eye"></i>
+
+                        </a>
+
+
+                        <!-- EDIT -->
+
+                        <a
+                            th:href="@{/admin/users/edit/{id}(id=${user.userId})}"
+                            class="edit-btn"
+                            title="Edit">
+
+                            <i class="fa-solid fa-pen"></i>
+
+                        </a>
+
+
+                        <!-- SUSPEND -->
+
+                        <form
+                            th:if="${user.status == 'ACTIVE'}"
+                            th:action="@{/admin/users/suspend}"
+                            method="post"
+                            style="display:inline;">
+
+                            <input
+                                type="hidden"
+                                name="userId"
+                                th:value="${user.userId}">
+
+                            <button
+                                type="submit"
+                                class="suspend-btn"
+                                title="Suspend"
+                                onclick="return confirm('Are you sure you want to suspend this user?');">
+
+                                <i class="fa-solid fa-ban"></i>
+
+                            </button>
+
+                        </form>
+
+
+                        <!-- ACTIVATE -->
+
+                        <form
+                            th:if="${user.status != 'ACTIVE'}"
+                            th:action="@{/admin/users/activate}"
+                            method="post"
+                            style="display:inline;">
+
+                            <input
+                                type="hidden"
+                                name="userId"
+                                th:value="${user.userId}">
+
+                            <button
+                                type="submit"
+                                class="activate-btn"
+                                title="Activate">
+
+                                <i class="fa-solid fa-check"></i>
+
+                            </button>
+
+                        </form>
+
+
+                        <!-- DELETE -->
+
+                        <form
+                            th:action="@{/admin/users/delete}"
+                            method="post"
+                            style="display:inline;">
+
+                            <input
+                                type="hidden"
+                                name="userId"
+                                th:value="${user.userId}">
+
+                            <button
+                                type="submit"
+                                class="delete-btn"
+                                title="Delete"
+                                onclick="return confirm('Are you sure you want to delete this user?');">
+
+                                <i class="fa-solid fa-trash"></i>
+
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+
+                <!-- NO DATA -->
+
+                <tr th:if="${#lists.isEmpty(users)}">
+
+                    <td
+                        colspan="7"
+                        style="text-align:center;">
+
+                        No users found.
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+
+
 
 
                 <!-- ================= TEACHER VIEW ================= -->
