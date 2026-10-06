@@ -43,7 +43,6 @@
             <div class="mb-4">
                 <div th:each="method, iterStat : ${paymentMethods}" class="method-option d-flex align-items-center justify-content-between">
                     <div>
-                       
                         <input class="form-check-input me-2" type="radio" name="paymentMethodId" 
                                th:id="'method-' + ${method['payment_method_id']}" 
                                th:value="${method['payment_method_id']}" 
@@ -58,7 +57,7 @@
                 </div>
             </div>
 
-            <!-- Total Amount (Editable) -->
+            <!-- Total Amount -->
             <div class="mb-3">
                 <label class="form-label fw-semibold">Total Amount (MMK)</label>
                 <input type="number" name="amount" class="form-control" placeholder="75000" required>
@@ -73,12 +72,6 @@
                     <option value="Exam Fee">Exam Fee</option>
                     <option value="Other">Other</option>
                 </select>
-            </div>
-
-            <!-- Transaction No -->
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Transaction No <span class="text-muted fw-normal">(Optional)</span></label>
-                <input type="text" name="transactionNo" class="form-control" placeholder="e.g. TXN123456789">
             </div>
 
             <!-- Note / Remark -->

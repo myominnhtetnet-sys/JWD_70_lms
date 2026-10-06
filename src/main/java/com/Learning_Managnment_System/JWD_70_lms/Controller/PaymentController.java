@@ -2,6 +2,7 @@ package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,7 +40,6 @@ public class PaymentController {
     @PostMapping("/student/process-payment")
     public String processPayment(@RequestParam(value = "paymentMethodId", defaultValue = "0") int paymentMethodId,
                                  @RequestParam("amount") double amount,
-                                 @RequestParam(value = "transactionNo", required = false) String transactionNo,
                                  @RequestParam(value = "paymentType", defaultValue = "Full Course Fee") String paymentType,
                                  @RequestParam(value = "note", required = false) String note,
                                  HttpSession session,
@@ -59,15 +59,18 @@ public class PaymentController {
 
         int userId = (studentIdObj != null) ? Integer.parseInt(studentIdObj.toString()) : 1;
         
-      
+        // Database ထဲမှ Valid ဖြစ်သော Enrollment ID ကို ရှာဖွေခြင်း
         Integer validEnrollmentId = paymentRepository.getEnrollmentIdByUserId(userId);
 
+        // System မှ Random Transaction Number အလိုအလျောက် ထုတ်ပေးခြင်း (ဥပမာ- TXN-A1B2C3D4)
+        String generatedTxnNo = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+
         PaymentBean payment = new PaymentBean();
-        payment.setEnrollmentId(validEnrollmentId); 
+        payment.setEnrollmentId(validEnrollmentId);
         payment.setScheduleId(1);
         payment.setPaymentMethodId(paymentMethodId);
         payment.setAmount(amount);
-        payment.setTransactionNo((transactionNo != null && !transactionNo.trim().isEmpty()) ? transactionNo : "N/A");
+        payment.setTransactionNo(generatedTxnNo); // Auto Generated Transaction No
         payment.setPaymentType(paymentType);
         payment.setNote(note);
         payment.setProofImage(null);
@@ -76,8 +79,9 @@ public class PaymentController {
         int result = paymentRepository.savePayment(payment);
 
         if (result > 0) {
+            // Receipt Page တွင် Auto ထွက်လာသော Transaction No ကို ပြသရန် ထည့်ပေးလိုက်ပါသည်
             redirectAttributes.addFlashAttribute("amount", amount);
-            redirectAttributes.addFlashAttribute("transactionNo", payment.getTransactionNo());
+            redirectAttributes.addFlashAttribute("transactionNo", generatedTxnNo);
             redirectAttributes.addFlashAttribute("paymentType", paymentType);
             redirectAttributes.addFlashAttribute("note", note);
             return "redirect:/student/payment-success";
