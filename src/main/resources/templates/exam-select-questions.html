@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Select Questions</title>
+
+<style>
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	font-family: Arial, sans-serif;
+	background: #f8fafc;
+	color: #1e293b;
+}
+
+.container {
+	width: 95%;
+	max-width: 1200px;
+	margin: 30px auto;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+h1 {
+	margin: 0;
+	font-size: 23px;
+}
+
+.subtitle {
+	margin-top: 5px;
+	color: #64748b;
+	font-size: 13px;
+}
+
+.card {
+	background: white;
+	border-radius: 10px;
+	padding: 20px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+th {
+	background: #f1f5f9;
+	padding: 11px;
+	text-align: left;
+	font-size: 12px;
+}
+
+td {
+	padding: 11px;
+	border-top: 1px solid #e2e8f0;
+	font-size: 13px;
+}
+
+.question-text {
+	font-weight: 500;
+}
+
+input[type="number"] {
+	width: 80px;
+	padding: 7px;
+	border: 1px solid #cbd5e1;
+	border-radius: 6px;
+}
+
+input[type="checkbox"] {
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+
+.btn {
+	border: none;
+	padding: 9px 14px;
+	border-radius: 7px;
+	text-decoration: none;
+	cursor: pointer;
+	font-size: 13px;
+}
+
+.btn-primary {
+	background: #4f46e5;
+	color: white;
+}
+
+.btn-secondary {
+	background: #e2e8f0;
+	color: #334155;
+}
+
+.actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 20px;
+}
+
+.empty {
+	text-align: center;
+	padding: 40px;
+	color: #64748b;
+}
+
+.added {
+	color: #16a34a;
+	font-weight: 600;
+}
+
+.disabled-mark {
+	color: #94a3b8;
+}
+</style>
+
+</head>
+
+
+<body>
+
+	<div class="container">
+
+
+		<!-- HEADER -->
+
+		<div class="header">
+
+			<div>
+
+				<h1>Select Questions</h1>
+
+				<div class="subtitle">
+
+					Exam: <strong th:text="${exam.title}"> Java Basic Exam </strong>
+
+				</div>
+
+			</div>
+
+
+			<a th:href="@{/teacher/exams/view/{id}(id=${exam.examId})}"
+				class="btn btn-secondary"> Back </a>
+
+		</div>
+
+
+		<!-- QUESTIONS -->
+
+		<div class="card">
+
+
+			<!-- EMPTY -->
+
+			<div th:if="${#lists.isEmpty(questions)}" class="empty">No
+				questions found in Question Bank.</div>
+
+
+			<!-- SAVE FORM -->
+
+			<form id="questionForm" th:if="${!#lists.isEmpty(questions)}"
+				th:action="@{/teacher/exams/{examId}/questions/save(examId=${exam.examId})}"
+				method="post">
+
+
+				<table>
+
+					<thead>
+
+						<tr>
+
+							<th>Select</th>
+
+							<th>Question</th>
+
+							<th>Type</th>
+
+							<th>Default Mark</th>
+
+							<th>Exam Mark</th>
+
+						</tr>
+
+					</thead>
+
+
+					<tbody>
+
+						<tr th:each="question : ${questions}">
+
+
+							<!-- SELECT -->
+
+							<td>
+								<!-- Already Added --> <span
+								th:if="${selectedQuestionIds.contains(question.questionId)}"
+								class="added"> ✓ Added </span> <!-- Not Added --> <input
+								th:unless="${selectedQuestionIds.contains(question.questionId)}"
+								type="checkbox" class="question-checkbox"
+								th:value="${question.questionId}">
+
+							</td>
+
+
+							<!-- QUESTION -->
+
+							<td><span class="question-text"
+								th:text="${question.questionText}"> What is Java? </span></td>
+
+
+							<!-- TYPE -->
+
+							<td th:text="${question.questionType}">MCQ</td>
+
+
+							<!-- DEFAULT MARK -->
+
+							<td th:text="${question.defaultMark}">5</td>
+
+
+							<!-- EXAM MARK -->
+
+							<td><input type="number" class="mark-input" step="0.01"
+								min="0.01" th:value="${question.defaultMark}"></td>
+
+						</tr>
+
+					</tbody>
+
+				</table>
+
+
+				<!-- Hidden Inputs -->
+
+				<div id="hiddenInputs"></div>
+
+
+				<!-- ACTIONS -->
+
+				<div class="actions">
+
+
+					<a th:href="@{/teacher/exams/view/{id}(id=${exam.examId})}"
+						class="btn btn-secondary"> Cancel </a>
+
+
+					<button type="submit" class="btn btn-primary">Save
+						Selected Questions</button>
+
+				</div>
+
+
+			</form>
+
+		</div>
+
+	</div>
+
+
+
+	<!-- JAVASCRIPT -->
+
+	<script>
+
+const questionForm =
+    document.getElementById("questionForm");
+
+
+if (questionForm) {
+
+    questionForm.addEventListener("submit", function(event) {
+
+
+        const selectedQuestions =
+            document.querySelectorAll(
+                ".question-checkbox:checked"
+            );
+
+
+        const hiddenInputs =
+            document.getElementById("hiddenInputs");
+
+
+        // Clear old hidden inputs
+
+        hiddenInputs.innerHTML = "";
+
+
+        // No new question selected
+
+        if (selectedQuestions.length === 0) {
+
+            event.preventDefault();
+
+            alert("Please select at least one new question.");
+
+            return;
+
+        }
+
+
+        // Loop selected questions
+
+        selectedQuestions.forEach(function(checkbox) {
+
+
+            const questionId =
+                checkbox.value;
+
+
+            const row =
+                checkbox.closest("tr");
+
+
+            const markInput =
+                row.querySelector(".mark-input");
+
+
+            const mark =
+                markInput.value;
+
+
+            // Question ID
+
+            const questionIdInput =
+                document.createElement("input");
+
+
+            questionIdInput.type = "hidden";
+
+            questionIdInput.name = "questionIds";
+
+            questionIdInput.value = questionId;
+
+
+            // Mark
+
+            const markHiddenInput =
+                document.createElement("input");
+
+
+            markHiddenInput.type = "hidden";
+
+            markHiddenInput.name = "marks";
+
+            markHiddenInput.value = mark;
+
+
+            // Add hidden inputs
+
+            hiddenInputs.appendChild(
+                questionIdInput
+            );
+
+            hiddenInputs.appendChild(
+                markHiddenInput
+            );
+
+        });
+
+    });
+
+}
+
+</script>
+
+
+</body>
+
+</html>
