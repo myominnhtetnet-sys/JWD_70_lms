@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout - Payment Method</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .payment-card {
+            max-width: 550px;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: #ffffff;
+        }
+        .method-option {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .method-option:hover {
+            border-color: #0d6efd;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container">
+    <div class="payment-card">
+        <h4 class="fw-bold mb-1">Select Payment Method</h4>
+        <p class="text-muted small">ကျေးဇူးပြု၍ မိမိပေးချေလိုသော App ကို ရွေးချယ်၍ ငွေလွှဲပေးပါရန်။</p>
+
+        <!-- Error Alert -->
+        <div th:if="${error}" class="alert alert-danger py-2 small mb-3" th:text="${error}"></div>
+
+        <form th:action="@{/student/process-payment}" method="post">
+            
+            <!-- Payment Methods List -->
+            <div class="mb-4">
+                <div th:each="method, iterStat : ${paymentMethods}" class="method-option d-flex align-items-center justify-content-between">
+                    <div>
+                       
+                        <input class="form-check-input me-2" type="radio" name="paymentMethodId" 
+                               th:id="'method-' + ${method['payment_method_id']}" 
+                               th:value="${method['payment_method_id']}" 
+                               th:checked="${iterStat.index == 0}" required>
+                        <label class="form-check-label fw-bold" 
+                               th:for="'method-' + ${method['payment_method_id']}" 
+                               th:text="${method['name']}"></label>
+                    </div>
+                    <div class="text-end text-muted small">
+                        <span th:text="${method['description']}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Amount (Editable) -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Total Amount (MMK)</label>
+                <input type="number" name="amount" class="form-control" placeholder="75000" required>
+            </div>
+
+            <!-- Payment Purpose -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Payment Purpose</label>
+                <select name="paymentType" class="form-select">
+                    <option value="Full Course Fee">Full Course Fee</option>
+                    <option value="Installment">Installment</option>
+                    <option value="Exam Fee">Exam Fee</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <!-- Transaction No -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Transaction No <span class="text-muted fw-normal">(Optional)</span></label>
+                <input type="text" name="transactionNo" class="form-control" placeholder="e.g. TXN123456789">
+            </div>
+
+            <!-- Note / Remark -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Note / Remark <span class="text-muted fw-normal">(Optional)</span></label>
+                <textarea name="note" class="form-control" rows="2" placeholder="အကြောင်းအရာ သို့မဟုတ် မှတ်ချက်ရေးပါ..."></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Confirm & Submit Payment</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

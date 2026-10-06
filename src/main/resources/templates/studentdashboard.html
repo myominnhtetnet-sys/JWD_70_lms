@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard - LMS</title>
+    <title>Student Dashboard - LearnHub LMS</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -33,28 +33,28 @@
                     <div>
                         <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Learning</div>
                         <div class="space-y-1">
-                            <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600/90 shadow-sm transition">
+                            <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 shadow-sm transition">
                                 <i class="fa-solid fa-border-all text-base"></i> Dashboard
                             </a>
-                            <a th:href="@{/student/courses}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/student/courses}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
                                 <i class="fa-solid fa-book-open text-base"></i> My Courses
                             </a>
-                            <a th:href="@{/student/classroom}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/student/classroom}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
                                 <i class="fa-solid fa-display text-base"></i> Classroom
                             </a>
-                            <a th:href="@{/student/schedule}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/student/schedule}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
                                 <i class="fa-regular fa-calendar-check text-base"></i> Schedule
                             </a>
-                            <a th:href="@{/student/assignments}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/student/assignments}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
                                 <div class="flex items-center gap-3">
                                     <i class="fa-regular fa-file-lines text-base"></i> Assignments
                                 </div>
                                 <span class="px-2 py-0.5 text-[10px] font-bold bg-rose-500/20 text-rose-400 rounded-full">2</span>
                             </a>
-                            <a th:href="@{/student/exams}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/student/exams}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
                                 <i class="fa-solid fa-square-check text-base"></i> Exams
                             </a>
-                            <a th:href="@{/certificate/verify}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/certificate/verify}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
                                 <i class="fa-solid fa-award text-base"></i> Certificates
                             </a>
                         </div>
@@ -63,14 +63,13 @@
                     <div>
                         <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Account</div>
                         <div class="space-y-1">
-                            <a th:href="@{/student/checkout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/student/checkout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
                                 <i class="fa-regular fa-credit-card text-base"></i> Payments
                             </a>
-                           
-                            <a th:href="@{/student/scholarships}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/student/scholarships}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
                                 <i class="fa-solid fa-user-graduate text-base"></i> Scholarships
                             </a>
-                            <a th:href="@{/student/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                            <a th:href="@{/student/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
                                 <i class="fa-regular fa-user text-base"></i> My Profile
                             </a>
                         </div>
@@ -93,18 +92,19 @@
             <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-10 shadow-sm">
                 <div>
                     <h2 class="text-lg font-bold text-slate-900 leading-tight">Dashboard</h2>
-                    <p class="text-xs text-slate-400 font-medium">Monday, 5 October 2026</p>
+                    <p class="text-xs text-slate-400 font-medium" th:text="${#dates.format(#dates.createNow(), 'EEEE, d MMMM yyyy')}">Monday, 5 October 2026</p>
                 </div>
 
                 <div class="flex items-center gap-3">
                     <!-- User Info -->
                     <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
-                        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-rose-400 to-pink-500 text-white font-bold text-xs flex items-center justify-center shadow-sm">
-                            <span th:text="${fullName != null ? #strings.substring(fullName,0,2) : 'ST'}">ST</span>
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-rose-400 to-pink-500 text-white font-bold text-xs flex items-center justify-center shadow-sm uppercase">
+                            <!-- Safe Substring Handling for Short Names -->
+                            <span th:text="${fullName != null and #strings.length(fullName) >= 2 ? #strings.substring(fullName,0,2) : (fullName != null ? fullName : 'ST')}">ST</span>
                         </div>
                         <div class="hidden lg:block">
-                            <b class="block text-xs font-bold text-slate-800 leading-none" th:text="${fullName != null ? fullName : 'Student'}">Student</b>
-                            <small class="text-[11px] text-slate-400 font-medium">Student</small>
+                            <b class="block text-xs font-bold text-slate-800 leading-none" th:text="${fullName != null ? fullName : 'Student'}">Student Name</b>
+                            <small class="text-[11px] text-slate-400 font-medium">Student Account</small>
                         </div>
                     </div>
                 </div>
@@ -112,7 +112,7 @@
 
             <main class="p-6 lg:p-8 space-y-6 max-w-[1400px] mx-auto w-full">
 
-                <!-- Hero Section Banner (Fixed) -->
+                <!-- Hero Section Banner -->
                 <div class="bg-indigo-600 rounded-2xl p-6 text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                     <div class="space-y-1">
                         <h1 class="text-xl lg:text-2xl font-bold tracking-tight">
@@ -128,7 +128,7 @@
                     </div>
                 </div>
 
-                <!-- Stats Overview Grid (Fixed) -->
+                <!-- Stats Overview Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Card 1 -->
                     <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">

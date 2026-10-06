@@ -34,10 +34,13 @@ public class LoginController {
             return "redirect:/login";
         }
         
+       
         session.setAttribute("roleId", user.getRole_id());
         session.setAttribute("fullName", user.getFull_name());
         session.setAttribute("email", user.getEmail());
         
+      
+        session.setAttribute("studentId", user.getRole_id()); 
 
         if (user.getRole_id() == 1) {
             return "redirect:/admin";
@@ -66,7 +69,7 @@ public class LoginController {
 
         model.addAttribute("fullName", session.getAttribute("fullName"));
         Object studentId = session.getAttribute("studentId");
-        model.addAttribute("studentId", studentId != null ? studentId : "STU-2026-0042");
+        model.addAttribute("studentId", studentId != null ? "STU-" + studentId : "STU-2026-0042");
 
         return "studentdashboard"; 
     }
