@@ -1,8 +1,9 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
-import java.util.List;
+import java.util.List; 
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -12,38 +13,26 @@ import com.Learning_Managnment_System.JWD_70_lms.model.BatchBean;
 @Repository
 public class BatchRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final BatchRowMapper batchRowMapper;
+	@Autowired
+    JdbcTemplate jdbcTemplate;
+    BatchRowMapper batchRowMapper;
 
-    public BatchRepository(
-            JdbcTemplate jdbcTemplate,
-            BatchRowMapper batchRowMapper) {
-
-        this.jdbcTemplate = jdbcTemplate;
-        this.batchRowMapper = batchRowMapper;
-    }
+  
 
     public List<BatchBean> findAll() {
 
-        String sql = """
-            SELECT batch_id, batch_code, title
-            FROM batches
-            ORDER BY batch_id
-            """;
+        String sql = "SELECT * FROM lms_db.batches ORDER BY batch_id";
+           
 
-        List<BatchBean> batches =jdbcTemplate.query(sql, batchRowMapper);
+        List<BatchBean> batches =jdbcTemplate.query(sql,new BatchRowMapper());
         System.out.println("Total Batches: " + batches.size());
         return batches;
     }
     
     public Optional<BatchBean> findById(Integer id) {
-        String sql = """
-                SELECT batch_id, batch_code, title
-                FROM batches
-                WHERE batch_id = ?
-                """;
+        String sql = "SELECT * FROM lms_db.batches where batch_id = ?";
 
-        List<BatchBean> batches = jdbcTemplate.query(sql, batchRowMapper, id);
+        List<BatchBean> batches = jdbcTemplate.query(sql, new BatchRowMapper(), id);
         return batches.stream().findFirst();
     }
 }

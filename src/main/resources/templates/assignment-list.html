@@ -48,11 +48,10 @@
 
                 <select name="batchId">
                     <option value="">All Batches</option>
-                    <option th:each="batch : ${batches}"
-                            th:value="${batch.batchId}"
-                            th:text="${batch.batchCode + ' - ' + batch.title}"
-                            th:selected="${selectedBatchId != null and selectedBatchId == batch.batchId}">
-                    </option>
+				<option th:each="batch : ${batches}" 
+				        th:value="${batch.batch_id}" 
+				        th:text="${batch.title}">Batch Title</option>
+
                 </select>
 
                 <select name="status">

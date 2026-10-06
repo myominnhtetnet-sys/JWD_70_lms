@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.Learning_Managnment_System.JWD_70_lms.Mapper.CourseMapper;
-import com.Learning_Managnment_System.JWD_70_lms.Mapper.BatchMapper;
+import com.Learning_Managnment_System.JWD_70_lms.Mapper.BatchRowMapper;
 import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.BatchBean;
 
@@ -35,7 +35,7 @@ public class CourseService {
         List<CourseBean> courses = jdbcTemplate.query(sql.toString(), new CourseMapper(), params.toArray());
 
         for (CourseBean course : courses) {
-            List<BatchBean> courseBatches = jdbcTemplate.query(BASE_BATCH_SQL, new BatchMapper(), course.getCourse_id());
+            List<BatchBean> courseBatches = jdbcTemplate.query(BASE_BATCH_SQL, new BatchRowMapper(), course.getCourse_id());
             course.setBatches(courseBatches);
         }
 
@@ -63,7 +63,7 @@ public class CourseService {
             // 🟢 INSTANTIATED INLINE: Matches your exact 'new UserRowMapper()' parameter style
             CourseBean course = jdbcTemplate.queryForObject(sql, new CourseMapper(), id);
             if (course != null) {
-                List<BatchBean> courseBatches = jdbcTemplate.query(BASE_BATCH_SQL, new BatchMapper(), course.getCourse_id());
+                List<BatchBean> courseBatches = jdbcTemplate.query(BASE_BATCH_SQL, new BatchRowMapper(), course.getCourse_id());
                 course.setBatches(courseBatches);
             }
             return course;
@@ -80,7 +80,7 @@ public class CourseService {
         
         // 2. 🟢 FIXED: Loop and fetch ALL batches using the service's working jdbcTemplate
         for (CourseBean course : courses) {
-            List<BatchBean> courseBatches = jdbcTemplate.query(BASE_BATCH_SQL, new BatchMapper(), course.getCourse_id());
+            List<BatchBean> courseBatches = jdbcTemplate.query(BASE_BATCH_SQL, new BatchRowMapper(), course.getCourse_id());
             course.setBatches(courseBatches);
         }
         

@@ -45,10 +45,11 @@
                         <select th:field="*{batchId}" required>
                             <option value=""> -- Select Batch -- </option>
 
-                            <option th:each="batch : ${batches}"
-                                    th:value="${batch.batchId}"
-                                    th:text="${batch.batchCode + ' - ' + batch.title}">
-                            </option>
+                          <!-- 🟢 FIXED: Changed batch.batchId to batch.batch_id -->
+						<option th:each="batch : ${batches}" 
+						        th:value="${batch.batch_id}" 
+						        th:text="${batch.title}">Batch Title</option>
+
                         </select>
                     </div>
 
