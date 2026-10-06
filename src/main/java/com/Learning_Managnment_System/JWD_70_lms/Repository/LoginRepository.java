@@ -14,41 +14,41 @@ public class LoginRepository {
 
 	public LoginBean login(String email, String password) {
 
-		String sql = """
-				SELECT  u.role_id,
-				      u.full_name,
-				      u.email,
-				      u.password_hash
-				  FROM users u
-				  JOIN roles r
-				      ON u.role_id = r.role_id
-				  WHERE u.email =?
-				  AND u.password_hash =?;
-				  """;
+	    // 🟢 FIXED: Added u.user_id to the SELECT columns list query string
+	    String sql = """
+	            SELECT  u.user_id,
+	                    u.role_id,
+	                    u.full_name,
+	                    u.email,
+	                    u.password_hash
+	              FROM users u
+	              JOIN roles r
+	                  ON u.role_id = r.role_id
+	              WHERE u.email =?
+	              AND u.password_hash =?;
+	              """;
 
-		try {
+	    try {
+	        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+	            LoginBean user = new LoginBean();
 
-			return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+	            // 🟢 FIXED: Populate the user_id field directly from the SQL database record row
+	            user.setUser_id(rs.getInt("user_id"));
+	            
+	            user.setRole_id(rs.getInt("role_id"));
+	            user.setFull_name(rs.getString("full_name"));
+	            user.setEmail(rs.getString("email"));
+	            user.setPassword_hash(rs.getString("password_hash"));
 
-				LoginBean user = new LoginBean();
+	            return user;
+	        }, email, password);
 
-				user.setRole_id(rs.getInt("role_id"));
-
-				user.setFull_name(rs.getString("full_name"));
-
-				user.setEmail(rs.getString("email"));
-
-				user.setPassword_hash(rs.getString("password_hash"));
-
-				return user;
-			}, email, password);
-
-		} catch (Exception e) {
-			System.out.println("LOGIN ERROR: " + e.getMessage());
-			return null;
-		}
-
+	    } catch (Exception e) {
+	        System.out.println("LOGIN ERROR: " + e.getMessage());
+	        return null;
+	    }
 	}
+
 
 	public boolean emailExists(String email) {
 

@@ -24,7 +24,7 @@ public class LoginController {
         model.addAttribute("login", new LoginBean());
         return "login";
     }
-
+    
     @PostMapping("/login")
     public String login(@ModelAttribute("login") LoginBean login, HttpSession session,
             RedirectAttributes redirectAttributes) {
@@ -34,11 +34,13 @@ public class LoginController {
             return "redirect:/login";
         }
         
-       
+        // 🟢 ADD THIS LINE: Save the authenticated user record to match your view checks
+        session.setAttribute("currentUser", user);
+        
+        // Keep your existing simple attribute mappings
         session.setAttribute("roleId", user.getRole_id());
         session.setAttribute("fullName", user.getFull_name());
         session.setAttribute("email", user.getEmail());
-        
         
 
         if (user.getRole_id() == 1) {
@@ -51,6 +53,7 @@ public class LoginController {
 
         return "redirect:/login";
     }
+
 
     @GetMapping("/teacher")
     public String teacherPage(HttpSession session) {
