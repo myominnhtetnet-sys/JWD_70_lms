@@ -225,22 +225,21 @@ public class ExamRepository {
         );
     }
 
-
-    // =========================================================
-    // 6. GET QUESTIONS OF AN EXAM
-    // =========================================================
-
     public List<ExamQuestionBean> findQuestionsByExamId(Long examId) {
 
         String sql = """
             SELECT
-                exam_id,
-                question_id,
-                mark,
-                sort_order
-            FROM exam_questions
-            WHERE exam_id = ?
-            ORDER BY sort_order ASC
+                eq.exam_id,
+                eq.question_id,
+                q.question_text,
+                q.question_type,
+                eq.mark,
+                eq.sort_order
+            FROM exam_questions eq
+            INNER JOIN questions q
+                ON eq.question_id = q.question_id
+            WHERE eq.exam_id = ?
+            ORDER BY eq.sort_order ASC
             """;
 
         return jdbcTemplate.query(
@@ -249,12 +248,6 @@ public class ExamRepository {
                 examId
         );
     }
-
-
-    // =========================================================
-    // 7. ADD QUESTION TO EXAM
-    // =========================================================
-
     public int addQuestionToExam(ExamQuestionBean examQuestion) {
 
         String sql = """

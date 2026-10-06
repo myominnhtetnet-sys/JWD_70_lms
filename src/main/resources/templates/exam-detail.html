@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -9,199 +10,75 @@
 
 <title>Exam Details</title>
 
-<style>
-* {
-	box-sizing: border-box;
-}
-
-body {
-	margin: 0;
-	font-family: Arial, sans-serif;
-	background: #f8fafc;
-	color: #1e293b;
-}
-
-.container {
-	width: 95%;
-	max-width: 1100px;
-	margin: 30px auto;
-}
-
-.header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 20px;
-}
-
-h1 {
-	margin: 0;
-	font-size: 24px;
-}
-
-.subtitle {
-	margin-top: 5px;
-	color: #64748b;
-	font-size: 13px;
-}
-
-.card {
-	background: white;
-	padding: 22px;
-	border-radius: 10px;
-	margin-bottom: 20px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-}
-
-.info-grid {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 15px;
-}
-
-.info-item {
-	background: #f8fafc;
-	padding: 12px;
-	border-radius: 7px;
-}
-
-.label {
-	display: block;
-	font-size: 11px;
-	color: #64748b;
-	margin-bottom: 5px;
-	text-transform: uppercase;
-}
-
-.value {
-	font-size: 14px;
-	font-weight: 600;
-}
-
-.actions {
-	display: flex;
-	gap: 8px;
-}
-
-.btn {
-	padding: 9px 14px;
-	border-radius: 7px;
-	border: none;
-	text-decoration: none;
-	font-size: 13px;
-	cursor: pointer;
-}
-
-.btn-primary {
-	background: #4f46e5;
-	color: white;
-}
-
-.btn-secondary {
-	background: #e2e8f0;
-	color: #334155;
-}
-
-.btn-danger {
-	background: #fee2e2;
-	color: #b91c1c;
-}
-
-table {
-	width: 100%;
-	border-collapse: collapse;
-}
-
-th {
-	background: #f1f5f9;
-	text-align: left;
-	padding: 11px;
-	font-size: 12px;
-}
-
-td {
-	padding: 11px;
-	border-top: 1px solid #e2e8f0;
-	font-size: 13px;
-}
-
-.empty {
-	text-align: center;
-	padding: 30px;
-	color: #64748b;
-}
-
-@media ( max-width : 700px) {
-	.info-grid {
-		grid-template-columns: 1fr;
-	}
-	.header {
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 12px;
-	}
-}
-</style>
+<link rel="stylesheet" th:href="@{/css/style.css}">
 
 </head>
 
 
 <body>
 
-	<div class="container">
+	<div class="exam-detail-container">
 
 
 		<!-- ================= HEADER ================= -->
 
-		<div class="header">
+		<div class="exam-detail-header">
 
 			<div>
 
-				<h1 th:text="${exam.title}">Java Basic Exam</h1>
+				<h1 class="exam-detail-title" th:text="${exam.title}">Java
+					Basic Exam</h1>
 
-				<div class="subtitle">Exam Details</div>
+				<div class="exam-detail-subtitle">Exam Details</div>
 
 			</div>
 
 
-			<div class="actions">
+			<div class="exam-actions">
 
-				<a th:href="@{/teacher/exams}" class="btn btn-secondary"> Back </a>
-
-				<a th:href="@{/teacher/exams/edit/{id}(id=${exam.examId})}"
-					class="btn btn-secondary"> Edit </a>
+				<a th:href="@{/teacher/exams}" class="exam-btn exam-btn-secondary">
+					Back </a> <a th:href="@{/teacher/exams/edit/{id}(id=${exam.examId})}"
+					class="exam-btn exam-btn-secondary"> Edit </a>
 
 			</div>
 
 		</div>
 
 
+
 		<!-- ================= EXAM INFO ================= -->
 
-		<div class="card">
+		<div class="exam-detail-card">
 
-			<div class="info-grid">
-
-
-				<div class="info-item">
-
-					<span class="label"> Exam ID </span> <span class="value"
-						th:text="${exam.examId}"> 1 </span>
-
-				</div>
+			<div class="exam-info-grid">
 
 
-				<div class="info-item">
+				<!-- Exam ID -->
 
-					<span class="label"> Exam Type </span> <span class="value"
-						th:text="${exam.examType}"> MCQ </span>
+				<div class="exam-info-item">
+
+					<span class="exam-info-label"> Exam ID </span> <span
+						class="exam-info-value" th:text="${exam.examId}"> 1 </span>
 
 				</div>
 
 
-				<div class="info-item">
+				<!-- Exam Type -->
 
-					<span class="label"> Duration </span> <span class="value"> <span
+				<div class="exam-info-item">
+
+					<span class="exam-info-label"> Exam Type </span> <span
+						class="exam-info-value" th:text="${exam.examType}"> MCQ </span>
+
+				</div>
+
+
+				<!-- Duration -->
+
+				<div class="exam-info-item">
+
+					<span class="exam-info-label"> Duration </span> <span
+						class="exam-info-value"> <span
 						th:text="${exam.durationMin}"> 60 </span> minutes
 
 					</span>
@@ -209,41 +86,52 @@ td {
 				</div>
 
 
-				<div class="info-item">
+				<!-- Total Mark -->
 
-					<span class="label"> Total Mark </span> <span class="value"
-						th:text="${exam.totalMark}"> 100 </span>
+				<div class="exam-info-item">
 
-				</div>
-
-
-				<div class="info-item">
-
-					<span class="label"> Pass Mark </span> <span class="value"
-						th:text="${exam.passMark}"> 40 </span>
+					<span class="exam-info-label"> Total Mark </span> <span
+						class="exam-info-value" th:text="${exam.totalMark}"> 100 </span>
 
 				</div>
 
 
-				<div class="info-item">
+				<!-- Pass Mark -->
 
-					<span class="label"> Max Attempts </span> <span class="value"
-						th:text="${exam.maxAttempts}"> 2 </span>
+				<div class="exam-info-item">
 
-				</div>
-
-
-				<div class="info-item">
-
-					<span class="label"> Status </span> <span class="value"
-						th:text="${exam.status}"> DRAFT </span>
+					<span class="exam-info-label"> Pass Mark </span> <span
+						class="exam-info-value" th:text="${exam.passMark}"> 40 </span>
 
 				</div>
 
 
-				<div class="info-item">
+				<!-- Max Attempts -->
 
-					<span class="label"> Shuffle Questions </span> <span class="value"
+				<div class="exam-info-item">
+
+					<span class="exam-info-label"> Max Attempts </span> <span
+						class="exam-info-value" th:text="${exam.maxAttempts}"> 2 </span>
+
+				</div>
+
+
+				<!-- Status -->
+
+				<div class="exam-info-item">
+
+					<span class="exam-info-label"> Status </span> <span
+						class="exam-info-value" th:text="${exam.status}"> DRAFT </span>
+
+				</div>
+
+
+				<!-- Shuffle Questions -->
+
+				<div class="exam-info-item">
+
+					<span class="exam-info-label"> Shuffle Questions </span> <span
+						class="exam-info-value"
 						th:text="${exam.shuffleQuestions ? 'Yes' : 'No'}"> No </span>
 
 				</div>
@@ -254,36 +142,83 @@ td {
 		</div>
 
 
-		<!-- ================= QUESTIONS ================= -->
 
-		<div class="card">
+		<!-- ================= SELECTED QUESTIONS ================= -->
 
-			<div class="header">
+		<div class="exam-detail-card">
+
+
+			<div class="exam-detail-header">
+
 
 				<div>
 
-					<h2 style="font-size: 18px;">Selected Questions</h2>
+					<h2>Selected Questions</h2>
 
-					<div class="subtitle">Questions currently assigned to this
-						exam</div>
+					<div class="exam-detail-subtitle">Questions currently
+						assigned to this exam</div>
+
+
+
+					<div class="question-summary">
+<div class="mark-warning"
+     th:if="${selectedTotalMark.compareTo(exam.totalMark) != 0}">
+
+    ⚠️ Question marks total
+    (<span th:text="${selectedTotalMark}">0</span>)
+    does not match exam total mark
+    (<span th:text="${exam.totalMark}">0</span>).
+
+</div>
+
+						<div class="summary-item">
+							<span class="summary-label"> Questions </span> <span
+								class="summary-value" th:text="${questionCount}"> 0 </span>
+						</div>
+
+						<!-- Selected Question Marks -->
+						<div class="summary-item">
+							<span class="summary-label"> Total Question Marks </span> <span
+								class="summary-value" th:text="${selectedTotalMark}"> 0 </span>
+						</div>
+
+						<!-- Exam Total Mark -->
+
+						<div class="summary-item">
+							<span class="summary-label"> Exam Total Mark </span> <span
+								class="summary-value" th:text="${exam.totalMark}"> 0 </span>
+						</div>
+
+
+					</div>
 
 				</div>
 
 
-				<!-- ဒီ button ကို နောက် Lesson မှာ route ချိတ်မယ် -->
+				<!-- Select Questions Button -->
 
 				<a
 					th:href="@{/teacher/exams/{examId}/questions(examId=${exam.examId})}"
-					class="btn btn-primary"> + Select Questions </a>
+					class="exam-btn exam-btn-primary"> + Select Questions </a>
+
 
 			</div>
 
 
-			<div th:if="${#lists.isEmpty(questions)}" class="empty">No
-				questions selected for this exam yet.</div>
+
+			<!-- ================= EMPTY ================= -->
+
+			<div th:if="${#lists.isEmpty(questions)}" class="exam-empty">
+
+				No questions selected for this exam yet.</div>
 
 
-			<table th:if="${!#lists.isEmpty(questions)}">
+
+			<!-- ================= QUESTION TABLE ================= -->
+
+			<table th:if="${!#lists.isEmpty(questions)}"
+				class="exam-question-table">
+
 
 				<thead>
 
@@ -291,7 +226,9 @@ td {
 
 						<th>Order</th>
 
-						<th>Question ID</th>
+						<th>Question</th>
+
+						<th>Type</th>
 
 						<th>Mark</th>
 
@@ -304,13 +241,31 @@ td {
 
 				<tbody>
 
+
 					<tr th:each="question : ${questions}">
+
+
+						<!-- Order -->
 
 						<td th:text="${question.sortOrder}">1</td>
 
-						<td th:text="${question.questionId}">10</td>
+
+						<!-- Question -->
+
+						<td th:text="${question.questionText}">What is Java?</td>
+
+
+						<!-- Type -->
+
+						<td th:text="${question.questionType}">MCQ</td>
+
+
+						<!-- Mark -->
 
 						<td th:text="${question.mark}">5</td>
+
+
+						<!-- Remove -->
 
 						<td>
 
@@ -321,7 +276,8 @@ td {
 								<input type="hidden" name="questionId"
 									th:value="${question.questionId}">
 
-								<button type="submit" class="btn btn-danger"
+
+								<button type="submit" class="exam-btn exam-btn-danger"
 									onclick="return confirm('Remove this question?');">
 
 									Remove</button>
@@ -329,7 +285,6 @@ td {
 							</form>
 
 						</td>
-
 					</tr>
 
 				</tbody>
@@ -337,6 +292,7 @@ td {
 			</table>
 
 		</div>
+
 
 	</div>
 

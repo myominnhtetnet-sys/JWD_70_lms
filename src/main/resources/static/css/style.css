@@ -2043,358 +2043,1089 @@ body {
 }
 /* Active sidebar menu */
 #sidebar-menu a.active {
-    background: #4f46e5;
-    color: white;
-    font-weight: 600;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+	background: #4f46e5;
+	color: white;
+	font-weight: 600;
+	border-radius: 16px;
+	box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
 }
 
 /* Active icon */
 #sidebar-menu a.active i {
-    color: white;
+	color: white;
 }
 
 /* =========================================
    COMPACT ASSIGNMENT MODAL
    ========================================= */
+.assignment-modal {
+	display: none;
+	position: fixed;
+	z-index: 9999;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.45);
+	align-items: center;
+	justify-content: center;
+	padding: 10px;
+}
+
+.assignment-modal.show {
+	display: flex;
+}
+
+/* ===== Small Modal Box ===== */
+.assignment-modal-content {
+	width: 480px !important;
+	max-width: 92vw;
+	max-height: 85vh;
+	background: #fff;
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.20);
+	display: flex;
+	flex-direction: column;
+}
+
+/* ===== Header ===== */
+.assignment-modal-header {
+	padding: 12px 16px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+.assignment-modal-header h2 {
+	margin: 0;
+	font-size: 17px;
+	font-weight: 600;
+}
+
+.assignment-modal-header p {
+	margin: 2px 0 0;
+	font-size: 11px;
+	color: #6b7280;
+}
+
+.modal-close {
+	border: none;
+	background: none;
+	font-size: 24px;
+	line-height: 1;
+	cursor: pointer;
+	color: #6b7280;
+	padding: 0;
+}
+
+/* ===== Body ===== */
+.assignment-modal-body {
+	padding: 12px 16px;
+	overflow-y: auto;
+}
+
+/* ===== Section ===== */
+.modal-section {
+	margin-bottom: 12px;
+}
+
+.modal-section:last-child {
+	margin-bottom: 0;
+}
+
+.modal-section h3 {
+	margin: 0 0 7px;
+	padding-bottom: 5px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #374151;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+/* ===== Grid ===== */
+.modal-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 7px;
+}
+
+/* ===== Item ===== */
+.modal-item {
+	padding: 7px 10px;
+	background: #f9fafb;
+	border: 1px solid #e5e7eb;
+	border-radius: 5px;
+}
+
+.modal-label {
+	display: block;
+	margin-bottom: 2px;
+	font-size: 10px;
+	color: #6b7280;
+}
+
+.modal-item strong {
+	font-size: 12px;
+	font-weight: 500;
+	color: #111827;
+}
+
+/* Description full width */
+.modal-full {
+	grid-column: 1/-1;
+}
+
+/* ===== Footer ===== */
+.assignment-modal-footer {
+	padding: 8px 16px;
+	border-top: 1px solid #e5e7eb;
+	display: flex;
+	justify-content: flex-end;
+}
+
+/* ===== Mobile ===== */
+@media ( max-width : 600px) {
+	.assignment-modal-content {
+		width: 95vw !important;
+	}
+	.modal-grid {
+		grid-template-columns: 1fr;
+	}
+	.modal-full {
+		grid-column: auto;
+	}
+}
+
+/* =========================================
+   COMPACT ASSIGNMENT EDIT FORM
+   Same size as View Modal
+   ========================================= */
+body .form-container {
+	width: 420px !important;
+	max-width: 92vw !important;
+	margin: 15px auto !important;
+}
+
+body .form-header {
+	margin-bottom: 8px !important;
+}
+
+body .form-header h2 {
+	font-size: 17px !important;
+	margin: 0 0 2px !important;
+}
+
+body .form-header p {
+	font-size: 10px !important;
+	margin: 0 !important;
+}
+
+body .form-card {
+	width: 100% !important;
+	padding: 12px 14px !important;
+	border-radius: 7px !important;
+}
+
+body .form-section {
+	margin-bottom: 10px !important;
+	padding-bottom: 8px !important;
+}
+
+body .form-section h3 {
+	font-size: 13px !important;
+	margin-bottom: 7px !important;
+	padding-bottom: 5px !important;
+}
+
+body .form-grid {
+	grid-template-columns: 1fr !important;
+	gap: 7px !important;
+}
+
+body .form-group {
+	margin-bottom: 0 !important;
+}
+
+body .form-group label {
+	font-size: 10px !important;
+	margin-bottom: 2px !important;
+}
+
+body .form-group input, body .form-group select, body .form-group textarea
+	{
+	width: 100% !important;
+	box-sizing: border-box !important;
+	padding: 6px 7px !important;
+	font-size: 11px !important;
+	border-radius: 4px !important;
+}
+
+body .form-group textarea {
+	height: 55px !important;
+	min-height: 55px !important;
+}
+
+body .form-group input[type="file"] {
+	padding: 4px !important;
+	font-size: 10px !important;
+}
+
+body .form-group small {
+	font-size: 9px !important;
+}
+
+body .checkbox-row {
+	font-size: 10px !important;
+	gap: 5px !important;
+}
+
+body .error-box {
+	padding: 6px 8px !important;
+	margin-bottom: 8px !important;
+	font-size: 10px !important;
+}
+
+body .form-actions {
+	margin-top: 8px !important;
+	padding-top: 8px !important;
+	gap: 5px !important;
+}
+
+body .form-actions a, body .form-actions button {
+	padding: 6px 10px !important;
+	font-size: 10px !important;
+	border-radius: 4px !important;
+}
+
+/* =========================================
+   EDIT MODAL
+   ========================================= */
+body .edit-modal-content {
+	width: 480px !important;
+	max-width: 92vw !important;
+	max-height: 85vh !important;
+}
+
+.edit-modal-content .modal-item input, .edit-modal-content .modal-item select,
+	.edit-modal-content .modal-item textarea {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 6px 8px;
+	font-size: 11px;
+	border: 1px solid #d1d5db;
+	border-radius: 4px;
+}
+
+.edit-modal-content .modal-item textarea {
+	resize: vertical;
+}
+
+.edit-modal-content .modal-label {
+	margin-bottom: 4px;
+}
+
+.edit-checkbox {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 11px;
+	cursor: pointer;
+}
+
+.edit-checkbox input {
+	width: auto !important;
+}
+
+.question-summary {
+	display: flex;
+	gap: 12px;
+	margin-top: 14px;
+}
+
+.summary-item {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	padding: 10px 16px;
+	min-width: 150px;
+}
+
+.summary-label {
+	display: block;
+	font-size: 11px;
+	color: #64748b;
+	margin-bottom: 4px;
+}
+
+.summary-value {
+	font-size: 16px;
+	font-weight: 700;
+	color: #334155;
+}
+
+/* =========================
+   EXAM DETAIL
+   ========================= */
+.exam-detail-container {
+	width: 95%;
+	max-width: 1100px;
+	margin: 30px auto;
+}
+
+.exam-detail-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+.exam-detail-title {
+	margin: 0;
+	font-size: 24px;
+}
+
+.exam-detail-subtitle {
+	margin-top: 5px;
+	color: #64748b;
+	font-size: 13px;
+}
+
+.exam-detail-card {
+	background: white;
+	padding: 22px;
+	border-radius: 10px;
+	margin-bottom: 20px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+/* Exam Information */
+.exam-info-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 15px;
+}
+
+.exam-info-item {
+	background: #f8fafc;
+	padding: 12px;
+	border-radius: 7px;
+}
+
+.exam-info-label {
+	display: block;
+	font-size: 11px;
+	color: #64748b;
+	margin-bottom: 5px;
+	text-transform: uppercase;
+}
+
+.exam-info-value {
+	font-size: 14px;
+	font-weight: 600;
+}
+
+/* Buttons */
+.exam-actions {
+	display: flex;
+	gap: 8px;
+}
+
+.exam-btn {
+	padding: 9px 14px;
+	border-radius: 7px;
+	border: none;
+	text-decoration: none;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.exam-btn-primary {
+	background: #4f46e5;
+	color: white;
+}
+
+.exam-btn-secondary {
+	background: #e2e8f0;
+	color: #334155;
+}
+
+.exam-btn-danger {
+	background: #fee2e2;
+	color: #b91c1c;
+}
+
+/* Question Summary */
+.question-summary {
+	display: flex;
+	gap: 12px;
+	margin-top: 14px;
+	margin-bottom: 15px;
+}
+
+.summary-item {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	padding: 10px 16px;
+	min-width: 150px;
+}
+
+.summary-label {
+	display: block;
+	font-size: 11px;
+	color: #64748b;
+	margin-bottom: 4px;
+}
+
+.summary-value {
+	font-size: 16px;
+	font-weight: 700;
+	color: #334155;
+}
+
+/* Question Table */
+.exam-question-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.exam-question-table th {
+	background: #f1f5f9;
+	text-align: left;
+	padding: 11px;
+	font-size: 12px;
+}
+
+.exam-question-table td {
+	padding: 11px;
+	border-top: 1px solid #e2e8f0;
+	font-size: 13px;
+}
+
+.exam-empty {
+	text-align: center;
+	padding: 30px;
+	color: #64748b;
+}
+
+/* Responsive */
+@media ( max-width : 700px) {
+	.exam-info-grid {
+		grid-template-columns: 1fr;
+	}
+	.exam-detail-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 12px;
+	}
+	.question-summary {
+		flex-wrap: wrap;
+	}
+}
+
+.mark-warning {
+	margin-top: 10px;
+	padding: 10px 14px;
+	border-radius: 7px;
+	background: #fff7ed;
+	border: 1px solid #fed7aa;
+	color: #c2410c;
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.question-filter {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 15px;
+	padding: 14px;
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+}
+
+.filter-group {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.filter-group label {
+	font-size: 11px;
+	font-weight: 600;
+	color: #64748b;
+}
+
+.filter-group input, .filter-group select {
+	padding: 8px 10px;
+	border: 1px solid #cbd5e1;
+	border-radius: 6px;
+	font-size: 13px;
+	min-width: 220px;
+}
+
+/* =========================================
+   EXAM SELECT QUESTIONS
+   ========================================= */
+.exam-select-container {
+	width: 95%;
+	max-width: 1200px;
+	margin: 30px auto;
+}
+
+.exam-select-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+.exam-select-header h1 {
+	margin: 0;
+	font-size: 23px;
+}
+
+.exam-select-subtitle {
+	margin-top: 5px;
+	color: #64748b;
+	font-size: 13px;
+}
+
+.exam-select-card {
+	background: white;
+	border-radius: 10px;
+	padding: 20px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+/* =========================================
+   FILTER
+   ========================================= */
+.question-filter {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 15px;
+	padding: 14px;
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+}
+
+.filter-group {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.filter-group label {
+	font-size: 11px;
+	font-weight: 600;
+	color: #64748b;
+}
+
+.filter-group input, .filter-group select {
+	padding: 8px 10px;
+	border: 1px solid #cbd5e1;
+	border-radius: 6px;
+	font-size: 13px;
+	min-width: 220px;
+}
+
+.question-table-wrapper {
+	width: 100%;
+	overflow-x: auto;
+}
+
+.exam-question-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.exam-question-table th {
+	background: #f1f5f9;
+	padding: 11px;
+	text-align: left;
+	font-size: 12px;
+}
+
+.exam-question-table td {
+	padding: 11px;
+	border-top: 1px solid #e2e8f0;
+	font-size: 13px;
+}
+
+.question-text {
+	font-weight: 500;
+}
+
+.exam-question-table input[type="number"] {
+	width: 80px;
+	padding: 7px;
+	border: 1px solid #cbd5e1;
+	border-radius: 6px;
+}
+
+.exam-question-table input[type="checkbox"] {
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+
+.added {
+	color: #16a34a;
+	font-weight: 600;
+}
+
+.exam-btn {
+	border: none;
+	padding: 9px 14px;
+	border-radius: 7px;
+	text-decoration: none;
+	cursor: pointer;
+	font-size: 13px;
+}
+
+.exam-btn-primary {
+	background: #4f46e5;
+	color: white;
+}
+
+.exam-btn-secondary {
+	background: #e2e8f0;
+	color: #334155;
+}
+
+.actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 20px;
+}
+.exam-select-empty {
+	text-align: center;
+	padding: 40px;
+	color: #64748b;
+}
+
+@media ( max-width : 700px) {
+	.exam-select-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 12px;
+	}
+	.question-filter {
+		flex-direction: column;
+	}
+	.filter-group input, .filter-group select {
+		width: 100%;
+		min-width: 0;
+	}
+}
+
+/* =====================================================
+   ASSIGNMENT MODAL
+===================================================== */
 
 .assignment-modal {
     display: none;
-    position: fixed;
-    z-index: 9999;
 
+    position: fixed;
     inset: 0;
 
-    background: rgba(0, 0, 0, 0.45);
+    z-index: 9999;
+
+    background: rgba(15, 23, 42, 0.45);
 
     align-items: center;
     justify-content: center;
 
-    padding: 10px;
+    padding: 20px;
+
+    backdrop-filter: blur(3px);
 }
+
+
+/* Show modal */
 
 .assignment-modal.show {
     display: flex;
 }
 
 
-/* ===== Small Modal Box ===== */
+/* Modal box */
 
 .assignment-modal-content {
-    width: 480px !important;
-    max-width: 92vw;
 
-    max-height: 85vh;
+    width: 100%;
+    max-width: 580px;
 
-    background: #fff;
+    max-height: 88vh;
 
-    border-radius: 8px;
+    overflow-y: auto;
 
-    overflow: hidden;
+    background: #ffffff;
 
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.20);
+    border-radius: 12px;
 
-    display: flex;
-    flex-direction: column;
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.18);
+
+    animation: assignmentModalShow 0.2s ease;
 }
 
 
-/* ===== Header ===== */
+/* Edit modal slightly wider */
+
+.edit-modal-content {
+    max-width: 650px;
+}
+
+
+/* Animation */
+
+@keyframes assignmentModalShow {
+
+    from {
+        opacity: 0;
+        transform: translateY(-15px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/* =====================================================
+   MODAL HEADER
+===================================================== */
 
 .assignment-modal-header {
-    padding: 12px 16px;
 
     display: flex;
+
     align-items: center;
     justify-content: space-between;
 
+    padding: 17px 20px;
+
     border-bottom: 1px solid #e5e7eb;
 }
 
-.assignment-modal-header h2 {
+
+.assignment-modal-header h3 {
+
     margin: 0;
 
     font-size: 17px;
-    font-weight: 600;
+
+    color: #1e293b;
 }
 
-.assignment-modal-header p {
-    margin: 2px 0 0;
+
+.assignment-modal-header span {
+
+    display: block;
+
+    margin-top: 3px;
 
     font-size: 11px;
-    color: #6b7280;
+
+    color: #94a3b8;
 }
 
-.modal-close {
-    border: none;
-    background: none;
 
-    font-size: 24px;
-    line-height: 1;
+/* Close */
+
+.modal-close {
+
+    width: 30px;
+    height: 30px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #f1f5f9;
+
+    color: #64748b;
+
+    font-size: 21px;
+
+    line-height: 30px;
 
     cursor: pointer;
 
-    color: #6b7280;
-
-    padding: 0;
+    transition: 0.2s;
 }
 
 
-/* ===== Body ===== */
+.modal-close:hover {
+
+    background: #fee2e2;
+
+    color: #dc2626;
+}
+
+
+/* =====================================================
+   MODAL BODY
+===================================================== */
 
 .assignment-modal-body {
-    padding: 12px 16px;
 
-    overflow-y: auto;
+    padding: 20px;
 }
 
 
-/* ===== Section ===== */
+/* View */
 
-.modal-section {
-    margin-bottom: 12px;
-}
+.modal-info-grid {
 
-.modal-section:last-child {
-    margin-bottom: 0;
-}
-
-.modal-section h3 {
-    margin: 0 0 7px;
-
-    padding-bottom: 5px;
-
-    font-size: 13px;
-    font-weight: 600;
-
-    color: #374151;
-
-    border-bottom: 1px solid #e5e7eb;
-}
-
-
-/* ===== Grid ===== */
-
-.modal-grid {
     display: grid;
 
     grid-template-columns: 1fr 1fr;
 
-    gap: 7px;
+    gap: 13px;
 }
 
 
-/* ===== Item ===== */
+.modal-info-item {
 
-.modal-item {
-    padding: 7px 10px;
+    padding: 11px 13px;
 
-    background: #f9fafb;
+    background: #f8fafc;
 
-    border: 1px solid #e5e7eb;
+    border: 1px solid #eef2f7;
 
-    border-radius: 5px;
-}
-
-.modal-label {
-    display: block;
-
-    margin-bottom: 2px;
-
-    font-size: 10px;
-
-    color: #6b7280;
-}
-
-.modal-item strong {
-    font-size: 12px;
-
-    font-weight: 500;
-
-    color: #111827;
+    border-radius: 8px;
 }
 
 
-/* Description full width */
+.modal-info-item.full-width {
 
-.modal-full {
     grid-column: 1 / -1;
 }
 
 
-/* ===== Footer ===== */
+.modal-info-item label {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    color: #94a3b8;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+}
+
+
+.modal-info-item p {
+
+    margin: 0;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    color: #334155;
+
+    word-break: break-word;
+}
+
+
+/* =====================================================
+   EDIT FORM
+===================================================== */
+
+.modal-form-grid {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 14px;
+}
+
+
+.modal-form-group {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+
+.modal-form-group.full-width {
+
+    grid-column: 1 / -1;
+}
+
+
+.modal-form-group label {
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    color: #475569;
+}
+
+
+.modal-form-group input,
+.modal-form-group select,
+.modal-form-group textarea {
+
+    width: 100%;
+
+    padding: 9px 10px;
+
+    border: 1px solid #dbe2ea;
+
+    border-radius: 7px;
+
+    background: #ffffff;
+
+    color: #334155;
+
+    font-size: 12px;
+
+    outline: none;
+
+    transition: 0.2s;
+
+    font-family: inherit;
+}
+
+
+.modal-form-group textarea {
+
+    resize: vertical;
+
+    min-height: 90px;
+}
+
+
+.modal-form-group input:focus,
+.modal-form-group select:focus,
+.modal-form-group textarea:focus {
+
+    border-color: #60a5fa;
+
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.12);
+}
+
+
+/* =====================================================
+   MODAL FOOTER
+===================================================== */
 
 .assignment-modal-footer {
-    padding: 8px 16px;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    padding: 14px 20px;
 
     border-top: 1px solid #e5e7eb;
 
-    display: flex;
-    justify-content: flex-end;
+    background: #fafafa;
+
+    border-radius: 0 0 12px 12px;
 }
 
 
-/* ===== Mobile ===== */
+.modal-btn {
+
+    border: none;
+
+    padding: 8px 14px;
+
+    border-radius: 7px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+
+.modal-btn-secondary {
+
+    background: #e2e8f0;
+
+    color: #475569;
+}
+
+
+.modal-btn-secondary:hover {
+
+    background: #cbd5e1;
+}
+
+
+.modal-btn-primary {
+
+    background: #2563eb;
+
+    color: #ffffff;
+}
+
+
+.modal-btn-primary:hover {
+
+    background: #1d4ed8;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
 
 @media (max-width: 600px) {
 
-    .assignment-modal-content {
-        width: 95vw !important;
+    .assignment-modal {
+        padding: 10px;
     }
 
-    .modal-grid {
+    .assignment-modal-content {
+        max-height: 94vh;
+    }
+
+    .modal-info-grid,
+    .modal-form-grid {
         grid-template-columns: 1fr;
     }
 
-    .modal-full {
+    .modal-info-item.full-width,
+    .modal-form-group.full-width {
         grid-column: auto;
+    }
+
+    .assignment-modal-header {
+        padding: 14px 15px;
+    }
+
+    .assignment-modal-body {
+        padding: 15px;
+    }
+
+    .assignment-modal-footer {
+        padding: 12px 15px;
     }
 }
 
-
-
-/* =========================================
-   COMPACT ASSIGNMENT EDIT FORM
-   Same size as View Modal
-   ========================================= */
-
-body .form-container {
-    width: 420px !important;
-    max-width: 92vw !important;
-    margin: 15px auto !important;
-}
-
-body .form-header {
-    margin-bottom: 8px !important;
-}
-
-body .form-header h2 {
-    font-size: 17px !important;
-    margin: 0 0 2px !important;
-}
-
-body .form-header p {
-    font-size: 10px !important;
-    margin: 0 !important;
-}
-
-body .form-card {
-    width: 100% !important;
-    padding: 12px 14px !important;
-    border-radius: 7px !important;
-}
-
-body .form-section {
-    margin-bottom: 10px !important;
-    padding-bottom: 8px !important;
-}
-
-body .form-section h3 {
-    font-size: 13px !important;
-    margin-bottom: 7px !important;
-    padding-bottom: 5px !important;
-}
-
-body .form-grid {
-    grid-template-columns: 1fr !important;
-    gap: 7px !important;
-}
-
-body .form-group {
-    margin-bottom: 0 !important;
-}
-
-body .form-group label {
-    font-size: 10px !important;
-    margin-bottom: 2px !important;
-}
-
-body .form-group input,
-body .form-group select,
-body .form-group textarea {
-    width: 100% !important;
-    box-sizing: border-box !important;
-    padding: 6px 7px !important;
-    font-size: 11px !important;
-    border-radius: 4px !important;
-}
-
-body .form-group textarea {
-    height: 55px !important;
-    min-height: 55px !important;
-}
-
-body .form-group input[type="file"] {
-    padding: 4px !important;
-    font-size: 10px !important;
-}
-
-body .form-group small {
-    font-size: 9px !important;
-}
-
-body .checkbox-row {
-    font-size: 10px !important;
-    gap: 5px !important;
-}
-
-body .error-box {
-    padding: 6px 8px !important;
-    margin-bottom: 8px !important;
-    font-size: 10px !important;
-}
-
-body .form-actions {
-    margin-top: 8px !important;
-    padding-top: 8px !important;
-    gap: 5px !important;
-}
-
-body .form-actions a,
-body .form-actions button {
-    padding: 6px 10px !important;
-    font-size: 10px !important;
-    border-radius: 4px !important;
-}
-
-/* =========================================
-   EDIT MODAL
-   ========================================= */
-
-body .edit-modal-content {
-    width: 480px !important;
-    max-width: 92vw !important;
-    max-height: 85vh !important;
-}
-
-.edit-modal-content .modal-item input,
-.edit-modal-content .modal-item select,
-.edit-modal-content .modal-item textarea {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 6px 8px;
-    font-size: 11px;
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-}
-
-.edit-modal-content .modal-item textarea {
-    resize: vertical;
-}
-
-.edit-modal-content .modal-label {
-    margin-bottom: 4px;
-}
-
-.edit-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    cursor: pointer;
-}
-
-.edit-checkbox input {
-    width: auto !important;
-}

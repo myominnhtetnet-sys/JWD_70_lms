@@ -148,46 +148,62 @@ public class ExamService {
 	}
 
 	@Transactional
-	public void saveSelectedQuestions(Long examId, List<Long> questionIds, List<String> marks) {
+	public void saveSelectedQuestions(
+	        Long examId,
+	        List<Long> questionIds,
+	        List<String> marks) {
 
-		getExamById(examId);
-		if (questionIds == null || questionIds.isEmpty()) {
-			throw new IllegalArgumentException("Please select at least one question.");
-		}
+	    getExamById(examId);
 
-		if (marks == null || questionIds.size() != marks.size()) {
-			throw new IllegalArgumentException("Question and mark data are invalid.");
-		}
+	    if (questionIds == null || questionIds.isEmpty()) {
+	        throw new IllegalArgumentException(
+	                "Please select at least one question.");
+	    }
 
-		for (int i = 0; i < questionIds.size(); i++) {
-			Long questionId = questionIds.get(i);
-			if (questionId == null) {
-				continue;
-			}
+	    if (marks == null || questionIds.size() != marks.size()) {
+	        throw new IllegalArgumentException(
+	                "Question and mark data are invalid.");
+	    }
 
-			if (examRepository.existsQuestionInExam(examId, questionId)) {
-				continue;
-			}
-			BigDecimal mark;
+	    for (int i = 0; i < questionIds.size(); i++) {
 
-			try {
-				mark = new BigDecimal(marks.get(i));
-			} catch (Exception e) {
-				throw new IllegalArgumentException("Invalid mark for question " + questionId);
-			}
+	        Long questionId = questionIds.get(i);
 
-			if (mark.signum() <= 0) {
-				throw new IllegalArgumentException("Question mark must be greater than zero.");
-			}
+	        if (questionId == null) {
+	            continue;
+	        }
 
-			Integer nextOrder = examRepository.getNextSortOrder(examId);
-			ExamQuestionBean examQuestion = new ExamQuestionBean();
+	        // Already added question ကို skip လုပ်မယ်
+	        if (examRepository.existsQuestionInExam(examId, questionId)) {
+	            continue;
+	        }
 
-			examQuestion.setExamId(examId);
-			examQuestion.setQuestionId(questionId);
-			examQuestion.setMark(mark);
-			examQuestion.setSortOrder(nextOrder);
-			examRepository.addQuestionToExam(examQuestion);
-		}
+	        BigDecimal mark;
+
+	        try {
+	            mark = new BigDecimal(marks.get(i));
+	        } catch (Exception e) {
+	            throw new IllegalArgumentException(
+	                    "Invalid mark for question " + questionId);
+	        }
+
+	        if (mark.signum() <= 0) {
+	            throw new IllegalArgumentException(
+	                    "Question mark must be greater than zero.");
+	        }
+
+	        Integer nextOrder =
+	                examRepository.getNextSortOrder(examId);
+
+	        ExamQuestionBean examQuestion =
+	                new ExamQuestionBean();
+
+	        examQuestion.setExamId(examId);
+	        examQuestion.setQuestionId(questionId);
+	        examQuestion.setMark(mark);
+	        examQuestion.setSortOrder(nextOrder);
+
+	        examRepository.addQuestionToExam(examQuestion);
+	    }
 	}
 }

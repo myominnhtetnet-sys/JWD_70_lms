@@ -53,17 +53,43 @@ public class ExamController {
 	}
 
 	@GetMapping("/view/{id}")
-	public String viewExam(@PathVariable("id") Long examId, Model model, RedirectAttributes redirectAttributes) {
-		try {
-			ExamBean exam = examService.getExamById(examId);
-			List<ExamQuestionBean> questions = examService.getSelectedQuestions(examId);
-			model.addAttribute("exam", exam);
-			model.addAttribute("questions", questions);
-			return "exam-detail";
-		} catch (IllegalArgumentException e) {
-			redirectAttributes.addFlashAttribute("error", e.getMessage());
-			return "redirect:/teacher/exams";
-		}
+	public String viewExam(
+	        @PathVariable("id") Long examId,
+	        Model model,
+	        RedirectAttributes redirectAttributes) {
+
+	    try {
+
+	        ExamBean exam = examService.getExamById(examId);
+
+	        List<ExamQuestionBean> questions =
+	                examService.getSelectedQuestions(examId);
+
+	        BigDecimal selectedTotalMark = questions.stream()
+	                .map(ExamQuestionBean::getMark)
+	                .filter(mark -> mark != null)
+	                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+	        model.addAttribute("exam", exam);
+	        model.addAttribute("questions", questions);
+
+	        // Question count
+	        model.addAttribute("questionCount", questions.size());
+
+	        // Selected questions total mark
+	        model.addAttribute("selectedTotalMark", selectedTotalMark);
+
+	        return "exam-detail";
+
+	    } catch (IllegalArgumentException e) {
+
+	        redirectAttributes.addFlashAttribute(
+	                "error",
+	                e.getMessage()
+	        );
+
+	        return "redirect:/teacher/exams";
+	    }
 	}
 
 	@PostMapping("/save")

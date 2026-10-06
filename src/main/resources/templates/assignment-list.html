@@ -1,102 +1,950 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assignment Management</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Assignment Management</title>
+
+<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<script>
+
+<body>
+
+	<div class="container">
+
+		<!-- =========================
+         PAGE HEADER
+    ========================== -->
+		<div class="page-header">
+
+			<div>
+				<h1 class="page-title">Assignment Management</h1>
+
+				<p class="page-subtitle">Manage your assignments easily.</p>
+			</div>
+
+			<a th:href="@{/teacher/assignments/create}" class="btn btn-primary">
+				+ Create Assignment </a>
+
+		</div>
+
+
+		<!-- =========================
+         SUCCESS MESSAGE
+    ========================== -->
+		<div class="success" th:if="${successMessage}"
+			th:text="${successMessage}"></div>
+
+
+		<!-- =========================
+         ERROR MESSAGE
+    ========================== -->
+		<div class="error" th:if="${errorMessage}" th:text="${errorMessage}">
+		</div>
+
+
+		<!-- =========================
+         SEARCH / FILTER
+    ========================== -->
+		<div class="filter-card">
+
+			<form th:action="@{/teacher/assignments/search}" method="get"
+				class="search-form">
+
+				<input type="text" name="title"
+					placeholder="Search assignment title..." th:value="${title}">
+
+				<select name="batchId">
+
+					<option value="">All Batches</option>
+
+					<option th:each="batch : ${batches}" th:value="${batch.batchId}"
+						th:text="${batch.batchCode + ' - ' + batch.title}"
+						th:selected="${selectedBatchId != null and selectedBatchId == batch.batchId}">
+					</option>
+
+				</select> <select name="status">
+
+					<option value="">All Status</option>
+
+					<option value="DRAFT" th:selected="${selectedStatus == 'DRAFT'}">
+						DRAFT</option>
+
+					<option value="PUBLISHED"
+						th:selected="${selectedStatus == 'PUBLISHED'}">PUBLISHED
+					</option>
+
+					<option value="CLOSED" th:selected="${selectedStatus == 'CLOSED'}">
+						CLOSED</option>
+
+				</select>
+
+
+				<button type="submit" class="btn btn-search">Search</button>
+
+
+				<a th:href="@{/teacher/assignments}" class="btn btn-reset">
+					Reset </a>
+
+			</form>
+
+		</div>
+
+
+		<!-- =========================
+         ASSIGNMENT TABLE
+    ========================== -->
+		<div class="table-card">
+
+			<div class="table-header">
+
+				<h2>Assignment List</h2>
+
+				<span class="total-count"> Total: <strong
+					th:text="${totalItems}"> 0 </strong>
+
+				</span>
+
+			</div>
+
+
+			<div class="table-responsive">
+
+				<table class="assignment-table">
+
+					<thead>
+
+						<tr>
+
+							<th>ID</th>
+
+							<th>Batch</th>
+
+							<th>Lesson</th>
+
+							<th>Title</th>
+
+							<th>Total Mark</th>
+
+							<th>Pass Mark</th>
+
+							<th>Status</th>
+
+							<th>Action</th>
+
+						</tr>
+
+					</thead>
+
+
+					<tbody>
+
+						<!-- =========================
+                     ASSIGNMENT ROW
+                ========================== -->
+						<tr th:each="assignment,index : ${assignments}">
+
+							<!-- ID -->
+							<td th:text="${index.count}">1</td>
+
+
+							<!-- BATCH -->
+							<td><span th:each="batch : ${batches}"
+								th:if="${batch.batchId == assignment.batchId}"
+								th:text="${batch.batchCode + ' - ' + batch.title}"> </span></td>
+
+
+							<!-- LESSON -->
+							<td><span th:each="lesson : ${lessons}"
+								th:if="${lesson.lessonId == assignment.lessonId}"
+								th:text="${lesson.title}"> </span></td>
+
+
+							<!-- TITLE -->
+							<td class="assignment-title" th:text="${assignment.title}">
+							</td>
+
+
+							<!-- TOTAL MARK -->
+							<td th:text="${assignment.totalMark}">100</td>
+
+
+							<!-- PASS MARK -->
+							<td th:text="${assignment.passMark}">40</td>
+
+
+							<!-- STATUS -->
+							<td><span class="status-badge"
+								th:classappend="
+                              ${assignment.status == 'PUBLISHED'}
+                              ? ' status-published'
+                              :
+                              (${assignment.status == 'DRAFT'}
+                              ? ' status-draft'
+                              :
+                              (${assignment.status == 'CLOSED'}
+                              ? ' status-closed'
+                              : ' status-default'))
+                              "
+								th:text="${assignment.status}"> PUBLISHED </span></td>
+
+
+							<!-- =========================
+                         ACTION BUTTONS
+                    ========================== -->
+							<td class="action-buttons">
+								<!-- VIEW -->
+								<button type="button" class="btn btn-view"
+									th:attr="
+                                data-id=${assignment.assignmentId},
+                                data-title=${assignment.title},
+                                data-description=${assignment.description},
+                                data-start=${assignment.startAt},
+                                data-due=${assignment.dueAt},
+                                data-late=${assignment.allowLateSubmit},
+                                data-late-deadline=${assignment.lateDeadline},
+                                data-total-mark=${assignment.totalMark},
+                                data-pass-mark=${assignment.passMark},
+                                data-status=${assignment.status},
+                                data-attachment=${assignment.attachment}"
+									onclick="openAssignmentModal(this)">View</button> <!-- EDIT -->
+								<button type="button" class="btn btn-edit"
+									th:attr="
+                                data-id=${assignment.assignmentId},
+                                data-batch=${assignment.batchId},
+                                data-lesson=${assignment.lessonId},
+                                data-title=${assignment.title},
+                                data-description=${assignment.description},
+                                data-start=${assignment.startAt},
+                                data-due=${assignment.dueAt},
+                                data-late=${assignment.allowLateSubmit},
+                                data-late-deadline=${assignment.lateDeadline},
+                                data-total-mark=${assignment.totalMark},
+                                data-pass-mark=${assignment.passMark},
+                                data-status=${assignment.status},
+                                data-created-by=${assignment.createdBy},
+                                data-attachment=${assignment.attachment}"
+									onclick="openEditModal(this)">Edit</button> <!-- DELETE -->
+								<form
+									th:action="@{/teacher/assignments/delete/{id}(id=${assignment.assignmentId})}"
+									method="post" class="delete-form"
+									onsubmit="return confirm('Are you sure you want to delete this assignment?');">
+
+									<button type="submit" class="btn btn-delete">Delete</button>
+
+								</form>
+
+
+							</td>
+
+						</tr>
+
+
+						<!-- EMPTY -->
+						<tr th:if="${#lists.isEmpty(assignments)}">
+
+							<td colspan="8" class="empty-message">No assignments found.
+
+							</td>
+
+						</tr>
+
+					</tbody>
+
+				</table>
+
+			</div>
+
+
+			<!-- =========================
+             PAGINATION
+        ========================== -->
+			<div class="pagination">
+
+				<a th:if="${currentPage > 1}"
+					th:href="@{/teacher/assignments(page=${currentPage - 1})}">
+
+					Previous </a> <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+
+					<a th:href="@{/teacher/assignments(page=${i})}" th:text="${i}"
+					th:classappend="${i == currentPage} ? 'active' : ''"> </a>
+
+				</span> <a th:if="${currentPage < totalPages}"
+					th:href="@{/teacher/assignments(page=${currentPage + 1})}">
+
+					Next </a>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+
+	<!-- =====================================================
+     VIEW ASSIGNMENT MODAL
+===================================================== -->
+
+	<div id="assignmentModal" class="assignment-modal">
+
+
+		<div class="assignment-modal-content">
+
+
+			<!-- HEADER -->
+			<div class="assignment-modal-header">
+
+				<div>
+
+					<h2>Assignment Details</h2>
+
+					<p>View complete assignment information.</p>
+
+				</div>
+
+
+				<button type="button" class="modal-close"
+					onclick="closeAssignmentModal()">&times;</button>
+
+			</div>
+
+
+			<!-- BODY -->
+			<div class="assignment-modal-body">
+
+
+				<!-- BASIC INFORMATION -->
+				<div class="modal-section">
+
+					<h3>Basic Information</h3>
+
+
+					<div class="modal-grid">
+
+
+						<div class="modal-item">
+
+							<span class="modal-label"> Assignment ID </span> <strong
+								id="detailAssignmentId"> - </strong>
+
+						</div>
+
+
+						<div class="modal-item">
+
+							<span class="modal-label"> Title </span> <strong id="detailTitle">
+								- </strong>
+
+						</div>
+
+
+						<div class="modal-item">
+
+							<span class="modal-label"> Batch </span> <strong id="detailBatch">
+								- </strong>
+
+						</div>
+
+
+						<div class="modal-item">
+
+							<span class="modal-label"> Lesson </span> <strong
+								id="detailLesson"> - </strong>
+
+						</div>
+
+
+						<div class="modal-item modal-full">
+
+							<span class="modal-label"> Description </span>
+
+							<div id="detailDescription">-</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+
+
+				<!-- SCHEDULE -->
+				<div class="modal-section">
+
+					<h3>Assignment Schedule</h3>
+
+
+					<div class="modal-grid">
+
+
+						<div class="modal-item">
+
+							<span class="modal-label"> Start At </span> <strong
+								id="detailStartAt"> - </strong>
+
+						</div>
+
+
+						<div class="modal-item">
+
+							<span class="modal-label"> Due At </span> <strong
+								id="detailDueAt"> - </strong>
+
+						</div>
+
+
+						<div class="modal-item">
+
+							<span class="modal-label"> Allow Late Submit </span> <strong
+								id="detailAllowLate"> - </strong>
+
+						</div>
+
+
+						<div class="modal-item">
+
+							<span class="modal-label"> Late Deadline </span> <strong
+								id="detailLateDeadline"> - </strong>
+
+						</div>
+
+					</div>
+
+				</div>
+
+
+
+				<!-- MARKING -->
+				<div class="modal-section">
+
+					<h3>Marking Information</h3>
+
+
+					<div class="modal-grid">
+
+
+						<div class="modal-item">
+
+							<span class="modal-label"> Total Mark </span> <strong
+								id="detailTotalMark"> - </strong>
+
+						</div>
+
+
+						<div class="modal-item">
+
+							<span class="modal-label"> Pass Mark </span> <strong
+								id="detailPassMark"> - </strong>
+
+						</div>
+
+
+						<div class="modal-item">
+
+							<span class="modal-label"> Status </span> <span id="detailStatus"
+								class="status-badge"> </span>
+
+						</div>
+
+					</div>
+
+				</div>
+
+
+
+				<!-- ATTACHMENT -->
+				<div class="modal-section">
+
+					<h3>Attachment</h3>
+
+					<div id="detailAttachment"></div>
+
+				</div>
+
+			</div>
+
+
+			<!-- FOOTER -->
+			<div class="assignment-modal-footer">
+
+				<button type="button" class="btn btn-reset"
+					onclick="closeAssignmentModal()">Close</button>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+
+	<!-- =====================================================
+     EDIT ASSIGNMENT MODAL
+===================================================== -->
+
+	<div id="editAssignmentModal" class="assignment-modal">
+
+
+		<div class="assignment-modal-content edit-modal-content">
+
+
+			<!-- HEADER -->
+			<div class="assignment-modal-header">
+
+				<div>
+
+					<h2>Edit Assignment</h2>
+
+					<p>Update assignment information.</p>
+
+				</div>
+
+
+				<button type="button" class="modal-close" onclick="closeEditModal()">
+
+					&times;</button>
+
+			</div>
+
+
+			<!-- BODY -->
+			<div class="assignment-modal-body">
+
+
+				<form th:action="@{/teacher/assignments/update}" method="post"
+					enctype="multipart/form-data">
+
+
+					<!-- ID -->
+					<input type="hidden" id="editAssignmentId" name="assignmentId">
+
+
+					<!-- BASIC INFORMATION -->
+					<div class="modal-section">
+
+						<h3>Basic Information</h3>
+
+
+						<div class="modal-grid">
+
+
+							<!-- BATCH -->
+							<div class="modal-item">
+
+								<span class="modal-label"> Batch </span> <select
+									id="editBatchId" name="batchId" required>
+
+									<option value="">-- Select Batch --</option>
+
+									<option th:each="batch : ${batches}"
+										th:value="${batch.batchId}"
+										th:text="${batch.batchCode + ' - ' + batch.title}"></option>
+
+								</select>
+
+							</div>
+
+
+							<!-- LESSON -->
+							<div class="modal-item">
+
+								<span class="modal-label"> Lesson </span> <select
+									id="editLessonId" name="lessonId" required>
+
+									<option value="">-- Select Lesson --</option>
+
+									<option th:each="lesson : ${lessons}"
+										th:value="${lesson.lessonId}" th:text="${lesson.title}">
+
+									</option>
+
+								</select>
+
+							</div>
+
+
+							<!-- TITLE -->
+							<div class="modal-item modal-full">
+
+								<span class="modal-label"> Assignment Title </span> <input
+									type="text" id="editTitle" name="title" required>
+
+							</div>
+
+
+							<!-- DESCRIPTION -->
+							<div class="modal-item modal-full">
+
+								<span class="modal-label"> Description </span>
+
+								<textarea id="editDescription" name="description" rows="3">
+
+                            </textarea>
+
+							</div>
+
+						</div>
+
+					</div>
+
+
+
+					<!-- SCHEDULE -->
+					<div class="modal-section">
+
+						<h3>Assignment Schedule</h3>
+
+
+						<div class="modal-grid">
+
+
+							<!-- START -->
+							<div class="modal-item">
+
+								<span class="modal-label"> Start At </span> <input
+									type="datetime-local" id="editStartAt" name="startAt" required>
+
+							</div>
+
+
+							<!-- DUE -->
+							<div class="modal-item">
+
+								<span class="modal-label"> Due At </span> <input
+									type="datetime-local" id="editDueAt" name="dueAt" required>
+
+							</div>
+
+
+							<!-- LATE -->
+							<div class="modal-item modal-full">
+
+								<label class="edit-checkbox"> <input type="checkbox"
+									id="editAllowLate" name="allowLateSubmit"> Allow Late
+									Submit
+
+								</label>
+
+							</div>
+
+
+							<!-- LATE DEADLINE -->
+							<div class="modal-item modal-full">
+
+								<span class="modal-label"> Late Deadline </span> <input
+									type="datetime-local" id="editLateDeadline" name="lateDeadline">
+
+							</div>
+
+						</div>
+
+					</div>
+
+
+
+					<!-- MARKING -->
+					<div class="modal-section">
+
+						<h3>Marking & Status</h3>
+
+
+						<div class="modal-grid">
+
+
+							<!-- TOTAL -->
+							<div class="modal-item">
+
+								<span class="modal-label"> Total Mark </span> <input
+									type="number" step="0.01" min="0" id="editTotalMark"
+									name="totalMark" required>
+
+							</div>
+
+
+							<!-- PASS -->
+							<div class="modal-item">
+
+								<span class="modal-label"> Pass Mark </span> <input
+									type="number" step="0.01" min="0" id="editPassMark"
+									name="passMark" required>
+
+							</div>
+
+
+							<!-- STATUS -->
+							<div class="modal-item">
+
+								<span class="modal-label"> Status </span> <select
+									id="editStatus" name="status">
+
+									<option value="DRAFT">DRAFT</option>
+
+									<option value="PUBLISHED">PUBLISHED</option>
+
+									<option value="CLOSED">CLOSED</option>
+
+								</select>
+
+							</div>
+
+
+							<!-- CREATED BY -->
+							<div class="modal-item">
+
+								<span class="modal-label"> Created By </span> <input
+									type="number" id="editCreatedBy" name="createdBy" required>
+
+							</div>
+
+						</div>
+
+					</div>
+
+
+
+					<!-- ATTACHMENT -->
+					<div class="modal-section">
+
+						<h3>Attachment</h3>
+
+
+						<div class="modal-item">
+
+							<input type="file" name="attachmentFile"
+								accept=".pdf,.zip,.doc,.docx"> <small> Allowed:
+								PDF, ZIP, DOC, DOCX </small>
+
+
+							<div id="editCurrentAttachment"></div>
+
+						</div>
+
+					</div>
+
+
+
+					<!-- FOOTER -->
+					<div class="assignment-modal-footer">
+
+
+						<button type="button" class="btn btn-reset"
+							onclick="closeEditModal()">Cancel</button>
+
+
+						<button type="submit" class="btn btn-primary">Update
+							Assignment</button>
+
+					</div>
+
+
+				</form>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+
+	<!-- =====================================================
+     JAVASCRIPT
+     IMPORTANT: Put script at the bottom
+===================================================== -->
+
+	<script>
+
+
+/* =====================================================
+   VIEW ASSIGNMENT MODAL
+===================================================== */
 
 function openAssignmentModal(button) {
 
-    const assignmentId = button.getAttribute("data-id");
+    const assignmentId =
+        button.getAttribute("data-id");
+
 
     fetch("/teacher/assignments/api/" + assignmentId)
+
         .then(response => {
 
             if (!response.ok) {
-                throw new Error("Assignment not found");
+
+                throw new Error(
+                    "Assignment not found"
+                );
+
             }
 
             return response.json();
+
         })
+
+
         .then(assignment => {
 
-            document.getElementById("detailAssignmentId").textContent =
+
+            document.getElementById(
+                "detailAssignmentId"
+            ).textContent =
                 assignment.assignmentId ?? "-";
 
-            document.getElementById("detailTitle").textContent =
+
+            document.getElementById(
+                "detailTitle"
+            ).textContent =
                 assignment.title ?? "-";
 
-            document.getElementById("detailBatch").textContent =
+
+            document.getElementById(
+                "detailBatch"
+            ).textContent =
                 assignment.batchName ?? "-";
 
-            document.getElementById("detailLesson").textContent =
+
+            document.getElementById(
+                "detailLesson"
+            ).textContent =
                 assignment.lessonName ?? "-";
 
-            document.getElementById("detailDescription").textContent =
-                assignment.description ?? "No description provided";
 
-            document.getElementById("detailStartAt").textContent =
-                formatDateTime(assignment.startAt);
+            document.getElementById(
+                "detailDescription"
+            ).textContent =
+                assignment.description
+                ?? "No description provided";
 
-            document.getElementById("detailDueAt").textContent =
-                formatDateTime(assignment.dueAt);
 
-            document.getElementById("detailAllowLate").textContent =
-                assignment.allowLateSubmit ? "Yes" : "No";
+            document.getElementById(
+                "detailStartAt"
+            ).textContent =
+                formatDateTime(
+                    assignment.startAt
+                );
 
-            document.getElementById("detailLateDeadline").textContent =
-                formatDateTime(assignment.lateDeadline);
 
-            document.getElementById("detailTotalMark").textContent =
+            document.getElementById(
+                "detailDueAt"
+            ).textContent =
+                formatDateTime(
+                    assignment.dueAt
+                );
+
+
+            document.getElementById(
+                "detailAllowLate"
+            ).textContent =
+                assignment.allowLateSubmit
+                ? "Yes"
+                : "No";
+
+
+            document.getElementById(
+                "detailLateDeadline"
+            ).textContent =
+                formatDateTime(
+                    assignment.lateDeadline
+                );
+
+
+            document.getElementById(
+                "detailTotalMark"
+            ).textContent =
                 assignment.totalMark ?? "-";
 
-            document.getElementById("detailPassMark").textContent =
+
+            document.getElementById(
+                "detailPassMark"
+            ).textContent =
                 assignment.passMark ?? "-";
 
+
+            /* STATUS */
+
             const statusElement =
-                document.getElementById("detailStatus");
+                document.getElementById(
+                    "detailStatus"
+                );
+
 
             statusElement.textContent =
                 assignment.status ?? "-";
 
-            statusElement.className = "status-badge";
+
+            statusElement.className =
+                "status-badge";
+
 
             if (assignment.status === "PUBLISHED") {
-                statusElement.classList.add("status-published");
-            } else if (assignment.status === "DRAFT") {
-                statusElement.classList.add("status-draft");
-            } else if (assignment.status === "CLOSED") {
-                statusElement.classList.add("status-closed");
+
+                statusElement.classList.add(
+                    "status-published"
+                );
+
+            }
+
+            else if (assignment.status === "DRAFT") {
+
+                statusElement.classList.add(
+                    "status-draft"
+                );
+
+            }
+
+            else if (assignment.status === "CLOSED") {
+
+                statusElement.classList.add(
+                    "status-closed"
+                );
+
             }
 
 
-            // Attachment
+            /* ATTACHMENT */
+
             const attachmentElement =
-                document.getElementById("detailAttachment");
+                document.getElementById(
+                    "detailAttachment"
+                );
+
 
             attachmentElement.innerHTML = "";
+
 
             if (assignment.attachment) {
 
                 attachmentElement.innerHTML = `
-                    <a href="${assignment.attachment}"
-                       target="_blank"
-                       class="btn btn-primary">
-                        View Attachment
-                    </a>
 
                     <a href="${assignment.attachment}"
-                       download
-                       class="btn btn-success">
-                        Download
+
+                       target="_blank"
+
+                       class="btn btn-primary">
+
+                        View Attachment
+
                     </a>
+
+
+                    <a href="${assignment.attachment}"
+
+                       download
+
+                       class="btn btn-success">
+
+                        Download
+
+                    </a>
+
                 `;
 
-            } else {
+            }
+
+            else {
 
                 attachmentElement.textContent =
                     "No attachment available.";
@@ -104,812 +952,323 @@ function openAssignmentModal(button) {
             }
 
 
-            // Show modal
-            document.getElementById("assignmentModal")
-                .classList.add("show");
+            /* OPEN MODAL */
+
+            document.getElementById(
+                "assignmentModal"
+            ).classList.add("show");
 
         })
+
+
         .catch(error => {
 
-            alert("Unable to load assignment details.");
+            alert(
+                "Unable to load assignment details."
+            );
 
             console.error(error);
 
         });
+
 }
 
+
+
+/* =====================================================
+   CLOSE VIEW MODAL
+===================================================== */
 
 function closeAssignmentModal() {
 
-    document.getElementById("assignmentModal")
-        .classList.remove("show");
+    document.getElementById(
+        "assignmentModal"
+    ).classList.remove("show");
 
 }
 
+
+
+/* =====================================================
+   FORMAT DATE TIME
+===================================================== */
 
 function formatDateTime(value) {
 
     if (!value) {
+
         return "Not set";
+
     }
 
     return value
         .replace("T", " ")
         .substring(0, 16);
+
 }
 
 
-// Close when clicking outside modal
-document.getElementById("assignmentModal")
-    .addEventListener("click", function(event) {
 
-        if (event.target === this) {
-            closeAssignmentModal();
-        }
+/* =====================================================
+   OPEN EDIT MODAL
+===================================================== */
 
-    });
 function openEditModal(button) {
 
-    document.getElementById("editAssignmentId").value =
+
+    document.getElementById(
+        "editAssignmentId"
+    ).value =
         button.dataset.id || "";
 
-    document.getElementById("editBatchId").value =
+
+    document.getElementById(
+        "editBatchId"
+    ).value =
         button.dataset.batch || "";
 
-    document.getElementById("editLessonId").value =
+
+    document.getElementById(
+        "editLessonId"
+    ).value =
         button.dataset.lesson || "";
 
-    document.getElementById("editTitle").value =
+
+    document.getElementById(
+        "editTitle"
+    ).value =
         button.dataset.title || "";
 
-    document.getElementById("editDescription").value =
+
+    document.getElementById(
+        "editDescription"
+    ).value =
         button.dataset.description || "";
 
-    document.getElementById("editStartAt").value =
-        formatInputDateTime(button.dataset.start);
 
-    document.getElementById("editDueAt").value =
-        formatInputDateTime(button.dataset.due);
+    document.getElementById(
+        "editStartAt"
+    ).value =
+        formatInputDateTime(
+            button.dataset.start
+        );
 
-    document.getElementById("editAllowLate").checked =
+
+    document.getElementById(
+        "editDueAt"
+    ).value =
+        formatInputDateTime(
+            button.dataset.due
+        );
+
+
+    document.getElementById(
+        "editAllowLate"
+    ).checked =
         button.dataset.late === "true";
 
-    document.getElementById("editLateDeadline").value =
-        formatInputDateTime(button.dataset.lateDeadline);
 
-    document.getElementById("editTotalMark").value =
+    document.getElementById(
+        "editLateDeadline"
+    ).value =
+        formatInputDateTime(
+            button.dataset.lateDeadline
+        );
+
+
+    document.getElementById(
+        "editTotalMark"
+    ).value =
         button.dataset.totalMark || "";
 
-    document.getElementById("editPassMark").value =
+
+    document.getElementById(
+        "editPassMark"
+    ).value =
         button.dataset.passMark || "";
 
-    document.getElementById("editStatus").value =
+
+    document.getElementById(
+        "editStatus"
+    ).value =
         button.dataset.status || "DRAFT";
 
-    document.getElementById("editCreatedBy").value =
+
+    document.getElementById(
+        "editCreatedBy"
+    ).value =
         button.dataset.createdBy || "";
 
 
+    /* CURRENT ATTACHMENT */
+
     const attachment =
-        document.getElementById("editCurrentAttachment");
+        document.getElementById(
+            "editCurrentAttachment"
+        );
+
 
     attachment.innerHTML = "";
 
-    if (button.dataset.attachment &&
-        button.dataset.attachment !== "null") {
+
+    if (
+        button.dataset.attachment &&
+        button.dataset.attachment !== "null"
+    ) {
 
         attachment.innerHTML = `
+
             <div style="margin-top:6px;">
-                <small>Current File:</small>
+
+                <small>
+                    Current File:
+                </small>
+
                 <a href="${button.dataset.attachment}"
+
                    target="_blank">
+
                     View Current File
+
                 </a>
+
             </div>
+
         `;
+
     }
 
 
-    document.getElementById("editAssignmentModal")
-        .classList.add("show");
+    /* OPEN EDIT MODAL */
+
+    document.getElementById(
+        "editAssignmentModal"
+    ).classList.add("show");
+
 }
 
+
+
+/* =====================================================
+   CLOSE EDIT MODAL
+===================================================== */
 
 function closeEditModal() {
 
-    document.getElementById("editAssignmentModal")
-        .classList.remove("show");
+    document.getElementById(
+        "editAssignmentModal"
+    ).classList.remove("show");
+
 }
 
+
+
+/* =====================================================
+   FORMAT INPUT DATETIME
+===================================================== */
 
 function formatInputDateTime(value) {
 
     if (!value || value === "null") {
+
         return "";
+
     }
 
     return value.substring(0, 16);
+
 }
 
 
-document.getElementById("editAssignmentModal")
-    .addEventListener("click", function(event) {
+
+/* =====================================================
+   CLOSE VIEW MODAL
+   WHEN CLICKING OUTSIDE
+===================================================== */
+
+document.getElementById(
+    "assignmentModal"
+).addEventListener(
+    "click",
+    function(event) {
 
         if (event.target === this) {
-            closeEditModal();
+
+            closeAssignmentModal();
+
         }
 
-    });
+    }
+);
+
+
+
+/* =====================================================
+   CLOSE EDIT MODAL
+   WHEN CLICKING OUTSIDE
+===================================================== */
+
+document.getElementById(
+    "editAssignmentModal"
+).addEventListener(
+    "click",
+    function(event) {
+
+        if (event.target === this) {
+
+            closeEditModal();
+
+        }
+
+    }
+);
+
+
+
+/* =====================================================
+   LATE SUBMISSION CONTROL
+===================================================== */
+
+const editAllowLate =
+    document.getElementById(
+        "editAllowLate"
+    );
+
+
+const editLateDeadline =
+    document.getElementById(
+        "editLateDeadline"
+    );
+
+
+function updateLateDeadlineState() {
+
+    if (!editAllowLate.checked) {
+
+        editLateDeadline.value = "";
+
+        editLateDeadline.disabled = true;
+
+    }
+
+    else {
+
+        editLateDeadline.disabled = false;
+
+    }
+
+}
+
+
+editAllowLate.addEventListener(
+    "change",
+    updateLateDeadlineState
+);
+
 
 </script>
-<body>
 
-    <div class="container">
-        <div class="page-header">
 
-            <div>
-                <h1 class="page-title">Assignment Management </h1>
-                <p class="page-subtitle">
-                    Manage your assignments easily.
-                </p>
-            </div>
-
-            <a th:href="@{/teacher/assignments/create}"
-               class="btn btn-primary">
-                + Create Assignment
-            </a>
-
-        </div>
-
-        <div class="success"
-             th:if="${successMessage}"
-             th:text="${successMessage}">
-        </div>
-
-        <div class="error"
-             th:if="${errorMessage}"
-             th:text="${errorMessage}">
-        </div>
-
-        <div class="filter-card">
-
-            <form th:action="@{/teacher/assignments/search}"
-                  method="get" class="search-form">
-
-                <input type="text" name="title"
-                       placeholder="Search assignment title..."
-                       th:value="${title}">
-
-                <select name="batchId">
-                    <option value="">All Batches</option>
-                    <option th:each="batch : ${batches}"
-                            th:value="${batch.batchId}"
-                            th:text="${batch.batchCode + ' - ' + batch.title}"
-                            th:selected="${selectedBatchId != null and selectedBatchId == batch.batchId}">
-                    </option>
-                </select>
-
-                <!-- <select name="status">
-                    <option value="">All Status</option>         
-                    <option value="PUBLISHED" th:selected="${selectedStatus == 'PUBLISHED'}"> PUBLISHED</option>                
-                    <option value="ACTIVE" th:selected="${selectedStatus == 'ACTIVE'}"> ACTIVE</option>                    
-                    <option value="INACTIVE" th:selected="${selectedStatus == 'INACTIVE'}"> INACTIVE</option>
-                    <option value="CLOSED" th:selected="${selectedStatus == 'CLOSED'}"> CLOSED</option>
-                </select> -->
-                 <select name="status">
-					<option value="">All Status</option>
-					<option value="DRAFT" th:selected="${selectedStatus == 'DRAFT'}">DRAFT</option>
-					<option value="PUBLISHED" th:selected="${selectedStatus == 'PUBLISHED'}">PUBLISHED</option>
-					<option value="CLOSED" th:selected="${selectedStatus == 'CLOSED'}">CLOSED</option>
-				</select>
-
-				<button type="submit" class="btn btn-search">
-                    Search
-                </button>
-
-                <a th:href="@{/teacher/assignments}"
-                   class="btn btn-reset">
-                    Reset
-                </a>
-
-            </form>
-        </div>
-
-        <div class="table-card">
-            <div class="table-header">
-                <h2>Assignment List</h2>
-                <span class="total-count">
-                    Total:
-                    <strong th:text="${totalItems}">0</strong>
-                </span>
-            </div>
-
-            <div class="table-responsive">
-                <table class="assignment-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Batch</th>
-                            <th>Lesson</th>
-                            <th>Title</th>
-                            <th>Start At</th>
-                            <th>Due At</th>
-                            <th>Total Mark</th>
-                            <th>Pass Mark</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        <tr th:each="assignment,index: ${assignments}">
-                            <td th:text="${index.count}"></td>
-                            <td>
-                                <span th:each="batch : ${batches}"
-                                      th:if="${batch.batchId == assignment.batchId}"
-                                      th:text="${batch.batchCode + ' - ' + batch.title}">
-                                </span>
-                            </td>
-
-                            <td>
-                                <span th:each="lesson : ${lessons}"
-                                      th:if="${lesson.lessonId == assignment.lessonId}"
-                                      th:text="${lesson.title}">
-                                </span>
-                            </td>
-
-                            <td class="assignment-title"th:text="${assignment.title}"></td>
-                            <td th:text="${assignment.startAt}"></td>
-                            <td th:text="${assignment.dueAt}"></td>
-                            <td th:text="${assignment.totalMark}"></td>
-                            <td th:text="${assignment.passMark}"></td>
-                            <td>
-                                <span class="status-badge"
-                                      th:classappend="${assignment.status == 'PUBLISHED'} ? ' status-published' :
-                                      (${assignment.status == 'DRAFT'} ? ' status-draft' :
-                                      (${assignment.status == 'CLOSED'} ? ' status-closed' : ' status-default'))"
-                                      th:text="${assignment.status}">
-                                </span>
-                            </td>
-
-                            <td class="action-buttons">
-                                <!-- <a th:href="@{/teacher/assignments/{id}(id=${assignment.assignmentId})}"
-                                   class="btn btn-view">
-                                    View
-                                </a> -->
-                                <button type="button"
-									class="btn btn-view"
-									th:attr="
-            data-id=${assignment.assignmentId},
-            data-title=${assignment.title},
-            data-description=${assignment.description},
-            data-start=${assignment.startAt},
-            data-due=${assignment.dueAt},
-            data-late=${assignment.allowLateSubmit},
-            data-late-deadline=${assignment.lateDeadline},
-            data-total-mark=${assignment.totalMark},
-            data-pass-mark=${assignment.passMark},
-            data-status=${assignment.status},
-            data-attachment=${assignment.attachment}"onclick="openAssignmentModal(this)">View</button>
-								<button type="button"
-        class="btn btn-edit"
-        th:attr="
-            data-id=${assignment.assignmentId},
-            data-batch=${assignment.batchId},
-            data-lesson=${assignment.lessonId},
-            data-title=${assignment.title},
-            data-description=${assignment.description},
-            data-start=${assignment.startAt},
-            data-due=${assignment.dueAt},
-            data-late=${assignment.allowLateSubmit},
-            data-late-deadline=${assignment.lateDeadline},
-            data-total-mark=${assignment.totalMark},
-            data-pass-mark=${assignment.passMark},
-            data-status=${assignment.status},
-            data-created-by=${assignment.createdBy},
-            data-attachment=${assignment.attachment}"
-        onclick="openEditModal(this)">
-    Edit
-</button>
-								<form th:action="@{/teacher/assignments/delete/{id}(id=${assignment.assignmentId})}"
-                                      method="post"
-                                      class="delete-form"
-                                      onsubmit="return confirm('Are you sure you want to delete this assignment?');">
-
-                                    <button type="submit"
-                                            class="btn btn-delete">
-                                        Delete
-                                    </button>
-                                    
-                                </form>
-                            </td>
-
-                        </tr>
-
-                        <tr th:if="${#lists.isEmpty(assignments)}">
-                            <td colspan="10" class="empty-message">
-                                No assignments found.
-                            </td>
-                        </tr>
-
-                    </tbody>
-                </table>
-
-            </div>
-
-            <div class="pagination">
-                <a th:if="${currentPage > 1}"
-                   th:href="@{/teacher/assignments(page=${currentPage - 1})}">
-                    Previous
-                </a>
-
-                <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-                    <a th:href="@{/teacher/assignments(page=${i})}"
-                       th:text="${i}"
-                       th:classappend="${i == currentPage} ? 'active' : ''">
-                    </a>
-                </span>
-
-                <a th:if="${currentPage < totalPages}"
-                   th:href="@{/teacher/assignments(page=${currentPage + 1})}">
-                    Next
-                </a>
-
-            </div>
-        </div>
-    </div>
-<!-- Assignment Detail Modal -->
-<div id="assignmentModal" class="assignment-modal">
-
-    <div class="assignment-modal-content">
-
-        <!-- Header -->
-        <div class="assignment-modal-header">
-
-            <div>
-                <h2>Assignment Details</h2>
-                <p>View complete assignment information.</p>
-            </div>
-
-            <button type="button"
-                    class="modal-close"
-                    onclick="closeAssignmentModal()">
-                &times;
-            </button>
-
-        </div>
-
-        <!-- Body -->
-        <div class="assignment-modal-body">
-
-            <!-- Basic Information -->
-            <div class="modal-section">
-
-                <h3>Basic Information</h3>
-
-                <div class="modal-grid">
-
-                    <div class="modal-item">
-                        <span class="modal-label">Assignment ID</span>
-                        <strong id="detailAssignmentId"></strong>
-                    </div>
-
-                    <div class="modal-item">
-                        <span class="modal-label">Title</span>
-                        <strong id="detailTitle"></strong>
-                    </div>
-
-                    <div class="modal-item">
-                        <span class="modal-label">Batch</span>
-                        <strong id="detailBatch"></strong>
-                    </div>
-
-                    <div class="modal-item">
-                        <span class="modal-label">Lesson</span>
-                        <strong id="detailLesson"></strong>
-                    </div>
-
-                    <div class="modal-item modal-full">
-                        <span class="modal-label">Description</span>
-                        <div id="detailDescription"></div>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- Schedule -->
-            <div class="modal-section">
-
-                <h3>Assignment Schedule</h3>
-
-                <div class="modal-grid">
-
-                    <div class="modal-item">
-                        <span class="modal-label">Start At</span>
-                        <strong id="detailStartAt"></strong>
-                    </div>
-
-                    <div class="modal-item">
-                        <span class="modal-label">Due At</span>
-                        <strong id="detailDueAt"></strong>
-                    </div>
-
-                    <div class="modal-item">
-                        <span class="modal-label">Allow Late Submit</span>
-                        <strong id="detailAllowLate"></strong>
-                    </div>
-
-                    <div class="modal-item">
-                        <span class="modal-label">Late Deadline</span>
-                        <strong id="detailLateDeadline"></strong>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- Marking -->
-            <div class="modal-section">
-
-                <h3>Marking Information</h3>
-
-                <div class="modal-grid">
-
-                    <div class="modal-item">
-                        <span class="modal-label">Total Mark</span>
-                        <strong id="detailTotalMark"></strong>
-                    </div>
-
-                    <div class="modal-item">
-                        <span class="modal-label">Pass Mark</span>
-                        <strong id="detailPassMark"></strong>
-                    </div>
-
-                    <div class="modal-item">
-                        <span class="modal-label">Status</span>
-                        <span id="detailStatus"
-                              class="status-badge">
-                        </span>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- Attachment -->
-            <div class="modal-section">
-
-                <h3>Attachment</h3>
-
-                <div id="detailAttachment">
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- Footer -->
-        <div class="assignment-modal-footer">
-
-            <button type="button"
-                    class="btn btn-reset"
-                    onclick="closeAssignmentModal()">
-                Close
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div id="editAssignmentModal" class="assignment-modal">
-
-    <div class="assignment-modal-content edit-modal-content">
-
-        <div class="assignment-modal-header">
-
-            <div>
-                <h2>Edit Assignment</h2>
-                <p>Update assignment information.</p>
-            </div>
-
-            <button type="button"
-                    class="modal-close"
-                    onclick="closeEditModal()">
-                &times;
-            </button>
-
-        </div>
-
-        <div class="assignment-modal-body">
-
-            <form action="/teacher/assignments/update"
-                  method="post"
-                  enctype="multipart/form-data">
-
-                <input type="hidden"
-                       id="editAssignmentId"
-                       name="assignmentId">
-
-                <!-- Basic Information -->
-                <div class="modal-section">
-
-                    <h3>Basic Information</h3>
-
-                    <div class="modal-grid">
-
-                        <div class="modal-item">
-                            <span class="modal-label">Batch</span>
-
-                            <select id="editBatchId"
-                                    name="batchId"
-                                    required>
-
-                                <option value="">
-                                    -- Select Batch --
-                                </option>
-
-                                <option th:each="batch : ${batches}"
-                                        th:value="${batch.batchId}"
-                                        th:text="${batch.batchCode + ' - ' + batch.title}">
-                                </option>
-
-                            </select>
-                        </div>
-
-
-                        <div class="modal-item">
-                            <span class="modal-label">Lesson</span>
-
-                            <select id="editLessonId"
-                                    name="lessonId"
-                                    required>
-
-                                <option value="">
-                                    -- Select Lesson --
-                                </option>
-
-                                <option th:each="lesson : ${lessons}"
-                                        th:value="${lesson.lessonId}"
-                                        th:text="${lesson.title}">
-                                </option>
-
-                            </select>
-                        </div>
-
-
-                        <div class="modal-item modal-full">
-
-                            <span class="modal-label">
-                                Assignment Title
-                            </span>
-
-                            <input type="text"
-                                   id="editTitle"
-                                   name="title"
-                                   required>
-
-                        </div>
-
-
-                        <div class="modal-item modal-full">
-
-                            <span class="modal-label">
-                                Description
-                            </span>
-
-                            <textarea id="editDescription"
-                                      name="description"
-                                      rows="3"></textarea>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Schedule -->
-                <div class="modal-section">
-
-                    <h3>Assignment Schedule</h3>
-
-                    <div class="modal-grid">
-
-                        <div class="modal-item">
-
-                            <span class="modal-label">
-                                Start At
-                            </span>
-
-                            <input type="datetime-local"
-                                   id="editStartAt"
-                                   name="startAt"
-                                   required>
-
-                        </div>
-
-
-                        <div class="modal-item">
-
-                            <span class="modal-label">
-                                Due At
-                            </span>
-
-                            <input type="datetime-local"
-                                   id="editDueAt"
-                                   name="dueAt"
-                                   required>
-
-                        </div>
-
-
-                        <div class="modal-item modal-full">
-
-                            <label class="edit-checkbox">
-
-                                <input type="checkbox"
-                                       id="editAllowLate"
-                                       name="allowLateSubmit">
-
-                                Allow Late Submit
-
-                            </label>
-
-                        </div>
-
-
-                        <div class="modal-item modal-full">
-
-                            <span class="modal-label">
-                                Late Deadline
-                            </span>
-
-                            <input type="datetime-local"
-                                   id="editLateDeadline"
-                                   name="lateDeadline">
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Marking -->
-                <div class="modal-section">
-
-                    <h3>Marking & Status</h3>
-
-                    <div class="modal-grid">
-
-                        <div class="modal-item">
-
-                            <span class="modal-label">
-                                Total Mark
-                            </span>
-
-                            <input type="number"
-                                   step="0.01"
-                                   min="0"
-                                   id="editTotalMark"
-                                   name="totalMark"
-                                   required>
-
-                        </div>
-
-
-                        <div class="modal-item">
-
-                            <span class="modal-label">
-                                Pass Mark
-                            </span>
-
-                            <input type="number"
-                                   step="0.01"
-                                   min="0"
-                                   id="editPassMark"
-                                   name="passMark"
-                                   required>
-
-                        </div>
-
-
-                        <div class="modal-item">
-
-                            <span class="modal-label">
-                                Status
-                            </span>
-
-                            <select id="editStatus"
-                                    name="status">
-
-                                <option value="DRAFT">
-                                    DRAFT
-                                </option>
-
-                                <option value="PUBLISHED">
-                                    PUBLISHED
-                                </option>
-
-                                <option value="CLOSED">
-                                    CLOSED
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                        <div class="modal-item">
-
-                            <span class="modal-label">
-                                Created By
-                            </span>
-
-                            <input type="number"
-                                   id="editCreatedBy"
-                                   name="createdBy"
-                                   required>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Attachment -->
-                <div class="modal-section">
-
-                    <h3>Attachment</h3>
-
-                    <div class="modal-item">
-
-                        <input type="file"
-                               name="attachmentFile"
-                               accept=".pdf,.zip,.doc,.docx">
-
-                        <small>
-                            Allowed: PDF, ZIP, DOC, DOCX
-                        </small>
-
-                        <div id="editCurrentAttachment"></div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Buttons -->
-                <div class="assignment-modal-footer">
-
-                    <button type="button"
-                            class="btn btn-reset"
-                            onclick="closeEditModal()">
-                        Cancel
-                    </button>
-
-                    <button type="submit"
-                            class="btn btn-primary">
-                        Update Assignment
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
-</div>
 </body>
+
 </html>

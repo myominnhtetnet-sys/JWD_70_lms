@@ -11,6 +11,10 @@ public class ExamQuestionBean {
 
     private Long examId;
     private Long questionId;
+    private String questionText;
+    private String questionType;
     private BigDecimal mark;
     private Integer sortOrder;
+    
+   
 }

@@ -16,6 +16,8 @@ public class ExamQuestionRowMapper implements RowMapper<ExamQuestionBean> {
 
         examQuestion.setExamId(rs.getLong("exam_id"));
         examQuestion.setQuestionId(rs.getLong("question_id"));
+        examQuestion.setQuestionText(rs.getString("question_text"));
+        examQuestion.setQuestionType(rs.getString("question_type"));
         examQuestion.setMark(rs.getBigDecimal("mark"));
         examQuestion.setSortOrder(rs.getInt("sort_order"));
 
