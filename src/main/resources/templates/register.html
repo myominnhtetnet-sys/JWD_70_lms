@@ -32,7 +32,7 @@
 
     <!-- Form Content -->
     <div class="p-6 sm:p-8">
-        <form th:action="@{/register}" th:object="${student}" method="post" class="space-y-4">
+        <form th:action="@{/student/register}" th:object="${student}" method="post" class="space-y-4">
             
             <!-- Hidden field for Student Role ID (3) -->
             <input type="hidden" th:field="*{roleId}" value="3" />

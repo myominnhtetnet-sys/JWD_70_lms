@@ -828,6 +828,98 @@
             <li><strong>Phase 3:</strong> Testing Strategies, Optimizations, and Production System Architecture</li>
         </ul>
     </div>
+    
+ <!-- Tab 3: Reviews (Separate View Panel)      -->
+<!-- ========================================== -->
+<!-- 🟢 FIXED: Using pure Thymeleaf logic to auto-check the tab without JavaScript -->
+<input type="radio" 
+       th:id="'tab-reviews-' + ${course.course_id}" 
+       th:name="'modal-tabs-' + ${course.course_id}" 
+       class="tab-radio"
+       th:checked="${reviewSubmitted != null}"> 
+
+<label th:for="'tab-reviews-' + ${course.course_id}" class="tab-label">⭐ Reviews</label>
+
+<div class="tab-panel">
+    <h4 style="margin-top:0; color: #0f172a;">Student Feedback</h4>
+
+    <!-- Form Submission Block: Show if user is logged in -->
+    <div class="add-review-box" th:if="${session.currentUser != null}" style="background-color: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; border-top: none;">
+        <h5 style="margin: 0 0 12px 0; font-size: 14px; color: #0f172a;">Share your feedback</h5>
+        
+       <form th:action="@{/courses/{id}/review(id=${course.course_id})}" method="POST" class="review-submit-form">
+            
+            <!-- Explicit Spring Security CSRF Token Payload Injection -->
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            
+            <!-- Hidden logged-in user tracking element -->
+            <input type="hidden" name="userId" th:value="${session.currentUser?.user_id}">
+
+            <div class="review-form-row" style="display: flex; gap: 16px; margin-bottom: 12px; align-items: center;">
+                <div class="review-form-group" style="flex: 1;">
+                    <label style="font-size: 11px; color:#64748b; text-transform:uppercase; font-weight:700; display:block; margin-bottom:4px;">Reviewing as:</label>
+                    <div style="font-size: 14px; font-weight: 600; color: #0f172a;" th:text="${session.currentUser?.full_name}">Logged In User Name</div>
+                </div>
+                
+                <div class="review-form-group" style="width: 130px; flex: 0 0 auto;">
+                    <label style="font-size: 11px; color:#64748b; text-transform:uppercase; font-weight:700; display:block; margin-bottom:4px;">Rating:</label>
+                    <select name="rating" required class="review-input-field select-rating" style="width:100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                        <option value="5">⭐⭐⭐⭐⭐</option>
+                        <option value="4">⭐⭐⭐⭐</option>
+                        <option value="3">⭐⭐⭐</option>
+                        <option value="2">⭐⭐</option>
+                        <option value="1">⭐</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 🟢 FIXED: Wrapped inside an explicitly balanced division tag element block layout container -->
+            <div class="review-form-group" style="margin-bottom: 12px;">
+                <label style="font-size: 11px; color:#64748b; text-transform:uppercase; font-weight:700; display:block; margin-bottom:4px;">Your Comment:</label>
+                <textarea name="comment" rows="3" required placeholder="Write your review comments here..." class="review-input-field review-textarea" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; resize: vertical;"></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end;">
+                <button type="submit" class="btn-submit-review" style="background-color: #0f172a; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer;">Submit Review</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Fallback Alert Box if the user isn't logged in -->
+    <div class="add-review-box" th:if="${session.currentUser == null}" style="text-align: center; padding: 15px; background-color: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1; margin-bottom: 20px; border-top: none;">
+        <p style="font-size: 13px; color: #64748b; margin: 0;">Please <a th:href="@{/login}" style="color:#0f172a; font-weight:600; text-decoration: none;">log in</a> to submit a course review.</p>
+    </div>
+
+<!-- Live Historical Reviews Feed List Display -->
+<div style="margin-top: 16px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+    
+    <!-- 🟢 FIXED: Safe lookup matching the String.valueOf() keys from the controller -->
+    <div th:if="${reviewsMap == null or reviewsMap[#strings.toString(course.course_id)] == null or #lists.isEmpty(reviewsMap[#strings.toString(course.course_id)])}" 
+         style="padding: 20px; text-align: center; color: #64748b; font-size: 13px; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;">
+        No student reviews submitted yet for this course.
+    </div>
+
+    <!-- 🟢 FIXED: Loops natively over the exact course index sublist key -->
+    <ul th:unless="${reviewsMap == null or reviewsMap[#strings.toString(course.course_id)] == null or #lists.isEmpty(reviewsMap[#strings.toString(course.course_id)])}" 
+        style="list-style-type: none; padding: 0; margin: 0;">
+        <li th:each="rev : ${reviewsMap[#strings.toString(course.course_id)]}" class="review-item-card" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <!-- 🟢 FIXED: Targets lowercase keys map entries coming from the database join execution -->
+                <strong th:text="${rev.full_name}" style="font-size: 13px; color: #0f172a;">Student Name</strong>
+                <span th:text="${rev.rating == 5 ? '⭐⭐⭐⭐⭐' : (rev.rating == 4 ? '⭐⭐⭐⭐' : (rev.rating == 3 ? '⭐⭐⭐' : (rev.rating == 2 ? '⭐⭐' : '⭐')))}" style="font-size: 12px;">⭐⭐⭐⭐⭐</span>
+            </div>
+            <p th:text="${rev.comment}" style="margin: 0; font-size: 13px; color: #475569; line-height: 1.4;">Review comments content text...</p>
+        </li>
+    </ul>
+</div>
+
+
+
+    
+</div>
+
+
+
 
    <!-- Tab 4: Live Dynamic Database Batches -->
 <input type="radio" th:id="'tab-batches-' + ${course.course_id}" th:name="'modal-tabs-' + ${course.course_id}" class="tab-radio">
@@ -874,23 +966,23 @@
 
 
                 <!-- 2. Write a Review Form Submission Block Linked to Session User -->
-<div class="add-review-box" th:if="${session.currentUser != null}">
+<!--<di v class="add-review-box" th:if="${session.currentUser != null}">
     <h4 style="margin: 0 0 12px 0; font-size: 14px; color: #0f172a;">Share your feedback</h4>
     
     <form th:action="@{/courses/{id}/review(id=${course.course_id})}" method="POST" class="review-submit-form">
         
-        <!-- Pass the logged-in User's ID implicitly -->
+        Pass the logged-in User's ID implicitly
         <input type="hidden" name="userId" th:value="${session.currentUser.user_id}">
 
         <div class="review-form-row" style="align-items: center;">
-            <!-- Read-Only Username Visual Anchor Display -->
+            Read-Only Username Visual Anchor Display
             <div class="review-form-group" style="flex: 1;">
                 <label style="font-size: 11px; color:#64748b; margin-bottom: 4px; text-transform:none;">Reviewing as:</label>
                 <div style="font-size: 14px; font-weight: 600; color: #0f172a; padding: 6px 0;" 
                      th:text="${session.currentUser.full_name}">Logged In User Name</div>
             </div>
             
-            <!-- Rating Selector Dropdown -->
+            Rating Selector Dropdown
             <div class="review-form-group" style="width: 110px; flex: 0 0 auto;">
                 <label style="font-size: 11px; color:#64748b; margin-bottom: 4px; text-transform:none;">Rating:</label>
                 <select name="rating" required class="review-input-field select-rating">
@@ -903,26 +995,19 @@
             </div>
         </div>
 
-        <!-- Comment Textarea Input Area -->
+        Comment Textarea Input Area
         <div class="review-form-group" style="margin-top: 10px;">
             <textarea name="comment" rows="3" required placeholder="Write your review comments here..." class="review-input-field review-textarea"></textarea>
         </div>
 
-        <!-- Action Button Submission Row -->
+        Action Button Submission Row
         <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
             <button type="submit" class="btn-submit-review">Submit Review</button>
         </div>
     </form>
-</div>
+</div> -->
 
-<!-- Fallback Alert Box if the user isn't logged in -->
-<div class="add-review-box" th:if="${session.currentUser == null}" style="text-align: center; padding: 15px;">
-<<<<<<< Updated upstream
-    <p style="font-size: 13px; color: #64748b; margin: 0;">Please <a th:href="@{/register}" style="color:#0f172a; font-weight:600;">log in</a> to submit a course review.</p>
-=======
-    <p style="font-size: 13px; color: #64748b; margin: 0;">Please <a th:href="@{/login}" style="color:#0f172a; font-weight:600;">log in</a> to submit a course review.</p>
->>>>>>> Stashed changes
-</div>
+
 
     </div>
 

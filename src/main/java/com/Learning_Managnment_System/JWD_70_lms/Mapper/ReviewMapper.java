@@ -21,7 +21,7 @@ public class ReviewMapper implements RowMapper<Review> {
         // This ensures review.user.fullName reads successfully on your HTML pages!
         StudentBean user = new StudentBean();
         user.setId(rs.getLong("user_id"));
-        user.setFullName(rs.getString("fullName")); // Extracted via the SQL Join query execution
+        user.setFullName(rs.getString("full_name")); // Extracted via the SQL Join query execution
         
         review.setUser(user);
         
