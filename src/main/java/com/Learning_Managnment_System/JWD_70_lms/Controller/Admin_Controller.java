@@ -1,140 +1,134 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.Learning_Managnment_System.JWD_70_lms.Repository.Admin_Repository;
 import com.Learning_Managnment_System.JWD_70_lms.model.AdminUserBean;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
+@RequestMapping("/admin")
 public class Admin_Controller {
 
-
     @Autowired
-    private Admin_Repository adminRepository;
+    private Admin_Repository userRepo;
 
 
     // =========================================================
     // ADMIN DASHBOARD
+    //
+    // URL:
+    // /admin
+    // /admin/
+    // /admin/dashboard
     // =========================================================
-
-    @GetMapping("/admin")
-    public String adminDashboard(Model model) {
-
-        List<AdminUserBean> users =
-                adminRepository.getAllUsers();
-
-        model.addAttribute("users", users);
-
-        return "dashboard";
-    }
-
-
-    // =========================================================
-    // SEARCH USER
-    // =========================================================
-
-    @GetMapping("/admin/users/search")
-    public String searchUsers(
-            @RequestParam("keyword") String keyword,
+    @GetMapping({"", "/", "/dashboard"})
+    public String dashboard(
+            HttpSession session,
             Model model) {
 
-        List<AdminUserBean> users;
-
-        if (keyword == null || keyword.trim().isEmpty()) {
-            users = adminRepository.getAllUsers();
-        } else {
-            users = adminRepository.searchUsers(keyword);
+        // Check admin login
+        if (!checkAdmin(session)) {
+            return "redirect:/login";
         }
 
-        model.addAttribute("users", users);
-        model.addAttribute("keyword", keyword);
+        // Dashboard statistics
+        model.addAttribute(
+                "totalUsers",
+                userRepo.countUsers()
+        );
 
+        model.addAttribute(
+                "totalRoles",
+                userRepo.countRoles()
+        );
+
+        model.addAttribute(
+                "activeUsers",
+                userRepo.countActiveUsers()
+        );
+
+        model.addAttribute(
+                "inactiveUsers",
+                userRepo.countInactiveUsers()
+        );
+
+        // File:
+        // src/main/resources/templates/dashboard.html
         return "dashboard";
     }
 
 
     // =========================================================
-    // SHOW ADD USER FORM
+    // USER LIST
+    //
+    // URL:
+    // /admin/users
     // =========================================================
+    @GetMapping("/users")
+    public String users(
+            HttpSession session,
+            Model model) {
 
-    @GetMapping("/admin/users/add")
-    public String showAddUserForm(Model model) {
+        // Check admin login
+        if (!checkAdmin(session)) {
+            return "redirect:/login";
+        }
 
+        // Load all users
+        model.addAttribute(
+                "users",
+                userRepo.getAllUsers()
+        );
+
+        // File:
+        // src/main/resources/templates/users.html
+        return "users";
+    }
+
+
+    
+    @GetMapping("/users/create")
+    public String createForm(
+            HttpSession session,
+            Model model) {
+
+        // Check admin login
+        if (!checkAdmin(session)) {
+            return "redirect:/login";
+        }
+
+        // Empty object for form
         model.addAttribute(
                 "user",
                 new AdminUserBean()
         );
 
-        return "admin/user_form";
+        // File:
+        // src/main/resources/templates/user_form.html
+        return "user_form";
     }
 
 
-    // =========================================================
-    // ADD USER
-    // =========================================================
-
-    @PostMapping("/admin/users/add")
-    public String addUser(
-            AdminUserBean user,
+    @PostMapping("/users/create")
+    public String createUser(
+            @ModelAttribute("user") AdminUserBean user,
+            HttpSession session,
             RedirectAttributes redirectAttributes) {
 
-        // Required validation
-        if (user.getFullName() == null ||
-                user.getFullName().trim().isEmpty()) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Full name is required."
-            );
-
-            return "redirect:/admin/users/add";
+        // Check admin login
+        if (!checkAdmin(session)) {
+            return "redirect:/login";
         }
-
-
-        if (user.getEmail() == null ||
-                user.getEmail().trim().isEmpty()) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Email is required."
-            );
-
-            return "redirect:/admin/users/add";
-        }
-
-
-        if (user.getPasswordHash() == null ||
-                user.getPasswordHash().trim().isEmpty()) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Password is required."
-            );
-
-            return "redirect:/admin/users/add";
-        }
-
-
-        // Duplicate email
-        if (adminRepository.emailExists(user.getEmail())) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "This email is already registered."
-            );
-
-            return "redirect:/admin/users/add";
-        }
-
 
         // Default status
         if (user.getStatus() == null ||
@@ -143,256 +137,224 @@ public class Admin_Controller {
             user.setStatus("ACTIVE");
         }
 
+        // Save user
+        userRepo.createUser(user);
 
-        int result =
-                adminRepository.addUser(user);
+        // Success message
+        redirectAttributes.addFlashAttribute(
+                "success",
+                "User created successfully!"
+        );
 
-
-        if (result > 0) {
-
-            redirectAttributes.addFlashAttribute(
-                    "success",
-                    "User added successfully."
-            );
-
-        } else {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Unable to add user."
-            );
-        }
-
-        return "redirect:/admin";
+        // IMPORTANT:
+        // Because controller has @RequestMapping("/admin")
+        // redirect must contain /admin/users
+        return "redirect:/admin/users";
     }
 
 
     // =========================================================
-    // VIEW USER
+    // EDIT USER FORM
+    //
+    // URL:
+    // /admin/users/edit/{id}
     // =========================================================
-
-    @GetMapping("/admin/users/view/{id}")
-    public String viewUser(
+    @GetMapping("/users/edit/{id}")
+    public String editForm(
             @PathVariable("id") int id,
+            HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        AdminUserBean user =
-                adminRepository.getUserById(id);
+        // Check admin login
+        if (!checkAdmin(session)) {
+            return "redirect:/login";
+        }
 
+        // Get user by ID
+        AdminUserBean user =
+                userRepo.getUserById(id);
+
+        // User not found
         if (user == null) {
 
             redirectAttributes.addFlashAttribute(
                     "error",
-                    "User not found."
+                    "User not found!"
             );
 
-            return "redirect:/admin";
+            return "redirect:/admin/users";
         }
 
-        model.addAttribute("user", user);
+        // Send user to form
+        model.addAttribute(
+                "user",
+                user
+        );
 
-        return "admin/user_view";
+        // Same form used for edit
+        return "user_form";
     }
 
 
     // =========================================================
-    // SHOW EDIT USER FORM
+    // NOTIFICATION
+    //
+    // URL:
+    // /admin/notification
+    //
+    // File:
+    // src/main/resources/templates/notification.html
     // =========================================================
+    @GetMapping("/notification")
+    public String notification(
+            HttpSession session) {
 
-    @GetMapping("/admin/users/edit/{id}")
-    public String showEditUserForm(
-            @PathVariable("id") int id,
-            Model model,
-            RedirectAttributes redirectAttributes) {
-
-        AdminUserBean user =
-                adminRepository.getUserById(id);
-
-        if (user == null) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "User not found."
-            );
-
-            return "redirect:/admin";
+        // Check admin login
+        if (!checkAdmin(session)) {
+            return "redirect:/login";
         }
 
-        model.addAttribute("user", user);
-
-        return "admin/user_form";
+        return "notification";
     }
 
 
-    // =========================================================
-    // UPDATE USER
-    // =========================================================
+    @GetMapping("/profile")
+    public String profile(
+            HttpSession session,
+            Model model) {
 
-    @PostMapping("/admin/users/update")
+        // Check admin login
+        if (!checkAdmin(session)) {
+            return "redirect:/login";
+        }
+
+        // Get session data
+        model.addAttribute(
+                "fullName",
+                session.getAttribute("fullName")
+        );
+
+        model.addAttribute(
+                "email",
+                session.getAttribute("email")
+        );
+
+        model.addAttribute(
+                "roleId",
+                session.getAttribute("role_id")
+        );
+
+        return "profile";
+    }
+
+
+    @PostMapping("/users/update")
     public String updateUser(
-            AdminUserBean user,
+            @ModelAttribute("user") AdminUserBean user,
+            HttpSession session,
             RedirectAttributes redirectAttributes) {
 
-        if (user.getFullName() == null ||
-                user.getFullName().trim().isEmpty()) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Full name is required."
-            );
-
-            return "redirect:/admin/users/edit/"
-                    + user.getUserId();
+        // Check admin login
+        if (!checkAdmin(session)) {
+            return "redirect:/login";
         }
 
+        // Update user
+        userRepo.updateUser(user);
 
-        if (user.getEmail() == null ||
-                user.getEmail().trim().isEmpty()) {
+        // Success message
+        redirectAttributes.addFlashAttribute(
+                "success",
+                "User updated successfully!"
+        );
 
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Email is required."
-            );
-
-            return "redirect:/admin/users/edit/"
-                    + user.getUserId();
-        }
-
-
-        // Duplicate email except current user
-        if (adminRepository.emailExistsForOtherUser(
-                user.getEmail(),
-                user.getUserId())) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "This email is already used by another user."
-            );
-
-            return "redirect:/admin/users/edit/"
-                    + user.getUserId();
-        }
-
-
-        int result =
-                adminRepository.updateUser(user);
-
-
-        if (result > 0) {
-
-            redirectAttributes.addFlashAttribute(
-                    "success",
-                    "User updated successfully."
-            );
-
-        } else {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Unable to update user."
-            );
-        }
-
-        return "redirect:/admin";
+        return "redirect:/admin/users";
     }
 
 
     // =========================================================
-    // SUSPEND USER
+    // DELETE USER
+    //
+    // URL:
+    // /admin/users/delete/{id}
     // =========================================================
-
-    @PostMapping("/admin/users/suspend")
-    public String suspendUser(
-            @RequestParam("userId") int userId,
-            RedirectAttributes redirectAttributes) {
-
-        int result =
-                adminRepository.updateStatus(
-                        userId,
-                        "SUSPENDED"
-                );
-
-        if (result > 0) {
-
-            redirectAttributes.addFlashAttribute(
-                    "success",
-                    "User suspended successfully."
-            );
-
-        } else {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Unable to suspend user."
-            );
-        }
-
-        return "redirect:/admin";
-    }
-
-
-    // =========================================================
-    // ACTIVATE USER
-    // =========================================================
-
-    @PostMapping("/admin/users/activate")
-    public String activateUser(
-            @RequestParam("userId") int userId,
-            RedirectAttributes redirectAttributes) {
-
-        int result =
-                adminRepository.updateStatus(
-                        userId,
-                        "ACTIVE"
-                );
-
-        if (result > 0) {
-
-            redirectAttributes.addFlashAttribute(
-                    "success",
-                    "User activated successfully."
-            );
-
-        } else {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Unable to activate user."
-            );
-        }
-
-        return "redirect:/admin";
-    }
-
-
-    // =========================================================
-    // DELETE USER - SOFT DELETE
-    // =========================================================
-
-    @PostMapping("/admin/users/delete")
+    @GetMapping("/users/delete/{id}")
     public String deleteUser(
-            @RequestParam("userId") int userId,
+            @PathVariable("id") int id,
+            HttpSession session,
             RedirectAttributes redirectAttributes) {
 
-        int result =
-                adminRepository.deleteUser(userId);
-
-        if (result > 0) {
-
-            redirectAttributes.addFlashAttribute(
-                    "success",
-                    "User deleted successfully."
-            );
-
-        } else {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Unable to delete user."
-            );
+        // Check admin login
+        if (!checkAdmin(session)) {
+            return "redirect:/login";
         }
 
-        return "redirect:/admin";
+        // Delete user
+        userRepo.deleteUser(id);
+
+        // Success message
+        redirectAttributes.addFlashAttribute(
+                "success",
+                "User deleted successfully!"
+        );
+
+        return "redirect:/admin/users";
+    }
+
+
+    // =========================================================
+    // LOGOUT
+    //
+    // URL:
+    // /admin/logout
+    // =========================================================
+    @GetMapping("/logout")
+    public String logout(
+            HttpSession session) {
+
+        // Remove all session data
+        session.invalidate();
+
+        // Back to login page
+        return "redirect:/login";
+    }
+
+
+    // =========================================================
+    // CHECK ADMIN
+    // =========================================================
+    private boolean checkAdmin(
+            HttpSession session) {
+
+        // Get role_id from session
+        Object role =
+                session.getAttribute("role_id");
+
+        // No login session
+        if (role == null) {
+            return false;
+        }
+
+        int roleId;
+
+        try {
+
+            roleId = Integer.parseInt(
+                    role.toString()
+            );
+
+        } catch (Exception e) {
+
+            return false;
+        }
+
+        // Current role setup
+        //
+        // 1 = Admin
+        // 2 = Teacher
+        // 3 = Student
+
+        return roleId == 1;
     }
 }

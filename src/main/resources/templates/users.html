@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>User Management - LMS</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f7f5fa;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+
+        /* ================= TOPBAR ================= */
+
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+
+            height: 70px;
+
+            background: #ffffff;
+
+            border-bottom: 1px solid #e5dbea;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 30px;
+
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4b176b;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .top-link {
+            color: #555;
+
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+            font-size: 14px;
+        }
+
+        .top-link:hover {
+            color: #8e44ad;
+        }
+
+        .logout-btn {
+            color: white;
+            background: #8e44ad;
+
+            padding: 10px 16px;
+
+            border-radius: 8px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #71368a;
+        }
+
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+
+            top: 70px;
+            left: 0;
+            bottom: 0;
+
+            width: 250px;
+
+            background: #ffffff;
+
+            border-right: 1px solid #e5dbea;
+
+            padding: 25px 15px;
+        }
+
+        .sidebar-title {
+            padding: 0 15px 15px;
+
+            color: #888;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            text-transform: uppercase;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 13px 15px;
+
+            margin-bottom: 6px;
+
+            border-radius: 8px;
+
+            color: #555;
+
+            font-size: 14px;
+        }
+
+        .sidebar-link:hover {
+            background: #f4e9ff;
+            color: #8e44ad;
+        }
+
+        .sidebar-link.active {
+            background: #f4e9ff;
+            color: #8e44ad;
+
+            font-weight: bold;
+        }
+
+        .sidebar-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            margin-left: 250px;
+
+            padding: 105px 35px 40px;
+
+            min-height: 100vh;
+        }
+
+
+        /* ================= PAGE HEADER ================= */
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            font-size: 30px;
+
+            color: #333;
+
+            margin-bottom: 7px;
+        }
+
+        .page-header p {
+            color: #777;
+
+            font-size: 14px;
+        }
+
+
+        /* ================= ADD BUTTON ================= */
+
+        .add-btn {
+            background: #8e44ad;
+
+            color: white;
+
+            padding: 11px 18px;
+
+            border-radius: 8px;
+
+            display: inline-flex;
+            align-items: center;
+
+            gap: 8px;
+
+            font-size: 14px;
+
+            font-weight: 500;
+        }
+
+        .add-btn:hover {
+            background: #71368a;
+        }
+
+
+        /* ================= ALERT ================= */
+
+        .alert {
+            padding: 14px 18px;
+
+            border-radius: 8px;
+
+            margin-bottom: 20px;
+
+            font-size: 14px;
+        }
+
+        .success {
+            background: #eaf8ee;
+
+            color: #227a3b;
+
+            border: 1px solid #bde5c8;
+        }
+
+        .error {
+            background: #fff0f0;
+
+            color: #c0392b;
+
+            border: 1px solid #f0c1c1;
+        }
+
+
+        /* ================= TABLE CONTAINER ================= */
+
+        .table-box {
+            background: #ffffff;
+
+            border: 1px solid #eee5f3;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.05);
+
+            overflow-x: auto;
+        }
+
+
+        /* ================= TABLE ================= */
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 850px;
+        }
+
+        thead {
+            background: #f4e9ff;
+        }
+
+        th {
+            padding: 15px;
+
+            text-align: left;
+
+            font-size: 13px;
+
+            color: #4b176b;
+
+            border-bottom: 1px solid #e5dbea;
+        }
+
+        td {
+            padding: 15px;
+
+            font-size: 14px;
+
+            border-bottom: 1px solid #eeeeee;
+
+            color: #555;
+        }
+
+        tbody tr:hover {
+            background: #faf8fc;
+        }
+
+
+        /* ================= ROLE ================= */
+
+        .role-badge {
+            display: inline-block;
+
+            background: #f4e9ff;
+
+            color: #8e44ad;
+
+            padding: 5px 10px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+
+        /* ================= STATUS ================= */
+
+        .status-badge {
+            display: inline-block;
+
+            padding: 5px 10px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+        .active-status {
+            background: #eaf8ee;
+
+            color: #227a3b;
+        }
+
+        .inactive-status {
+            background: #fff0f0;
+
+            color: #c0392b;
+        }
+
+        .suspended-status {
+            background: #fff7df;
+
+            color: #9a7200;
+        }
+
+
+        /* ================= ACTION BUTTONS ================= */
+
+        .action-buttons {
+            display: flex;
+
+            gap: 8px;
+        }
+
+        .edit-btn {
+            background: #f4e9ff;
+
+            color: #8e44ad;
+
+            padding: 8px 11px;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+        }
+
+        .edit-btn:hover {
+            background: #e8d3f5;
+        }
+
+        .delete-btn {
+            background: #fff0f0;
+
+            color: #c0392b;
+
+            padding: 8px 11px;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+        }
+
+        .delete-btn:hover {
+            background: #f8dede;
+        }
+
+
+        /* ================= EMPTY ================= */
+
+        .empty-message {
+            text-align: center;
+
+            padding: 50px 20px;
+
+            color: #888;
+        }
+
+        .empty-message i {
+            font-size: 40px;
+
+            color: #cbb1d8;
+
+            margin-bottom: 15px;
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 768px) {
+
+            .sidebar {
+                width: 210px;
+            }
+
+            .content {
+                margin-left: 210px;
+
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .top-link {
+                display: none;
+            }
+
+            .page-header {
+                align-items: flex-start;
+
+                flex-direction: column;
+
+                gap: 15px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     TOPBAR
+====================================================== -->
+
+<header class="topbar">
+
+    <div class="logo">
+        LMS
+    </div>
+
+
+    <div class="topbar-right">
+
+        <a th:href="@{/admin/notifications}"
+           class="top-link">
+
+            <i class="fa-regular fa-bell"></i>
+
+            <span>Notifications</span>
+
+        </a>
+
+
+        <a th:href="@{/admin/profile}"
+           class="top-link">
+
+            <i class="fa-regular fa-user"></i>
+
+            <span>My Profile</span>
+
+        </a>
+
+
+        <a th:href="@{/admin/logout}"
+           class="logout-btn">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>Logout</span>
+
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     LAYOUT
+====================================================== -->
+
+<div class="layout">
+
+
+    <!-- =================================================
+         SIDEBAR
+    ================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-title">
+            Admin Portal
+        </div>
+
+
+        <!-- Dashboard -->
+        <a th:href="@{/admin}"
+           class="sidebar-link">
+
+            <i class="fa-solid fa-gauge-high"></i>
+
+            <span>Dashboard</span>
+
+        </a>
+
+
+        <!-- User & Role -->
+        <a th:href="@{/admin/users}"
+           class="sidebar-link active">
+
+            <i class="fa-solid fa-users"></i>
+
+            <span>User &amp; Role</span>
+
+        </a>
+
+
+        <!-- Notifications -->
+        <a th:href="@{/admin/notifications}"
+           class="sidebar-link">
+
+            <i class="fa-regular fa-bell"></i>
+
+            <span>Notifications</span>
+
+        </a>
+
+
+        <!-- My Profile -->
+        <a th:href="@{/admin/profile}"
+           class="sidebar-link">
+
+            <i class="fa-regular fa-user"></i>
+
+            <span>My Profile</span>
+
+        </a>
+
+
+        <!-- Logout -->
+        <a th:href="@{/admin/logout}"
+           class="sidebar-link">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>Logout</span>
+
+        </a>
+
+    </aside>
+
+
+    <!-- =================================================
+         CONTENT
+    ================================================== -->
+
+    <main class="content">
+
+
+        <!-- Page Header -->
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    User Management
+                </h1>
+
+                <p>
+                    Manage LMS users and their roles.
+                </p>
+
+            </div>
+
+
+            <a th:href="@{/admin/users/create}"
+               class="add-btn">
+
+                <i class="fa-solid fa-user-plus"></i>
+
+                Add User
+
+            </a>
+
+        </div>
+
+
+        <!-- =================================================
+             SUCCESS MESSAGE
+        ================================================== -->
+
+        <div th:if="${success}"
+             class="alert success"
+             th:text="${success}">
+
+            User operation successful.
+
+        </div>
+
+
+        <!-- =================================================
+             ERROR MESSAGE
+        ================================================== -->
+
+        <div th:if="${error}"
+             class="alert error"
+             th:text="${error}">
+
+            Something went wrong.
+
+        </div>
+
+
+        <!-- =================================================
+             USER TABLE
+        ================================================== -->
+
+        <div class="table-box">
+
+
+            <!-- Users exist -->
+            <table th:if="${users != null and !#lists.isEmpty(users)}">
+
+                <thead>
+
+                <tr>
+
+                    <th>
+                        ID
+                    </th>
+
+                    <th>
+                        Full Name
+                    </th>
+
+                    <th>
+                        Email
+                    </th>
+
+                    <th>
+                        Phone
+                    </th>
+
+                    <th>
+                        Role
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Action
+                    </th>
+
+                </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                <tr th:each="user : ${users}">
+
+                    <!-- ID -->
+                    <td th:text="${user.user_id}">
+                        1
+                    </td>
+
+
+                    <!-- Full Name -->
+                    <td th:text="${user.full_name}">
+                        User Name
+                    </td>
+
+
+                    <!-- Email -->
+                    <td th:text="${user.email}">
+                        user@example.com
+                    </td>
+
+
+                    <!-- Phone -->
+                    <td th:text="${user.phone}">
+                        09xxxxxxxxx
+                    </td>
+
+
+                    <!-- Role -->
+                    <td>
+
+                        <span class="role-badge"
+                              th:text="${user.role_name}">
+                            ADMIN
+                        </span>
+
+                    </td>
+
+
+                    <!-- Status -->
+                    <td>
+
+                        <span class="status-badge"
+                              th:classappend="${user.status == 'ACTIVE'} ? ' active-status' :
+                                              (${user.status == 'INACTIVE'} ? ' inactive-status' :
+                                              ' suspended-status')"
+                              th:text="${user.status}">
+
+                            ACTIVE
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- Actions -->
+                    <td>
+
+                        <div class="action-buttons">
+
+
+                            <!-- Edit -->
+                            <a th:href="@{/admin/users/edit/{id}(id=${user.user_id})}"
+                               class="edit-btn">
+
+                                <i class="fa-solid fa-pen"></i>
+
+                            </a>
+
+
+                            <!-- Delete -->
+                            <a th:href="@{/admin/users/delete/{id}(id=${user.user_id})}"
+                               class="delete-btn"
+                               onclick="return confirm('Are you sure you want to delete this user?');">
+
+                                <i class="fa-solid fa-trash"></i>
+
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+
+            <!-- No Users -->
+            <div th:if="${users == null or #lists.isEmpty(users)}"
+                 class="empty-message">
+
+                <i class="fa-solid fa-users"></i>
+
+                <p>
+                    No users found.
+                </p>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>

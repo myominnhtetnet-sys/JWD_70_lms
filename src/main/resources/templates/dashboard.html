@@ -1,16 +1,16 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduPulse LMS - Enterprise Learning Platform</title>
-    <!-- Tailwind CSS CDN -->
+    Tailwind CSS CDN
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
+    FontAwesome Icons
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
+    Chart.js
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Google Fonts: Inter -->
+    Google Fonts: Inter
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <script>
@@ -234,11 +234,11 @@ table th {
 
     <div id="app" class="min-h-screen flex flex-col">
         
-        <!-- TOP HEADER BAR -->
+        TOP HEADER BAR
         <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 shadow-sm transition-colors duration-200">
             <div class="px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
                 
-                <!-- Left: Branding & Search -->
+                Left: Branding & Search
                 <div class="flex items-center gap-6 flex-1 max-w-xl">
                     <div class="flex items-center gap-3 cursor-pointer" onclick="switchRole('admin')">
                         <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-200 dark:shadow-none">
@@ -250,7 +250,7 @@ table th {
                         </div>
                     </div>
 
-                    <!-- Global Search -->
+                    Global Search
                     <div class="relative flex-1 hidden md:block">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                         <input id="globalSearch" type="text" placeholder="Search courses, users, materials..." 
@@ -258,7 +258,7 @@ table th {
                     </div>
                 </div>
 
-                <!-- Center: Prominent Role Switcher -->
+                Center: Prominent Role Switcher
                 <div class="bg-slate-100 dark:bg-slate-700/80 p-1 rounded-xl border border-slate-200 dark:border-slate-600 flex items-center gap-1 shadow-inner">
                     <button onclick="switchRole('admin')" id="role-btn-admin" class="role-btn text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all">
                         <i class="fa-solid fa-user-shield"></i>
@@ -274,20 +274,20 @@ table th {
                     </button>
                 </div>
 
-                <!-- Right: Utilities & User Profile -->
+                Right: Utilities & User Profile
                 <div class="flex items-center gap-3">
-                    <!-- Dark Mode Toggle -->
+                    Dark Mode Toggle
                     <button onclick="toggleDarkMode()" class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition">
                         <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
                     </button>
 
-                    <!-- Notifications Button -->
+                    Notifications Button
                     <div class="relative">
                         <button onclick="toggleNotifications()" class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition relative">
                             <i class="fa-regular fa-bell text-lg"></i>
                             <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-600 rounded-full ring-2 ring-white dark:ring-slate-800"></span>
                         </button>
-                        <!-- Notifications Dropdown -->
+                        Notifications Dropdown
                         <div id="notif-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 fade-in">
                             <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
                                 <span class="font-bold text-sm">Notifications</span>
@@ -308,7 +308,7 @@ table th {
                         </div>
                     </div>
 
-                    <!-- User Profile Dropdown -->
+                    User Profile Dropdown
                     <div class="flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-slate-700">
                         <img id="user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120" alt="Avatar" class="w-9 h-9 rounded-full object-cover ring-2 ring-indigo-500/30">
                         <div class="hidden lg:block text-left">
@@ -321,15 +321,15 @@ table th {
             </div>
         </header>
 
-        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
+        MAIN APP CONTENT AREA (Sidebar + Dynamic View)
         <div class="flex-1 flex overflow-hidden">
             
-            <!-- DYNAMIC SIDEBAR -->
+            DYNAMIC SIDEBAR
             <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex-shrink-0 border-r border-slate-800 flex flex-col justify-between transition-all duration-300">
                 <div class="p-4">
                     <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-3" id="sidebar-category">Admin Portal</div>
                     <nav id="sidebar-menu" class="space-y-1">
-                        <!-- Populated by JavaScript based on active role -->
+                        Populated by JavaScript based on active role
                     </nav>
                 </div>
                 
@@ -344,12 +344,12 @@ table th {
                 </div>
             </aside>
 
-            <!-- MAIN DYNAMIC CONTENT CONTAINER -->
+            MAIN DYNAMIC CONTENT CONTAINER
             <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-slate-900">
                 
-                <!-- ================= ADMIN VIEW ================= -->
+                ================= ADMIN VIEW =================
                 <div id="view-admin" class="role-view space-y-6 hidden">
-                    <!-- Title & Header -->
+                    Title & Header
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Admin Dashboard</h1>
@@ -367,7 +367,7 @@ table th {
                         </div>
                     </div>
 
-                    <!-- Admin Stat Cards -->
+                    Admin Stat Cards
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
                             <div class="flex items-center justify-between">
@@ -432,7 +432,7 @@ table th {
                         </div>
                     </div>
 
-                    <!-- Visual Analytics Charts Row -->
+                    Visual Analytics Charts Row
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
                             <div class="flex items-center justify-between mb-4">
@@ -496,8 +496,8 @@ table th {
                         </div>
                     </div>
 
-                    <!-- User Management Table -->
-                   <!--  <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm overflow-hidden">
+                    User Management Table
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm overflow-hidden">
                         <div class="p-6 border-b border-slate-100 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
                                 <h3 class="font-bold text-base text-slate-900 dark:text-white">User Management</h3>
@@ -531,36 +531,30 @@ table th {
                             </table>
                         </div>
                     </div>
-                </div> -->
+                </div>
 
-
-
-<!-- =====================================================
-     USER MANAGEMENT
-===================================================== -->
+================= USER MANAGEMENT =================
 
 <div class="user-management">
 
     <div class="section-header">
 
         <div>
-
             <h2>
                 <i class="fa-solid fa-users"></i>
                 User Management
             </h2>
 
             <p>
-                Manage LMS users
+                Manage LMS users, roles and account status.
             </p>
-
         </div>
 
-        <a
-            th:href="@{/admin/users/add}"
-            class="add-user-btn">
+        <a th:href="@{/admin/users/add}"
+           class="add-user-btn">
 
             <i class="fa-solid fa-user-plus"></i>
+
             Add User
 
         </a>
@@ -568,46 +562,42 @@ table th {
     </div>
 
 
-    <!-- SUCCESS MESSAGE -->
+    ================= ALERT =================
 
-    <div
-        th:if="${success}"
-        class="alert success"
-        th:text="${success}">
+    <div class="alert success"
+         th:if="${success}"
+         th:text="${success}">
     </div>
 
 
-    <!-- ERROR MESSAGE -->
-
-    <div
-        th:if="${error}"
-        class="alert error"
-        th:text="${error}">
+    <div class="alert error"
+         th:if="${error}"
+         th:text="${error}">
     </div>
 
 
-    <!-- SEARCH -->
+    ================= SEARCH =================
 
-    <form
-        th:action="@{/admin/users/search}"
-        method="get"
-        class="search-form">
+    <form th:action="@{/admin/users/search}"
+          method="get"
+          class="search-form">
 
-        <input
-            type="text"
-            name="keyword"
-            th:value="${keyword}"
-            placeholder="Search name, email, phone, role or status...">
+        <input type="text"
+               name="keyword"
+               th:value="${keyword}"
+               placeholder="Search by name, email, phone, role or status...">
 
         <button type="submit">
 
-            <i class="fa-solid fa-search"></i>
+            <i class="fa-solid fa-magnifying-glass"></i>
+
             Search
 
         </button>
 
-        <a
-            th:href="@{/admin}">
+        <a th:href="@{/admin}">
+
+            <i class="fa-solid fa-rotate-left"></i>
 
             Reset
 
@@ -616,7 +606,7 @@ table th {
     </form>
 
 
-    <!-- USER TABLE -->
+    ================= USER TABLE =================
 
     <div class="table-container">
 
@@ -624,116 +614,108 @@ table th {
 
             <thead>
 
-                <tr>
+            <tr>
 
-                    <th>ID</th>
+                <th>ID</th>
 
-                    <th>Full Name</th>
+                <th>Full Name</th>
 
-                    <th>Email</th>
+                <th>Email</th>
 
-                    <th>Role</th>
+                <th>Role</th>
 
-                    <th>Status</th>
+                <th>Status</th>
 
-                    <th>Created At</th>
+                <th>Created At</th>
 
-                    <th>Action</th>
+                <th>Actions</th>
 
-                </tr>
+            </tr>
 
             </thead>
 
 
             <tbody>
 
-                <tr th:each="user : ${users}">
+            <tr th:each="user : ${users}">
 
-                    <td
-                        th:text="${user.userId}">
-                        1
-                    </td>
+                <td th:text="${user.userId}">
+                </td>
 
 
-                    <td
-                        th:text="${user.fullName}">
-                        
-                    </td>
+                <td th:text="${user.fullName}">
+                </td>
 
 
-                    <td
-                        th:text="${user.email}">
-                   
-                    </td>
+                <td th:text="${user.email}">
+                </td>
 
 
-                    <td
-                        th:text="${user.roleName}">
-                 
-                    </td>
+                <td>
+
+                    <span class="role-badge"
+                          th:text="${user.roleName}">
+                    </span>
+
+                </td>
 
 
-                    <td>
+                <td>
 
-                        <span
-                            th:text="${user.status}"
-                            th:class="'status ' + ${#strings.toLowerCase(user.status)}">
-                            ACTIVE
-                        </span>
+                    <span class="status"
+                          th:classappend="${#strings.toLowerCase(user.status)}"
+                          th:text="${user.status}">
+                    </span>
 
-                    </td>
-
-
-                    <td
-                        th:text="${user.createdAt}">
-                        2026-10-01
-                    </td>
+                </td>
 
 
-                    <td class="actions">
+                <td th:text="${user.createdAt != null
+                    ? #temporals.format(user.createdAt,'yyyy-MM-dd HH:mm')
+                    : '-'}">
+                </td>
 
-                        <!-- VIEW -->
 
-                        <a
-                            th:href="@{/admin/users/view/{id}(id=${user.userId})}"
-                            class="view-btn"
-                            title="View">
+                <td>
+
+                    <div class="actions">
+
+                        VIEW
+
+                        <a th:href="@{/admin/users/view/{id}(id=${user.userId})}"
+                           class="view-btn"
+                           title="View">
 
                             <i class="fa-solid fa-eye"></i>
 
                         </a>
 
 
-                        <!-- EDIT -->
+                        EDIT
 
-                        <a
-                            th:href="@{/admin/users/edit/{id}(id=${user.userId})}"
-                            class="edit-btn"
-                            title="Edit">
+                        <a th:href="@{/admin/users/edit/{id}(id=${user.userId})}"
+                           class="edit-btn"
+                           title="Edit">
 
                             <i class="fa-solid fa-pen"></i>
 
                         </a>
 
 
-                        <!-- SUSPEND -->
+                        SUSPEND
 
-                        <form
-                            th:if="${user.status == 'ACTIVE'}"
-                            th:action="@{/admin/users/suspend}"
-                            method="post"
-                            style="display:inline;">
+                        <form th:if="${user.status == 'ACTIVE'}"
+                              th:action="@{/admin/users/suspend}"
+                              method="post">
 
-                            <input
-                                type="hidden"
-                                name="userId"
-                                th:value="${user.userId}">
+                            <input type="hidden"
+                                   name="userId"
+                                   th:value="${user.userId}">
 
-                            <button
-                                type="submit"
-                                class="suspend-btn"
-                                title="Suspend"
-                                onclick="return confirm('Are you sure you want to suspend this user?');">
+                            <button type="submit"
+                                    class="suspend-btn"
+                                    title="Suspend"
+                                    onclick="return confirm('Are you sure you want to suspend this user?');">
 
                                 <i class="fa-solid fa-ban"></i>
 
@@ -742,23 +724,20 @@ table th {
                         </form>
 
 
-                        <!-- ACTIVATE -->
+                        ACTIVATE
 
-                        <form
-                            th:if="${user.status != 'ACTIVE'}"
-                            th:action="@{/admin/users/activate}"
-                            method="post"
-                            style="display:inline;">
+                        <form th:if="${user.status == 'SUSPENDED' or user.status == 'INACTIVE'}"
+                              th:action="@{/admin/users/activate}"
+                              method="post">
 
-                            <input
-                                type="hidden"
-                                name="userId"
-                                th:value="${user.userId}">
+                            <input type="hidden"
+                                   name="userId"
+                                   th:value="${user.userId}">
 
-                            <button
-                                type="submit"
-                                class="activate-btn"
-                                title="Activate">
+                            <button type="submit"
+                                    class="activate-btn"
+                                    title="Activate"
+                                    onclick="return confirm('Are you sure you want to activate this user?');">
 
                                 <i class="fa-solid fa-check"></i>
 
@@ -767,23 +746,19 @@ table th {
                         </form>
 
 
-                        <!-- DELETE -->
+                        DELETE
 
-                        <form
-                            th:action="@{/admin/users/delete}"
-                            method="post"
-                            style="display:inline;">
+                        <form th:action="@{/admin/users/delete}"
+                              method="post">
 
-                            <input
-                                type="hidden"
-                                name="userId"
-                                th:value="${user.userId}">
+                            <input type="hidden"
+                                   name="userId"
+                                   th:value="${user.userId}">
 
-                            <button
-                                type="submit"
-                                class="delete-btn"
-                                title="Delete"
-                                onclick="return confirm('Are you sure you want to delete this user?');">
+                            <button type="submit"
+                                    class="delete-btn"
+                                    title="Delete"
+                                    onclick="return confirm('Are you sure you want to delete this user?');">
 
                                 <i class="fa-solid fa-trash"></i>
 
@@ -791,24 +766,27 @@ table th {
 
                         </form>
 
-                    </td>
+                    </div>
 
-                </tr>
+                </td>
+
+            </tr>
 
 
-                <!-- NO DATA -->
+            EMPTY
 
-                <tr th:if="${#lists.isEmpty(users)}">
+            <tr th:if="${users == null or #lists.isEmpty(users)}">
 
-                    <td
-                        colspan="7"
-                        style="text-align:center;">
+                <td colspan="7"
+                    class="empty-row">
 
-                        No users found.
+                    <i class="fa-solid fa-users-slash"></i>
 
-                    </td>
+                    No users found.
 
-                </tr>
+                </td>
+
+            </tr>
 
             </tbody>
 
@@ -818,14 +796,15 @@ table th {
 
 </div>
 
+================= END USER MANAGEMENT =================
 
 
 
 
 
-                <!-- ================= TEACHER VIEW ================= -->
+                ================= TEACHER VIEW =================
                 <div id="view-teacher" class="role-view space-y-6 hidden">
-                    <!-- Title & Header -->
+                    Title & Header
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Teacher Dashboard</h1>
@@ -843,7 +822,7 @@ table th {
                         </div>
                     </div>
 
-                    <!-- Teacher Stats -->
+                    Teacher Stats
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
                             <div class="flex items-center justify-between">
@@ -898,9 +877,9 @@ table th {
                         </div>
                     </div>
 
-                    <!-- Teacher Section: Active Classes & Grading Queue -->
+                    Teacher Section: Active Classes & Grading Queue
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- My Active Classes -->
+                        My Active Classes
                         <div class="lg:col-span-2 space-y-4">
                             <div class="flex items-center justify-between">
                                 <h3 class="font-bold text-base text-slate-900 dark:text-white">My Managed Courses</h3>
@@ -908,7 +887,7 @@ table th {
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <!-- Course Card 1 -->
+                                Course Card 1
                                 <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
                                     <div>
                                         <div class="flex justify-between items-start mb-3">
@@ -937,7 +916,7 @@ table th {
                                     </div>
                                 </div>
 
-                                <!-- Course Card 2 -->
+                                Course Card 2
                                 <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
                                     <div>
                                         <div class="flex justify-between items-start mb-3">
@@ -968,7 +947,7 @@ table th {
                             </div>
                         </div>
 
-                        <!-- Grading Submissions Quick Box -->
+                        Grading Submissions Quick Box
                         <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
                             <div>
                                 <div class="flex items-center justify-between mb-4">
@@ -976,7 +955,7 @@ table th {
                                     <span class="text-xs bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 font-bold px-2 py-0.5 rounded-full">12 Pending</span>
                                 </div>
                                 <div id="grading-queue-list" class="space-y-3">
-                                    <!-- Grading Items via JS -->
+                                    Grading Items via JS
                                 </div>
                             </div>
                             <button onclick="showToast('Opening full grading suite...')" class="mt-4 w-full py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-xs font-bold text-slate-700 dark:text-slate-200 rounded-lg transition">
@@ -987,9 +966,9 @@ table th {
                 </div>
 
 
-                <!-- ================= STUDENT VIEW ================= -->
+                ================= STUDENT VIEW =================
                 <div id="view-student" class="role-view space-y-6 hidden">
-                    <!-- Title & Header -->
+                    Title & Header
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Welcome Back, Alex! 👋</h1>
@@ -1001,7 +980,7 @@ table th {
                         </button>
                     </div>
 
-                    <!-- Student Stat Cards -->
+                    Student Stat Cards
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
                             <div class="flex items-center justify-between">
@@ -1056,27 +1035,27 @@ table th {
                         </div>
                     </div>
 
-                    <!-- Enrolled Courses & Homework Deadlines -->
+                    Enrolled Courses & Homework Deadlines
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Active Enrolled Courses Cards -->
+                        Active Enrolled Courses Cards
                         <div class="lg:col-span-2 space-y-4">
                             <h3 class="font-bold text-base text-slate-900 dark:text-white">Continue Learning</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="student-courses-container">
-                                <!-- Enrolled Course cards generated via JS -->
+                                Enrolled Course cards generated via JS
                             </div>
                         </div>
 
-                        <!-- Side panel: Deadlines & Teacher Feedback -->
+                        Side panel: Deadlines & Teacher Feedback
                         <div class="space-y-6">
-                            <!-- Deadlines Box -->
+                            Deadlines Box
                             <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
                                 <h3 class="font-bold text-base text-slate-900 dark:text-white mb-4">Upcoming Deadlines</h3>
                                 <div class="space-y-3" id="student-deadlines-list">
-                                    <!-- Dynamic Deadlines -->
+                                    Dynamic Deadlines
                                 </div>
                             </div>
 
-                            <!-- Recent Teacher Feedback -->
+                            Recent Teacher Feedback
                             <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
                                 <h3 class="font-bold text-base text-slate-900 dark:text-white mb-3">Recent Grades & Feedback</h3>
                                 <div class="space-y-3">
@@ -1098,9 +1077,9 @@ table th {
         </div>
     </div>
 
-    <!-- MODAL DIALOGS -->
+    MODAL DIALOGS
     
-    <!-- Modal 1: Add New User (Admin) -->
+    Modal 1: Add New User (Admin)
     <div id="user-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
             <div class="flex justify-between items-center mb-4">
@@ -1132,7 +1111,7 @@ table th {
         </div>
     </div>
 
-    <!-- Modal 2: Create Assignment (Teacher) -->
+    Modal 2: Create Assignment (Teacher)
     <div id="assignment-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
             <div class="flex justify-between items-center mb-4">
@@ -1163,7 +1142,7 @@ table th {
         </div>
     </div>
 
-    <!-- Modal 3: Submit Work (Student) -->
+    Modal 3: Submit Work (Student)
     <div id="submit-work-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
             <div class="flex justify-between items-center mb-4">
@@ -1191,7 +1170,7 @@ table th {
         </div>
     </div>
 
-    <!-- Modal 4: Announcement (Global) -->
+    Modal 4: Announcement (Global)
     <div id="announcement-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
             <div class="flex justify-between items-center mb-4">
@@ -1215,13 +1194,13 @@ table th {
         </div>
     </div>
 
-    <!-- TOAST NOTIFICATION BANNER -->
+    TOAST NOTIFICATION BANNER
     <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl z-50 flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 border border-slate-700">
         <i class="fa-solid fa-circle-check text-emerald-400 text-base" id="toast-icon"></i>
         <span id="toast-message" class="text-xs font-semibold">Notification message</span>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    JAVASCRIPT LOGIC
     <script>
         // State Management
         let currentRole = 'admin';
@@ -1615,4 +1594,928 @@ table th {
         }
     </script>
 </body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard - LMS</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+
+        /* =========================
+           RESET
+        ========================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f7f5fa;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+
+        /* =========================
+           TOP NAVBAR
+        ========================== */
+
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+
+            height: 70px;
+
+            background: #ffffff;
+
+            border-bottom: 1px solid #e5dbea;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 30px;
+
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4b176b;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .top-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            color: #555;
+
+            font-size: 14px;
+            font-weight: 500;
+
+            transition: 0.2s;
+        }
+
+        .top-link:hover {
+            color: #8e44ad;
+        }
+
+        .top-link i {
+            font-size: 16px;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 10px 16px;
+
+            background: #8e44ad;
+            color: white;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+            font-weight: 500;
+
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #71368a;
+        }
+
+
+        /* =========================
+           SIDEBAR
+        ========================== */
+
+        .sidebar {
+            position: fixed;
+
+            top: 70px;
+            left: 0;
+            bottom: 0;
+
+            width: 250px;
+
+            background: #ffffff;
+
+            border-right: 1px solid #e5dbea;
+
+            padding: 25px 15px;
+
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            padding: 0 15px 15px;
+
+            color: #888;
+
+            font-size: 13px;
+            font-weight: bold;
+
+            text-transform: uppercase;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+
+            gap: 13px;
+
+            width: 100%;
+
+            padding: 13px 15px;
+
+            margin-bottom: 6px;
+
+            border-radius: 8px;
+
+            color: #555;
+
+            font-size: 14px;
+
+            transition: 0.2s;
+        }
+
+        .sidebar-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-link:hover {
+            background: #f4e9ff;
+            color: #8e44ad;
+        }
+
+        .sidebar-link.active {
+            background: #f4e9ff;
+            color: #8e44ad;
+            font-weight: bold;
+        }
+
+        .logout-link {
+            margin-top: 25px;
+            color: #c0392b;
+        }
+
+        .logout-link:hover {
+            background: #fff0f0;
+            color: #c0392b;
+        }
+
+
+        /* =========================
+           MAIN CONTENT
+        ========================== */
+
+        .content {
+            margin-left: 250px;
+
+            padding: 105px 35px 40px;
+
+            min-height: 100vh;
+        }
+
+
+        /* =========================
+           PAGE HEADER
+        ========================== */
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 30px;
+            color: #333;
+
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #777;
+            font-size: 15px;
+        }
+
+        .page-header strong {
+            color: #4b176b;
+        }
+
+
+        /* =========================
+           STAT CARDS
+        ========================== */
+
+        .stats-grid {
+            display: grid;
+
+            grid-template-columns: repeat(4, 1fr);
+
+            gap: 20px;
+
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+
+            border: 1px solid #eee5f3;
+
+            border-radius: 12px;
+
+            padding: 22px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 18px;
+
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+
+            transition: 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-icon {
+            width: 55px;
+            height: 55px;
+
+            flex-shrink: 0;
+
+            border-radius: 10px;
+
+            background: #f4e9ff;
+
+            color: #8e44ad;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 21px;
+        }
+
+        .stat-info h3 {
+            font-size: 13px;
+            color: #888;
+
+            margin-bottom: 6px;
+
+            font-weight: 500;
+        }
+
+        .stat-info p {
+            font-size: 28px;
+
+            color: #333;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           DASHBOARD SECTION
+        ========================== */
+
+        .dashboard-section {
+            background: #ffffff;
+
+            border: 1px solid #eee5f3;
+
+            border-radius: 12px;
+
+            padding: 25px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .section-title {
+            margin-bottom: 20px;
+        }
+
+        .section-title h2 {
+            font-size: 20px;
+            color: #333;
+        }
+
+
+        /* =========================
+           QUICK ACTIONS
+        ========================== */
+
+        .quick-actions {
+            display: grid;
+
+            grid-template-columns: repeat(4, 1fr);
+
+            gap: 15px;
+        }
+
+        .action-card {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 18px;
+
+            border: 1px solid #e7dced;
+
+            border-radius: 10px;
+
+            color: #444;
+
+            font-size: 14px;
+            font-weight: 500;
+
+            transition: 0.2s;
+        }
+
+        .action-card i {
+            color: #8e44ad;
+
+            font-size: 19px;
+        }
+
+        .action-card:hover {
+            background: #f4e9ff;
+
+            border-color: #8e44ad;
+
+            transform: translateY(-2px);
+        }
+
+
+        /* =========================
+           WELCOME BOX
+        ========================== */
+
+        .welcome-box {
+            background: #f4e9ff;
+
+            border: 1px solid #8e44ad;
+
+            border-radius: 12px;
+
+            padding: 25px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 20px;
+        }
+
+        .welcome-icon {
+            width: 60px;
+            height: 60px;
+
+            flex-shrink: 0;
+
+            border-radius: 50%;
+
+            background: #ffffff;
+
+            color: #8e44ad;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 25px;
+        }
+
+        .welcome-box h2 {
+            margin-bottom: 8px;
+
+            color: #4b176b;
+
+            font-size: 21px;
+        }
+
+        .welcome-box p {
+            color: #666;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================== */
+
+        @media (max-width: 1100px) {
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+
+        @media (max-width: 768px) {
+
+            .topbar {
+                padding: 0 15px;
+            }
+
+            .top-link {
+                display: none;
+            }
+
+            .sidebar {
+                width: 210px;
+            }
+
+            .content {
+                margin-left: 210px;
+
+                width: calc(100% - 210px);
+
+                padding: 100px 20px 30px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        @media (max-width: 500px) {
+
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar-title {
+                display: none;
+            }
+
+            .sidebar-link {
+                justify-content: center;
+            }
+
+            .sidebar-link span {
+                display: none;
+            }
+
+            .content {
+                margin-left: 70px;
+
+                width: calc(100% - 70px);
+
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            .page-header h1 {
+                font-size: 24px;
+            }
+
+            .welcome-box {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         TOP NAVBAR
+    ====================================================== -->
+
+    <header class="topbar">
+
+        <!-- Logo -->
+        <div class="logo">
+            LMS
+        </div>
+
+
+        <!-- Right Side -->
+        <div class="topbar-right">
+
+            <!-- Notifications -->
+            <a th:href="@{/admin/notifications}"
+               class="top-link">
+
+                <i class="fa-regular fa-bell"></i>
+
+                <span>Notifications</span>
+
+            </a>
+
+
+            <!-- My Profile -->
+            <a th:href="@{/admin/profile}"
+               class="top-link">
+
+                <i class="fa-regular fa-user"></i>
+
+                <span>My Profile</span>
+
+            </a>
+
+
+            <!-- Logout -->
+            <a th:href="@{/admin/logout}"
+               class="logout-btn">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                <span>Logout</span>
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         PAGE LAYOUT
+    ====================================================== -->
+
+    <div class="layout">
+
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
+        <aside class="sidebar">
+
+            <div class="sidebar-title">
+                Admin Portal
+            </div>
+
+
+            <!-- Dashboard -->
+            <a th:href="@{/admin}"
+               class="sidebar-link active">
+
+                <i class="fa-solid fa-gauge-high"></i>
+
+                <span>Dashboard</span>
+
+            </a>
+
+
+            <!-- User & Role -->
+            <a th:href="@{/admin/users}"
+               class="sidebar-link">
+
+                <i class="fa-solid fa-users"></i>
+
+                <span>User &amp; Role</span>
+
+            </a>
+
+
+            <!-- Notifications -->
+            <a th:href="@{/admin/notification}"
+               class="sidebar-link">
+
+                <i class="fa-regular fa-bell"></i>
+
+                <span>Notifications</span>
+
+            </a>
+
+
+            <!-- My Profile -->
+            <a th:href="@{/admin/profile}"
+               class="sidebar-link">
+
+                <i class="fa-regular fa-user"></i>
+
+                <span>My Profile</span>
+
+            </a>
+
+
+            <!-- Logout -->
+            <a th:href="@{/admin/logout}"
+               class="sidebar-link logout-link">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                <span>Logout</span>
+
+            </a>
+
+        </aside>
+
+
+
+        <!-- =================================================
+             MAIN CONTENT
+        ================================================== -->
+
+        <main class="content">
+
+
+            <!-- Page Header -->
+            <div class="page-header">
+
+                <div>
+
+                    <h1>
+                        Admin Dashboard
+                    </h1>
+
+                    <p>
+                        Welcome,
+                        <strong th:text="${session.fullName}">
+                            Admin
+                        </strong>
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 STATISTICS
+            ================================================== -->
+
+            <div class="stats-grid">
+
+
+                <!-- Total Users -->
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+
+                        <i class="fa-solid fa-users"></i>
+
+                    </div>
+
+                    <div class="stat-info">
+
+                        <h3>
+                            Total Users
+                        </h3>
+
+                        <p th:text="${totalUsers}">
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Total Roles -->
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+
+                        <i class="fa-solid fa-user-shield"></i>
+
+                    </div>
+
+                    <div class="stat-info">
+
+                        <h3>
+                            Total Roles
+                        </h3>
+
+                        <p th:text="${totalRoles}">
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Active Users -->
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+
+                        <i class="fa-solid fa-user-check"></i>
+
+                    </div>
+
+                    <div class="stat-info">
+
+                        <h3>
+                            Active Users
+                        </h3>
+
+                        <p th:text="${activeUsers}">
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Inactive Users -->
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+
+                        <i class="fa-solid fa-user-slash"></i>
+
+                    </div>
+
+                    <div class="stat-info">
+
+                        <h3>
+                            Inactive Users
+                        </h3>
+
+                        <p th:text="${inactiveUsers}">
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 QUICK ACTIONS
+            ================================================== -->
+
+            <div class="dashboard-section">
+
+                <div class="section-title">
+
+                    <h2>
+                        Quick Actions
+                    </h2>
+
+                </div>
+
+
+                <div class="quick-actions">
+
+
+                    <!-- Manage Users -->
+                    <a th:href="@{/admin/users}"
+                       class="action-card">
+
+                        <i class="fa-solid fa-users"></i>
+
+                        <span>
+                            Manage Users
+                        </span>
+
+                    </a>
+
+
+                    <!-- Create User -->
+                    <a th:href="@{/admin/users/create}"
+                       class="action-card">
+
+                        <i class="fa-solid fa-user-plus"></i>
+
+                        <span>
+                            Create User
+                        </span>
+
+                    </a>
+
+
+                    <!-- Notifications -->
+                    <a th:href="@{/admin/notification}"
+                       class="action-card">
+
+                        <i class="fa-regular fa-bell"></i>
+
+                        <span>
+                            Notifications
+                        </span>
+
+                    </a>
+
+
+                    <!-- My Profile -->
+                    <a th:href="@{/admin/profile}"
+                       class="action-card">
+
+                        <i class="fa-regular fa-user"></i>
+
+                        <span>
+                            My Profile
+                        </span>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 WELCOME MESSAGE
+            ================================================== -->
+
+            <div class="welcome-box">
+
+                <div class="welcome-icon">
+
+                    <i class="fa-solid fa-graduation-cap"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h2>
+                        Learning Management System
+                    </h2>
+
+                    <p>
+                        Manage users, roles and LMS administration
+                        from this dashboard.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </main>
+
+    </div>
+
+</body>
+
 </html>

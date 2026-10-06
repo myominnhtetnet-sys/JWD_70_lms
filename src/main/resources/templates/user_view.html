@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
 
 <head>
 
     <meta charset="UTF-8">
 
-    <title>User Details</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <title>View User - LMS</title>
 
     <style>
 
@@ -19,24 +19,25 @@
 
         body {
             margin: 0;
-            background: #f4e9ff;
             font-family: Arial, sans-serif;
+            background: #f4e9ff;
+        }
+
+        .page {
+            min-height: 100vh;
+            padding: 40px;
         }
 
         .container {
-            width: 90%;
-            max-width: 800px;
-            margin: 40px auto;
-        }
-
-        .card {
+            max-width: 750px;
+            margin: auto;
             background: white;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0,0,0,.08);
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
         }
 
-        h2 {
+        h1 {
             color: #4b176b;
             margin-bottom: 25px;
         }
@@ -44,7 +45,7 @@
         .row {
             display: grid;
             grid-template-columns: 180px 1fr;
-            padding: 13px 0;
+            padding: 14px 0;
             border-bottom: 1px solid #eee;
         }
 
@@ -53,14 +54,50 @@
             color: #555;
         }
 
-        .back {
+        .value {
+            color: #222;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .active {
+            background: #d9f7e8;
+            color: #087443;
+        }
+
+        .inactive {
+            background: #eee;
+            color: #666;
+        }
+
+        .suspended {
+            background: #ffe2e2;
+            color: #b30000;
+        }
+
+        .back-btn {
             display: inline-block;
             margin-top: 25px;
-            padding: 10px 18px;
+            padding: 12px 20px;
             background: #8e44ad;
             color: white;
             text-decoration: none;
             border-radius: 7px;
+        }
+
+        @media (max-width: 600px) {
+
+            .row {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+
         }
 
     </style>
@@ -69,83 +106,125 @@
 
 <body>
 
-<div class="container">
+<div class="page">
 
-    <div class="card">
+    <div class="container">
 
-        <h2>
-            <i class="fa-solid fa-user"></i>
-            User Details
-        </h2>
+        <h1>User Details</h1>
 
 
         <div class="row">
-            <div class="label">User ID</div>
-            <div th:text="${user.userId}"></div>
+
+            <div class="label">
+                User ID
+            </div>
+
+            <div class="value"
+                 th:text="${user.user_id}">
+            </div>
+
         </div>
 
 
         <div class="row">
-            <div class="label">Full Name</div>
-            <div th:text="${user.fullName}"></div>
+
+            <div class="label">
+                Full Name
+            </div>
+
+            <div class="value"
+                 th:text="${user.full_name}">
+            </div>
+
         </div>
 
 
         <div class="row">
-            <div class="label">Email</div>
-            <div th:text="${user.email}"></div>
+
+            <div class="label">
+                Email
+            </div>
+
+            <div class="value"
+                 th:text="${user.email}">
+            </div>
+
         </div>
 
 
         <div class="row">
-            <div class="label">Phone</div>
-            <div th:text="${user.phone}"></div>
+
+            <div class="label">
+                Phone
+            </div>
+
+            <div class="value"
+                 th:text="${user.phone != null ? user.phone : '-'}">
+            </div>
+
         </div>
 
 
         <div class="row">
-            <div class="label">Role</div>
-            <div th:text="${user.roleName}"></div>
+
+            <div class="label">
+                Role
+            </div>
+
+            <div class="value"
+                 th:text="${user.role_name}">
+            </div>
+
         </div>
 
 
         <div class="row">
-            <div class="label">Status</div>
-            <div th:text="${user.status}"></div>
+
+            <div class="label">
+                Status
+            </div>
+
+            <div>
+
+                <span class="status"
+                      th:classappend="${#strings.toLowerCase(user.status)}"
+                      th:text="${user.status}">
+                </span>
+
+            </div>
+
         </div>
 
 
         <div class="row">
-            <div class="label">Date of Birth</div>
-            <div th:text="${user.dob}"></div>
+
+            <div class="label">
+                Created At
+            </div>
+
+            <div class="value"
+                 th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm') : '-'}">
+            </div>
+
         </div>
 
 
         <div class="row">
-            <div class="label">Gender</div>
-            <div th:text="${user.gender}"></div>
+
+            <div class="label">
+                Updated At
+            </div>
+
+            <div class="value"
+                 th:text="${user.updatedAt != null ? #temporals.format(user.updatedAt, 'yyyy-MM-dd HH:mm') : '-'}">
+            </div>
+
         </div>
 
 
-        <div class="row">
-            <div class="label">Address</div>
-            <div th:text="${user.address}"></div>
-        </div>
-
-
-        <div class="row">
-            <div class="label">Created At</div>
-            <div th:text="${user.createdAt}"></div>
-        </div>
-
-
-        <a
-            href="/admin"
-            class="back">
-
-            <i class="fa-solid fa-arrow-left"></i>
-            Back to Users
-
+        <a th:href="@{/admin}"
+           class="back-btn">
+            Back to Dashboard
         </a>
 
     </div>
@@ -153,5 +232,4 @@
 </div>
 
 </body>
-
 </html>

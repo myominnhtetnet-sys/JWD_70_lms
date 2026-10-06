@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Notifications - LMS</title>
+
+    <!-- Font Awesome 6.5.2 -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+
+    <!-- =====================================================
+         CSS
+    ====================================================== -->
+
+    <style>
+
+        /* =========================
+           RESET
+        ========================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f7f5fa;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+
+        /* =========================
+           TOP NAVBAR
+        ========================== */
+
+        .topbar {
+            position: fixed;
+
+            top: 0;
+            left: 0;
+            right: 0;
+
+            height: 70px;
+
+            background: #ffffff;
+
+            border-bottom: 1px solid #e5dbea;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 30px;
+
+            z-index: 1000;
+        }
+
+
+        .logo {
+            font-size: 28px;
+
+            font-weight: bold;
+
+            color: #4b176b;
+        }
+
+
+        .topbar-right {
+            display: flex;
+
+            align-items: center;
+
+            gap: 25px;
+        }
+
+
+        .top-link {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            color: #555;
+
+            font-size: 14px;
+
+            font-weight: 500;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .top-link:hover {
+            color: #8e44ad;
+        }
+
+
+        .logout-btn {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 10px 16px;
+
+            background: #8e44ad;
+
+            color: #ffffff;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+
+            font-weight: 500;
+
+            transition: 0.2s;
+        }
+
+
+        .logout-btn:hover {
+            background: #71368a;
+        }
+
+
+        /* =========================
+           PAGE LAYOUT
+        ========================== */
+
+        .layout {
+            display: flex;
+
+            min-height: 100vh;
+        }
+
+
+        /* =========================
+           SIDEBAR
+        ========================== */
+
+        .sidebar {
+            position: fixed;
+
+            top: 70px;
+
+            left: 0;
+
+            bottom: 0;
+
+            width: 250px;
+
+            background: #ffffff;
+
+            border-right: 1px solid #e5dbea;
+
+            padding: 25px 15px;
+
+            overflow-y: auto;
+        }
+
+
+        .sidebar-title {
+            padding: 0 15px 15px;
+
+            color: #888;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            text-transform: uppercase;
+        }
+
+
+        .sidebar-link {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 13px 15px;
+
+            margin-bottom: 6px;
+
+            border-radius: 8px;
+
+            color: #555;
+
+            font-size: 14px;
+
+            transition: 0.2s;
+        }
+
+
+        .sidebar-link i {
+            width: 20px;
+
+            text-align: center;
+        }
+
+
+        .sidebar-link:hover {
+            background: #f4e9ff;
+
+            color: #8e44ad;
+        }
+
+
+        .sidebar-link.active {
+            background: #f4e9ff;
+
+            color: #8e44ad;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           MAIN CONTENT
+        ========================== */
+
+        .content {
+            margin-left: 250px;
+
+            width: calc(100% - 250px);
+
+            min-height: 100vh;
+
+            padding: 105px 35px 40px;
+        }
+
+
+        /* =========================
+           PAGE HEADER
+        ========================== */
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+
+        .page-header h1 {
+            font-size: 30px;
+
+            color: #333;
+
+            margin-bottom: 8px;
+        }
+
+
+        .page-header p {
+            font-size: 14px;
+
+            color: #777;
+        }
+
+
+        /* =========================
+           NOTIFICATION CARD
+        ========================== */
+
+        .notification-box {
+            background: #ffffff;
+
+            border: 1px solid #eee5f3;
+
+            border-radius: 12px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.05);
+
+            max-width: 900px;
+        }
+
+
+        .notification-box-header {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding-bottom: 20px;
+
+            border-bottom: 1px solid #eeeeee;
+
+            margin-bottom: 10px;
+        }
+
+
+        .notification-box-header h2 {
+            color: #4b176b;
+
+            font-size: 20px;
+        }
+
+
+        .mark-read-btn {
+            border: none;
+
+            background: transparent;
+
+            color: #8e44ad;
+
+            font-size: 13px;
+
+            cursor: pointer;
+        }
+
+
+        .mark-read-btn:hover {
+            text-decoration: underline;
+        }
+
+
+        /* =========================
+           NOTIFICATION ITEM
+        ========================== */
+
+        .notification-item {
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 18px;
+
+            padding: 20px 10px;
+
+            border-bottom: 1px solid #eeeeee;
+
+            transition: 0.2s;
+
+            cursor: pointer;
+        }
+
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+
+        .notification-item:hover {
+            background: #fcfaff;
+        }
+
+
+        .notification-item.unread {
+            background: #faf5ff;
+        }
+
+
+        /* =========================
+           NOTIFICATION ICON
+        ========================== */
+
+        .notification-icon {
+            width: 48px;
+
+            height: 48px;
+
+            flex-shrink: 0;
+
+            border-radius: 50%;
+
+            background: #f4e9ff;
+
+            color: #8e44ad;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 19px;
+        }
+
+
+        /* =========================
+           NOTIFICATION CONTENT
+        ========================== */
+
+        .notification-content {
+            flex: 1;
+        }
+
+
+        .notification-content h3 {
+            font-size: 15px;
+
+            color: #333;
+
+            margin-bottom: 6px;
+        }
+
+
+        .notification-item.unread
+        .notification-content h3 {
+            color: #4b176b;
+        }
+
+
+        .notification-content p {
+            font-size: 13px;
+
+            color: #777;
+
+            line-height: 1.5;
+
+            margin-bottom: 6px;
+        }
+
+
+        .notification-time {
+            font-size: 12px;
+
+            color: #aaa;
+        }
+
+
+        /* =========================
+           UNREAD DOT
+        ========================== */
+
+        .unread-dot {
+            width: 9px;
+
+            height: 9px;
+
+            border-radius: 50%;
+
+            background: #8e44ad;
+
+            margin-top: 6px;
+
+            flex-shrink: 0;
+        }
+
+
+        /* =========================
+           MODAL
+        ========================== */
+
+        .modal {
+            display: none;
+
+            position: fixed;
+
+            z-index: 2000;
+
+            left: 0;
+
+            top: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+            background: rgba(0, 0, 0, 0.45);
+        }
+
+
+        .modal.show {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+        }
+
+
+        .modal-content {
+            width: 450px;
+
+            max-width: 90%;
+
+            background: #ffffff;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 10px 35px rgba(0, 0, 0, 0.2);
+
+            overflow: hidden;
+
+            animation: modalOpen 0.2s ease;
+        }
+
+
+        @keyframes modalOpen {
+
+            from {
+                transform: scale(0.95);
+
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+
+                opacity: 1;
+            }
+        }
+
+
+        .modal-header {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 18px 22px;
+
+            background: #f4e9ff;
+
+            border-bottom: 1px solid #e5dbea;
+        }
+
+
+        .modal-header h2 {
+            font-size: 20px;
+
+            color: #4b176b;
+        }
+
+
+        .close-btn {
+            border: none;
+
+            background: transparent;
+
+            font-size: 28px;
+
+            color: #555;
+
+            cursor: pointer;
+
+            line-height: 1;
+        }
+
+
+        .close-btn:hover {
+            color: #8e44ad;
+        }
+
+
+        .modal-body {
+            padding: 25px;
+        }
+
+
+        .modal-notification {
+            display: flex;
+
+            gap: 15px;
+
+            padding: 15px 0;
+
+            border-bottom: 1px solid #eeeeee;
+        }
+
+
+        .modal-notification:last-child {
+            border-bottom: none;
+        }
+
+
+        .modal-notification i {
+            color: #8e44ad;
+
+            font-size: 19px;
+
+            margin-top: 3px;
+        }
+
+
+        .modal-notification h3 {
+            font-size: 14px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .modal-notification p {
+            font-size: 13px;
+
+            color: #777;
+
+            line-height: 1.5;
+        }
+
+
+        .modal-footer {
+            padding: 15px 22px;
+
+            border-top: 1px solid #eeeeee;
+
+            text-align: right;
+        }
+
+
+        .modal-close-btn {
+            border: none;
+
+            background: #8e44ad;
+
+            color: #ffffff;
+
+            padding: 9px 16px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+        }
+
+
+        .modal-close-btn:hover {
+            background: #71368a;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================== */
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                width: 210px;
+            }
+
+            .content {
+                margin-left: 210px;
+
+                width: calc(100% - 210px);
+            }
+        }
+
+
+        @media (max-width: 700px) {
+
+            .top-link span {
+                display: none;
+            }
+
+            .topbar-right {
+                gap: 15px;
+            }
+
+            .sidebar {
+                width: 70px;
+
+                padding: 25px 10px;
+            }
+
+            .sidebar-title {
+                display: none;
+            }
+
+            .sidebar-link {
+                justify-content: center;
+            }
+
+            .sidebar-link span {
+                display: none;
+            }
+
+            .content {
+                margin-left: 70px;
+
+                width: calc(100% - 70px);
+
+                padding: 100px 20px 30px;
+            }
+
+            .page-header h1 {
+                font-size: 25px;
+            }
+
+            .notification-box {
+                padding: 20px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     TOP NAVBAR
+====================================================== -->
+
+<header class="topbar">
+
+
+    <!-- Logo -->
+
+    <div class="logo">
+        LMS
+    </div>
+
+
+    <!-- Right Side -->
+
+    <div class="topbar-right">
+
+
+        <!-- Notification -->
+
+        <a href="javascript:void(0)"
+           class="top-link"
+           onclick="openNotificationModal()">
+
+            <i class="fa-regular fa-bell"></i>
+
+            <span>Notifications</span>
+
+        </a>
+
+
+        <!-- My Profile -->
+
+        <a th:href="@{/admin/profile}"
+           class="top-link">
+
+            <i class="fa-regular fa-user"></i>
+
+            <span>My Profile</span>
+
+        </a>
+
+
+        <!-- Logout -->
+
+        <a th:href="@{/admin/logout}"
+           class="logout-btn">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>Logout</span>
+
+        </a>
+
+    </div>
+
+</header>
+
+
+
+<!-- =====================================================
+     LAYOUT
+====================================================== -->
+
+<div class="layout">
+
+
+    <!-- =================================================
+         SIDEBAR
+    ================================================== -->
+
+    <aside class="sidebar">
+
+
+        <div class="sidebar-title">
+            Admin Portal
+        </div>
+
+
+        <!-- Dashboard -->
+
+        <a th:href="@{/admin}"
+           class="sidebar-link">
+
+            <i class="fa-solid fa-gauge-high"></i>
+
+            <span>Dashboard</span>
+
+        </a>
+
+
+        <!-- User & Role -->
+
+        <a th:href="@{/admin/users}"
+           class="sidebar-link">
+
+            <i class="fa-solid fa-users"></i>
+
+            <span>User &amp; Role</span>
+
+        </a>
+
+
+        <!-- Notification -->
+
+        <a href="javascript:void(0)"
+           class="sidebar-link active"
+           onclick="openNotificationModal()">
+
+            <i class="fa-regular fa-bell"></i>
+
+            <span>Notifications</span>
+
+        </a>
+
+
+        <!-- My Profile -->
+
+        <a th:href="@{/admin/profile}"
+           class="sidebar-link">
+
+            <i class="fa-regular fa-user"></i>
+
+            <span>My Profile</span>
+
+        </a>
+
+
+        <!-- Logout -->
+
+        <a th:href="@{/admin/logout}"
+           class="sidebar-link">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>Logout</span>
+
+        </a>
+
+    </aside>
+
+
+
+    <!-- =================================================
+         MAIN CONTENT
+    ================================================== -->
+
+    <main class="content">
+
+
+        <!-- Page Header -->
+
+        <div class="page-header">
+
+            <h1>
+                Notifications
+            </h1>
+
+            <p>
+                View your latest notifications and system updates.
+            </p>
+
+        </div>
+
+
+
+        <!-- =================================================
+             NOTIFICATION BOX
+        ================================================== -->
+
+        <div class="notification-box">
+
+
+            <!-- Header -->
+
+            <div class="notification-box-header">
+
+                <h2>
+                    Recent Notifications
+                </h2>
+
+
+                <button type="button"
+                        class="mark-read-btn"
+                        onclick="markAllRead()">
+
+                    Mark all as read
+
+                </button>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 NOTIFICATION 1
+            ================================================== -->
+
+            <div class="notification-item unread">
+
+                <div class="notification-icon">
+
+                    <i class="fa-solid fa-user-plus"></i>
+
+                </div>
+
+
+                <div class="notification-content">
+
+                    <h3>
+                        New User Created
+                    </h3>
+
+                    <p>
+                        A new user account has been created successfully.
+                    </p>
+
+                    <span class="notification-time">
+                        Recently
+                    </span>
+
+                </div>
+
+
+                <div class="unread-dot"></div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 NOTIFICATION 2
+            ================================================== -->
+
+            <div class="notification-item unread">
+
+                <div class="notification-icon">
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+                </div>
+
+
+                <div class="notification-content">
+
+                    <h3>
+                        Role Updated
+                    </h3>
+
+                    <p>
+                        User role information has been updated successfully.
+                    </p>
+
+                    <span class="notification-time">
+                        Today
+                    </span>
+
+                </div>
+
+
+                <div class="unread-dot"></div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 NOTIFICATION 3
+            ================================================== -->
+
+            <div class="notification-item">
+
+                <div class="notification-icon">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                </div>
+
+
+                <div class="notification-content">
+
+                    <h3>
+                        System Status
+                    </h3>
+
+                    <p>
+                        Learning Management System is running normally.
+                    </p>
+
+                    <span class="notification-time">
+                        Today
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 NOTIFICATION 4
+            ================================================== -->
+
+            <div class="notification-item">
+
+                <div class="notification-icon">
+
+                    <i class="fa-solid fa-bullhorn"></i>
+
+                </div>
+
+
+                <div class="notification-content">
+
+                    <h3>
+                        LMS Announcement
+                    </h3>
+
+                    <p>
+                        Please check the latest LMS administration updates.
+                    </p>
+
+                    <span class="notification-time">
+                        Today
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+<!-- =====================================================
+     NOTIFICATION MODAL
+====================================================== -->
+
+<div id="notificationModal"
+     class="modal">
+
+
+    <div class="modal-content">
+
+
+        <!-- Modal Header -->
+
+        <div class="modal-header">
+
+            <h2>
+
+                <i class="fa-regular fa-bell"></i>
+
+                Notifications
+
+            </h2>
+
+
+            <button type="button"
+                    class="close-btn"
+                    onclick="closeNotificationModal()">
+
+                &times;
+
+            </button>
+
+        </div>
+
+
+
+        <!-- Modal Body -->
+
+        <div class="modal-body">
+
+
+            <!-- Notification 1 -->
+
+            <div class="modal-notification">
+
+                <i class="fa-solid fa-user-plus"></i>
+
+                <div>
+
+                    <h3>
+                        New User Created
+                    </h3>
+
+                    <p>
+                        A new user account has been created successfully.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Notification 2 -->
+
+            <div class="modal-notification">
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+                <div>
+
+                    <h3>
+                        Role Updated
+                    </h3>
+
+                    <p>
+                        User role information has been updated successfully.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Notification 3 -->
+
+            <div class="modal-notification">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                <div>
+
+                    <h3>
+                        System Status
+                    </h3>
+
+                    <p>
+                        Learning Management System is running normally.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Notification 4 -->
+
+            <div class="modal-notification">
+
+                <i class="fa-solid fa-bullhorn"></i>
+
+                <div>
+
+                    <h3>
+                        LMS Announcement
+                    </h3>
+
+                    <p>
+                        Please check the latest LMS administration updates.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Modal Footer -->
+
+        <div class="modal-footer">
+
+            <button type="button"
+                    class="modal-close-btn"
+                    onclick="closeNotificationModal()">
+
+                Close
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+
+
+    /* =====================================================
+       OPEN NOTIFICATION MODAL
+    ====================================================== */
+
+    function openNotificationModal() {
+
+        const modal =
+            document.getElementById("notificationModal");
+
+        modal.classList.add("show");
+
+    }
+
+
+    /* =====================================================
+       CLOSE NOTIFICATION MODAL
+    ====================================================== */
+
+    function closeNotificationModal() {
+
+        const modal =
+            document.getElementById("notificationModal");
+
+        modal.classList.remove("show");
+
+    }
+
+
+    /* =====================================================
+       MARK ALL AS READ
+    ====================================================== */
+
+    function markAllRead() {
+
+        const notifications =
+            document.querySelectorAll(
+                ".notification-item.unread"
+            );
+
+
+        notifications.forEach(function(item) {
+
+            item.classList.remove("unread");
+
+            const dot =
+                item.querySelector(".unread-dot");
+
+            if (dot) {
+                dot.remove();
+            }
+
+        });
+
+    }
+
+
+    /* =====================================================
+       CLOSE MODAL WHEN CLICKING OUTSIDE
+    ====================================================== */
+
+    window.addEventListener(
+        "click",
+        function(event) {
+
+            const modal =
+                document.getElementById(
+                    "notificationModal"
+                );
+
+
+            if (event.target === modal) {
+
+                closeNotificationModal();
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       CLOSE MODAL WITH ESCAPE KEY
+    ====================================================== */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Escape") {
+
+                closeNotificationModal();
+
+            }
+
+        }
+    );
+
+</script>
+
+
+</body>
+
+</html>

@@ -9,7 +9,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Add User - LMS</title>
+    <title>Edit User - LMS</title>
 
     <style>
 
@@ -19,7 +19,6 @@
 
         body {
             margin: 0;
-            padding: 0;
             font-family: Arial, sans-serif;
             background: #f4e9ff;
         }
@@ -51,7 +50,6 @@
             display: block;
             margin-bottom: 7px;
             font-weight: bold;
-            color: #333;
         }
 
         input,
@@ -90,16 +88,11 @@
             border-radius: 7px;
             cursor: pointer;
             text-decoration: none;
-            font-size: 14px;
         }
 
         button {
             background: #8e44ad;
             color: white;
-        }
-
-        button:hover {
-            background: #732d91;
         }
 
         .back-btn {
@@ -117,24 +110,27 @@
 
     <div class="form-container">
 
-        <h1>Add New User</h1>
+        <h1>Edit User</h1>
 
         <div class="error"
              th:if="${error}"
              th:text="${error}">
         </div>
 
-        <form th:action="@{/admin/users/save}"
+        <form th:action="@{/admin/users/update}"
               th:object="${user}"
               method="post">
+
+            <input type="hidden"
+                   th:field="*{userId}">
+
 
             <div class="form-group">
 
                 <label>Full Name</label>
 
                 <input type="text"
-                       th:field="*{fullName}"
-                       placeholder="Enter full name">
+                       th:field="*{full_name}">
 
             </div>
 
@@ -144,8 +140,7 @@
                 <label>Email</label>
 
                 <input type="email"
-                       th:field="*{email}"
-                       placeholder="Enter email">
+                       th:field="*{email}">
 
             </div>
 
@@ -155,19 +150,7 @@
                 <label>Phone</label>
 
                 <input type="text"
-                       th:field="*{phone}"
-                       placeholder="Enter phone number">
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>Password</label>
-
-                <input type="password"
-                       th:field="*{passwordHash}"
-                       placeholder="Enter password">
+                       th:field="*{phone}">
 
             </div>
 
@@ -176,15 +159,15 @@
 
                 <label>Role</label>
 
-                <select th:field="*{roleId}">
+                <select th:field="*{role_id}">
 
                     <option value="0">
                         -- Select Role --
                     </option>
 
                     <option th:each="role : ${roles}"
-                            th:value="${role.roleId}"
-                            th:text="${role.roleName}">
+                            th:value="${role.role_id}"
+                            th:text="${role.role_name}">
                     </option>
 
                 </select>
@@ -195,7 +178,7 @@
             <div class="buttons">
 
                 <button type="submit">
-                    Save User
+                    Update User
                 </button>
 
                 <a th:href="@{/admin}"

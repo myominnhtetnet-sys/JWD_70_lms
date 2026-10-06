@@ -1,6 +1,5 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
-import java.sql.ResultSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,536 +14,316 @@ public class Admin_Repository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-
     // =========================================================
-    // 1. GET ALL USERS
+    // GET ALL USERS
     // =========================================================
 
     public List<AdminUserBean> getAllUsers() {
 
         String sql = """
-            SELECT
-                u.user_id,
-                u.role_id,
-                u.full_name,
-                u.email,
-                u.phone,
-                u.password_hash,
-                u.dob,
-                u.gender,
-                u.address,
-                r.role_name,
-                u.status,
-                u.created_at,
-                u.updated_at
-            FROM users u
-            JOIN roles r
-                ON u.role_id = r.role_id
-            WHERE u.deleted_at IS NULL
-            ORDER BY u.user_id DESC
-            """;
+                SELECT
+                    u.user_id,
+                    u.role_id,
+                    u.full_name,
+                    u.email,
+                    u.phone,
+                    u.password_hash,
+                    u.dob,
+                    u.gender,
+                    u.address,
+                    u.status,
+                    u.created_at,
+                    u.updated_at,
+                    r.role_name
+                FROM users u
+                LEFT JOIN roles r
+                    ON u.role_id = r.role_id
+                ORDER BY u.user_id DESC
+                """;
 
         return jdbcTemplate.query(
-            sql,
-            (rs, rowNum) -> mapUser(rs)
+                sql,
+                (rs, rowNum) -> {
+
+                    AdminUserBean user = new AdminUserBean();
+
+                    user.setUser_id(rs.getInt("user_id"));
+                    user.setRole_id(rs.getInt("role_id"));
+
+                    user.setFull_name(rs.getString("full_name"));
+                    user.setEmail(rs.getString("email"));
+                    user.setPhone(rs.getString("phone"));
+                    user.setPassword_hash(rs.getString("password_hash"));
+
+                    if (rs.getDate("dob") != null) {
+                        user.setDob(
+                                rs.getDate("dob").toString()
+                        );
+                    }
+
+                    user.setGender(rs.getString("gender"));
+                    user.setAddress(rs.getString("address"));
+                    user.setStatus(rs.getString("status"));
+
+                    user.setRole_name(rs.getString("role_name"));
+
+                    if (rs.getTimestamp("created_at") != null) {
+                        user.setCreated_at(
+                                rs.getTimestamp("created_at").toLocalDateTime()
+                        );
+                    }
+
+                    if (rs.getTimestamp("updated_at") != null) {
+                        user.setUpdated_at(
+                                rs.getTimestamp("updated_at").toLocalDateTime()
+                        );
+                    }
+
+                    return user;
+                }
         );
     }
 
 
     // =========================================================
-    // 2. SEARCH USERS
+    // GET USER BY ID
     // =========================================================
 
-    public List<AdminUserBean> searchUsers(String keyword) {
+    public AdminUserBean getUserById(int id) {
 
         String sql = """
-            SELECT
-                u.user_id,
-                u.role_id,
-                u.full_name,
-                u.email,
-                u.phone,
-                u.password_hash,
-                u.dob,
-                u.gender,
-                u.address,
-                r.role_name,
-                u.status,
-                u.created_at,
-                u.updated_at
-            FROM users u
-            JOIN roles r
-                ON u.role_id = r.role_id
-            WHERE u.deleted_at IS NULL
-            AND (
-                u.full_name LIKE ?
-                OR u.email LIKE ?
-                OR r.role_name LIKE ?
-                OR u.status LIKE ?
-                OR CAST(u.user_id AS CHAR) LIKE ?
-            )
-            ORDER BY u.user_id DESC
-            """;
+                SELECT
+                    u.user_id,
+                    u.role_id,
+                    u.full_name,
+                    u.email,
+                    u.phone,
+                    u.password_hash,
+                    u.dob,
+                    u.gender,
+                    u.address,
+                    u.status,
+                    u.created_at,
+                    u.updated_at,
+                    r.role_name
+                FROM users u
+                LEFT JOIN roles r
+                    ON u.role_id = r.role_id
+                WHERE u.user_id = ?
+                """;
 
-        String search = "%" + keyword.trim() + "%";
+        List<AdminUserBean> list = jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> {
 
-        return jdbcTemplate.query(
-            sql,
-            (rs, rowNum) -> mapUser(rs),
-            search,
-            search,
-            search,
-            search,
-            search
+                    AdminUserBean user = new AdminUserBean();
+
+                    user.setUser_id(rs.getInt("user_id"));
+                    user.setRole_id(rs.getInt("role_id"));
+
+                    user.setFull_name(rs.getString("full_name"));
+                    user.setEmail(rs.getString("email"));
+                    user.setPhone(rs.getString("phone"));
+                    user.setPassword_hash(rs.getString("password_hash"));
+
+                    if (rs.getDate("dob") != null) {
+                        user.setDob(
+                                rs.getDate("dob").toString()
+                        );
+                    }
+
+                    user.setGender(rs.getString("gender"));
+                    user.setAddress(rs.getString("address"));
+                    user.setStatus(rs.getString("status"));
+
+                    user.setRole_name(rs.getString("role_name"));
+
+                    if (rs.getTimestamp("created_at") != null) {
+                        user.setCreated_at(
+                                rs.getTimestamp("created_at").toLocalDateTime()
+                        );
+                    }
+
+                    if (rs.getTimestamp("updated_at") != null) {
+                        user.setUpdated_at(
+                                rs.getTimestamp("updated_at").toLocalDateTime()
+                        );
+                    }
+
+                    return user;
+                },
+                id
         );
+
+        return list.isEmpty() ? null : list.get(0);
     }
 
 
     // =========================================================
-    // 3. GET USER BY ID
+    // CREATE USER
     // =========================================================
 
-    public AdminUserBean getUserById(int userId) {
+    public int createUser(AdminUserBean user) {
 
         String sql = """
-            SELECT
-                u.user_id,
-                u.role_id,
-                u.full_name,
-                u.email,
-                u.phone,
-                u.password_hash,
-                u.dob,
-                u.gender,
-                u.address,
-                r.role_name,
-                u.status,
-                u.created_at,
-                u.updated_at
-            FROM users u
-            JOIN roles r
-                ON u.role_id = r.role_id
-            WHERE u.user_id = ?
-            AND u.deleted_at IS NULL
-            """;
-
-        List<AdminUserBean> users = jdbcTemplate.query(
-            sql,
-            (rs, rowNum) -> mapUser(rs),
-            userId
-        );
-
-        if (users.isEmpty()) {
-            return null;
-        }
-
-        return users.get(0);
-    }
-
-
-    // =========================================================
-    // 4. CHECK EMAIL EXISTS
-    // =========================================================
-
-    public boolean emailExists(String email) {
-
-        String sql = """
-            SELECT COUNT(*)
-            FROM users
-            WHERE email = ?
-            AND deleted_at IS NULL
-            """;
-
-        Integer count = jdbcTemplate.queryForObject(
-            sql,
-            Integer.class,
-            email
-        );
-
-        return count != null && count > 0;
-    }
-
-
-    // =========================================================
-    // 5. CHECK EMAIL EXISTS FOR OTHER USER
-    // =========================================================
-
-    public boolean emailExistsForOtherUser(String email, int userId) {
-
-        String sql = """
-            SELECT COUNT(*)
-            FROM users
-            WHERE email = ?
-            AND user_id <> ?
-            AND deleted_at IS NULL
-            """;
-
-        Integer count = jdbcTemplate.queryForObject(
-            sql,
-            Integer.class,
-            email,
-            userId
-        );
-
-        return count != null && count > 0;
-    }
-
-
-    // =========================================================
-    // 6. ADD USER
-    // =========================================================
-
-    public int addUser(AdminUserBean user) {
-
-        String sql = """
-            INSERT INTO users
-            (
-                role_id,
-                full_name,
-                email,
-                phone,
-                password_hash,
-                dob,
-                gender,
-                address,
-                status,
-                created_at,
-                updated_at
-            )
-            VALUES
-            (
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                NOW(),
-                NOW()
-            )
-            """;
+                INSERT INTO users
+                (
+                    role_id,
+                    full_name,
+                    email,
+                    phone,
+                    password_hash,
+                    dob,
+                    gender,
+                    address,
+                    status,
+                    created_at,
+                    updated_at
+                )
+                VALUES
+                (
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                    NOW(),
+                    NOW()
+                )
+                """;
 
         return jdbcTemplate.update(
-            sql,
-            user.getRoleId(),
-            user.getFullName(),
-            user.getEmail(),
-            user.getPhone(),
-            user.getPasswordHash(),
-            user.getDob(),
-            user.getGender(),
-            user.getAddress(),
-            user.getStatus()
+                sql,
+                user.getRole_id(),
+                user.getFull_name(),
+                user.getEmail(),
+                user.getPhone(),
+                user.getPassword_hash(),
+                user.getDob(),
+                user.getGender(),
+                user.getAddress(),
+                user.getStatus()
         );
     }
 
 
     // =========================================================
-    // 7. UPDATE USER
+    // UPDATE USER
     // =========================================================
 
     public int updateUser(AdminUserBean user) {
 
         String sql = """
-            UPDATE users
-            SET
-                role_id = ?,
-                full_name = ?,
-                email = ?,
-                phone = ?,
-                dob = ?,
-                gender = ?,
-                address = ?,
-                status = ?,
-                updated_at = NOW()
-            WHERE user_id = ?
-            AND deleted_at IS NULL
-            """;
+                UPDATE users
+                SET
+                    role_id = ?,
+                    full_name = ?,
+                    email = ?,
+                    phone = ?,
+                    dob = ?,
+                    gender = ?,
+                    address = ?,
+                    status = ?,
+                    updated_at = NOW()
+                WHERE user_id = ?
+                """;
 
         return jdbcTemplate.update(
-            sql,
-            user.getRoleId(),
-            user.getFullName(),
-            user.getEmail(),
-            user.getPhone(),
-            user.getDob(),
-            user.getGender(),
-            user.getAddress(),
-            user.getStatus(),
-            user.getUserId()
+                sql,
+                user.getRole_id(),
+                user.getFull_name(),
+                user.getEmail(),
+                user.getPhone(),
+                user.getDob(),
+                user.getGender(),
+                user.getAddress(),
+                user.getStatus(),
+                user.getUser_id()
         );
     }
 
 
     // =========================================================
-    // 8. UPDATE PASSWORD
+    // DELETE USER
     // =========================================================
 
-    public int updatePassword(int userId, String password) {
+    public int deleteUser(int id) {
 
         String sql = """
-            UPDATE users
-            SET
-                password_hash = ?,
-                updated_at = NOW()
-            WHERE user_id = ?
-            AND deleted_at IS NULL
-            """;
+                DELETE FROM users
+                WHERE user_id = ?
+                """;
 
-        return jdbcTemplate.update(
-            sql,
-            password,
-            userId
-        );
+        return jdbcTemplate.update(sql, id);
     }
 
 
     // =========================================================
-    // 9. UPDATE USER STATUS
+    // COUNT USERS
     // =========================================================
 
-    public int updateStatus(int userId, String status) {
+    public int countUsers() {
 
         String sql = """
-            UPDATE users
-            SET
-                status = ?,
-                updated_at = NOW()
-            WHERE user_id = ?
-            AND deleted_at IS NULL
-            """;
+                SELECT COUNT(*)
+                FROM users
+                """;
 
-        return jdbcTemplate.update(
-            sql,
-            status,
-            userId
+        return jdbcTemplate.queryForObject(
+                sql,
+                Integer.class
         );
     }
 
 
     // =========================================================
-    // 10. SOFT DELETE USER
+    // COUNT ROLES
     // =========================================================
 
-    public int deleteUser(int userId) {
+    public int countRoles() {
 
         String sql = """
-            UPDATE users
-            SET
-                deleted_at = NOW(),
-                updated_at = NOW()
-            WHERE user_id = ?
-            AND deleted_at IS NULL
-            """;
+                SELECT COUNT(*)
+                FROM roles
+                """;
 
-        return jdbcTemplate.update(
-            sql,
-            userId
+        return jdbcTemplate.queryForObject(
+                sql,
+                Integer.class
         );
     }
 
 
     // =========================================================
-    // 11. DASHBOARD STATISTICS
+    // COUNT ACTIVE USERS
     // =========================================================
 
-    public int getTotalUsers() {
+    public int countActiveUsers() {
 
         String sql = """
-            SELECT COUNT(*)
-            FROM users
-            WHERE deleted_at IS NULL
-            """;
+                SELECT COUNT(*)
+                FROM users
+                WHERE status = 'ACTIVE'
+                """;
 
-        Integer count = jdbcTemplate.queryForObject(
-            sql,
-            Integer.class
+        return jdbcTemplate.queryForObject(
+                sql,
+                Integer.class
         );
-
-        return count != null ? count : 0;
     }
 
 
-    public int getTotalStudents() {
+    // =========================================================
+    // COUNT INACTIVE USERS
+    // =========================================================
+
+    public int countInactiveUsers() {
 
         String sql = """
-            SELECT COUNT(*)
-            FROM users u
-            JOIN roles r
-                ON u.role_id = r.role_id
-            WHERE r.role_name = 'Student'
-            AND u.deleted_at IS NULL
-            """;
+                SELECT COUNT(*)
+                FROM users
+                WHERE status = 'INACTIVE'
+                """;
 
-        Integer count = jdbcTemplate.queryForObject(
-            sql,
-            Integer.class
+        return jdbcTemplate.queryForObject(
+                sql,
+                Integer.class
         );
-
-        return count != null ? count : 0;
-    }
-
-
-    public int getTotalTeachers() {
-
-        String sql = """
-            SELECT COUNT(*)
-            FROM users u
-            JOIN roles r
-                ON u.role_id = r.role_id
-            WHERE r.role_name = 'Teacher'
-            AND u.deleted_at IS NULL
-            """;
-
-        Integer count = jdbcTemplate.queryForObject(
-            sql,
-            Integer.class
-        );
-
-        return count != null ? count : 0;
-    }
-
-
-    public int getTotalAdmins() {
-
-        String sql = """
-            SELECT COUNT(*)
-            FROM users u
-            JOIN roles r
-                ON u.role_id = r.role_id
-            WHERE r.role_name = 'Admin'
-            AND u.deleted_at IS NULL
-            """;
-
-        Integer count = jdbcTemplate.queryForObject(
-            sql,
-            Integer.class
-        );
-
-        return count != null ? count : 0;
-    }
-
-
-    // =========================================================
-    // 12. ACTIVE COURSES
-    // =========================================================
-
-    public int getActiveCourses() {
-
-        String sql = """
-            SELECT COUNT(*)
-            FROM courses
-            WHERE status = 'ACTIVE'
-            """;
-
-        Integer count = jdbcTemplate.queryForObject(
-            sql,
-            Integer.class
-        );
-
-        return count != null ? count : 0;
-    }
-
-
-    // =========================================================
-    // 13. TOTAL ENROLLMENTS
-    // =========================================================
-
-    public int getTotalEnrollments() {
-
-        String sql = """
-            SELECT COUNT(*)
-            FROM enrollments
-            """;
-
-        Integer count = jdbcTemplate.queryForObject(
-            sql,
-            Integer.class
-        );
-
-        return count != null ? count : 0;
-    }
-
-
-    // =========================================================
-    // 14. ACTIVE BATCHES
-    // =========================================================
-
-    public int getActiveBatches() {
-
-        String sql = """
-            SELECT COUNT(*)
-            FROM batches
-            WHERE status = 'ACTIVE'
-            """;
-
-        Integer count = jdbcTemplate.queryForObject(
-            sql,
-            Integer.class
-        );
-
-        return count != null ? count : 0;
-    }
-
-
-    // =========================================================
-    // 15. UPCOMING BATCHES
-    // =========================================================
-
-    public int getUpcomingBatches() {
-
-        String sql = """
-            SELECT COUNT(*)
-            FROM batches
-            WHERE start_date > CURDATE()
-            """;
-
-        Integer count = jdbcTemplate.queryForObject(
-            sql,
-            Integer.class
-        );
-
-        return count != null ? count : 0;
-    }
-
-
-    // =========================================================
-    // COMMON ROW MAPPER
-    // =========================================================
-
-    private AdminUserBean mapUser(ResultSet rs) throws java.sql.SQLException {
-
-        AdminUserBean user = new AdminUserBean();
-
-        user.setUserId(rs.getInt("user_id"));
-        user.setRoleId(rs.getInt("role_id"));
-        user.setFullName(rs.getString("full_name"));
-        user.setEmail(rs.getString("email"));
-        user.setPhone(rs.getString("phone"));
-        user.setPasswordHash(rs.getString("password_hash"));
-        user.setDob(rs.getDate("dob") != null
-                ? rs.getDate("dob").toLocalDate()
-                : null);
-        user.setGender(rs.getString("gender"));
-        user.setAddress(rs.getString("address"));
-        user.setRoleName(rs.getString("role_name"));
-        user.setStatus(rs.getString("status"));
-
-        if (rs.getTimestamp("created_at") != null) {
-            user.setCreatedAt(
-                rs.getTimestamp("created_at").toLocalDateTime()
-            );
-        }
-
-        if (rs.getTimestamp("updated_at") != null) {
-            user.setUpdatedAt(
-                rs.getTimestamp("updated_at").toLocalDateTime()
-            );
-        }
-
-        return user;
     }
 }
