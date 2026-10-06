@@ -11,11 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
-
-import jakarta.servlet.http.HttpSession;
-
 import com.Learning_Managnment_System.JWD_70_lms.Repository.StudentRepository;
 import com.Learning_Managnment_System.JWD_70_lms.Service.StudentService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/student")
@@ -37,14 +36,12 @@ public class StudentController {
 		return "student";		
 	}
 
-    
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
         model.addAttribute("student", new StudentBean());
         return "register"; 
     }
 
-   
     @PostMapping("/register")
     public String processRegistration(@ModelAttribute("student") StudentBean student, RedirectAttributes redirectAttributes) {
         studentService.registerStudent(student); 
@@ -65,13 +62,12 @@ public class StudentController {
             model.addAttribute("email", student.get("email"));
             model.addAttribute("phone", student.get("phone"));
             model.addAttribute("address", student.get("address"));
-            model.addAttribute("studentId", student.get("id")); // သို့မဟုတ် student_id column Name
+            model.addAttribute("studentId", student.get("id")); 
         }
 
         return "profile";
     }
 
-   
     @PostMapping("/student/profile/update")
     public String updateProfile(@RequestParam("fullName") String fullName,
                                 @RequestParam(value = "phone", required = false) String phone,
@@ -96,7 +92,6 @@ public class StudentController {
         return "redirect:/student/profile";
     }
 
-   
     @PostMapping("/student/profile/change-password")
     public String changePassword(@RequestParam("currentPassword") String currentPassword,
                                  @RequestParam("newPassword") String newPassword,
@@ -109,7 +104,6 @@ public class StudentController {
             return "redirect:/login";
         }
 
-     
         if (!newPassword.equals(confirmPassword)) {
             redirectAttributes.addFlashAttribute("error", "New password and Confirm password do not match!");
             return "redirect:/student/profile";
@@ -119,13 +113,11 @@ public class StudentController {
         if (student != null) {
             String dbPasswordHash = (String) student.get("password_hash");
 
-           
             if (!dbPasswordHash.equals(currentPassword)) {
                 redirectAttributes.addFlashAttribute("error", "Current password is incorrect!");
                 return "redirect:/student/profile";
             }
 
-           
             studentRepository.updatePassword(email, newPassword);
             redirectAttributes.addFlashAttribute("success", "Password updated successfully!");
         }
