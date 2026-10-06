@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Student Assignment List</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>Student Assignment List</h2>
+
+        <div th:if="${successMessage}"
+             class="alert alert-success"
+             th:text="${successMessage}">
+        </div>
+
+        <div th:if="${errorMessage}"
+             class="alert alert-danger"
+             th:text="${errorMessage}">
+        </div>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Assignment Title</th>
+                    <th>Description</th>
+                    <th>Start Date</th>
+                    <th>Due Date</th>
+                    <th>Total Mark</th>
+                    <th>Submission Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:each="assignment, stat : ${assignments}">
+                    <td th:text="${stat.count}"></td>
+                    <td th:text="${assignment.title}"></td>
+                    <td th:text="${assignment.description}"></td>
+                    <td th:text="${assignment.startAt}"></td>
+                    <td th:text="${assignment.dueAt}"></td>
+                    <td th:text="${assignment.totalMark}"></td>
+
+                    <td>
+                        <span th:if="${submittedAssignmentIds.contains(assignment.assignmentId)}">
+                            <span th:if="${lateAssignmentIds.contains(assignment.assignmentId)}"
+                                  class="status-late">
+                                LATE
+                            </span>
+
+                            <span th:unless="${lateAssignmentIds.contains(assignment.assignmentId)}"
+                                  class="status-ontime">
+                                ON TIME
+                            </span>
+                        </span>
+
+                        <span th:unless="${submittedAssignmentIds.contains(assignment.assignmentId)}"
+                              class="status-pending">
+                            NOT SUBMITTED
+                        </span>
+                    </td>
+
+                    <td>
+                        <a th:if="${submittedAssignmentIds.contains(assignment.assignmentId)}"
+                           th:href="@{/student/assignments/submission/{id}(id=${assignment.assignmentId})}"
+                           class="btn-primary">
+                            View Submission
+                        </a>
+
+                        <a th:unless="${submittedAssignmentIds.contains(assignment.assignmentId)}"
+                           th:href="@{/student/assignments/submit/{id}(id=${assignment.assignmentId})}"
+                           class="btn-primary">
+                            Submit Assignment
+                        </a>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(assignments)}">
+                    <td colspan="8">No assignments available.</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
