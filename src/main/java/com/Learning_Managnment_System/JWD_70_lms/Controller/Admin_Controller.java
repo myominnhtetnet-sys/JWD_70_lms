@@ -17,7 +17,7 @@ public class Admin_Controller {
 		return "dashboard";		
 	}
 	
-}
+
 
     @Autowired
     private Admin_Repository adminRepository;
