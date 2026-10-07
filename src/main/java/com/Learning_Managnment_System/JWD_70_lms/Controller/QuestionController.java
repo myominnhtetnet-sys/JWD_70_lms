@@ -1,7 +1,9 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,15 +21,27 @@ import com.Learning_Managnment_System.JWD_70_lms.model.QuestionOptionBean;
 @RequestMapping("/api/questions")
 public class QuestionController {
 
+	private final JdbcTemplate jdbcTemplate;
     private final QuestionService questionService;
 
-    public QuestionController(QuestionService questionService) {
+    public QuestionController(QuestionService questionService,JdbcTemplate jdbcTemplate) {
         this.questionService = questionService;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @GetMapping
     public List<QuestionBean> getAllQuestions() {
         return questionService.getAllQuestions();
+    }
+    
+    @GetMapping("/courses")
+    public List<Map<String, Object>> getCourses() {
+        String sql = """
+                SELECT course_id, title
+                FROM courses
+                ORDER BY title
+                """;
+        return jdbcTemplate.queryForList(sql);
     }
 
     @GetMapping("/{id}")

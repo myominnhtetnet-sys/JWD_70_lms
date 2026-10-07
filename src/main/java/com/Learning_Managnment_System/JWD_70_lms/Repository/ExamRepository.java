@@ -23,13 +23,7 @@ public class ExamRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
-    // =========================================================
-    // 1. FIND ALL EXAMS
-    // =========================================================
-
     public List<ExamBean> findAll() {
-
         String sql = """
             SELECT
                 exam_id,
@@ -58,13 +52,7 @@ public class ExamRepository {
         );
     }
 
-
-    // =========================================================
-    // 2. FIND EXAM BY ID
-    // =========================================================
-
     public Optional<ExamBean> findById(Long examId) {
-
         String sql = """
             SELECT
                 exam_id,
@@ -87,26 +75,16 @@ public class ExamRepository {
             WHERE exam_id = ?
             """;
 
-        List<ExamBean> list = jdbcTemplate.query(
-                sql,
-                new ExamRowMapper(),
-                examId
-        );
+		List<ExamBean> list = jdbcTemplate.query(sql, new ExamRowMapper(), examId);
 
-        if (list.isEmpty()) {
-            return Optional.empty();
-        }
+		if (list.isEmpty()) {
+			return Optional.empty();
+		}
 
-        return Optional.of(list.get(0));
-    }
-
-
-    // =========================================================
-    // 3. SAVE EXAM
-    // =========================================================
+		return Optional.of(list.get(0));
+	}
 
     public Long save(ExamBean exam) {
-
         String sql = """
             INSERT INTO exams (
                 course_id,
@@ -126,15 +104,10 @@ public class ExamRepository {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		jdbcTemplate.update(connection -> {
 
-        jdbcTemplate.update(connection -> {
-
-            PreparedStatement ps =
-                    connection.prepareStatement(
-                        sql,
-                        new String[] { "exam_id" }
-                    );
+			PreparedStatement ps = connection.prepareStatement(sql, new String[] { "exam_id" });
 
             ps.setLong(1, exam.getCourseId());
             ps.setLong(2, exam.getBatchId());
@@ -165,12 +138,9 @@ public class ExamRepository {
         }
 
         return key.longValue();
-    }    // =========================================================
-    // 4. UPDATE EXAM
-    // =========================================================
-
+    } 
+    
     public int update(ExamBean exam) {
-
         String sql = """
             UPDATE exams
             SET
@@ -207,11 +177,6 @@ public class ExamRepository {
         );
     }
 
-
-    // =========================================================
-    // 5. DELETE EXAM
-    // =========================================================
-
     public int deleteById(Long examId) {
 
         String sql = """
@@ -219,14 +184,10 @@ public class ExamRepository {
             WHERE exam_id = ?
             """;
 
-        return jdbcTemplate.update(
-                sql,
-                examId
-        );
-    }
+		return jdbcTemplate.update(sql, examId);
+	}
 
     public List<ExamQuestionBean> findQuestionsByExamId(Long examId) {
-
         String sql = """
             SELECT
                 eq.exam_id,
@@ -242,14 +203,10 @@ public class ExamRepository {
             ORDER BY eq.sort_order ASC
             """;
 
-        return jdbcTemplate.query(
-                sql,
-                new ExamQuestionRowMapper(),
-                examId
-        );
+		return jdbcTemplate.query(sql, new ExamQuestionRowMapper(), examId);
     }
+    
     public int addQuestionToExam(ExamQuestionBean examQuestion) {
-
         String sql = """
             INSERT INTO exam_questions (
                 exam_id,
@@ -269,48 +226,26 @@ public class ExamRepository {
         );
     }
 
-
-    // =========================================================
-    // 8. REMOVE ONE QUESTION FROM EXAM
-    // =========================================================
-
-    public int removeQuestionFromExam(
-            Long examId,
-            Long questionId) {
-
+	public int removeQuestionFromExam(Long examId, Long questionId) {
         String sql = """
             DELETE FROM exam_questions
             WHERE exam_id = ?
               AND question_id = ?
             """;
 
-        return jdbcTemplate.update(
-                sql,
-                examId,
-                questionId
-        );
+		return jdbcTemplate.update(sql, examId, questionId);
     }
 
-
-    // =========================================================
-    // 9. REMOVE ALL QUESTIONS FROM EXAM
-    // =========================================================
-
     public int removeAllQuestions(Long examId) {
-
         String sql = """
             DELETE FROM exam_questions
             WHERE exam_id = ?
             """;
 
-        return jdbcTemplate.update(
-                sql,
-                examId
-        );
-    }
+		return jdbcTemplate.update(sql, examId);
+	}
     
     public boolean existsQuestionInExam(Long examId, Long questionId) {
-
         String sql = """
             SELECT COUNT(*)
             FROM exam_questions
@@ -318,28 +253,18 @@ public class ExamRepository {
               AND question_id = ?
             """;
 
-        Integer count = jdbcTemplate.queryForObject(
-            sql,
-            Integer.class,
-            examId,
-            questionId
-        );
+		Integer count = jdbcTemplate.queryForObject(sql, Integer.class, examId, questionId);
 
         return count != null && count > 0;
     }
     
     public Integer getNextSortOrder(Long examId) {
-
         String sql = """
             SELECT COALESCE(MAX(sort_order), 0) + 1
             FROM exam_questions
             WHERE exam_id = ?
             """;
-
-        return jdbcTemplate.queryForObject(
-            sql,
-            Integer.class,
-            examId
-        );
+        
+		return jdbcTemplate.queryForObject(sql, Integer.class, examId);
     }
 }

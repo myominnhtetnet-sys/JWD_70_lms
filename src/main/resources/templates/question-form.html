@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title id="pageTitle">Create Question</title>
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Font Awesome -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+    <main class="max-w-xl mx-auto px-4 py-6">
+
+        <!-- PAGE HEADER -->
+        <div class="mb-4">
+
+            <h1 id="pageTitle"
+                class="text-2xl font-bold text-slate-800">
+                Create Question
+            </h1>
+
+            <p id="pageDescription"
+               class="text-sm text-slate-500 mt-1">
+                Manage question information and answer options.
+            </p>
+
+        </div>
+
+
+        <form id="questionForm">
+
+
+            <!-- BASIC INFORMATION -->
+            <div class="bg-white rounded-lg
+                        border border-slate-200
+                        shadow-sm
+                        p-4 mb-4">
+
+                <h2 class="text-lg font-bold
+                           text-slate-800
+                           pb-2 mb-4
+                           border-b border-slate-200">
+
+                    Basic Information
+
+                </h2>
+
+
+                <!-- COURSE -->
+                <div class="mb-3">
+
+                    <label for="courseId"
+                           class="block text-sm
+                                  font-semibold
+                                  text-slate-700 mb-1">
+
+                        Course
+
+                    </label>
+
+                    <select id="courseId"
+                            name="courseId"
+                            required
+                            class="w-full px-3 py-2
+                                   text-sm
+                                   border border-slate-300
+                                   rounded-md
+                                   bg-white
+                                   focus:outline-none
+                                   focus:ring-1
+                                   focus:ring-indigo-500">
+
+                        <option value="">
+                            -- Select Course --
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- QUESTION -->
+                <div class="mb-3">
+
+                    <label for="questionText"
+                           class="block text-sm
+                                  font-semibold
+                                  text-slate-700 mb-1">
+
+                        Question
+
+                    </label>
+
+                    <textarea id="questionText"
+                              name="questionText"
+                              rows="3"
+                              required
+                              placeholder="Enter your question"
+                              class="w-full px-3 py-2
+                                     text-sm
+                                     border border-slate-300
+                                     rounded-md
+                                     resize-none
+                                     focus:outline-none
+                                     focus:ring-1
+                                     focus:ring-indigo-500"></textarea>
+
+                </div>
+
+
+                <!-- TYPE + MARK -->
+                <div class="grid grid-cols-2 gap-3">
+
+                    <div>
+
+                        <label for="questionType"
+                               class="block text-sm
+                                      font-semibold
+                                      text-slate-700 mb-1">
+
+                            Question Type
+
+                        </label>
+
+                        <select id="questionType"
+                                name="questionType"
+                                required
+                                onchange="changeQuestionType()"
+                                class="w-full px-3 py-2
+                                       text-sm
+                                       border border-slate-300
+                                       rounded-md
+                                       bg-white
+                                       focus:outline-none
+                                       focus:ring-1
+                                       focus:ring-indigo-500">
+
+                            <option value="">
+                                -- Select Type --
+                            </option>
+
+                            <option value="MCQ">
+                                Multiple Choice
+                            </option>
+
+                            <option value="TRUE_FALSE">
+                                True / False
+                            </option>
+
+                            <option value="SHORT_ANSWER">
+                                Short Answer
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div>
+
+                        <label for="defaultMark"
+                               class="block text-sm
+                                      font-semibold
+                                      text-slate-700 mb-1">
+
+                            Default Mark
+
+                        </label>
+
+                        <input type="number"
+                               id="defaultMark"
+                               name="defaultMark"
+                               step="0.01"
+                               min="0"
+                               required
+                               placeholder="Enter mark"
+                               class="w-full px-3 py-2
+                                      text-sm
+                                      border border-slate-300
+                                      rounded-md
+                                      focus:outline-none
+                                      focus:ring-1
+                                      focus:ring-indigo-500">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ANSWER OPTIONS -->
+            <div id="optionsSection"
+                 class="bg-white rounded-lg
+                        border border-slate-200
+                        shadow-sm
+                        p-4 mb-4 hidden">
+
+                <div class="flex items-center
+                            justify-between
+                            pb-2 mb-3
+                            border-b border-slate-200">
+
+                    <div>
+
+                        <h2 class="text-lg font-bold
+                                   text-slate-800">
+
+                            Answer Options
+
+                        </h2>
+
+                        <p class="text-xs text-slate-500">
+                            Select the correct answer.
+                        </p>
+
+                    </div>
+
+                    <button type="button"
+                            id="addOptionButton"
+                            onclick="createOption()"
+                            class="px-3 py-1.5
+                                   text-xs
+                                   bg-indigo-600
+                                   text-white
+                                   rounded-md
+                                   hover:bg-indigo-700">
+
+                        <i class="fa-solid fa-plus mr-1"></i>
+                        Add Option
+
+                    </button>
+
+                </div>
+
+                <div id="optionsContainer"
+                     class="space-y-2">
+                </div>
+
+            </div>
+
+
+            <!-- EXPLANATION -->
+            <div class="bg-white rounded-lg
+                        border border-slate-200
+                        shadow-sm
+                        p-4 mb-4">
+
+                <h2 class="text-lg font-bold
+                           text-slate-800
+                           pb-2 mb-3
+                           border-b border-slate-200">
+
+                    Explanation
+
+                </h2>
+
+                <label for="explanation"
+                       class="block text-sm
+                              font-semibold
+                              text-slate-700 mb-1">
+
+                    Explanation
+                    <span class="text-xs
+                                 text-slate-400
+                                 font-normal">
+
+                        (Optional)
+
+                    </span>
+
+                </label>
+
+                <textarea id="explanation"
+                          name="explanation"
+                          rows="3"
+                          placeholder="Enter explanation..."
+                          class="w-full px-3 py-2
+                                 text-sm
+                                 border border-slate-300
+                                 rounded-md
+                                 resize-none
+                                 focus:outline-none
+                                 focus:ring-1
+                                 focus:ring-indigo-500"></textarea>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+            <div class="flex justify-end gap-2 pb-5">
+
+                <button type="button"
+                        onclick="goBack()"
+                        class="px-4 py-2
+                               text-sm
+                               border border-slate-300
+                               bg-white
+                               text-slate-700
+                               rounded-md
+                               hover:bg-slate-50">
+
+                    Cancel
+
+                </button>
+
+                <button type="submit"
+                        id="saveButton"
+                        class="px-4 py-2
+                               text-sm
+                               bg-indigo-600
+                               text-white
+                               rounded-md
+                               hover:bg-indigo-700">
+
+                    <i class="fa-solid fa-floppy-disk mr-1"></i>
+
+                    <span id="saveButtonText">
+                        Save Question
+                    </span>
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </main>
+	<!-- =========================
+     JAVASCRIPT
+========================= -->
+
+	<script>
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let optionCount = 0;
+
+let questionId = null;
+
+const currentPath = window.location.pathname;
+
+const isEdit = currentPath.startsWith("/questions/edit/");
+
+
+
+/* =========================================================
+   PAGE LOAD
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    /*
+     * First load courses.
+     * After courses are loaded,
+     * load edit question if this is edit page.
+     */
+
+    loadCourses()
+        .then(() => {
+
+            if (isEdit) {
+
+                questionId =
+                    currentPath.split("/").pop();
+
+                setupEditPage();
+
+                loadQuestionForEdit();
+
+            } else {
+
+                setupAddPage();
+
+            }
+
+        })
+        .catch(error => {
+
+            console.error(
+                "Page initialization error:",
+                error
+            );
+
+        });
+
+});
+
+
+
+/* =========================================================
+   LOAD COURSES
+========================================================= */
+
+function loadCourses() {
+
+    return fetch("/api/questions/courses")
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load courses"
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(courses => {
+
+            const select =
+                document.getElementById("courseId");
+
+
+            select.innerHTML =
+                '<option value="">-- Select Course --</option>';
+
+
+            courses.forEach(course => {
+
+                const option =
+                    document.createElement("option");
+
+
+                option.value =
+                    course.course_id;
+
+
+                option.textContent =
+                    course.title;
+
+
+                select.appendChild(option);
+
+            });
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Course loading error:",
+                error
+            );
+
+            alert(
+                "Failed to load courses."
+            );
+
+            throw error;
+
+        });
+
+}
+
+
+
+/* =========================================================
+   ADD PAGE
+========================================================= */
+
+function setupAddPage() {
+
+    document.getElementById("pageTitle")
+        .textContent = "Create Question";
+
+
+    document.getElementById("pageDescription")
+        .textContent =
+        "Manage question information and answer options.";
+
+
+    document.getElementById("saveButtonText")
+        .textContent = "Save Question";
+
+}
+
+
+
+/* =========================================================
+   EDIT PAGE
+========================================================= */
+
+function setupEditPage() {
+
+    document.getElementById("pageTitle")
+        .textContent = "Edit Question";
+
+
+    document.getElementById("pageDescription")
+        .textContent =
+        "Update question information and answer options.";
+
+
+    document.getElementById("saveButtonText")
+        .textContent = "Update Question";
+
+}
+
+
+
+/* =========================================================
+   QUESTION TYPE CHANGE
+========================================================= */
+
+function changeQuestionType() {
+
+    const type =
+        document.getElementById("questionType").value;
+
+
+    const optionsSection =
+        document.getElementById("optionsSection");
+
+
+    const addOptionButton =
+        document.getElementById("addOptionButton");
+
+
+    const optionsContainer =
+        document.getElementById("optionsContainer");
+
+
+    /*
+     * Clear old options
+     */
+
+    optionsContainer.innerHTML = "";
+
+    optionCount = 0;
+
+
+
+    /*
+     * Nothing selected
+     */
+
+    if (type === "") {
+
+        optionsSection.classList.add("hidden");
+
+        return;
+
+    }
+
+
+
+    /*
+     * Short Answer
+     */
+
+    if (type === "SHORT_ANSWER") {
+
+        optionsSection.classList.add("hidden");
+
+        return;
+
+    }
+
+
+
+    /*
+     * MCQ
+     */
+
+    if (type === "MCQ") {
+
+        optionsSection.classList.remove("hidden");
+
+        addOptionButton.classList.remove("hidden");
+
+
+        createOption();
+
+        createOption();
+
+        createOption();
+
+        createOption();
+
+
+        return;
+
+    }
+
+
+
+    /*
+     * TRUE / FALSE
+     */
+
+    if (type === "TRUE_FALSE") {
+
+        optionsSection.classList.remove("hidden");
+
+        addOptionButton.classList.add("hidden");
+
+
+        createOption("True", false);
+
+        createOption("False", false);
+
+
+        return;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   CREATE OPTION
+========================================================= */
+
+function createOption(
+    text = "",
+    isCorrect = false
+) {
+
+    optionCount++;
+
+
+    const container =
+        document.getElementById("optionsContainer");
+
+
+    const optionItem =
+        document.createElement("div");
+
+
+    optionItem.className =
+        "option-item flex items-center gap-3 " +
+        "p-3 rounded-lg border border-slate-200 " +
+        "bg-slate-50 hover:border-indigo-300 " +
+        "hover:bg-indigo-50/30 transition";
+
+
+
+    /* Correct Answer Radio */
+
+    const radioWrapper =
+        document.createElement("div");
+
+
+    radioWrapper.className =
+        "flex items-center";
+
+
+
+    const radio =
+        document.createElement("input");
+
+
+    radio.type = "radio";
+
+    radio.name = "correctOption";
+
+    radio.value = optionCount;
+
+    radio.checked = isCorrect;
+
+    radio.className =
+        "w-5 h-5 text-indigo-600 " +
+        "border-slate-300 " +
+        "focus:ring-indigo-500";
+
+
+
+    radioWrapper.appendChild(radio);
+
+
+
+    /* Option Label */
+
+    const label =
+        document.createElement("span");
+
+
+    label.className =
+        "text-sm font-semibold " +
+        "text-slate-600 w-20";
+
+
+    label.textContent =
+        "Option " + optionCount;
+
+
+
+    /* Option Text */
+
+    const input =
+        document.createElement("input");
+
+
+    input.type = "text";
+
+    input.className =
+        "option-text flex-1 px-4 py-2.5 " +
+        "border border-slate-300 rounded-lg " +
+        "bg-white focus:outline-none " +
+        "focus:ring-2 focus:ring-indigo-500 " +
+        "focus:border-indigo-500";
+
+
+    input.placeholder =
+        "Enter option " + optionCount;
+
+
+    input.value = text;
+
+
+
+    /* Delete Button */
+
+    const deleteButton =
+        document.createElement("button");
+
+
+    deleteButton.type = "button";
+
+
+    deleteButton.className =
+        "w-10 h-10 rounded-lg " +
+        "text-red-500 hover:text-red-600 " +
+        "hover:bg-red-50 transition";
+
+
+    deleteButton.innerHTML =
+        '<i class="fa-solid fa-trash"></i>';
+
+
+    deleteButton.onclick = function () {
+
+        optionItem.remove();
+
+        refreshOptionNumbers();
+
+    };
+
+
+
+    /* Append */
+
+    optionItem.appendChild(
+        radioWrapper
+    );
+
+    optionItem.appendChild(
+        label
+    );
+
+    optionItem.appendChild(
+        input
+    );
+
+    optionItem.appendChild(
+        deleteButton
+    );
+
+
+    container.appendChild(
+        optionItem
+    );
+
+}
+
+
+
+/* =========================================================
+   REFRESH OPTION NUMBERS
+========================================================= */
+
+function refreshOptionNumbers() {
+
+    const items =
+        document.querySelectorAll(
+            ".option-item"
+        );
+
+
+    items.forEach((item, index) => {
+
+        const label =
+            item.querySelector("span");
+
+
+        const input =
+            item.querySelector(
+                ".option-text"
+            );
+
+
+        label.textContent =
+            "Option " + (index + 1);
+
+
+        input.placeholder =
+            "Enter option " + (index + 1);
+
+    });
+
+
+    optionCount =
+        items.length;
+
+}
+
+
+
+/* =========================================================
+   LOAD QUESTION FOR EDIT
+========================================================= */
+
+function loadQuestionForEdit() {
+
+    fetch(
+        `/api/questions/${questionId}`
+    )
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load question"
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(question => {
+
+
+            /* Course */
+
+            document.getElementById("courseId")
+                .value =
+                question.courseId ?? "";
+
+
+
+            /* Question */
+
+            document.getElementById("questionText")
+                .value =
+                question.questionText ?? "";
+
+
+
+            /* Question Type */
+
+            document.getElementById("questionType")
+                .value =
+                question.questionType ?? "";
+
+
+
+            /* Default Mark */
+
+            document.getElementById("defaultMark")
+                .value =
+                question.defaultMark ?? "";
+
+
+
+            /* Explanation */
+
+            document.getElementById("explanation")
+                .value =
+                question.explanation ?? "";
+
+
+            /*
+             * Load options
+             */
+
+            return fetch(
+                `/api/questions/${questionId}/options`
+            );
+
+        })
+
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load options"
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+
+        .then(options => {
+
+            renderEditOptions(options);
+
+        })
+
+
+        .catch(error => {
+
+            console.error(error);
+
+            alert(
+                "Failed to load question information."
+            );
+
+        });
+
+}
+
+
+
+/* =========================================================
+   RENDER EDIT OPTIONS
+========================================================= */
+
+function renderEditOptions(options) {
+
+    const container =
+        document.getElementById(
+            "optionsContainer"
+        );
+
+
+    const type =
+        document.getElementById(
+            "questionType"
+        ).value;
+
+
+    const optionsSection =
+        document.getElementById(
+            "optionsSection"
+        );
+
+
+    const addOptionButton =
+        document.getElementById(
+            "addOptionButton"
+        );
+
+
+    container.innerHTML = "";
+
+    optionCount = 0;
+
+
+
+    /*
+     * SHORT ANSWER
+     */
+
+    if (type === "SHORT_ANSWER") {
+
+        optionsSection.classList.add(
+            "hidden"
+        );
+
+        return;
+
+    }
+
+
+
+    /*
+     * Show options section
+     */
+
+    optionsSection.classList.remove(
+        "hidden"
+    );
+
+
+
+    /*
+     * MCQ
+     */
+
+    if (type === "MCQ") {
+
+        addOptionButton.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+
+    /*
+     * TRUE / FALSE
+     */
+
+    if (type === "TRUE_FALSE") {
+
+        addOptionButton.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+
+    /*
+     * No options found
+     */
+
+    if (!options || options.length === 0) {
+
+
+        if (type === "MCQ") {
+
+            createOption();
+
+            createOption();
+
+            createOption();
+
+            createOption();
+
+        }
+
+
+        else if (type === "TRUE_FALSE") {
+
+            createOption(
+                "True",
+                false
+            );
+
+            createOption(
+                "False",
+                false
+            );
+
+        }
+
+
+        return;
+
+    }
+
+
+
+    /*
+     * Existing options
+     */
+
+    options.forEach(option => {
+
+        createOption(
+
+            option.optionText || "",
+
+            option.isCorrect === true
+
+        );
+
+    });
+
+}
+
+
+
+/* =========================================================
+   GET FORM DATA
+========================================================= */
+
+function getFormData() {
+
+    const courseId =
+        document.getElementById(
+            "courseId"
+        ).value;
+
+
+    const questionText =
+        document.getElementById(
+            "questionText"
+        ).value.trim();
+
+
+    const questionType =
+        document.getElementById(
+            "questionType"
+        ).value;
+
+
+    const defaultMark =
+        document.getElementById(
+            "defaultMark"
+        ).value;
+
+
+    const explanation =
+        document.getElementById(
+            "explanation"
+        ).value.trim();
+
+
+    return {
+
+        courseId:
+            courseId
+                ? Number(courseId)
+                : null,
+
+        questionText:
+            questionText,
+
+        questionType:
+            questionType,
+
+        defaultMark:
+            defaultMark
+                ? Number(defaultMark)
+                : null,
+
+        explanation:
+            explanation,
+
+        isActive:
+            true,
+
+        createdBy:
+            1
+
+    };
+
+}
+
+
+
+/* =========================================================
+   VALIDATE OPTIONS
+========================================================= */
+
+function validateOptions() {
+
+    const type =
+        document.getElementById(
+            "questionType"
+        ).value;
+
+
+    /*
+     * Short answer does not need options
+     */
+
+    if (type === "SHORT_ANSWER") {
+
+        return true;
+
+    }
+
+
+
+    const optionItems =
+        document.querySelectorAll(
+            ".option-item"
+        );
+
+
+    /*
+     * At least one option
+     */
+
+    if (optionItems.length === 0) {
+
+        alert(
+            "Please add at least one option."
+        );
+
+        return false;
+
+    }
+
+
+
+    /*
+     * Check empty options
+     */
+
+    for (const item of optionItems) {
+
+        const input =
+            item.querySelector(
+                ".option-text"
+            );
+
+
+        if (!input.value.trim()) {
+
+            alert(
+                "Please fill in all answer options."
+            );
+
+            input.focus();
+
+            return false;
+
+        }
+
+    }
+
+
+
+    /*
+     * Check correct answer
+     */
+
+    const correctOption =
+        document.querySelector(
+            'input[name="correctOption"]:checked'
+        );
+
+
+    if (!correctOption) {
+
+        alert(
+            "Please select at least one correct answer."
+        );
+
+        return false;
+
+    }
+
+
+
+    return true;
+
+}
+
+
+
+/* =========================================================
+   SAVE / UPDATE FORM
+========================================================= */
+
+document.getElementById(
+    "questionForm"
+).addEventListener(
+    "submit",
+    function (event) {
+
+        event.preventDefault();
+
+
+        /*
+         * Validate options
+         */
+
+        if (!validateOptions()) {
+
+            return;
+
+        }
+
+
+
+        const formData =
+            getFormData();
+
+
+        const saveButton =
+            document.getElementById(
+                "saveButton"
+            );
+
+
+        /*
+         * Disable button
+         */
+
+        saveButton.disabled = true;
+
+        saveButton.classList.add(
+            "opacity-60",
+            "cursor-not-allowed"
+        );
+
+
+
+        /*
+         * ADD
+         */
+
+        if (!isEdit) {
+
+            fetch(
+                "/api/questions",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            formData
+                        )
+                }
+            )
+
+                .then(response => {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "Failed to save question"
+                        );
+
+                    }
+
+                    return response.json();
+
+                })
+
+                .then(newQuestionId => {
+
+                    return saveOptions(
+                        newQuestionId
+                    );
+
+                })
+
+                .then(() => {
+
+                    alert(
+                        "Question created successfully."
+                    );
+
+                    window.location.href =
+                        "/questions";
+
+                })
+
+                .catch(error => {
+
+                    console.error(error);
+
+                    alert(
+                        "Failed to save question."
+                    );
+
+                    enableSaveButton();
+
+                });
+
+        }
+
+
+
+        /*
+         * UPDATE
+         */
+
+        else {
+
+            fetch(
+                `/api/questions/${questionId}`,
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            formData
+                        )
+                }
+            )
+
+                .then(response => {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "Failed to update question"
+                        );
+
+                    }
+
+                    return response;
+
+                })
+
+                /*
+                 * Delete old options
+                 */
+
+                .then(() => {
+
+                    return fetch(
+                        `/api/questions/${questionId}/options`,
+                        {
+                            method: "DELETE"
+                        }
+                    );
+
+                })
+
+                /*
+                 * Save new options
+                 */
+
+                .then(() => {
+
+                    return saveOptions(
+                        questionId
+                    );
+
+                })
+
+                .then(() => {
+
+                    alert(
+                        "Question updated successfully."
+                    );
+
+                    window.location.href =
+                        "/questions";
+
+                })
+
+                .catch(error => {
+
+                    console.error(error);
+
+                    alert(
+                        "Failed to update question."
+                    );
+
+                    enableSaveButton();
+
+                });
+
+        }
+
+    }
+);
+
+
+
+/* =========================================================
+   SAVE OPTIONS
+========================================================= */
+
+function saveOptions(id) {
+
+    const type =
+        document.getElementById(
+            "questionType"
+        ).value;
+
+
+    /*
+     * Short answer
+     */
+
+    if (type === "SHORT_ANSWER") {
+
+        return Promise.resolve();
+
+    }
+
+
+
+    const optionItems =
+        document.querySelectorAll(
+            ".option-item"
+        );
+
+
+    const requests = [];
+
+
+    optionItems.forEach(item => {
+
+        const input =
+            item.querySelector(
+                ".option-text"
+            );
+
+
+        const radio =
+            item.querySelector(
+                'input[name="correctOption"]'
+            );
+
+
+        const optionData = {
+
+            questionId:
+                Number(id),
+
+            optionText:
+                input.value.trim(),
+
+            isCorrect:
+                radio.checked
+
+        };
+
+
+        requests.push(
+
+            fetch(
+                `/api/questions/${id}/options`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            optionData
+                        )
+                }
+            )
+
+        );
+
+    });
+
+
+    return Promise.all(requests);
+
+}
+
+
+
+/* =========================================================
+   ENABLE SAVE BUTTON
+========================================================= */
+
+function enableSaveButton() {
+
+    const saveButton =
+        document.getElementById(
+            "saveButton"
+        );
+
+
+    saveButton.disabled = false;
+
+
+    saveButton.classList.remove(
+        "opacity-60",
+        "cursor-not-allowed"
+    );
+
+}
+
+
+
+/* =========================================================
+   GO BACK
+========================================================= */
+
+function goBack() {
+
+    window.location.href =
+        "/questions";
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>

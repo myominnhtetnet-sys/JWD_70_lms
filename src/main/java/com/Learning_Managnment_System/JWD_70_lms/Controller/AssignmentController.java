@@ -49,7 +49,7 @@ public class AssignmentController {
     @GetMapping("/assignments")
     public String listAssignments(@RequestParam(defaultValue = "1") int page, Model model) {
 
-        int size = 5;
+        int size = 10;
         int totalItems = assignmentService.getTotalAssignments();
         int totalPages = (int) Math.ceil((double) totalItems / size);
 
