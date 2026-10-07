@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholarships - LMS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased font-sans">
+
+    <div class="flex min-h-screen">
+        
+        <!-- Sidebar Navigation Menu -->
+        <aside class="w-64 bg-slate-900 text-slate-300 hidden md:flex flex-col justify-between shrink-0 sticky top-0 h-screen overflow-y-auto border-r border-slate-800">
+            <div>
+                <!-- Logo -->
+                <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
+                        <i class="fa-solid fa-graduation-cap text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-base font-bold text-white tracking-wide block leading-none">LearnHub</span>
+                        <small class="text-[11px] font-medium text-slate-400">Student Portal</small>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="p-4 space-y-6">
+                    <div>
+                        <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Menu</div>
+                        <div class="space-y-1">
+                            <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                                <i class="fa-solid fa-border-all text-base"></i> Dashboard
+                            </a>
+                            <a th:href="@{/student/certificate}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                                <i class="fa-solid fa-award text-base"></i> Certificates
+                            </a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Account</div>
+                        <div class="space-y-1">
+                            
+                            <!-- Active Scholarships Menu Link -->
+                            <a th:href="@{/student/scholarship}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600/90 shadow-sm transition">
+                                <i class="fa-solid fa-user-graduate text-base"></i> Scholarships
+                            </a>
+                            <a th:href="@{/student/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                                <i class="fa-regular fa-user text-base"></i> My Profile
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Logout Link -->
+            <div class="p-4 border-t border-slate-800 space-y-3">
+                <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                    <i class="fa-solid fa-right-from-bracket text-base"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+
+            <!-- Top Header -->
+            <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 leading-tight">Scholarship Programs</h2>
+                    <p class="text-xs text-slate-400 font-medium">Apply for available scholarships or check application status</p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
+                        <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+                            <span th:text="${fullName != null ? #strings.substring(fullName,0,2) : 'ST'}">ST</span>
+                        </div>
+                        <div class="hidden lg:block">
+                            <b class="block text-xs font-bold text-slate-800 leading-none" th:text="${fullName != null ? fullName : 'Student'}">Student</b>
+                            <small class="text-[11px] text-slate-400 font-medium">Student</small>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="p-6 lg:p-8 space-y-6 max-w-[1100px] mx-auto w-full">
+
+                <!-- Application Status / Available List Card -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+                    <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800">Your Scholarship Applications</h3>
+                            <p class="text-xs text-slate-400">Track and review the status of your scholarship submissions.</p>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-600">
+                            <thead class="bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider">
+                                <tr>
+                                    <th class="p-3.5 rounded-l-xl">Program Name</th>
+                                    <th class="p-3.5">Applied Date</th>
+                                    <th class="p-3.5">Discount %</th>
+                                    <th class="p-3.5">Status</th>
+                                    <th class="p-3.5 rounded-r-xl text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr th:each="sch : ${scholarships}" class="hover:bg-slate-50/80 transition">
+                                    <td class="p-3.5 font-semibold text-slate-900" th:text="${sch.title}">IT Excellence Scholarship</td>
+                                    <td class="p-3.5 text-slate-500" th:text="${sch.appliedDate}">2026-03-15</td>
+                                    <td class="p-3.5 font-semibold text-indigo-600" th:text="${sch.discountPercentage + '%'}">50%</td>
+                                    <td class="p-3.5">
+                                        <span th:text="${sch.status}" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700">
+                                            Pending
+                                        </span>
+                                    </td>
+                                    <td class="p-3.5 text-right">
+                                        <button class="text-xs px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition">View Details</button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Empty State -->
+                                <tr th:if="${#lists.isEmpty(scholarships)}">
+                                    <td colspan="5" class="text-center py-12 text-slate-400">
+                                        <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3 text-lg">
+                                            <i class="fa-solid fa-folder-open"></i>
+                                        </div>
+                                        <p class="font-semibold text-slate-700 text-sm mb-0.5">No scholarship applications found</p>
+                                        <p class="text-xs text-slate-400">You have not submitted any scholarship applications yet.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+</body>
+</html>

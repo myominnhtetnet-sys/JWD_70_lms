@@ -19,32 +19,32 @@ public class Admin_Controller {
 	
 }
 
-
     @Autowired
     private Admin_Repository adminRepository;
 
+    @GetMapping("/")
+    public String show() {        
+        return "dashboard";        
+    }
 
     // =========================================================
     // ADMIN DASHBOARD
     // =========================================================
 
-    @GetMapping("/admin")
+    @GetMapping("/dashboard")
     public String adminDashboard(Model model) {
 
-        List<AdminUserBean> users =
-                adminRepository.getAllUsers();
-
+        List<AdminUserBean> users = adminRepository.getAllUsers();
         model.addAttribute("users", users);
 
         return "dashboard";
     }
 
-
     // =========================================================
     // SEARCH USER
     // =========================================================
 
-    @GetMapping("/admin/users/search")
+    @GetMapping("/users/search")
     public String searchUsers(
             @RequestParam("keyword") String keyword,
             Model model) {
@@ -63,338 +63,195 @@ public class Admin_Controller {
         return "dashboard";
     }
 
-
     // =========================================================
     // SHOW ADD USER FORM
     // =========================================================
 
-    @GetMapping("/admin/users/add")
+    @GetMapping("/users/add")
     public String showAddUserForm(Model model) {
 
-        model.addAttribute(
-                "user",
-                new AdminUserBean()
-        );
-
+        model.addAttribute("user", new AdminUserBean());
         return "admin/user_form";
     }
-
 
     // =========================================================
     // ADD USER
     // =========================================================
 
-    @PostMapping("/admin/users/add")
+    @PostMapping("/users/add")
     public String addUser(
             AdminUserBean user,
             RedirectAttributes redirectAttributes) {
 
-        // Required validation
-        if (user.getFullName() == null ||
-                user.getFullName().trim().isEmpty()) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Full name is required."
-            );
-
+        if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Full name is required.");
             return "redirect:/admin/users/add";
         }
 
-
-        if (user.getEmail() == null ||
-                user.getEmail().trim().isEmpty()) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Email is required."
-            );
-
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Email is required.");
             return "redirect:/admin/users/add";
         }
 
-
-        if (user.getPasswordHash() == null ||
-                user.getPasswordHash().trim().isEmpty()) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Password is required."
-            );
-
+        if (user.getPasswordHash() == null || user.getPasswordHash().trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Password is required.");
             return "redirect:/admin/users/add";
         }
 
-
-        // Duplicate email
         if (adminRepository.emailExists(user.getEmail())) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "This email is already registered."
-            );
-
+            redirectAttributes.addFlashAttribute("error", "This email is already registered.");
             return "redirect:/admin/users/add";
         }
 
-
-        // Default status
-        if (user.getStatus() == null ||
-                user.getStatus().isBlank()) {
-
+        if (user.getStatus() == null || user.getStatus().isBlank()) {
             user.setStatus("ACTIVE");
         }
 
-
-        int result =
-                adminRepository.addUser(user);
-
+        int result = adminRepository.addUser(user);
 
         if (result > 0) {
-
-            redirectAttributes.addFlashAttribute(
-                    "success",
-                    "User added successfully."
-            );
-
+            redirectAttributes.addFlashAttribute("success", "User added successfully.");
         } else {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Unable to add user."
-            );
+            redirectAttributes.addFlashAttribute("error", "Unable to add user.");
         }
 
-        return "redirect:/admin";
+        return "redirect:/admin/";
     }
-
 
     // =========================================================
     // VIEW USER
     // =========================================================
 
-    @GetMapping("/admin/users/view/{id}")
+    @GetMapping("/users/view/{id}")
     public String viewUser(
             @PathVariable("id") int id,
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        AdminUserBean user =
-                adminRepository.getUserById(id);
+        AdminUserBean user = adminRepository.getUserById(id);
 
         if (user == null) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "User not found."
-            );
-
-            return "redirect:/admin";
+            redirectAttributes.addFlashAttribute("error", "User not found.");
+            return "redirect:/admin/";
         }
 
         model.addAttribute("user", user);
-
         return "admin/user_view";
     }
-
 
     // =========================================================
     // SHOW EDIT USER FORM
     // =========================================================
 
-    @GetMapping("/admin/users/edit/{id}")
+    @GetMapping("/users/edit/{id}")
     public String showEditUserForm(
             @PathVariable("id") int id,
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        AdminUserBean user =
-                adminRepository.getUserById(id);
+        AdminUserBean user = adminRepository.getUserById(id);
 
         if (user == null) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "User not found."
-            );
-
-            return "redirect:/admin";
+            redirectAttributes.addFlashAttribute("error", "User not found.");
+            return "redirect:/admin/";
         }
 
         model.addAttribute("user", user);
-
         return "admin/user_form";
     }
-
 
     // =========================================================
     // UPDATE USER
     // =========================================================
 
-    @PostMapping("/admin/users/update")
+    @PostMapping("/users/update")
     public String updateUser(
             AdminUserBean user,
             RedirectAttributes redirectAttributes) {
 
-        if (user.getFullName() == null ||
-                user.getFullName().trim().isEmpty()) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Full name is required."
-            );
-
-            return "redirect:/admin/users/edit/"
-                    + user.getUserId();
+        if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Full name is required.");
+            return "redirect:/admin/users/edit/" + user.getUserId();
         }
 
-
-        if (user.getEmail() == null ||
-                user.getEmail().trim().isEmpty()) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Email is required."
-            );
-
-            return "redirect:/admin/users/edit/"
-                    + user.getUserId();
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Email is required.");
+            return "redirect:/admin/users/edit/" + user.getUserId();
         }
 
-
-        // Duplicate email except current user
-        if (adminRepository.emailExistsForOtherUser(
-                user.getEmail(),
-                user.getUserId())) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "This email is already used by another user."
-            );
-
-            return "redirect:/admin/users/edit/"
-                    + user.getUserId();
+        if (adminRepository.emailExistsForOtherUser(user.getEmail(), user.getUserId())) {
+            redirectAttributes.addFlashAttribute("error", "This email is already used by another user.");
+            return "redirect:/admin/users/edit/" + user.getUserId();
         }
 
-
-        int result =
-                adminRepository.updateUser(user);
-
+        int result = adminRepository.updateUser(user);
 
         if (result > 0) {
-
-            redirectAttributes.addFlashAttribute(
-                    "success",
-                    "User updated successfully."
-            );
-
+            redirectAttributes.addFlashAttribute("success", "User updated successfully.");
         } else {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Unable to update user."
-            );
+            redirectAttributes.addFlashAttribute("error", "Unable to update user.");
         }
 
-        return "redirect:/admin";
+        return "redirect:/admin/";
     }
-
 
     // =========================================================
     // SUSPEND USER
     // =========================================================
 
-    @PostMapping("/admin/users/suspend")
+    @PostMapping("/users/suspend")
     public String suspendUser(
             @RequestParam("userId") int userId,
             RedirectAttributes redirectAttributes) {
 
-        int result =
-                adminRepository.updateStatus(
-                        userId,
-                        "SUSPENDED"
-                );
+        int result = adminRepository.updateStatus(userId, "SUSPENDED");
 
         if (result > 0) {
-
-            redirectAttributes.addFlashAttribute(
-                    "success",
-                    "User suspended successfully."
-            );
-
+            redirectAttributes.addFlashAttribute("success", "User suspended successfully.");
         } else {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Unable to suspend user."
-            );
+            redirectAttributes.addFlashAttribute("error", "Unable to suspend user.");
         }
 
-        return "redirect:/admin";
+        return "redirect:/admin/";
     }
-
 
     // =========================================================
     // ACTIVATE USER
     // =========================================================
 
-    @PostMapping("/admin/users/activate")
+    @PostMapping("/users/activate")
     public String activateUser(
             @RequestParam("userId") int userId,
             RedirectAttributes redirectAttributes) {
 
-        int result =
-                adminRepository.updateStatus(
-                        userId,
-                        "ACTIVE"
-                );
+        int result = adminRepository.updateStatus(userId, "ACTIVE");
 
         if (result > 0) {
-
-            redirectAttributes.addFlashAttribute(
-                    "success",
-                    "User activated successfully."
-            );
-
+            redirectAttributes.addFlashAttribute("success", "User activated successfully.");
         } else {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Unable to activate user."
-            );
+            redirectAttributes.addFlashAttribute("error", "Unable to activate user.");
         }
 
-        return "redirect:/admin";
+        return "redirect:/admin/";
     }
-
 
     // =========================================================
     // DELETE USER - SOFT DELETE
     // =========================================================
 
-    @PostMapping("/admin/users/delete")
+    @PostMapping("/users/delete")
     public String deleteUser(
             @RequestParam("userId") int userId,
             RedirectAttributes redirectAttributes) {
 
-        int result =
-                adminRepository.deleteUser(userId);
+        int result = adminRepository.deleteUser(userId);
 
         if (result > 0) {
-
-            redirectAttributes.addFlashAttribute(
-                    "success",
-                    "User deleted successfully."
-            );
-
+            redirectAttributes.addFlashAttribute("success", "User deleted successfully.");
         } else {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Unable to delete user."
-            );
+            redirectAttributes.addFlashAttribute("error", "Unable to delete user.");
         }
 
-        return "redirect:/admin";
+        return "redirect:/admin/";
     }
 }
