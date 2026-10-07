@@ -31,12 +31,11 @@ public class StudentController {
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
-    
 
-	@GetMapping("/home")
-	public String show() {		
-		return "student";		
-	}
+    @GetMapping("/home")
+    public String show() {        
+        return "student";        
+    }
 
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
@@ -51,7 +50,8 @@ public class StudentController {
         return "redirect:/login";
     }
 
-    @GetMapping("/student/profile")
+    // 🔴 ပြင်ဆင်ရန်: "/student/profile" မှ "/profile" သို့ ပြောင်းပါ
+    @GetMapping("/profile")
     public String showProfilePage(HttpSession session, Model model) {
         String email = (String) session.getAttribute("email");
         if (email == null) {
@@ -70,7 +70,8 @@ public class StudentController {
         return "profile";
     }
 
-    @PostMapping("/student/profile/update")
+    // 🔴 ပြင်ဆင်ရန်: "/student/profile/update" မှ "/profile/update" သို့ ပြောင်းပါ
+    @PostMapping("/profile/update")
     public String updateProfile(@RequestParam("fullName") String fullName,
                                 @RequestParam(value = "phone", required = false) String phone,
                                 @RequestParam(value = "address", required = false) String address,
@@ -94,7 +95,8 @@ public class StudentController {
         return "redirect:/student/profile";
     }
 
-    @PostMapping("/student/profile/change-password")
+    
+    @PostMapping("/profile/change-password")
     public String changePassword(@RequestParam("currentPassword") String currentPassword,
                                  @RequestParam("newPassword") String newPassword,
                                  @RequestParam("confirmPassword") String confirmPassword,
