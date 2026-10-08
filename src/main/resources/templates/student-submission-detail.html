@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Assignment Result</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body class="student-result-page">
+
+<div class="result-container">
+
+    <div class="result-header">
+        <div>
+            <h1>My Assignment Result</h1>
+            <p>View your assignment submission and grading result.</p>
+        </div>
+
+        <a th:href="@{/student/assignments}" class="back-btn">
+            Back to Assignments
+        </a>
+    </div>
+
+    <div class="result-card">
+
+        <h2 th:text="${submission.assignmentTitle}"> Assignment Title </h2>
+
+        <div class="result-info-grid">
+
+            <div class="result-info-item">
+                <label>Submission ID</label>
+                <p th:text="${submission.submissionId}">1</p>
+            </div>
+
+            <div class="result-info-item">
+                <label>Submitted Date</label>
+                <p th:text="${submission.submittedAt}">Date</p>
+            </div>
+
+            <div class="result-info-item">
+                <label>Submission Status</label>
+
+                <span th:if="${submission.status == 'GRADED'}"
+                      class="result-badge badge-graded">
+                    GRADED
+                </span>
+
+                <span th:unless="${submission.status == 'GRADED'}"
+                      class="result-badge badge-pending">
+                    PENDING
+                </span>
+            </div>
+
+            <div class="result-info-item">
+                <label>Late Status</label>
+
+                <span th:if="${submission.isLate}"
+                      class="result-badge badge-late">
+                    LATE
+                </span>
+
+                <span th:unless="${submission.isLate}"
+                      class="result-badge badge-ontime">
+                    ON TIME
+                </span>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="result-card score-card">
+
+        <h2>My Score</h2>
+
+        <div th:if="${submission.status == 'GRADED'}">
+            <div class="score-display">
+                <span th:text="${submission.score}">95</span>
+                <span class="score-divider">/</span>
+                <span th:text="${submission.totalMark}">100</span>
+            </div>
+            <p class="score-label">Your Assignment Mark</p>
+        </div>
+
+        <div th:unless="${submission.status == 'GRADED'}">
+            <h3 class="pending-text">Waiting for Teacher Grading</h3>
+            <p>Your assignment has been submitted successfully.</p>
+        </div>
+
+    </div>
+
+  <div class="result-card" style="background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+    <h2 style="color: #0f172a; margin-top: 0; font-size: 18px; margin-bottom: 12px;">My Submitted Answer</h2>
+    
+    <div class="answer-content" style="display: flex; flex-direction: column; gap: 16px;">
+        
+        <!-- 🟢 1. DISPLAY TEXT RESPONSE BLOCK (If written text answer exists in database) -->
+        <div th:if="${submission.answerText != null and !#strings.isEmpty(submission.answerText)}" class="text-response-section">
+            <h3 style="font-size: 11px; color:#64748b; text-transform:uppercase; font-weight:700; margin: 0 0 4px 0; letter-spacing: 0.05em;">Written Content:</h3>
+            <p th:text="${submission.answerText}" style="margin: 0; color: #334155; line-height: 1.6; font-size: 14px; white-space: pre-wrap; background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid #f1f5f9;">
+                Student Answer Text Content...
+            </p>
+        </div>
+
+        <!-- 🟢 2. DISPLAY ATTACHMENT LINK BLOCK (Render alongside text if file exists) -->
+        <div th:if="${submission.attachment != null and !#strings.isEmpty(submission.attachment)}" class="attachment-response-section" style="background: #f0fdf4; border: 1px dashed #bbf7d0; padding: 12px; border-radius: 6px;">
+            <h3 style="font-size: 11px; color:#166534; text-transform:uppercase; font-weight:700; margin: 0 0 6px 0; letter-spacing: 0.05em;">Attached Resource File:</h3>
+            <a th:href="@{/{path}(path=${submission.attachment})}" 
+               class="btn-attachment-link" 
+               target="_blank"
+               style="color: #166534; font-weight: 600; text-decoration: underline; display: inline-flex; align-items: center; gap: 6px; font-size: 14px;">
+                📂 View Submitted Attachment File
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+    <div class="result-card">
+        <h2>Teacher Feedback</h2>
+
+        <div th:if="${submission.status == 'GRADED'}">
+            <div class="feedback-content"
+                 th:text="${submission.feedback != null and !submission.feedback.isEmpty() ? submission.feedback : 'No feedback provided.'}">
+                Teacher Feedback
+            </div>
+        </div>
+
+        <div th:unless="${submission.status == 'GRADED'}">
+            <p class="pending-text">
+                Feedback will be available after grading.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

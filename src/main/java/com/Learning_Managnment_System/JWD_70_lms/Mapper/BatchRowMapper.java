@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class BatchMapper implements RowMapper<BatchBean> {
+public class BatchRowMapper implements RowMapper<BatchBean> {
 
     @Override
     public BatchBean mapRow(ResultSet rs, int rowNum) throws SQLException {

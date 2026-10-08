@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<title>Teacher Submissions</title>
+</head>
+
+<body>
+<!-- အသုံးမပြုသေး SUBMISSION GRADING PAGE မှသာသုံးမည်  -->
+	<h2>Student Assignment Submissions</h2>
+
+	<p th:if="${success}" th:text="${success}" style="color: green;"></p>
+	<p th:if="${error}" th:text="${error}" style="color: red;"></p>
+
+	<table border="1" cellpadding="10">
+
+		<thead>
+			<tr>
+				<th>No</th>
+				<th>Student Name</th>
+				<th>Assignment Title</th>
+				<th>Submitted Date</th>
+				<th>Late</th>
+				<th>Status</th>
+				<th>Mark</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+
+		<tbody>
+
+			<tr th:each="item, stat : ${submissions}">
+				<td th:text="${stat.count}"></td>
+				<td th:text="${item.studentName}"></td>
+				<td th:text="${item.assignmentTitle}"></td>
+				<td th:text="${item.submittedAt}"></td>
+				<td th:text="${item.isLate ? 'LATE' : 'ON TIME'}"></td>
+				<td th:text="${item.status}"></td>
+				<td>
+					<span th:text="${item.score != null ? item.score : 'Not Graded'}"></span>
+					/ <span th:text="${item.totalMark}"></span></td>
+
+				<td>
+				<a th:href="@{/teacher/submissions/grade/{id}(id=${item.submissionId})}">
+						View / Grade 
+					</a>
+				</td>
+
+			</tr>
+
+			<tr th:if="${#lists.isEmpty(submissions)}">
+				<td colspan="8">No submissions found.</td>
+			</tr>
+
+		</tbody>
+	</table>
+
+</body>
+</html>

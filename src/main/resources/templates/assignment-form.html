@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment Form</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<div class="container form-container">
+
+    <div class="form-header">
+
+        <h2 th:text="${assignment.assignmentId == null ? 'Create Assignment'
+            : 'Edit Assignment'}">
+            Assignment Form
+        </h2>
+
+        <p> Manage assignment information and submission settings.</p>
+
+    </div>
+
+
+    <div class="form-card">
+
+        <div class="error-box" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+       <form th:object="${assignment}"
+      th:action="${assignment.assignmentId == null ? '/teacher/assignments/save' : '/teacher/assignments/update'}"
+      method="post" enctype="multipart/form-data">
+
+            <input type="hidden" th:field="*{assignmentId}">
+
+            <div class="form-section">
+                <h3>Basic Information</h3>
+                
+                <div class="form-grid">
+                
+                    <div class="form-group">
+                        <label>Batch</label>
+
+                        <select th:field="*{batchId}" required>
+                            <option value=""> -- Select Batch -- </option>
+
+                          <!-- 🟢 FIXED: Changed batch.batchId to batch.batch_id -->
+						<option th:each="batch : ${batches}" 
+						        th:value="${batch.batch_id}" 
+						        th:text="${batch.title}">Batch Title</option>
+
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Lesson</label>
+                        
+                        <select th:field="*{lessonId}" required>
+                            <option value=""> -- Select Lesson --</option>
+                            <option th:each="lesson : ${lessons}"
+                                    th:value="${lesson.lessonId}"
+                                    th:text="${lesson.title}">
+                            </option>
+                        </select>
+
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Assignment Title</label>
+                        <input type="text" th:field="*{title}"
+                               placeholder="Enter assignment title"
+                               required>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Description</label>
+                        <textarea th:field="*{description}" rows="4"
+                                  placeholder="Enter assignment description">
+                        </textarea>
+                    </div>
+
+                    <div class="form-group full">
+
+                        <label>Attachment</label>
+                        <input type="file"
+                               name="attachmentFile"
+                               accept=".pdf,.zip,.doc,.docx">
+
+                        <small> Allowed file types:  PDF, ZIP, DOC, DOCX </small>
+
+                        <div th:if="${assignment.attachment != null and !assignment.attachment.isEmpty()}"
+                             style="margin-top: 8px;">
+
+                            <strong>Current File:</strong>
+
+                            <a th:href="@{${assignment.attachment}}"
+                               th:text="${assignment.attachment}"
+                               target="_blank">
+                            </a>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="form-section">
+                <h3>Assignment Schedule</h3>
+
+                <div class="form-grid">
+                
+                    <div class="form-group">
+                        <label>Start At</label>
+                        <input type="datetime-local"
+                               th:field="*{startAt}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Due At</label>
+                        <input type="datetime-local"
+                               th:field="*{dueAt}" required>
+                    </div>
+
+                    <div class="form-group full">
+                        <label class="checkbox-row">
+                            <input type="checkbox" th:field="*{allowLateSubmit}">
+                            Allow Late Submit
+                        </label>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Late Deadline</label>
+                        <input type="datetime-local" th:field="*{lateDeadline}">
+                        <small> Required when Allow Late Submit is enabled. </small>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="form-section">
+               <h3>Marking & Status</h3>
+
+                <div class="form-grid">
+                
+                    <div class="form-group">
+                        <label>Total Mark</label>
+
+                        <input type="number"step="0.01"
+                               min="0" th:field="*{totalMark}"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pass Mark</label>
+                        <input type="number" step="0.01"
+                               min="0" th:field="*{passMark}"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select th:field="*{status}">
+                            <option value="DRAFT"> DRAFT</option>
+                            <option value="PUBLISHED"> PUBLISHED </option>
+                            <option value="CLOSED"> CLOSED </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Created By</label>
+                        <input type="number" th:field="*{createdBy}" required>\
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <a class="btn-secondary" th:href="@{/teacher/assignments}">
+                    Cancel
+                </a>
+
+                <button type="submit" class="btn-primary"
+                        th:text="${assignment.assignmentId == null
+                        ? 'Save Assignment'
+                        : 'Update Assignment'}">
+                    Save Assignment
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>
