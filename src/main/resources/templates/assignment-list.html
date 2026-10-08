@@ -116,71 +116,73 @@
                         </tr>
                     </thead>
 
-                    <tbody>
+                   <tbody>
 
-                        <tr th:each="assignment : ${assignments}">
-                            <td th:text="${assignment.assignmentId}"></td>
-                            <td>
-                                <span th:each="batch : ${batches}"
-                                      th:if="${batch.batchId == assignment.batchId}"
-                                      th:text="${batch.batchCode + ' - ' + batch.title}">
-                                </span>
-                            </td>
+		    <tr th:each="assignment : ${assignments}">
+		        <td th:text="${assignment.assignmentId}"></td>
+		      <td>
+			    <span th:each="batch : ${batches}"
+			          th:if="${batch.batch_id == assignment.batchId}"
+			          th:text="${batch.batch_code + ' - ' + batch.title}"> <!-- 🟢 FIXED: Changed batchCode to batch_code -->
+			    </span>
+			</td>
 
-                            <td>
-                                <span th:each="lesson : ${lessons}"
-                                      th:if="${lesson.lessonId == assignment.lessonId}"
-                                      th:text="${lesson.title}">
-                                </span>
-                            </td>
+		
+		        <td>
+		            <!-- 🟢 DOUBLE CHECK: Ensure lessonId matches your Java model variable casing structure (lessonId vs lesson_id) -->
+		            <span th:each="lesson : ${lessons}"
+		                  th:if="${lesson.lessonId == assignment.lessonId}"
+		                  th:text="${lesson.title}">
+		            </span>
+		        </td>
+		
+		        <td class="assignment-title" th:text="${assignment.title}"></td>
+		        <td th:text="${assignment.startAt}"></td>
+		        <td th:text="${assignment.dueAt}"></td>
+		        <td th:text="${assignment.totalMark}"></td>
+		        <td th:text="${assignment.passMark}"></td>
+		        <td>
+		            <span class="status-badge"
+		                  th:classappend="${assignment.status == 'PUBLISHED'} ? ' status-published' :
+		                  (${assignment.status == 'DRAFT'} ? ' status-draft' :
+		                  (${assignment.status == 'CLOSED'} ? ' status-closed' : ' status-default'))"
+		                  th:text="${assignment.status}">
+		            </span>
+		        </td>
+		
+		        <td class="action-buttons">
+		            <a th:href="@{/teacher/assignments/{id}(id=${assignment.assignmentId})}"
+		               class="btn btn-view">
+		                View
+		            </a>
+		
+		            <a th:href="@{/teacher/assignments/edit/{id}(id=${assignment.assignmentId})}"
+		               class="btn btn-edit">
+		                Edit
+		            </a>
+		
+		            <form th:action="@{/teacher/assignments/delete/{id}(id=${assignment.assignmentId})}"
+		                  method="post"
+		                  class="delete-form"
+		                  onsubmit="return confirm('Are you sure you want to delete this assignment?');">
+		
+		                <button type="submit" class="btn btn-delete">
+		                    Delete
+		                </button>
+		                
+		            </form>
+		        </td>
+		
+		    </tr>
+		
+		    <tr th:if="${#lists.isEmpty(assignments)}">
+		        <td colspan="10" class="empty-message">
+		            No assignments found.
+		        </td>
+		    </tr>
+		
+		</tbody>
 
-                            <td class="assignment-title"th:text="${assignment.title}"></td>
-                            <td th:text="${assignment.startAt}"></td>
-                            <td th:text="${assignment.dueAt}"></td>
-                            <td th:text="${assignment.totalMark}"></td>
-                            <td th:text="${assignment.passMark}"></td>
-                            <td>
-                                <span class="status-badge"
-                                      th:classappend="${assignment.status == 'PUBLISHED'} ? ' status-published' :
-                                      (${assignment.status == 'DRAFT'} ? ' status-draft' :
-                                      (${assignment.status == 'CLOSED'} ? ' status-closed' : ' status-default'))"
-                                      th:text="${assignment.status}">
-                                </span>
-                            </td>
-
-                            <td class="action-buttons">
-                                <a th:href="@{/teacher/assignments/{id}(id=${assignment.assignmentId})}"
-                                   class="btn btn-view">
-                                    View
-                                </a>
-
-                                <a th:href="@{/teacher/assignments/edit/{id}(id=${assignment.assignmentId})}"
-                                   class="btn btn-edit">
-                                    Edit
-                                </a>
-
-                                <form th:action="@{/teacher/assignments/delete/{id}(id=${assignment.assignmentId})}"
-                                      method="post"
-                                      class="delete-form"
-                                      onsubmit="return confirm('Are you sure you want to delete this assignment?');">
-
-                                    <button type="submit"
-                                            class="btn btn-delete">
-                                        Delete
-                                    </button>
-                                    
-                                </form>
-                            </td>
-
-                        </tr>
-
-                        <tr th:if="${#lists.isEmpty(assignments)}">
-                            <td colspan="10" class="empty-message">
-                                No assignments found.
-                            </td>
-                        </tr>
-
-                    </tbody>
                 </table>
 
             </div>

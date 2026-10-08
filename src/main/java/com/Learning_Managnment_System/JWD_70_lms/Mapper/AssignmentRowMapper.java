@@ -56,8 +56,19 @@ public class AssignmentRowMapper implements RowMapper<AssignmentBean> {
 
 		Timestamp updatedAt = rs.getTimestamp("updated_at");
 		if (updatedAt != null) {
-			assignment.setUpdatedAt(updatedAt.toLocalDateTime());
+		    assignment.setUpdatedAt(updatedAt.toLocalDateTime());
 		}
-		return assignment;
-	}
+
+		// 🟢 FIXED: Add this block right here to capture and assign the table JOIN fields!
+		try {
+		    assignment.setBatchCode(rs.getString("batch_code"));
+		    assignment.setBatchTitle(rs.getString("batch_title"));
+		    assignment.setLessonTitle(rs.getString("lesson_title"));
+		} catch (SQLException e) {
+		    // This quietly catches the exception if this row mapper is reused 
+		    // elsewhere for simple "SELECT * FROM assignments" queries where the JOIN columns don't exist.
+		}
+
+		return assignment; // This remains your final line
 }
+	}

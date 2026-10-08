@@ -73,5 +73,29 @@ public class SubmissionRepository {
 		
 		return result.stream().findFirst();
 	}
+    // 🟢 FIXED: Helper method to retrieve the real, active enrollment ID mapping
+	// 🟢 ADD THIS METHOD INSIDE YOUR SubmissionRepository.java CLASS
+	public Optional<Integer> findEnrollmentIdByStudentAndBatch(int userId, int batchId) {
+	    String sql = """
+	            SELECT enrollment_id 
+	            FROM enrollments 
+	            WHERE user_id = ? AND batch_id = ? AND status = 'ACTIVE' 
+	            LIMIT 1
+	            """;
+	    try {
+	        List<Integer> ids = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("enrollment_id"), userId, batchId);
+	        return ids.stream().findFirst();
+	    } catch (Exception e) {
+	        return Optional.empty();
+	    }
+	}
+
+	// 🟢 ADD THIS METHOD TO FETCH ALL ACTIVE ENROLLMENTS FOR THE LOGGED-IN USER (For lists)
+	public List<Integer> findEnrollmentIdsByUserId(int userId) {
+	    String sql = "SELECT enrollment_id FROM enrollments WHERE user_id = ? AND status = 'ACTIVE'";
+	    return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("enrollment_id"), userId);
+	}
+
+
 
 }

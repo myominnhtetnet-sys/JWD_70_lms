@@ -26,5 +26,11 @@ public class AssignmentBean {
 	private Integer createdBy;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
+	
+
+    // 🟢 FIXED: Add these three properties to hold your custom SQL JOIN columns!
+    private String batchCode;
+    private String batchTitle;
+    private String lessonTitle;
 
 }

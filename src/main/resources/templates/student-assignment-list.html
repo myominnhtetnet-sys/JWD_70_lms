@@ -1,94 +1,445 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
+<html xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Student Assignment List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Assignments Workspace</title>
+    <!-- Keep your original style link for external layouts -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+    
+    <style>
+        /* Modern Dashboard UI Styling Tokens */
+        :root {
+            --bg-main: #f8fafc;
+            --slate-900: #0f172a;
+            --slate-700: #334155;
+            --slate-400: #94a3b8;
+            --blue-600: #2563eb;
+            --blue-50: #eff6ff;
+            --emerald-600: #166534;
+            --emerald-50: #f0fdf4;
+            --amber-600: #b45309;
+            --amber-50: #fef3c7;
+            --border-color: #e2e8f0;
+        }
 
+        body {
+            background-color: var(--bg-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--slate-900);
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .header-section {
+            margin-bottom: 32px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--slate-900);
+            margin: 0 0 8px 0;
+            letter-spacing: -0.025em;
+        }
+
+        .header-subtitle {
+            font-size: 15px;
+            color: var(--slate-700);
+            margin: 0;
+        }
+
+        /* Top Summary Counters Panel */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .metric-card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--slate-400);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--slate-900);
+        }
+
+        /* Core Content Assignment Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .assignment-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            overflow: hidden;
+        }
+
+        .assignment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            padding: 20px 20px 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .batch-badge {
+            background: var(--blue-50);
+            color: var(--blue-600);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            letter-spacing: 0.025em;
+        }
+
+        .status-badge-container {
+            flex-shrink: 0;
+        }
+
+        .badge-ui {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 6px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-block;
+        }
+
+        .badge-pending { background: #f1f5f9; color: var(--slate-700); }
+        .badge-submitted { background: var(--emerald-50); color: var(--emerald-600); }
+        .badge-late { background: var(--amber-50); color: var(--amber-600); }
+
+        .card-body {
+            padding: 16px 20px;
+            flex-grow: 1;
+        }
+
+        .assignment-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--slate-900);
+            margin: 0 0 8px 0;
+            line-height: 1.4;
+        }
+
+        .assignment-desc {
+            font-size: 14px;
+            color: var(--slate-700);
+            margin: 0 0 16px 0;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 16px;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meta-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--slate-400);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2px;
+        }
+
+        .meta-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--slate-700);
+        }
+
+        .card-footer {
+            background: #fafafa;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.15s ease;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-turnin {
+            background: var(--blue-600);
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-turnin:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-review {
+            background: var(--slate-900);
+            color: #ffffff;
+        }
+
+        .btn-review:hover {
+            background: #1e293b;
+        }
+
+        .empty-state-box {
+            grid-column: 1 / -1;
+            background: #ffffff;
+            border: 1px dashed var(--slate-400);
+            border-radius: 16px;
+            padding: 60px 24px;
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        .alert-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .alert-danger { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+        
+              /* Sleek Modern Pagination Container */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 40px 0 20px 0;
+    width: 100%;
+}
+
+/* Base Style for Interactive Pagination Controls */
+.pagination-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    height: 38px;
+    padding: 0 6px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+}
+
+/* Hover, Focus, Active Interaction System States */
+.pagination-link:hover:not(.disabled) {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    border-color: #cbd5e0;
+}
+
+/* Active Highlight Style for Current Page */
+.pagination-link.active {
+    background-color: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+    cursor: default;
+}
+
+/* Immutable Disabled UI Control Layout state */
+.pagination-link.disabled {
+    color: #cbd5e0;
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+    </style>
+</head>
 <body>
 
-    <div class="container">
-
-        <h2>Student Assignment List</h2>
-
-        <div th:if="${successMessage}"
-             class="alert alert-success"
-             th:text="${successMessage}">
+    <div class="dashboard-wrapper">
+        
+        <!-- Header Summary Section -->
+        <div class="header-section">
+            <h1 class="header-title">My Assignment Space</h1>
+            <p class="header-subtitle">Track, manage, and turn in your coursework submissions.</p>
         </div>
 
-        <div th:if="${errorMessage}"
-             class="alert alert-danger"
-             th:text="${errorMessage}">
+        <!-- Feedback Messages Container -->
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <!-- Metric Performance Grid Block Overview -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <span class="metric-label">Total Assigned</span>
+                <span class="metric-value" th:text="${assignments != null ? #lists.size(assignments) : 0}">0</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Completed Tasks</span>
+                <span class="metric-value" th:text="${submittedAssignments != null ? #lists.size(submittedAssignments) : 0}">0</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Late Submissions</span>
+                <span class="metric-value" th:text="${lateAssignments != null ? #lists.size(lateAssignments) : 0}">0</span>
+            </div>
         </div>
 
-        <table>
-
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Assignment Title</th>
-                    <th>Description</th>
-                    <th>Start Date</th>
-                    <th>Due Date</th>
-                    <th>Total Mark</th>
-                    <th>Submission Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                <tr th:each="assignment, stat : ${assignments}">
-                    <td th:text="${stat.count}"></td>
-                    <td th:text="${assignment.title}"></td>
-                    <td th:text="${assignment.description}"></td>
-                    <td th:text="${assignment.startAt}"></td>
-                    <td th:text="${assignment.dueAt}"></td>
-                    <td th:text="${assignment.totalMark}"></td>
-
-                    <td>
-                        <span th:if="${submittedAssignmentIds.contains(assignment.assignmentId)}">
-                            <span th:if="${lateAssignmentIds.contains(assignment.assignmentId)}"
-                                  class="status-late">
-                                LATE
-                            </span>
-
-                            <span th:unless="${lateAssignmentIds.contains(assignment.assignmentId)}"
-                                  class="status-ontime">
-                                ON TIME
-                            </span>
+        <!-- Dynamic Content Layout Grid Framework -->
+        <div class="cards-grid">
+            
+            <!-- Dynamic Iterator Item Card -->
+            <div th:each="assignment : ${assignments}" class="assignment-card">
+                
+                <div class="card-header">
+                    <span class="batch-badge" th:text="${assignment.batchCode}">JV-01</span>
+                    <div class="status-badge-container">
+                        <!-- Projection collection logic maps visibility status tags -->
+                        <span th:if="${submittedAssignments != null and #lists.contains(submittedAssignments.![assignmentId], assignment.assignmentId)}">
+                            <span th:if="${lateAssignments != null and #lists.contains(lateAssignments.![assignmentId], assignment.assignmentId)}" 
+                                  class="badge-ui badge-late">Late</span>
+                            <span th:unless="${lateAssignments != null and #lists.contains(lateAssignments.![assignmentId], assignment.assignmentId)}" 
+                                  class="badge-ui badge-submitted">Submitted</span>
                         </span>
+                        <span th:unless="${submittedAssignments != null and #lists.contains(submittedAssignments.![assignmentId], assignment.assignmentId)}" 
+                              class="badge-ui badge-pending">Pending</span>
+                    </div>
+                </div>
 
-                        <span th:unless="${submittedAssignmentIds.contains(assignment.assignmentId)}"
-                              class="status-pending">
-                            NOT SUBMITTED
-                        </span>
-                    </td>
+                <div class="card-body">
+                    <h3 class="assignment-title" th:text="${assignment.title}">Core Java Homework</h3>
+                    <p class="assignment-desc" th:text="${assignment.description}">Assignment detail text description block metrics...</p>
+                    
+                    <div class="meta-row">
+                        <div class="meta-item">
+                            <span class="meta-label">Deadline Cutoff</span>
+                            <span class="meta-value" th:text="${#temporals.format(assignment.dueAt, 'dd MMM yyyy, hh:mm a')}">12 Oct 2026, 11:30 PM</span>
+                        </div>
+                        <div class="meta-item" style="margin-left: auto;">
+                            <span class="meta-label">Total Points</span>
+                            <span class="meta-value" style="font-weight: 700;" th:text="${#numbers.formatDecimal(assignment.totalMark, 1, 0)}">100</span>
+                        </div>
+                    </div>
+                </div>
 
-                    <td>
-                        <a th:if="${submittedAssignmentIds.contains(assignment.assignmentId)}"
-                           th:href="@{/student/assignments/submission/{id}(id=${assignment.assignmentId})}"
-                           class="btn-primary">
-                            View Submission
-                        </a>
+                <div class="card-footer">
+                    <a th:if="${submittedAssignments != null and #lists.contains(submittedAssignments.![assignmentId], assignment.assignmentId)}"
+                       th:href="@{/student/assignments/submission/{id}(id=${assignment.assignmentId})}"
+                       class="btn-action btn-review">View My Work</a>
 
-                        <a th:unless="${submittedAssignmentIds.contains(assignment.assignmentId)}"
-                           th:href="@{/student/assignments/submit/{id}(id=${assignment.assignmentId})}"
-                           class="btn-primary">
-                            Submit Assignment
-                        </a>
-                    </td>
-                </tr>
+                    <a th:unless="${submittedAssignments != null and #lists.contains(submittedAssignments.![assignmentId], assignment.assignmentId)}"
+                       th:href="@{/student/assignments/submit/{id}(id=${assignment.assignmentId})}"
+                       class="btn-action btn-turnin">Turn In Task</a>
+                </div>
+                
+            </div> <!-- Closes .assignment-card loop securely -->
+            
+            <!-- Empty State View display when no active assignments exist in context payload -->
+            <div th:if="${#lists.isEmpty(assignments)}" class="empty-state-box">
+                <div style="font-size: 40px; margin-bottom: 12px;">🎉</div>
+                <h3 style="margin: 0 0 6px 0; font-size: 16px; color: var(--slate-900);">All Caught Up!</h3>
+                <p style="margin: 0; font-size: 14px; color: var(--slate-700);">No active assignments are currently published for your active course enrollments.</p>
+            </div>
 
-                <tr th:if="${#lists.isEmpty(assignments)}">
-                    <td colspan="8">No assignments available.</td>
-                </tr>
+        </div> <!-- Closes .cards-grid framework wrapper securely -->
 
-            </tbody>
-        </table>
-    </div>
+        <!-- Dynamic Pagination Navigation Bar -->
+        <div class="pagination-container" th:if="${totalPages > 1}">
+            
+            <!-- Previous Page Action Link Button (🟢 ROUTED TO ASSIGNMENTS ROOT ABSOLUTE) -->
+            <a th:href="${currentPage > 0} ? @{/student/assignments(page=${currentPage - 1})} : '#'"
+               class="pagination-link"
+               th:classappend="${currentPage == 0} ? 'disabled' : ''">
+                <svg style="width:16px; height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </a>
+
+            <!-- Interactive Sequenced Numeric Page Elements (🟢 ROUTED TO ASSIGNMENTS ROOT ABSOLUTE) -->
+            <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                <a th:href="@{/student/assignments(page=${i})}"
+                   th:text="${i + 1}"
+                   class="pagination-link"
+                   th:classappend="${currentPage == i} ? 'active' : ''">
+                    1
+                </a>
+            </th:block>
+
+            <!-- Next Page Action Link Button (🟢 ROUTED TO ASSIGNMENTS ROOT ABSOLUTE) -->
+            <a th:href="${currentPage < totalPages - 1} ? @{/student/assignments(page=${currentPage + 1})} : '#'"
+               class="pagination-link"
+               th:classappend="${currentPage == totalPages - 1} ? 'disabled' : ''">
+                <svg style="width:16px; height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                </svg>
+            </a>
+            
+        </div> <!-- Closes .pagination-container securely -->
+        
+    </div> <!-- Closes .dashboard-wrapper layout wrapper securely -->
 
 </body>
 </html>
+
+
