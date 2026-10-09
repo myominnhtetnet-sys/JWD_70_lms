@@ -148,16 +148,13 @@ public class ExamService {
 	}
 
 	@Transactional
-	public void saveSelectedQuestions(
-	        Long examId,
-	        List<Long> questionIds,
-	        List<String> marks) {
+	public void saveSelectedQuestions(Long examId,
+	        List<Long> questionIds, List<String> marks) {
 
 	    getExamById(examId);
 
 	    if (questionIds == null || questionIds.isEmpty()) {
-	        throw new IllegalArgumentException(
-	                "Please select at least one question.");
+	        throw new IllegalArgumentException("Please select at least one question.");
 	    }
 
 	    if (marks == null || questionIds.size() != marks.size()) {
@@ -166,14 +163,11 @@ public class ExamService {
 	    }
 
 	    for (int i = 0; i < questionIds.size(); i++) {
-
 	        Long questionId = questionIds.get(i);
-
 	        if (questionId == null) {
 	            continue;
 	        }
 
-	        // Already added question ကို skip လုပ်မယ်
 	        if (examRepository.existsQuestionInExam(examId, questionId)) {
 	            continue;
 	        }
@@ -183,20 +177,16 @@ public class ExamService {
 	        try {
 	            mark = new BigDecimal(marks.get(i));
 	        } catch (Exception e) {
-	            throw new IllegalArgumentException(
-	                    "Invalid mark for question " + questionId);
+	            throw new IllegalArgumentException( "Invalid mark for question " + questionId);
 	        }
 
 	        if (mark.signum() <= 0) {
-	            throw new IllegalArgumentException(
-	                    "Question mark must be greater than zero.");
+	            throw new IllegalArgumentException("Question mark must be greater than zero.");
 	        }
 
-	        Integer nextOrder =
-	                examRepository.getNextSortOrder(examId);
+	        Integer nextOrder = examRepository.getNextSortOrder(examId);
 
-	        ExamQuestionBean examQuestion =
-	                new ExamQuestionBean();
+	        ExamQuestionBean examQuestion = new ExamQuestionBean();
 
 	        examQuestion.setExamId(examId);
 	        examQuestion.setQuestionId(questionId);

@@ -13,7 +13,6 @@ import com.Learning_Managnment_System.JWD_70_lms.model.AssignmentBean;
 public class StudentAssignmentRepository {
 
     private final JdbcTemplate jdbcTemplate;
-
     private final AssignmentRowMapper assignmentRowMapper;
 
     public StudentAssignmentRepository(

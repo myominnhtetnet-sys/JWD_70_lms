@@ -6,8 +6,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,31 +22,30 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.Learning_Managnment_System.JWD_70_lms.Repository.BatchRepository;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.LessonRepository;
 import com.Learning_Managnment_System.JWD_70_lms.Service.AssignmentService;
 import com.Learning_Managnment_System.JWD_70_lms.model.AssignmentBean;
-import com.Learning_Managnment_System.JWD_70_lms.model.BatchBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.LessonBean;
 
 @Controller
 @RequestMapping("/teacher")
 public class AssignmentController {
 
-    private final AssignmentService assignmentService;
-    private final BatchRepository batchRepository;
-    private final LessonRepository lessonRepository;
-    private static final String UPLOAD_DIR = "uploads/assignments";
+	private final AssignmentService assignmentService;
+	private final JdbcTemplate jdbcTemplate;
+	private final LessonRepository lessonRepository;
 
-    public AssignmentController(
-            AssignmentService assignmentService,
-            BatchRepository batchRepository,
-            LessonRepository lessonRepository) {
+	private static final String UPLOAD_DIR = "uploads/assignments";
 
-        this.assignmentService = assignmentService;
-        this.batchRepository = batchRepository;
-        this.lessonRepository = lessonRepository;
-    }
+	public AssignmentController(
+	        AssignmentService assignmentService,
+	        JdbcTemplate jdbcTemplate,
+	        LessonRepository lessonRepository) {
+
+	    this.assignmentService = assignmentService;
+	    this.jdbcTemplate = jdbcTemplate;
+	    this.lessonRepository = lessonRepository;
+	}
 
     @GetMapping("/assignments")
     public String listAssignments(@RequestParam(defaultValue = "1") int page, Model model) {
@@ -145,11 +146,26 @@ public class AssignmentController {
 
         AssignmentBean assignment = assignmentService.getAssignmentById(id);
 
-        BatchBean batch =
-        		batchRepository.findById(
-                        assignment.getBatchId()
-                ).orElseThrow(
-                        () -> new IllegalArgumentException("Batch not found"));
+//        BatchBean batch =
+//        		batchRepository.findById(
+//                        assignment.getBatchId()
+//                ).orElseThrow(
+//                        () -> new IllegalArgumentException("Batch not found"));
+        List<Map<String, Object>> batchList =
+                jdbcTemplate.queryForList(
+                    """
+                    SELECT batch_id, batch_code, title
+                    FROM batches
+                    WHERE batch_id = ?
+                    """,
+                    assignment.getBatchId()
+                );
+
+        if (batchList.isEmpty()) {
+            throw new IllegalArgumentException("Batch not found");
+        }
+
+        Map<String, Object> batch = batchList.get(0);
 
         LessonBean lesson =
                 lessonRepository.findById(
@@ -264,10 +280,26 @@ public class AssignmentController {
         return "/uploads/assignments/" + newFileName;
     }
 
+//    private void loadDropdownData(Model model) {
+//        List<BatchBean> batches = batchRepository.findAll();
+//        List<LessonBean> lessons = lessonRepository.findAll();     
+//        model.addAttribute("batches", batches);
+//        model.addAttribute("lessons", lessons);
+//    }
     private void loadDropdownData(Model model) {
-        List<BatchBean> batches = batchRepository.findAll();
-        List<LessonBean> lessons = lessonRepository.findAll();
-        
+
+        String sql = """
+            SELECT batch_id, batch_code, title
+            FROM batches
+            ORDER BY batch_id DESC
+            """;
+
+        List<Map<String, Object>> batches =
+                jdbcTemplate.queryForList(sql);
+
+        List<LessonBean> lessons =
+                lessonRepository.findAll();
+
         model.addAttribute("batches", batches);
         model.addAttribute("lessons", lessons);
     }

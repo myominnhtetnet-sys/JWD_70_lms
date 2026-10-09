@@ -1,315 +1,243 @@
+
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title th:text="${exam.examId == null ? 'Create Exam' : 'Edit Exam'}">
         Create Exam
     </title>
 
-   
-    <link rel="stylesheet"
-          th:href="@{/css/style.css}">
-
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
 <body>
 
 <div class="exam-form-page">
 
-    <!-- ================= HEADER ================= -->
-
+    <!-- HEADER -->
     <div class="exam-form-header">
-
         <div>
-            <h1>
-                <span th:if="${exam.examId == null}">
-                    Create Exam
-                </span>
-
-                <span th:if="${exam.examId != null}">
-                    Edit Exam
-                </span>
+            <h1 th:text="${exam.examId == null ? 'Create Exam' : 'Edit Exam'}">
+                Create Exam
             </h1>
-
-            <p>
-                Create and configure an examination.
-            </p>
+            <p>Create and configure an examination.</p>
         </div>
-
     </div>
 
-
-    <!-- ================= ERROR ================= -->
-
+    <!-- ERROR MESSAGE -->
     <div th:if="${error}"
          class="exam-error"
          th:text="${error}">
     </div>
 
-
-    <!-- ================= FORM CARD ================= -->
-
+    <!-- FORM CARD -->
     <div class="exam-form-card">
 
         <form method="post"
               th:object="${exam}"
-              th:action="${exam.examId == null
-                    ? '/teacher/exams/save'
-                    : '/teacher/exams/update'}">
-
-
-            <!-- ================= HIDDEN ID ================= -->
+              th:action="${exam.examId == null}
+                  ? @{/teacher/exams/save}
+                  : @{/teacher/exams/update}">
 
             <input type="hidden"
                    th:if="${exam.examId != null}"
                    th:field="*{examId}">
 
-
-            <!-- ================= FORM GRID ================= -->
-
             <div class="exam-form-grid">
 
-
-                <!-- COURSE -->
-
                 <div class="exam-form-group">
-
-                    <label>
+                    <label for="courseId">
                         Course
                         <span class="exam-required">*</span>
                     </label>
 
-                    <input type="number"
-                           th:field="*{courseId}"
-                           placeholder="Enter course ID"
-                           min="1"
-                           required>
+                    <select id="courseId"
+                            th:field="*{courseId}"
+                            required>
 
+                        <option value="">-- Select Course --</option>
+
+                        <option th:each="course : ${courses}"
+                                th:value="${course['course_id']}"
+                                th:text="${course['title']}">
+                        </option>
+
+                    </select>
                 </div>
 
+            <!-- BATCH -->
+<div class="exam-form-group">
+    <label for="batchId">
+        Batch
+        <span class="exam-required">*</span>
+    </label>
 
-                <!-- BATCH -->
+    <select id="batchId"
+            th:field="*{batchId}"
+            required>
 
-                <div class="exam-form-group">
+        <option value="">-- Select Batch --</option>
 
-                    <label>
-                        Batch
-                        <span class="exam-required">*</span>
-                    </label>
+        <option th:each="batch : ${batches}"
+                th:value="${batch['batch_id']}"
+                th:text="${batch['title']}">
+        </option>
 
-                    <input type="number"
-                           th:field="*{batchId}"
-                           placeholder="Enter batch ID"
-                           min="1"
-                           required>
-
-                </div>
-
+    </select>
+</div>
 
                 <!-- EXAM TITLE -->
-
                 <div class="exam-form-group exam-full">
-
-                    <label>
+                    <label for="title">
                         Exam Title
                         <span class="exam-required">*</span>
                     </label>
 
                     <input type="text"
+                           id="title"
                            th:field="*{title}"
                            placeholder="Enter exam title"
                            maxlength="255"
                            required>
-
                 </div>
 
-
                 <!-- EXAM TYPE -->
-
                 <div class="exam-form-group">
-
-                    <label>
+                    <label for="examType">
                         Exam Type
                         <span class="exam-required">*</span>
                     </label>
 
-                    <select th:field="*{examType}"
+                    <select id="examType"
+                            th:field="*{examType}"
                             required>
 
-                        <option value="">
-                            -- Select Exam Type --
-                        </option>
-
-                        <option value="QUIZ">
-                            Quiz
-                        </option>
-
-                        <option value="MIDTERM">
-                            Midterm
-                        </option>
-
-                        <option value="FINAL">
-                            Final
-                        </option>
+                        <option value="">-- Select Exam Type --</option>
+                        <option value="QUIZ">Quiz</option>
+                        <option value="MIDTERM">Midterm</option>
+                        <option value="FINAL">Final</option>
 
                     </select>
-
                 </div>
 
-
                 <!-- DURATION -->
-
                 <div class="exam-form-group">
-
-                    <label>
+                    <label for="durationMin">
                         Duration (Minutes)
                         <span class="exam-required">*</span>
                     </label>
 
                     <input type="number"
+                           id="durationMin"
                            th:field="*{durationMin}"
                            min="1"
+                           step="1"
                            placeholder="e.g. 60"
                            required>
-
                 </div>
 
-
                 <!-- TOTAL MARK -->
-
                 <div class="exam-form-group">
-
-                    <label>
+                    <label for="totalMark">
                         Total Mark
                         <span class="exam-required">*</span>
                     </label>
 
                     <input type="number"
+                           id="totalMark"
                            th:field="*{totalMark}"
                            min="0.01"
                            step="0.01"
                            placeholder="e.g. 100"
                            required>
-
                 </div>
 
-
                 <!-- PASS MARK -->
-
                 <div class="exam-form-group">
-
-                    <label>
+                    <label for="passMark">
                         Pass Mark
                         <span class="exam-required">*</span>
                     </label>
 
                     <input type="number"
+                           id="passMark"
                            th:field="*{passMark}"
                            min="0"
                            step="0.01"
                            placeholder="e.g. 40"
                            required>
-
                 </div>
-
 
                 <!-- START DATE -->
-
                 <div class="exam-form-group">
-
-                    <label>
-                        Start Date & Time
+                    <label for="startAt">
+                        Start Date &amp; Time
                         <span class="exam-required">*</span>
                     </label>
 
                     <input type="datetime-local"
+                           id="startAt"
                            th:field="*{startAt}"
                            required>
-
                 </div>
 
-
                 <!-- END DATE -->
-
                 <div class="exam-form-group">
-
-                    <label>
-                        End Date & Time
+                    <label for="endAt">
+                        End Date &amp; Time
                         <span class="exam-required">*</span>
                     </label>
 
                     <input type="datetime-local"
+                           id="endAt"
                            th:field="*{endAt}"
                            required>
-
                 </div>
 
-
-                <!-- MAX ATTEMPTS -->
-
+                <!-- MAXIMUM ATTEMPTS -->
                 <div class="exam-form-group">
-
-                    <label>
+                    <label for="maxAttempts">
                         Maximum Attempts
                         <span class="exam-required">*</span>
                     </label>
 
                     <input type="number"
+                           id="maxAttempts"
                            th:field="*{maxAttempts}"
                            min="1"
+                           step="1"
                            placeholder="e.g. 2"
                            required>
-
                 </div>
 
-
                 <!-- STATUS -->
-
                 <div class="exam-form-group">
-
-                    <label>
+                    <label for="status">
                         Status
                         <span class="exam-required">*</span>
                     </label>
 
-                    <select th:field="*{status}"
+                    <select id="status"
+                            th:field="*{status}"
                             required>
 
-                        <option value="">
-                            -- Select Status --
-                        </option>
-
-                        <option value="DRAFT">
-                            Draft
-                        </option>
-
-                        <option value="PUBLISHED">
-                            Published
-                        </option>
-
-                        <option value="CLOSED">
-                            Closed
-                        </option>
+                        <option value="">-- Select Status --</option>
+                        <option value="DRAFT">Draft</option>
+                        <option value="PUBLISHED">Published</option>
+                        <option value="CLOSED">Closed</option>
 
                     </select>
-
                 </div>
 
-
                 <!-- SHUFFLE QUESTIONS -->
-
                 <div class="exam-checkbox-row exam-full">
 
                     <input type="checkbox"
-                           th:field="*{shuffleQuestions}"
-                           id="shuffleQuestions">
+                           id="shuffleQuestions"
+                           th:field="*{shuffleQuestions}">
 
                     <label for="shuffleQuestions">
                         Shuffle Questions
@@ -317,12 +245,9 @@
 
                 </div>
 
-
             </div>
 
-
-            <!-- ================= BUTTONS ================= -->
-
+            <!-- FORM ACTION BUTTONS -->
             <div class="exam-form-actions">
 
                 <a th:href="@{/teacher/exams}"
@@ -345,12 +270,60 @@
 
             </div>
 
-
         </form>
 
     </div>
 
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const form = document.querySelector("form");
+        const startInput = document.getElementById("startAt");
+        const endInput = document.getElementById("endAt");
+        const totalInput = document.getElementById("totalMark");
+        const passInput = document.getElementById("passMark");
+
+        function validateDates() {
+            endInput.setCustomValidity("");
+
+            if (startInput.value && endInput.value &&
+                endInput.value <= startInput.value) {
+                endInput.setCustomValidity(
+                    "End date must be after start date."
+                );
+            }
+        }
+
+        function validateMarks() {
+            passInput.setCustomValidity("");
+
+            if (totalInput.value !== "" &&
+                passInput.value !== "" &&
+                Number(passInput.value) > Number(totalInput.value)) {
+
+                passInput.setCustomValidity(
+                    "Pass mark cannot exceed total mark.");
+            }
+        }
+
+        startInput.addEventListener("change", validateDates);
+        endInput.addEventListener("change", validateDates);
+
+        totalInput.addEventListener("input", validateMarks);
+        passInput.addEventListener("input", validateMarks);
+
+        form.addEventListener("submit", function (event) {
+            validateDates();
+            validateMarks();
+
+            if (!form.reportValidity()) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

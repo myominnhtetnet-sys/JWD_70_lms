@@ -3,272 +3,141 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Exam Details</title>
-
 <link rel="stylesheet" th:href="@{/css/style.css}">
-
 </head>
-
 
 <body>
 
 	<div class="exam-detail-container">
 
-
-		<!-- ================= HEADER ================= -->
-
 		<div class="exam-detail-header">
-
 			<div>
-
 				<h1 class="exam-detail-title" th:text="${exam.title}">Java
 					Basic Exam</h1>
-
 				<div class="exam-detail-subtitle">Exam Details</div>
-
 			</div>
-
-
+			
 			<div class="exam-actions">
-
 				<a th:href="@{/teacher/exams}" class="exam-btn exam-btn-secondary">
 					Back </a> <a th:href="@{/teacher/exams/edit/{id}(id=${exam.examId})}"
 					class="exam-btn exam-btn-secondary"> Edit </a>
-
 			</div>
-
 		</div>
-
-
-
-		<!-- ================= EXAM INFO ================= -->
 
 		<div class="exam-detail-card">
 
 			<div class="exam-info-grid">
-
-
-				<!-- Exam ID -->
-
 				<div class="exam-info-item">
-
 					<span class="exam-info-label"> Exam ID </span> <span
 						class="exam-info-value" th:text="${exam.examId}"> 1 </span>
-
 				</div>
-
-
-				<!-- Exam Type -->
-
+				
 				<div class="exam-info-item">
-
 					<span class="exam-info-label"> Exam Type </span> <span
 						class="exam-info-value" th:text="${exam.examType}"> MCQ </span>
-
 				</div>
-
-
-				<!-- Duration -->
-
+				
 				<div class="exam-info-item">
-
 					<span class="exam-info-label"> Duration </span> <span
 						class="exam-info-value"> <span
 						th:text="${exam.durationMin}"> 60 </span> minutes
-
 					</span>
-
 				</div>
 
-
-				<!-- Total Mark -->
-
 				<div class="exam-info-item">
-
 					<span class="exam-info-label"> Total Mark </span> <span
 						class="exam-info-value" th:text="${exam.totalMark}"> 100 </span>
-
 				</div>
 
-
-				<!-- Pass Mark -->
-
 				<div class="exam-info-item">
-
 					<span class="exam-info-label"> Pass Mark </span> <span
 						class="exam-info-value" th:text="${exam.passMark}"> 40 </span>
-
 				</div>
 
-
-				<!-- Max Attempts -->
-
 				<div class="exam-info-item">
-
 					<span class="exam-info-label"> Max Attempts </span> <span
 						class="exam-info-value" th:text="${exam.maxAttempts}"> 2 </span>
-
 				</div>
 
-
-				<!-- Status -->
-
 				<div class="exam-info-item">
-
 					<span class="exam-info-label"> Status </span> <span
 						class="exam-info-value" th:text="${exam.status}"> DRAFT </span>
-
 				</div>
 
-
-				<!-- Shuffle Questions -->
-
 				<div class="exam-info-item">
-
 					<span class="exam-info-label"> Shuffle Questions </span> <span
 						class="exam-info-value"
 						th:text="${exam.shuffleQuestions ? 'Yes' : 'No'}"> No </span>
-
 				</div>
 
-
 			</div>
-
 		</div>
-
-
-
-		<!-- ================= SELECTED QUESTIONS ================= -->
 
 		<div class="exam-detail-card">
 
-
 			<div class="exam-detail-header">
 
-
 				<div>
-
 					<h2>Selected Questions</h2>
-
 					<div class="exam-detail-subtitle">Questions currently
 						assigned to this exam</div>
 
-
-
 					<div class="question-summary">
-<div class="mark-warning"
-     th:if="${selectedTotalMark.compareTo(exam.totalMark) != 0}">
-
-    ⚠️ Question marks total
-    (<span th:text="${selectedTotalMark}">0</span>)
-    does not match exam total mark
-    (<span th:text="${exam.totalMark}">0</span>).
-
-</div>
+					
+						<div class="mark-warning"
+							th:if="${selectedTotalMark.compareTo(exam.totalMark) != 0}">
+							⚠️ Question marks total (<span th:text="${selectedTotalMark}">0</span>)
+							does not match exam total mark (<span th:text="${exam.totalMark}">0</span>).
+						</div>
 
 						<div class="summary-item">
 							<span class="summary-label"> Questions </span> <span
 								class="summary-value" th:text="${questionCount}"> 0 </span>
 						</div>
 
-						<!-- Selected Question Marks -->
 						<div class="summary-item">
 							<span class="summary-label"> Total Question Marks </span> <span
 								class="summary-value" th:text="${selectedTotalMark}"> 0 </span>
 						</div>
-
-						<!-- Exam Total Mark -->
 
 						<div class="summary-item">
 							<span class="summary-label"> Exam Total Mark </span> <span
 								class="summary-value" th:text="${exam.totalMark}"> 0 </span>
 						</div>
 
-
 					</div>
-
 				</div>
 
-
-				<!-- Select Questions Button -->
-
-				<a
-					th:href="@{/teacher/exams/{examId}/questions(examId=${exam.examId})}"
+				<a th:href="@{/teacher/exams/{examId}/questions(examId=${exam.examId})}"
 					class="exam-btn exam-btn-primary"> + Select Questions </a>
-
 
 			</div>
 
-
-
-			<!-- ================= EMPTY ================= -->
-
 			<div th:if="${#lists.isEmpty(questions)}" class="exam-empty">
-
 				No questions selected for this exam yet.</div>
 
-
-
-			<!-- ================= QUESTION TABLE ================= -->
-
-			<table th:if="${!#lists.isEmpty(questions)}"
-				class="exam-question-table">
-
+			<table th:if="${!#lists.isEmpty(questions)}" class="exam-question-table">
 
 				<thead>
-
 					<tr>
-
 						<th>Order</th>
-
 						<th>Question</th>
-
 						<th>Type</th>
-
 						<th>Mark</th>
-
 						<th>Action</th>
-
 					</tr>
-
 				</thead>
 
-
 				<tbody>
-
-
 					<tr th:each="question : ${questions}">
-
-
-						<!-- Order -->
-
 						<td th:text="${question.sortOrder}">1</td>
-
-
-						<!-- Question -->
-
 						<td th:text="${question.questionText}">What is Java?</td>
-
-
-						<!-- Type -->
-
 						<td th:text="${question.questionType}">MCQ</td>
-
-
-						<!-- Mark -->
-
 						<td th:text="${question.mark}">5</td>
-
-
-						<!-- Remove -->
-
 						<td>
-
 							<form
 								th:action="@{/teacher/exams/{examId}/questions/remove(examId=${exam.examId})}"
 								method="post">
@@ -276,23 +145,17 @@
 								<input type="hidden" name="questionId"
 									th:value="${question.questionId}">
 
-
 								<button type="submit" class="exam-btn exam-btn-danger"
 									onclick="return confirm('Remove this question?');">
-
 									Remove</button>
-
 							</form>
-
 						</td>
 					</tr>
-
 				</tbody>
 
 			</table>
 
 		</div>
-
 
 	</div>
 

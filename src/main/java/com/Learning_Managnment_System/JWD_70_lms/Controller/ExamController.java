@@ -2,9 +2,11 @@ package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,36 +26,54 @@ import com.Learning_Managnment_System.JWD_70_lms.model.QuestionBean;
 public class ExamController {
 
 	private final ExamService examService;
-	public ExamController(ExamService examService) {
+	private final JdbcTemplate jdbcTemplate;
+
+	public ExamController(ExamService examService,JdbcTemplate jdbcTemplate) {
 		this.examService = examService;
+		this.jdbcTemplate = jdbcTemplate;
 	}
 
 	@GetMapping
 	public String examList(Model model) {
-		model.addAttribute("exams", examService.getAllExams());
-		return "exam-list";
+
+	    model.addAttribute("exams", examService.getAllExams());
+	    model.addAttribute("courses", getAllCourses());
+	    model.addAttribute("batches", getAllBatches());
+
+	    return "exam-list";
 	}
 
+	private List<Map<String, Object>> getAllCourses() {
+	    String sql = """
+	        SELECT course_id, title
+	        FROM courses
+	        ORDER BY title
+	    """;
+	    return jdbcTemplate.queryForList(sql);
+	}
+	private List<Map<String, Object>> getAllBatches() {
+
+	    String sql = """
+	        SELECT batch_id, batch_code, title
+	        FROM batches
+	        ORDER BY batch_id DESC
+	        """;
+
+	    return jdbcTemplate.queryForList(sql);
+	}
+	
 	@GetMapping("/create")
 	public String createForm(Model model) {
-		model.addAttribute("exam", new ExamBean());
-		return "exam-form";
+
+	    model.addAttribute("exam", new ExamBean());
+	    model.addAttribute("batches", getAllBatches());
+	    model.addAttribute("courses", getAllCourses());
+
+	    return "exam-form";
 	}
 
 	@GetMapping("/edit/{id}")
-	public String editForm(@PathVariable("id") Long examId, Model model, RedirectAttributes redirectAttributes) {
-		try {
-			ExamBean exam = examService.getExamById(examId);
-			model.addAttribute("exam", exam);
-			return "exam-form";
-		} catch (IllegalArgumentException e) {
-			redirectAttributes.addFlashAttribute("error", e.getMessage());
-			return "redirect:/teacher/exams";
-		}
-	}
-
-	@GetMapping("/view/{id}")
-	public String viewExam(
+	public String editForm(
 	        @PathVariable("id") Long examId,
 	        Model model,
 	        RedirectAttributes redirectAttributes) {
@@ -62,8 +82,28 @@ public class ExamController {
 
 	        ExamBean exam = examService.getExamById(examId);
 
-	        List<ExamQuestionBean> questions =
-	                examService.getSelectedQuestions(examId);
+	        model.addAttribute("exam", exam);
+	        model.addAttribute("batches", getAllBatches());
+	        model.addAttribute("courses", getAllCourses());
+
+	        return "exam-form";
+
+	    } catch (IllegalArgumentException e) {
+
+	        redirectAttributes.addFlashAttribute(
+	                "error", e.getMessage());
+
+	        return "redirect:/teacher/exams";
+	    }
+	}
+
+	@GetMapping("/view/{id}")
+	public String viewExam( @PathVariable("id") Long examId, Model model,
+	        RedirectAttributes redirectAttributes) {
+
+	    try {
+	        ExamBean exam = examService.getExamById(examId);
+	        List<ExamQuestionBean> questions =examService.getSelectedQuestions(examId);
 
 	        BigDecimal selectedTotalMark = questions.stream()
 	                .map(ExamQuestionBean::getMark)
@@ -72,11 +112,7 @@ public class ExamController {
 
 	        model.addAttribute("exam", exam);
 	        model.addAttribute("questions", questions);
-
-	        // Question count
 	        model.addAttribute("questionCount", questions.size());
-
-	        // Selected questions total mark
 	        model.addAttribute("selectedTotalMark", selectedTotalMark);
 
 	        return "exam-detail";

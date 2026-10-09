@@ -39,7 +39,7 @@
                 
                 <div class="form-grid">
                 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label>Batch</label>
 
                         <select th:field="*{batchId}" required>
@@ -51,7 +51,22 @@
                             </option>
                         </select>
                     </div>
+ -->
+ 
+ <div class="form-group">
+    <label>Batch</label>
 
+    <select th:field="*{batchId}" required>
+
+        <option value="">-- Select Batch --</option>
+
+        <option th:each="batch : ${batches}"
+                th:value="${batch['batch_id']}"
+                th:text="${batch['title']}">
+        </option>
+
+    </select>
+</div>
                     <div class="form-group">
 
                         <label>Lesson</label>
@@ -123,20 +138,26 @@
                                th:field="*{dueAt}" required>
                     </div>
 
-                    <div class="form-group full">
-                        <label class="checkbox-row">
-                            <input type="checkbox" th:field="*{allowLateSubmit}">
-                            Allow Late Submit
-                        </label>
-                    </div>
+						<div class="late-deadline-row">
 
-                    <div class="form-group full">
-                        <label>Late Deadline</label>
-                        <input type="datetime-local" th:field="*{lateDeadline}">
-                        <small> Required when Allow Late Submit is enabled. </small>
-                    </div>
+							<div class="form-group late-deadline-field">
+								<label>Late Deadline</label> <input type="datetime-local"
+									name="lateDeadline" th:value="${assignment.lateDeadline}">
+							</div>
 
-                </div>
+							<div class="late-submit-field">
+								<input type="hidden" name="allowLateSubmit" value="false">
+
+								<label class="late-submit-label"> <input type="checkbox"
+									name="allowLateSubmit" value="true"
+									th:checked="${assignment.allowLateSubmit}"> <span>Allow
+										Late Submit</span>
+								</label>
+							</div>
+
+						</div>
+
+					</div>
 
             </div>
 
