@@ -1,79 +1,75 @@
-
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Assignment Result</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+
+ <style>
+    /* Absolute high specificity selector forces layout blocks to collapse heights completely */
+    #submission-display-root.result-card,
+    #submission-display-root .submission-view-pane {
+        display: block !important;
+        height: auto !important;
+        min-height: 0px !important;
+        max-height: none !important;
+    }
+
+    #submission-edit-pane:target { display: flex !important; }
+    
+    .premium-file-btn:hover { 
+        border-color: #2563eb !important; 
+        background-color: #fafcff !important; 
+    }
+</style>
+
+
 </head>
 
 <body class="student-result-page">
 
 <div class="result-container">
 
+    <!-- Header Grid Area -->
     <div class="result-header">
         <div>
             <h1>My Assignment Result</h1>
             <p>View your assignment submission and grading result.</p>
         </div>
-
         <a th:href="@{/student/assignments}" class="back-btn">
             Back to Assignments
         </a>
     </div>
 
+    <!-- Assignment Meta Card -->
     <div class="result-card">
-
         <h2 th:text="${submission.assignmentTitle}"> Assignment Title </h2>
-
         <div class="result-info-grid">
-
             <div class="result-info-item">
                 <label>Submission ID</label>
                 <p th:text="${submission.submissionId}">1</p>
             </div>
-
             <div class="result-info-item">
                 <label>Submitted Date</label>
                 <p th:text="${submission.submittedAt}">Date</p>
             </div>
-
             <div class="result-info-item">
                 <label>Submission Status</label>
-
-                <span th:if="${submission.status == 'GRADED'}"
-                      class="result-badge badge-graded">
-                    GRADED
-                </span>
-
-                <span th:unless="${submission.status == 'GRADED'}"
-                      class="result-badge badge-pending">
-                    PENDING
-                </span>
+                <span th:if="${submission.status == 'GRADED'}" class="result-badge badge-graded">GRADED</span>
+                <span th:unless="${submission.status == 'GRADED'}" class="result-badge badge-pending">PENDING</span>
             </div>
-
             <div class="result-info-item">
                 <label>Late Status</label>
-
-                <span th:if="${submission.isLate}"
-                      class="result-badge badge-late">
-                    LATE
-                </span>
-
-                <span th:unless="${submission.isLate}"
-                      class="result-badge badge-ontime">
-                    ON TIME
-                </span>
+                <span th:if="${submission.isLate}" class="result-badge badge-late">LATE</span>
+                <span th:unless="${submission.isLate}" class="result-badge badge-ontime">ON TIME</span>
             </div>
-
         </div>
     </div>
 
+    <!-- Score Summary Card -->
     <div class="result-card score-card">
-
         <h2>My Score</h2>
-
         <div th:if="${submission.status == 'GRADED'}">
             <div class="score-display">
                 <span th:text="${submission.score}">95</span>
@@ -82,45 +78,87 @@
             </div>
             <p class="score-label">Your Assignment Mark</p>
         </div>
-
         <div th:unless="${submission.status == 'GRADED'}">
             <h3 class="pending-text">Waiting for Teacher Grading</h3>
             <p>Your assignment has been submitted successfully.</p>
         </div>
-
     </div>
 
-  <div class="result-card" style="background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
-    <h2 style="color: #0f172a; margin-top: 0; font-size: 18px; margin-bottom: 12px;">My Submitted Answer</h2>
+ <!-- ========================================================= -->
+<!-- MY SUBMITTED ANSWER (ZERO GAP ROW-STACK VIEW)            -->
+<!-- ========================================================= -->
+<div class="result-card" id="submission-display-root" style="background: #ffffff !important; padding: 16px 20px !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; margin-bottom: 16px !important; position: relative !important; display: block !important; height: auto !important; min-height: 0px !important;">
     
-    <div class="answer-content" style="display: flex; flex-direction: column; gap: 16px;">
+    <!-- LAYER A: NATIVE VIEW MODE INTERFACE -->
+    <div class="submission-view-pane" style="display: block !important; margin: 0 !important; padding: 0 !important; height: auto !important;">
         
-        <!-- 🟢 1. DISPLAY TEXT RESPONSE BLOCK (If written text answer exists in database) -->
-        <div th:if="${submission.answerText != null and !#strings.isEmpty(submission.answerText)}" class="text-response-section">
-            <h3 style="font-size: 11px; color:#64748b; text-transform:uppercase; font-weight:700; margin: 0 0 4px 0; letter-spacing: 0.05em;">Written Content:</h3>
-            <p th:text="${submission.answerText}" style="margin: 0; color: #334155; line-height: 1.6; font-size: 14px; white-space: pre-wrap; background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid #f1f5f9;">
+        <!-- Header Title Row -->
+        <div style="display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 14px !important; height: auto !important;">
+            <h2 style="color: #0f172a; margin: 0 !important; padding: 0; font-size: 15px; font-weight: 700; letter-spacing: -0.01em;">My Submitted Answer</h2>
+            <a th:if="${submission.status != 'GRADED'}" href="#submission-edit-pane" class="btn-edit-trigger" style="display: inline-flex; align-items: center; gap: 5px; background: #0f172a; color: #ffffff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-size: 12.5px; font-weight: 600; transition: all 0.15s ease;">
+                <svg style="width:13px; height:14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                Edit Answer
+            </a>
+        </div>
+        
+        <!-- 1. Text Response Row (Matches the edit panel text area layout box exactly) -->
+        <div th:if="${submission.answerText != null and !#strings.isEmpty(submission.answerText)}" style="display: block !important; margin-bottom: 12px !important; height: auto !important; width: 100%;">
+            <p th:text="${submission.answerText}" style="margin: 0 !important; color: #334155 !important; line-height: 1.5 !important; font-size: 14px !important; white-space: pre-wrap !important; background: #f8fafc !important; padding: 12px 14px !important; border-radius: 8px !important; border: 1px solid #cbd5e1 !important; display: block !important; height: auto !important; text-align: left !important; word-break: break-all !important; width: 100% !important; box-sizing: border-box !important;">
                 Student Answer Text Content...
             </p>
         </div>
 
-        <!-- 🟢 2. DISPLAY ATTACHMENT LINK BLOCK (Render alongside text if file exists) -->
-        <div th:if="${submission.attachment != null and !#strings.isEmpty(submission.attachment)}" class="attachment-response-section" style="background: #f0fdf4; border: 1px dashed #bbf7d0; padding: 12px; border-radius: 6px;">
-            <h3 style="font-size: 11px; color:#166534; text-transform:uppercase; font-weight:700; margin: 0 0 6px 0; letter-spacing: 0.05em;">Attached Resource File:</h3>
+        <!-- 2. Attached File Row (Matches the edit panel file input row exactly) -->
+        <!-- 🟢 THE FIX: Sits as a clean standalone row with zero parent flexbox gaps stretching it down -->
+        <div th:if="${submission.attachment != null and !#strings.isEmpty(submission.attachment)}" style="display: block !important; margin: 0 !important; padding: 0 !important; height: auto !important; width: 100%;">
             <a th:href="@{/{path}(path=${submission.attachment})}" 
-               class="btn-attachment-link" 
-               target="_blank"
-               style="color: #166534; font-weight: 600; text-decoration: underline; display: inline-flex; align-items: center; gap: 6px; font-size: 14px;">
-                📂 View Submitted Attachment File
+               target="_blank" 
+               class="premium-file-btn action-view"
+               style="display: flex !important; align-items: center !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px 14px !important; text-decoration: none !important; transition: all 0.15s ease !important; width: 100% !important; box-sizing: border-box !important; height: auto !important;">
+                
+                <div style="background: #eff6ff !important; color: #2563eb !important; width: 32px !important; height: 32px !important; border-radius: 6px !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; margin-right: 12px !important;">
+                    <svg style="width:16px; height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </div>
+                
+                <span style="font-size: 13.5px !important; font-weight: 600 !important; color: #0f172a !important;">Open Attached Submission Document</span>
+                <span style="font-size: 12px !important; color: #64748b !important; margin-left: auto !important;" class="btn-subtext">View →</span>
             </a>
         </div>
-        
+            
     </div>
+
+    <!-- LAYER B: MODAL EDIT PANE -->
+    <div id="submission-edit-pane" class="pure-css-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(2px); z-index: 9999; justify-content: center; align-items: center; margin: 0; padding: 0;">
+        <a href="#submission-display-root" style="position: absolute; width: 100%; height: 100%; cursor: default;"></a>
+        <div style="background: #ffffff; border-radius: 12px; width: 90%; max-width: 500px; padding: 16px 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); position: relative; z-index: 10000;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h2 style="color: #0f172a; margin: 0 !important; font-size: 16px; font-weight: 700;">Edit My Submitted Answer</h2>
+                <a href="#submission-display-root" style="color: #475569; text-decoration: none; font-size: 22px; line-height: 20px;">&times;</a>
+            </div>
+            <form th:action="@{/student/assignments/submission/update}" method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0;">
+                <input type="hidden" name="submissionId" th:value="${submission.submissionId}">
+                <input type="hidden" name="assignmentId" th:value="${submission.assignmentId}">
+                <div>
+                    <textarea name="answerText" rows="4" th:text="${submission.answerText}" placeholder="Type your changes here..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 13.5px; resize: vertical; color: #1e293b; background: #f8fafc; margin: 0;"></textarea>
+                </div>
+                <div style="background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: space-between; margin: 0;">
+                    <label style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; margin: 0;">Replace File:</label>
+                    <input type="file" name="file" style="font-size: 12px; color: #475569; max-width: 220px; margin: 0;">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; padding-top: 4px;">
+                    <a href="#submission-display-root" style="display: inline-flex; align-items: center; justify-content: center; background: #f1f5f9; color: #334155; text-decoration: none; border: 1px solid #cbd5e1; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 13px;">Cancel</a>
+                    <button type="submit" style="background: #166534; color: #ffffff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; margin: 0;">💾 Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </div>
 
 
+    <!-- Teacher Feedback Section -->
     <div class="result-card">
         <h2>Teacher Feedback</h2>
-
         <div th:if="${submission.status == 'GRADED'}">
             <div class="feedback-content"
                  th:text="${submission.feedback != null and !submission.feedback.isEmpty() ? submission.feedback : 'No feedback provided.'}">

@@ -1,5 +1,6 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,8 @@ public class StudentAssignmentRepository {
                 WHERE e.user_id = ? AND a.status = 'PUBLISHED' AND e.status = 'ACTIVE'
                 ORDER BY a.due_at ASC
                 """;
-                
-        // 🟢 PASS THE userId PARAMETER HERE SO SPRING CAN SAFELY SUBSTITUTE THE '?' PLACEHOLDER
         return jdbcTemplate.query(sql, assignmentRowMapper, userId);
     }
-
 
     public Optional<AssignmentBean> findAssignmentById(Integer assignmentId) {
         String sql = "SELECT * FROM assignments WHERE assignment_id = ? AND status = 'PUBLISHED'";
@@ -44,7 +42,6 @@ public class StudentAssignmentRepository {
         return result.stream().findFirst();
     }
 
- // 🟢 FIXED: Added users JOIN to provide 'student_name' to the RowMapper
     public List<SubmissionBean> findSubmittedAssignments(int userId) {
         String sql = """
                 SELECT s.*, s.mark AS score, 
@@ -60,7 +57,6 @@ public class StudentAssignmentRepository {
         return jdbcTemplate.query(sql, submissionRowMapper, userId);
     }
 
-    // 🟢 FIXED: Updated late assignments query method with the same column allocations
     public List<SubmissionBean> findLateAssignments(int userId) {
         String sql = """
                 SELECT DISTINCT s.*, s.mark AS score,
@@ -76,35 +72,85 @@ public class StudentAssignmentRepository {
         return jdbcTemplate.query(sql, submissionRowMapper, userId);
     }
     
-    // 🟢 ADD THIS: Count total active assignments matching the student's batches
-    public int getTotalAssignmentsCount(int userId) {
-        String sql = """
+    // 🟢 OVERLOADED: Count total active assignments matching active filter keywords
+    public int getTotalAssignmentsCount(int userId, String title, String status) {
+        StringBuilder sql = new StringBuilder("""
                 SELECT COUNT(*)
                 FROM assignments a
                 JOIN batches b ON a.batch_id = b.batch_id
                 JOIN enrollments e ON b.batch_id = e.batch_id
                 WHERE e.user_id = ? AND a.status = 'PUBLISHED' AND e.status = 'ACTIVE'
-                """;
-        return jdbcTemplate.queryForObject(sql, Integer.class, userId);
+                """);
+        List<Object> params = new ArrayList<>();
+        params.add(userId);
+
+        buildAssignmentDynamicQuery(title, status, userId, sql, params);
+
+        return jdbcTemplate.queryForObject(sql.toString(), Integer.class, params.toArray());
     }
 
-    // 🟢 ADD THIS: Fetch chunked page cards using dynamic OFFSET calculations
-    public List<AssignmentBean> findPaginatedAssignmentsByStudentId(int userId, int page, int pageSize) {
-        int offset = page * pageSize; // Computes standard mathematical page slicing offsets
+    // 🟢 OVERLOADED: Fetch chunked page cards using dynamic parameters and OFFSET slicing
+    public List<AssignmentBean> findPaginatedAssignmentsByStudentId(int userId, String title, String status, int page, int pageSize) {
+        int offset = page * pageSize;
         
-        String sql = """
+        StringBuilder sql = new StringBuilder("""
                 SELECT a.*, b.batch_code AS batch_code, b.title AS batch_title, l.title AS lesson_title
                 FROM assignments a
                 JOIN batches b ON a.batch_id = b.batch_id
                 JOIN enrollments e ON b.batch_id = e.batch_id
                 LEFT JOIN lessons l ON a.lesson_id = l.lesson_id
                 WHERE e.user_id = ? AND a.status = 'PUBLISHED' AND e.status = 'ACTIVE'
-                ORDER BY a.due_at ASC
-                LIMIT ? OFFSET ?
-                """;
-        return jdbcTemplate.query(sql, assignmentRowMapper, userId, pageSize, offset);
+                """);
+        List<Object> params = new ArrayList<>();
+        params.add(userId);
+
+        buildAssignmentDynamicQuery(title, status, userId, sql, params);
+
+        sql.append(" ORDER BY a.due_at ASC LIMIT ? OFFSET ?");
+        params.add(pageSize);
+        params.add(offset);
+
+        return jdbcTemplate.query(sql.toString(), assignmentRowMapper, params.toArray());
     }
 
-
-
+    // 🟢 NEW PRIVATE HELPER: Dynamically handles and appends assignment database filtering rules
+    private void buildAssignmentDynamicQuery(String title, String status, int userId, StringBuilder sql, List<Object> params) {
+        if (title != null && !title.trim().isEmpty()) {
+            sql.append(" AND LOWER(a.title) LIKE ?");
+            params.add("%" + title.trim().toLowerCase() + "%");
+        }
+        
+        if (status != null && !status.trim().isEmpty()) {
+            if ("SUBMITTED".equalsIgnoreCase(status)) {
+                sql.append("""
+                     AND EXISTS (
+                         SELECT 1 FROM submissions sub 
+                         JOIN enrollments en ON sub.enrollment_id = en.enrollment_id 
+                         WHERE sub.assignment_id = a.assignment_id AND en.user_id = ? AND sub.is_late = 0
+                     )
+                     """);
+                params.add(userId);
+            } 
+            else if ("LATE".equalsIgnoreCase(status)) {
+                sql.append("""
+                     AND EXISTS (
+                         SELECT 1 FROM submissions sub 
+                         JOIN enrollments en ON sub.enrollment_id = en.enrollment_id 
+                         WHERE sub.assignment_id = a.assignment_id AND en.user_id = ? AND sub.is_late = 1
+                     )
+                     """);
+                params.add(userId);
+            } 
+            else if ("PENDING".equalsIgnoreCase(status)) {
+                sql.append("""
+                     AND NOT EXISTS (
+                         SELECT 1 FROM submissions sub 
+                         JOIN enrollments en ON sub.enrollment_id = en.enrollment_id 
+                         WHERE sub.assignment_id = a.assignment_id AND en.user_id = ?
+                     )
+                     """);
+                params.add(userId);
+            }
+        }
+    }
 }

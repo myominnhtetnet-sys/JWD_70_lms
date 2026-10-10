@@ -3,8 +3,16 @@ package com.Learning_Managnment_System.JWD_70_lms.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate; // 🟢 Added import for direct safe database updates
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile; // 🟢 Added import for file stream handling
 
 import com.Learning_Managnment_System.JWD_70_lms.Repository.StudentAssignmentRepository;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.SubmissionRepository;
@@ -20,22 +28,25 @@ public class StudentAssignmentService {
     @Autowired
     private SubmissionRepository submissionRepository;
 
-    // 🟢 REQUIRED BY GET: /student/assignments (Line 38)
+    @Autowired
+    private JdbcTemplate jdbcTemplate; // 🟢 Injected directly to execute non-static update statements safely
+
+    // REQUIRED BY GET: /student/assignments
     public List<AssignmentBean> getStudentAssignments(int userId) {
         return repository.findAssignmentsByStudentId(userId);
     }
 
-    // 🟢 REQUIRED BY GET: /student/assignments (Line 39)
+    // REQUIRED BY GET: /student/assignments
     public List<SubmissionBean> getSubmittedAssignments(int userId) {
         return repository.findSubmittedAssignments(userId);
     }
 
-    // 🟢 REQUIRED BY GET: /student/assignments (Line 40)
+    // REQUIRED BY GET: /student/assignments
     public List<SubmissionBean> getLateAssignments(int userId) {
         return repository.findLateAssignments(userId);
     }
 
-    // 🟢 REQUIRED BY GET: /student/assignments/submission/{id} (Line 103)
+    // REQUIRED BY GET: /student/assignments/submission/{id}
     public Optional<SubmissionBean> getMySubmission(Integer assignmentId, int userId) {
         AssignmentBean assignment = repository.findAssignmentById(assignmentId).orElse(null);
         if (assignment == null) {
@@ -47,7 +58,7 @@ public class StudentAssignmentService {
         return submissionRepository.findByAssignmentAndEnrollment(assignmentId, enrollmentId);
     }
 
-    // 🟢 REQUIRED BY POST: /student/assignments/submit (Line 89)
+    // REQUIRED BY POST: /student/assignments/submit
     public int submitAssignment(SubmissionBean submission, int currentUserId) {
         AssignmentBean assignment = repository.findAssignmentById(submission.getAssignmentId())
                 .orElseThrow(() -> new IllegalArgumentException("Assignment not found!"));
@@ -84,14 +95,48 @@ public class StudentAssignmentService {
 
         return submissionRepository.save(submission);
     }
-    // 🟢 ADD THIS: Relay the total count metric to your controller
-    public int getTotalAssignmentsCount(int userId) {
-        return repository.getTotalAssignmentsCount(userId);
+
+    // 🟢 UPDATED: Relays the total count metric passing search parameters down to repository
+    public int getTotalAssignmentsCount(int userId, String title, String status) {
+        return repository.getTotalAssignmentsCount(userId, title, status);
     }
 
-    // 🟢 ADD THIS: Relay the chunked paginated array list to your controller
-    public List<AssignmentBean> getPaginatedStudentAssignments(int userId, int page, int pageSize) {
-        return repository.findPaginatedAssignmentsByStudentId(userId, page, pageSize);
+    // 🟢 UPDATED: Relays the chunked paginated array list passing search parameters down to repository
+    public List<AssignmentBean> getPaginatedStudentAssignments(int userId, String title, String status, int page, int pageSize) {
+        return repository.findPaginatedAssignmentsByStudentId(userId, title, status, page, pageSize);
     }
 
+    // ==========================================================================
+    // 🟢 NEW ADDITION: PROCESSES FILE OVERRIDES AND SAVES MODIFIED SUBMISSIONS
+    // ==========================================================================
+    public void updateStudentSubmission(int submissionId, String answerText, MultipartFile file) throws IOException {
+        String attachmentPath = null;
+        
+        // 1. Process new file upload replacement if student attaches a resource document
+        if (file != null && !file.isEmpty()) {
+            Path uploadPath = Paths.get("uploads");
+            Files.createDirectories(uploadPath);
+            
+            String originalName = file.getOriginalFilename();
+            String extension = "";
+            if (originalName != null && originalName.contains(".")) {
+                extension = originalName.substring(originalName.lastIndexOf(".")).toLowerCase();
+            }
+            
+            String savedFileName = UUID.randomUUID() + extension;
+            Path filePath = uploadPath.resolve(savedFileName);
+            Files.copy(file.getInputStream(), filePath);
+            
+            attachmentPath = "uploads/" + savedFileName;
+        }
+
+        // 2. Execute SQL query on live connection block ensuring ungraded entries are isolated
+        if (attachmentPath != null) {
+            String sql = "UPDATE submissions SET answer_text = ?, attachment = ?, submitted_at = NOW() WHERE submission_id = ? AND status != 'GRADED'";
+            jdbcTemplate.update(sql, answerText, attachmentPath, submissionId);
+        } else {
+            String sql = "UPDATE submissions SET answer_text = ?, submitted_at = NOW() WHERE submission_id = ? AND status != 'GRADED'";
+            jdbcTemplate.update(sql, answerText, submissionId);
+        }
+    }
 }

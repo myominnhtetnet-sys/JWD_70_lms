@@ -25,15 +25,17 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/student")
 public class StudentAssignmentController {
 
-    private final StudentAssignmentService service;
+    private final StudentAssignmentService studentAssignmentService;
 
     public StudentAssignmentController(StudentAssignmentService service) {
-        this.service = service;
+        this.studentAssignmentService = service;
     }
 
     @GetMapping("/assignments")
     public String showAssignments(
-            @RequestParam(value = "page", defaultValue = "0") int page, // 🟢 FIXED: Accept page parameter (defaults to first page)
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "title", required = false) String title,   // 🟢 Capture search keywords
+            @RequestParam(value = "status", required = false) String status, // 🟢 Capture submission states
             Model model, 
             HttpSession session) {
             
@@ -43,22 +45,26 @@ public class StudentAssignmentController {
         }
 
         int activeUserId = currentLogin.getUser_id();
-        int pageSize = 6; // Adjust this number to change how many cards display per page
+        int pageSize = 6; 
 
-        // 🟢 FIXED: Calculate pagination counts dynamically
-        int totalItems = service.getTotalAssignmentsCount(activeUserId);
+        // 1. Compute items dynamically through the parameterized service query tiers
+        int totalItems = studentAssignmentService.getTotalAssignmentsCount(activeUserId, title, status);
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+        if (totalPages == 0) {
+            totalPages = 1;
+        }
 
-        // 🟢 FIXED: Fetch only the chunk of assignments for the CURRENT page (e.g. LIMIT 6 OFFSET 0)
-        List<AssignmentBean> paginatedAssignments = service.getPaginatedStudentAssignments(activeUserId, page, pageSize);
+        // 2. Fetch the paginated and filtered assignment row results
+        List<AssignmentBean> paginatedAssignments = studentAssignmentService.getPaginatedStudentAssignments(activeUserId, title, status, page, pageSize);
 
-        // Map live page calculation counts straight down to the model context
+        // 3. Map tracking attributes straight down to the Thymeleaf model container context
         model.addAttribute("assignments", paginatedAssignments);
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", totalPages); // 🟢 THIS MAKES THE PAGINATION BAR APPEAR!
+        model.addAttribute("totalPages", totalPages);
         
-        model.addAttribute("submittedAssignments", service.getSubmittedAssignments(activeUserId));
-        model.addAttribute("lateAssignments", service.getLateAssignments(activeUserId));
+        // Retain original metrics counters
+        model.addAttribute("submittedAssignments", studentAssignmentService.getSubmittedAssignments(activeUserId));
+        model.addAttribute("lateAssignments", studentAssignmentService.getLateAssignments(activeUserId));
         
         return "student-assignment-list";
     }
@@ -80,10 +86,9 @@ public class StudentAssignmentController {
     public String submitAssignment(
             @ModelAttribute SubmissionBean submission,
             @RequestParam(value = "file", required = false) MultipartFile file,
-            HttpSession session, // 🟢 Inject session context mapping payload container
+            HttpSession session, 
             RedirectAttributes redirectAttributes) throws IOException {
 
-        // 🟢 FIXED: Protect authentication scope boundaries
         LoginBean currentLogin = (LoginBean) session.getAttribute("currentUser");
         if (currentLogin == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Session expired. Please log in again.");
@@ -117,8 +122,8 @@ public class StudentAssignmentController {
         }
 
         try {
-            // 🟢 FIXED: Pass the true session user_id to resolve enrollment safely inside service tier
-            service.submitAssignment(submission, currentLogin.getUser_id());
+            // 🟢 FIXED: Swapped 'service' with 'studentAssignmentService' to clear compile crashes
+            studentAssignmentService.submitAssignment(submission, currentLogin.getUser_id());
             redirectAttributes.addFlashAttribute("successMessage", "Assignment submitted successfully!");
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
@@ -131,11 +136,39 @@ public class StudentAssignmentController {
         LoginBean currentLogin = (LoginBean) session.getAttribute("currentUser");
         if (currentLogin == null) return "redirect:/login";
 
-        Optional<SubmissionBean> submission = service.getMySubmission(id, currentLogin.getUser_id());
+        // 🟢 FIXED: Swapped 'service' with 'studentAssignmentService' to clear compile crashes
+        Optional<SubmissionBean> submission = studentAssignmentService.getMySubmission(id, currentLogin.getUser_id());
         if (submission.isEmpty()) {
             return "redirect:/student/assignments";
         }
         model.addAttribute("submission", submission.get());
         return "student-submission-detail";
+    }
+    
+    
+    @PostMapping("/assignments/submission/update")
+    public String updateSubmission(
+            @RequestParam("submissionId") int submissionId,
+            @RequestParam("assignmentId") int assignmentId,
+            @RequestParam(value = "answerText", required = false) String answerText,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            RedirectAttributes redirectAttributes,
+            HttpSession session) {
+        
+        LoginBean currentLogin = (LoginBean) session.getAttribute("currentUser");
+        if (currentLogin == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            // Safe instance call processes text saves or file replacements securely
+            studentAssignmentService.updateStudentSubmission(submissionId, answerText, file);
+            redirectAttributes.addFlashAttribute("successMessage", "Your assignment submission has been updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to save modifications: " + e.getMessage());
+        }
+
+        // Returns user straight back to their detailed view sheet cleanly
+        return "redirect:/student/assignments/submission/" + assignmentId;
     }
 }
