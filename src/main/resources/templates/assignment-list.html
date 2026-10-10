@@ -11,7 +11,6 @@
 <body>
 
 	<div class="container">
-	
 		<div class="page-header">
 			<div>
 				<h1 class="page-title">Assignment Management</h1>
@@ -37,9 +36,9 @@
 				<select name="batchId">
 					<option value="">All Batches</option>
 					<option th:each="batch : ${batches}"
-        th:value="${batch['batch_id']}"
-        th:text="${batch['title']}">
-</option>
+					        th:value="${batch['batch_id']}"
+					        th:text="${batch['title']}">
+					</option>
 				</select> 
 				
 				<select name="status">
@@ -95,11 +94,11 @@
 							<td th:text="${index.count}">1</td>
 
 							<td>
-    <span th:each="batch : ${batches}"
-          th:if="${batch['batch_id'] == assignment.batchId}"
-          th:text="${batch['title']}">
-    </span>
-</td>
+						    <span th:each="batch : ${batches}"
+						          th:if="${batch['batch_id'] == assignment.batchId}"
+						          th:text="${batch['title']}">
+						    </span>
+						</td>
 
 							<td><span th:each="lesson : ${lessons}"
 								th:if="${lesson.lessonId == assignment.lessonId}"
@@ -126,7 +125,8 @@
                               ? ' status-closed'
                               : ' status-default'))
                               "
-								th:text="${assignment.status}"> PUBLISHED </span></td>
+								th:text="${assignment.status}"> PUBLISHED </span>
+							</td>
 
 							<td class="action-buttons">
 								<button type="button" class="btn btn-view"
@@ -142,7 +142,8 @@
                                 data-pass-mark=${assignment.passMark},
                                 data-status=${assignment.status},
                                 data-attachment=${assignment.attachment}"
-									onclick="openAssignmentModal(this)">View</button> <!-- EDIT -->
+									onclick="openAssignmentModal(this)">View</button> 
+									
 								<button type="button" class="btn btn-edit"
 									th:attr="
                                 data-id=${assignment.assignmentId},
@@ -328,9 +329,9 @@
 								<span class="modal-label"> Batch </span> <select
 									id="editBatchId" name="batchId" required>
 									<option th:each="batch : ${batches}"
-        th:value="${batch['batch_id']}"
-        th:text="${batch['batch_code'] + ' - ' + batch['title']}">
-</option>	
+									        th:value="${batch['batch_id']}"
+									        th:text="${batch['batch_code'] + ' - ' + batch['title']}">
+									</option>	
 								</select>
 							</div>
 
@@ -375,24 +376,15 @@
 							
 							<div class="modal-item modal-full">
 								<label class="edit-checkbox">
-
-    <input type="hidden"
-           name="_allowLateSubmit"
-           value="on">
-
-    <input type="checkbox"
-           id="editAllowLate"
-           name="allowLateSubmit"
-           value="true">
-
-    Allow Late Submit
-
-</label>
+							    <input type="hidden" name="_allowLateSubmit" value="on">						
+							    <input type="checkbox" id="editAllowLate" name="allowLateSubmit" value="true">							
+							    			Allow Late Submit						
+									</label>
 							</div>
 
 							<div class="modal-item modal-full">
-								<span class="modal-label"> Late Deadline </span> <input
-									type="datetime-local" id="editLateDeadline" name="lateDeadline">
+								<span class="modal-label"> Late Deadline </span> 
+								<input type="datetime-local" id="editLateDeadline" name="lateDeadline">
 							</div>
 
 						</div>
@@ -416,8 +408,8 @@
 							</div>
 
 							<div class="modal-item">
-								<span class="modal-label"> Status </span> <select
-									id="editStatus" name="status">
+								<span class="modal-label"> Status </span> 
+								<select id="editStatus" name="status">
 									<option value="DRAFT">DRAFT</option>
 									<option value="PUBLISHED">PUBLISHED</option>
 									<option value="CLOSED">CLOSED</option>
@@ -425,8 +417,8 @@
 							</div>
 
 							<div class="modal-item">
-								<span class="modal-label"> Created By </span> <input
-									type="number" id="editCreatedBy" name="createdBy" required>
+								<span class="modal-label"> Created By </span> 
+								<input type="number" id="editCreatedBy" name="createdBy" required>
 							</div>
 
 						</div>
@@ -436,8 +428,8 @@
 						<h3>Attachment</h3>
 						<div class="modal-item">
 							<input type="file" name="attachmentFile"
-								accept=".pdf,.zip,.doc,.docx"> <small> Allowed:
-								PDF, ZIP, DOC, DOCX </small>
+								accept=".pdf,.zip,.doc,.docx">
+								 <small> Allowed: PDF, ZIP, DOC, DOCX </small>
 							<div id="editCurrentAttachment"></div>
 						</div>
 					</div>
@@ -810,7 +802,6 @@ function applyAssignmentStatus() {
         }
     });
 }
-
 </script>
 
 </body>

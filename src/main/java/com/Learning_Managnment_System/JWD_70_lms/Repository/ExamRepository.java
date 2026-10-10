@@ -1,5 +1,6 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
@@ -266,5 +267,48 @@ public class ExamRepository {
             """;
         
 		return jdbcTemplate.queryForObject(sql, Integer.class, examId);
+    }
+    
+    public BigDecimal getDefaultMark(Long questionId, Long courseId) {
+
+        String sql = """
+            SELECT default_mark
+            FROM questions
+            WHERE question_id = ?
+              AND course_id = ?
+              AND is_active = 1
+            """;
+
+        List<BigDecimal> marks = jdbcTemplate.query(
+            sql,
+            (rs, rowNum) -> rs.getBigDecimal("default_mark"),
+            questionId,
+            courseId
+        );
+
+        if (marks.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Active question not found in this course: " + questionId
+            );
+        }
+
+        return marks.get(0);
+    }
+
+    public BigDecimal getSelectedTotalMark(Long examId) {
+
+        String sql = """
+            SELECT COALESCE(SUM(mark), 0)
+            FROM exam_questions
+            WHERE exam_id = ?
+            """;
+
+        BigDecimal total = jdbcTemplate.queryForObject(
+            sql,
+            BigDecimal.class,
+            examId
+        );
+
+        return total == null ? BigDecimal.ZERO : total;
     }
 }

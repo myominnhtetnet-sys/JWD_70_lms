@@ -19,22 +19,18 @@ public class ExamRowMapper implements RowMapper<ExamBean> {
         exam.setBatchId(rs.getLong("batch_id"));
         exam.setTitle(rs.getString("title"));
         exam.setExamType(rs.getString("exam_type"));
-
         exam.setDurationMin(rs.getInt("duration_min"));
-
         exam.setTotalMark(rs.getBigDecimal("total_mark"));
         exam.setPassMark(rs.getBigDecimal("pass_mark"));
 
         if (rs.getTimestamp("start_at") != null) {
             exam.setStartAt(
-                rs.getTimestamp("start_at").toLocalDateTime()
-            );
+                rs.getTimestamp("start_at").toLocalDateTime());
         }
 
         if (rs.getTimestamp("end_at") != null) {
             exam.setEndAt(
-                rs.getTimestamp("end_at").toLocalDateTime()
-            );
+                rs.getTimestamp("end_at").toLocalDateTime());
         }
 
         exam.setMaxAttempts(rs.getInt("max_attempts"));
@@ -45,14 +41,12 @@ public class ExamRowMapper implements RowMapper<ExamBean> {
 
         if (rs.getTimestamp("created_at") != null) {
             exam.setCreatedAt(
-                rs.getTimestamp("created_at").toLocalDateTime()
-            );
+                rs.getTimestamp("created_at").toLocalDateTime());
         }
 
         if (rs.getTimestamp("updated_at") != null) {
             exam.setUpdatedAt(
-                rs.getTimestamp("updated_at").toLocalDateTime()
-            );
+                rs.getTimestamp("updated_at").toLocalDateTime());
         }
 
         return exam;

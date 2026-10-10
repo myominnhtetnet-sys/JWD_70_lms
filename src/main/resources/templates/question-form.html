@@ -595,7 +595,6 @@ document.getElementById("questionForm").addEventListener("submit", function (eve
                     return response;
                 })
 
-
                 .then(() => {
                     return fetch(
                         `/api/questions/${questionId}/options`,
@@ -623,9 +622,7 @@ document.getElementById("questionForm").addEventListener("submit", function (eve
 
 
 function saveOptions(id) {
-
     const type = document.getElementById( "questionType").value;
-
     if (type === "SHORT_ANSWER") {
         return Promise.resolve();
 
@@ -635,10 +632,8 @@ function saveOptions(id) {
     const requests = [];
 
     optionItems.forEach(item => {
-
         const input =item.querySelector( ".option-text" );
         const radio = item.querySelector('input[name="correctOption"]');
-
         const optionData = {
             questionId: Number(id),
             optionText: input.value.trim(),
@@ -654,7 +649,6 @@ function saveOptions(id) {
                     headers: {
                         "Content-Type": "application/json"
                     },
-
                     body: JSON.stringify(optionData )
                 })
         );
@@ -666,7 +660,6 @@ function saveOptions(id) {
 }
 
 function enableSaveButton() {
-
     const saveButton = document.getElementById("saveButton");
     saveButton.disabled = false;
     saveButton.classList.remove("opacity-60","cursor-not-allowed");

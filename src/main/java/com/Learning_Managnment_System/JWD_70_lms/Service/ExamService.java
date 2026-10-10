@@ -1,8 +1,11 @@
 package com.Learning_Managnment_System.JWD_70_lms.Service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
+import java.util.Set;
+import java.util.LinkedHashSet;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.ExamRepository;
@@ -158,8 +161,7 @@ public class ExamService {
 	    }
 
 	    if (marks == null || questionIds.size() != marks.size()) {
-	        throw new IllegalArgumentException(
-	                "Question and mark data are invalid.");
+	        throw new IllegalArgumentException("Question and mark data are invalid.");
 	    }
 
 	    for (int i = 0; i < questionIds.size(); i++) {
@@ -167,7 +169,6 @@ public class ExamService {
 	        if (questionId == null) {
 	            continue;
 	        }
-
 	        if (examRepository.existsQuestionInExam(examId, questionId)) {
 	            continue;
 	        }
@@ -185,7 +186,6 @@ public class ExamService {
 	        }
 
 	        Integer nextOrder = examRepository.getNextSortOrder(examId);
-
 	        ExamQuestionBean examQuestion = new ExamQuestionBean();
 
 	        examQuestion.setExamId(examId);
@@ -194,6 +194,98 @@ public class ExamService {
 	        examQuestion.setSortOrder(nextOrder);
 
 	        examRepository.addQuestionToExam(examQuestion);
+	    }
+	}
+	@Transactional
+	public void updateExamWithQuestions( ExamBean exam,List<Long> selectedIds) {
+
+	    ExamBean existing = getExamById(exam.getExamId());
+
+	    exam.setCourseId(existing.getCourseId());
+	    exam.setBatchId(existing.getBatchId());
+	    exam.setCreatedBy(existing.getCreatedBy());
+
+	    validateExam(exam);
+
+	    if (selectedIds == null || selectedIds.isEmpty()) {
+	        throw new IllegalArgumentException( "Please select at least one question.");
+	    }
+
+	    Set<Long> uniqueIds = new LinkedHashSet<>(selectedIds);
+
+	    if (uniqueIds.size() != selectedIds.size()) {
+	        throw new IllegalArgumentException("Duplicate questions are not allowed.");
+	    }
+
+	    List<ExamQuestionBean> existingQuestions =
+	            examRepository.findQuestionsByExamId(exam.getExamId());
+
+	    Map<Long, BigDecimal> existingMarks = new HashMap<>();
+
+	    for (ExamQuestionBean question : existingQuestions) {
+	        existingMarks.put( question.getQuestionId(), question.getMark());
+	    }
+
+	    BigDecimal selectedTotal = BigDecimal.ZERO;
+
+	    for (Long questionId : uniqueIds) {
+	        if (questionId == null) {
+	            throw new IllegalArgumentException( "Invalid question ID.");
+	        }
+
+	        BigDecimal mark;
+
+	        if (existingMarks.containsKey(questionId)) {
+	            mark = existingMarks.get(questionId);
+	        } else {
+	            mark = examRepository.getDefaultMark( questionId, exam.getCourseId());
+	        }
+
+	        if (mark == null || mark.signum() <= 0) {
+	            throw new IllegalArgumentException(
+	                "Invalid mark for question " + questionId);
+	        }
+
+	        selectedTotal = selectedTotal.add(mark);
+	    }
+
+	    if (selectedTotal.compareTo(exam.getTotalMark()) != 0) {
+	        throw new IllegalArgumentException(
+	            "Selected Question Marks (" + selectedTotal
+	            + ") must equal Exam Total Mark ("
+	            + exam.getTotalMark() + ").");
+	    }
+
+	    for (ExamQuestionBean question : existingQuestions) {
+	        if (!uniqueIds.contains(question.getQuestionId())) {
+	            examRepository.removeQuestionFromExam(
+	                exam.getExamId(),question.getQuestionId());
+	        }
+	    }
+
+	    for (Long questionId : uniqueIds) {
+	        if (existingMarks.containsKey(questionId)) {
+	            continue;
+	        }
+
+	        ExamQuestionBean newQuestion = new ExamQuestionBean();
+
+	        newQuestion.setExamId(exam.getExamId());
+	        newQuestion.setQuestionId(questionId);
+
+	        newQuestion.setMark(
+	            examRepository.getDefaultMark(
+	                questionId,exam.getCourseId()));
+
+	        newQuestion.setSortOrder(
+	            examRepository.getNextSortOrder(exam.getExamId()));
+
+	        examRepository.addQuestionToExam(newQuestion);
+	    }
+
+	    int updated = examRepository.update(exam);
+	    if (updated == 0) {
+	        throw new IllegalArgumentException("Exam update failed.");
 	    }
 	}
 }

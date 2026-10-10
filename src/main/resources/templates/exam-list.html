@@ -434,10 +434,7 @@
         .modal-box {
             max-height: 95vh;
         }
-
     }
-
-    /* Prevent page scroll while modal open */
 
     body.modal-open {
         overflow: hidden;
@@ -597,15 +594,12 @@
     .search-card {
         grid-template-columns: 1fr 1fr;
     }
-
     .search-box {
         grid-column: 1 / -1;
     }
-
     .search-actions {
         width: 100%;
     }
-
     .search-actions button {
         flex: 1;
     }
@@ -616,18 +610,149 @@
         grid-template-columns: 1fr;
         padding: 16px;
     }
-
     .search-box {
         grid-column: auto;
     }
-
     .search-actions {
         flex-direction: column;
     }
-
     .search-actions button {
         width: 100%;
         flex: auto;
+    }
+}
+/* EDIT MODAL */
+
+.exam-edit-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;backdrop-filter: blur(4px);
+    z-index: 9999;
+    background: rgba(15, 23, 42, 0.55);
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.exam-edit-overlay.show {
+    display: flex;
+}
+
+.exam-edit-box {
+    width: 100%;
+    max-width: 650px;
+    max-height: 90vh;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.exam-edit-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.exam-edit-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.exam-edit-header p {
+    margin: 5px 0 0;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.exam-edit-close {
+    border: none;
+    background: transparent;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+#editExamForm {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.exam-edit-body {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.exam-edit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.exam-edit-full {
+    grid-column: 1 / -1;
+}
+
+.exam-edit-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.exam-edit-group label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.exam-edit-group input,
+.exam-edit-group select {
+    width: 100%;
+    padding: 9px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+}
+
+.exam-edit-group select:disabled {
+    background: #f1f5f9;
+}
+
+.exam-edit-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.exam-edit-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 15px 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.exam-edit-footer button {
+    padding: 9px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.exam-edit-save {
+    background: #4f46e5;
+    color: white;
+    border: none;
+}
+
+.exam-edit-cancel {
+    background: #e2e8f0;
+    border: none;
+}
+
+@media (max-width: 600px) {
+    .exam-edit-grid {
+        grid-template-columns: 1fr;
     }
 }
 </style>
@@ -738,8 +863,10 @@
 								</div>
 							</td>
 
-							<td><span class="exam-type" th:text="${exam.examType}">
-									MCQ </span></td>
+							<td>
+							   <span class="exam-type" th:text="${exam.examType}">
+									MCQ </span>
+							</td>
 
 							<td><span th:text="${exam.durationMin}"> 60 </span> min</td>
 							<td th:text="${exam.totalMark}">100</td>
@@ -755,7 +882,6 @@
 							<td>
 
 								<div class="actions">
-
 									<button type="button" class="btn btn-view" title="View"
 										th:attr="
                                     data-id=${exam.examId},
@@ -772,17 +898,23 @@
 
 									<button type="button" class="btn btn-edit" title="Edit"
 										th:attr="
-                                    data-id=${exam.examId},
-                                    data-title=${exam.title},
-                                    data-type=${exam.examType},
-                                    data-duration=${exam.durationMin},
-                                    data-total=${exam.totalMark},
-                                    data-pass=${exam.passMark},
-                                    data-attempts=${exam.maxAttempts},
-                                    data-status=${exam.status}
-                                "
+            									data-id=${exam.examId},
+            									data-course=${exam.courseId},
+								            data-batch=${exam.batchId},
+								            data-title=${exam.title},
+								            data-type=${exam.examType},
+								            data-duration=${exam.durationMin},
+								            data-total=${exam.totalMark},
+								            data-pass=${exam.passMark},
+								            data-start=${exam.startAt != null ? #temporals.format(exam.startAt, 'yyyy-MM-dd''T''HH:mm') : ''},
+								            data-end=${exam.endAt != null ? #temporals.format(exam.endAt, 'yyyy-MM-dd''T''HH:mm') : ''},
+								            data-attempts=${exam.maxAttempts},
+								            data-shuffle=${exam.shuffleQuestions},
+								            data-status=${exam.status}"
 										onclick="openEditModal(this)">
+
 										<i class="fa-solid fa-pen"></i>
+
 									</button>
 
 									<form
@@ -800,7 +932,7 @@
 							
 						</tr>
 
-						<tr th:if="${#lists.isEmpty(exams)}">
+			<tr th:if="${#lists.isEmpty(exams)}">
                 <td colspan="9">
                     <div class="empty">
                         <div>
@@ -889,109 +1021,158 @@
                 onclick="closeViewModal()">
             Close
         </button>
-
     </div>
 
 </div>
-
 </div>
-<div id="editModal" class="modal-overlay">
-    <div class="modal-box edit-modal-box">	
 
-    <div class="modal-header">
-        <h2>
-            <i class="fa-solid fa-pen"></i>
-            Edit Exam
-        </h2>
-        <button type="button" class="modal-close"
-                onclick="closeEditModal()">
-            &times;
-        </button>
-    </div>
+<div id="editModal" class="exam-edit-overlay">
 
-    <form id="editExamForm" method="post">
+    <div class="exam-edit-box">
 
-        <div class="modal-body">
+        <div class="exam-edit-header">
+            <div>
+                <h2>Edit Exam</h2>
+                <p>Update exam information</p>
+            </div>
 
-            <div class="form-grid">
+            <button type="button" class="exam-edit-close"
+                    onclick="closeEditModal()">
+                &times;
+            </button>
+        </div>
 
-                <div class="form-group">
-                    <label>Exam ID </label>
-                    <input type="text" id="editExamId"
-                           name="examId" readonly>
-                </div>
+            <form id="editExamForm" method="post" th:action="@{/teacher/exams/update/prepare}">
 
-                <div class="form-group">
-                    <label> Title</label>
-                    <input type="text"id="editTitle" name="title" required>
-                </div>
+            <input type="hidden" id="editExamId" name="examId">
 
-                <div class="form-group">
-                    <label>Exam Type </label> 
-                    		<select id="editType" name="examType" required>
-								<option value="QUIZ">QUIZ</option>
-								<option value="MIDTERM">MIDTERM</option>
-								<option value="FINAL">FINAL</option>
-						</select>
-						</div>
+            <input type="hidden"
+                   th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
 
-                <div class="form-group">
-                    <label> Duration (minutes)</label>
-                    <input type="number" id="editDuration"
-                           name="durationMin"
-                           min="1" required>
-                </div>
+            <div class="exam-edit-body">
 
-                <div class="form-group">
-                    <label> Total Mark</label>
-                    <input type="number" id="editTotal"
-                           name="totalMark" step="0.01"
-                           min="0" required>
-                </div>
+                <div class="exam-edit-grid">
 
-                <div class="form-group">
-                    <label>Pass Mark</label>
-                    <input type="number" id="editPass"
-                           name="passMark" step="0.01"
-                           min="0" required>
-                </div>
+                    <div class="exam-edit-group">
+                        <label>Course</label>
 
-                <div class="form-group">
-                    <label> Max Attempts </label>
-                    <input type="number" id="editAttempts"
-                           name="maxAttempts"
-                           min="1" required>
-                </div>
+                        <select id="editCourse" disabled>
+                            <option value="">
+                                Select Course
+                            </option>
 
-                <div class="form-group">
-                    <label>Status</label>
-                    <select id="editStatus" name="status" required>
-                        <option value="DRAFT"> DRAFT </option>
-                        <option value="PUBLISHED">
-                            PUBLISHED </option>
-                        <option value="CLOSED">CLOSED</option>
-                    </select>
+                            <option th:each="course : ${courses}"
+                                    th:value="${course['course_id']}"
+                                    th:text="${course['title']}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="exam-edit-group">
+                        <label>Batch</label>
+
+                        <select id="editBatch" disabled>
+                            <option value="">
+                                Select Batch
+                            </option>
+
+                            <option th:each="batch : ${batches}"
+                                    th:value="${batch['batch_id']}"
+                                    th:text="${batch['title']}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="exam-edit-group exam-edit-full">
+                        <label>Exam Title <span>*</span></label>
+                        <input type="text" id="editTitle" name="title"
+                               maxlength="255" required>
+                    </div>
+
+                    <div class="exam-edit-group">
+                        <label>Exam Type <span>*</span></label>
+                        <select id="editType" name="examType" required>
+                            <option value="QUIZ">Quiz</option>
+                            <option value="MIDTERM">Midterm</option>
+                            <option value="FINAL">Final</option>
+                        </select>
+                    </div>
+
+                    <div class="exam-edit-group">
+                        <label>Duration (Minutes) <span>*</span></label>
+                        <input type="number" id="editDuration"
+                               name="durationMin"
+                               min="1" step="1" required>
+                    </div>
+
+                    <div class="exam-edit-group">
+                        <label>Total Mark <span>*</span></label>
+                        <input type="number" id="editTotal"
+                               name="totalMark"
+                               min="0.01" step="0.01" required>
+                    </div>
+
+                    <div class="exam-edit-group">
+                        <label>Pass Mark <span>*</span></label>
+                        <input type="number" id="editPass"
+                               name="passMark"
+                               min="0" step="0.01" required>
+                    </div>
+
+                    <div class="exam-edit-group">
+                        <label>Start Date & Time <span>*</span></label>
+                        <input type="datetime-local" id="editStart"
+                               name="startAt" required>
+                    </div>
+
+                    <div class="exam-edit-group">
+                        <label>End Date & Time <span>*</span></label>
+                        <input type="datetime-local" 
+                        id="editEnd" name="endAt" required>
+                    </div>
+
+                    <div class="exam-edit-group">
+                        <label>Maximum Attempts <span>*</span></label>
+                        <input type="number" id="editAttempts"
+                               name="maxAttempts"
+                               min="1" step="1" required>
+                    </div>
+
+                    <div class="exam-edit-group">
+                        <label>Status <span>*</span></label>
+                        <select id="editStatus" name="status" required>
+                            <option value="DRAFT">Draft</option>
+                            <option value="PUBLISHED">Published</option>
+                            <option value="CLOSED">Closed</option>
+                        </select>
+                    </div>
+
+                    <div class="exam-edit-check exam-edit-full">
+                        <input type="checkbox" id="editShuffle" name="shuffleQuestions" value="true">
+                        <label for="editShuffle">
+                            Shuffle Questions
+                        </label>
+                    </div>
+
                 </div>
 
             </div>
 
-        </div>
+            <div class="exam-edit-footer">
+                <button type="button" class="exam-edit-cancel" onclick="closeEditModal()">
+                    Cancel
+                </button>
+                <button type="submit" class="exam-edit-save">
+    						Next: Manage Questions
+				</button>
 
-        <div class="modal-footer">
-            <button type="button" class="btn btn-cancel"
-                    onclick="closeEditModal()">
-                Cancel
-            </button>
+            </div>
 
-            <button type="submit" class="btn btn-save">
-                <i class="fa-solid fa-floppy-disk"></i>
-                Save Changes
-            </button>
-        </div>
+        </form>
 
-    </form>
-
-</div>
+    </div>
 
 </div>
 
@@ -999,10 +1180,6 @@
      JAVASCRIPT
 ========================================================= -->
 <script>
-
-    /* =====================================================
-       VIEW MODAL
-    ===================================================== */
 
     function openViewModal(button) {
 
@@ -1031,117 +1208,150 @@
 
 
     function closeViewModal() {
-
         document.getElementById("viewModal").classList.remove("show");
         document.body.classList.remove("modal-open");
     }
 
+ function openEditModal(button) {
 
-    /* =====================================================
-       EDIT MODAL
-    ===================================================== */
+     const d = button.dataset;
 
-    function openEditModal(button) {
+     document.getElementById("editExamId").value =
+         d.id || "";
 
-        const id = button.dataset.id;
-        const title = button.dataset.title;
-        const type = button.dataset.type;
-        const duration = button.dataset.duration;
-        const total = button.dataset.total;
-        const pass = button.dataset.pass;
-        const attempts = button.dataset.attempts;
-        const status = button.dataset.status;
+     document.getElementById("editCourse").value =
+         d.course || "";
 
-        document.getElementById("editExamId").value = id;
-        document.getElementById("editTitle").value = title;
-        document.getElementById("editType").value = type;
-        document.getElementById("editDuration").value = duration;
-        document.getElementById("editTotal").value = total;
-        document.getElementById("editPass").value = pass;
-        document.getElementById("editAttempts").value = attempts;
-        document.getElementById("editStatus").value = status;
+     document.getElementById("editBatch").value =
+         d.batch || "";
 
-        document.getElementById("editExamForm").action =
-            "/teacher/exams/update";
+     document.getElementById("editTitle").value =
+         d.title || "";
 
-        document.getElementById("editModal").classList.add("show");
-        document.body.classList.add("modal-open");
-    }
+     document.getElementById("editType").value =
+         d.type || "";
 
-    function closeEditModal() {
-        document.getElementById("editModal").classList.remove("show");
-        document.body.classList.remove("modal-open");
-    }
+     document.getElementById("editDuration").value =
+         d.duration || "";
 
-    document.getElementById("viewModal")
-        .addEventListener("click", function(event) {
-            if (event.target === this) {
-                closeViewModal();
-            }
-        });
+     document.getElementById("editTotal").value =
+         d.total || "";
 
+     document.getElementById("editPass").value =
+         d.pass || "";
 
-    document.getElementById("editModal").addEventListener("click", function(event) {
-            if (event.target === this) {
-                closeEditModal();
-            }
-        });
+     document.getElementById("editStart").value =
+         d.start || "";
 
-    document.addEventListener("keydown", function(event) {
-        if (event.key === "Escape") {
-            closeViewModal();
-            closeEditModal();
-        }
-    });
+     document.getElementById("editEnd").value =
+         d.end || "";
 
+     document.getElementById("editAttempts").value =
+         d.attempts || "";
+
+     document.getElementById("editStatus").value =
+         d.status || "";
+
+     document.getElementById("editShuffle").checked =
+         d.shuffle === "true";
+
+     document.getElementById("editPass").setCustomValidity("");
+     document.getElementById("editEnd").setCustomValidity("");
+     document.getElementById("editModal").classList.add("show");
+     document.body.style.overflow = "hidden";
+ }
+
+ function closeEditModal() {
+     document.getElementById("editModal") .classList.remove("show");
+     document.body.style.overflow = "";
+ }
+
+ // Form Validation
+ document.getElementById("editExamForm") .addEventListener("submit", function(event) {
+
+         const total = document.getElementById("editTotal");
+         const pass = document.getElementById("editPass");
+         const start = document.getElementById("editStart");
+         const end = document.getElementById("editEnd");
+
+         pass.setCustomValidity("");
+         end.setCustomValidity("");
+
+         if (Number(pass.value) > Number(total.value)) {
+             pass.setCustomValidity( "Pass Mark cannot exceed Total Mark.");
+         }
+
+         if (start.value && end.value &&
+             end.value <= start.value) {
+             end.setCustomValidity("End Date must be after Start Date.");
+         }
+
+         if (!this.reportValidity()) {
+             event.preventDefault();
+         }
+     });
+
+ document.getElementById("editPass")
+     .addEventListener("input", function() {
+         this.setCustomValidity("");
+     });
+
+ document.getElementById("editTotal")
+     .addEventListener("input", function() {
+         document.getElementById("editPass")
+             .setCustomValidity("");
+     });
+
+ ["editStart", "editEnd"].forEach(function(id) {
+     document.getElementById(id)
+         .addEventListener("input", function() {
+             document.getElementById("editEnd")
+             .setCustomValidity("");
+         });
+ });
+
+ document.getElementById("editModal").addEventListener("click", function(event) {
+         if (event.target === this) {
+             closeEditModal();
+         }
+     });
+
+ document.addEventListener("keydown", function(event) {
+     if (event.key === "Escape" &&
+         document.getElementById("editModal") .classList.contains("show")) {
+         closeEditModal();
+     }
+ });
+ 
     function setupExamEditTracking() {
 
-        const editForm =
-            document.getElementById("editExamForm");
-
+        const editForm = document.getElementById("editExamForm");
         if (!editForm) {
             return;
         }
 
         editForm.addEventListener("submit", function() {
-
-            const examId =
-                document.getElementById("editExamId").value;
-
+            const examId = document.getElementById("editExamId").value;
             if (!examId) {
                 return;
             }
-
-            localStorage.setItem(
-                "exam_edited_" + examId,
-                new Date().toISOString()
-            );
+            localStorage.setItem( "exam_edited_" + examId, new Date().toISOString());
         });
     }
-
-
-    /* =====================================================
-       CHECK RECENT TIME
-       24 HOURS
-    ===================================================== */
 
     function getRecentTime(value, now) {
 
         if (!value) {
             return 0;
         }
-
         const date = new Date(value);
 
         if (isNaN(date.getTime())) {
             return 0;
         }
 
-        const diff =
-            now - date.getTime();
-
-        const twentyFourHours =
-            24 * 60 * 60 * 1000;
+        const diff = now - date.getTime();
+        const twentyFourHours = 24 * 60 * 60 * 1000;
 
         if (diff >= 0 && diff <= twentyFourHours) {
             return date.getTime();
@@ -1150,240 +1360,101 @@
         return 0;
     }
 
-
-    /* =====================================================
-       APPLY NEW / EDITED
-    ===================================================== */
-
     function applyExamStatus() {
 
         const now = Date.now();
-
-        const tbody =
-            document.querySelector("table tbody");
+        const tbody = document.querySelector("table tbody");
 
         if (!tbody) {
             return;
         }
 
-        const rows = Array.from(
-            tbody.querySelectorAll("tr[data-id]")
-        );
-
-
-        /* ============================
-           ADD BADGE
-        ============================ */
+        const rows = Array.from( tbody.querySelectorAll("tr[data-id]"));
 
         rows.forEach(function(row) {
 
-            const examId =
-                row.dataset.id;
-
-            const createdTime =
-                getRecentTime(
-                    row.dataset.createdAt,
-                    now
-                );
-
-
-            const editedRaw =
-                localStorage.getItem(
-                    "exam_edited_" + examId
-                );
-
-            const editedTime =
-                getRecentTime(
-                    editedRaw,
-                    now
-                );
-
-
-            /* Remove expired edit time */
+            const examId = row.dataset.id;
+            const createdTime = getRecentTime( row.dataset.createdAt, now);
+            const editedRaw = localStorage.getItem( "exam_edited_" + examId);
+            const editedTime =getRecentTime(editedRaw,now);
 
             if (editedRaw && editedTime === 0) {
-
-                localStorage.removeItem(
-                    "exam_edited_" + examId
-                );
+                localStorage.removeItem("exam_edited_" + examId );
             }
 
+            row.classList.remove("exam-new","exam-edited");
 
-            /* Remove old classes */
-
-            row.classList.remove(
-                "exam-new",
-                "exam-edited"
-            );
-
-
-            /* Remove old badge */
-
-            const oldBadge =
-                row.querySelector(
-                    ".exam-status-badge"
-                );
+            const oldBadge = row.querySelector( ".exam-status-badge");
 
             if (oldBadge) {
                 oldBadge.remove();
             }
 
-
-            /* Find title wrapper */
-
-            const titleWrapper =
-                row.querySelector(
-                    ".exam-title-wrapper"
-                );
+            const titleWrapper =row.querySelector(".exam-title-wrapper");
 
             if (!titleWrapper) {
                 return;
             }
 
-
-            /* ============================
-               EDITED
-            ============================ */
-
             if (editedTime > 0) {
 
-                row.classList.add(
-                    "exam-edited"
-                );
+                row.classList.add("exam-edited");
 
-                const badge =
-                    document.createElement("span");
+                const badge = document.createElement("span");
 
-                badge.className =
-                    "exam-status-badge exam-edited-badge";
-
-                badge.innerHTML =
-                    '<i class="fa-solid fa-pen"></i> EDITED';
+                badge.className = "exam-status-badge exam-edited-badge";
+                badge.innerHTML ='<i class="fa-solid fa-pen"></i> EDITED';
 
                 titleWrapper.appendChild(badge);
-
                 return;
             }
 
-
-            /* ============================
-               NEW
-            ============================ */
-
             if (createdTime > 0) {
 
-                row.classList.add(
-                    "exam-new"
-                );
+                row.classList.add("exam-new");
 
-                const badge =
-                    document.createElement("span");
-
-                badge.className =
-                    "exam-status-badge exam-new-badge";
-
-                badge.innerHTML =
-                    '<i class="fa-solid fa-star"></i> NEW';
+                const badge = document.createElement("span");
+                
+                badge.className ="exam-status-badge exam-new-badge";
+                badge.innerHTML ='<i class="fa-solid fa-star"></i> NEW';
 
                 titleWrapper.appendChild(badge);
             }
 
         });
 
-
-        /* =================================================
-           SORT
-           LAST NEW / EDITED ACTION FIRST
-        ================================================= */
-
         rows.sort(function(a, b) {
+            const aId = Number(a.dataset.id);
+            const bId = Number(b.dataset.id);
 
-            const aId =
-                Number(a.dataset.id);
+            const aCreatedTime = getRecentTime(a.dataset.createdAt, now);
+            const bCreatedTime = getRecentTime( b.dataset.createdAt, now);
 
-            const bId =
-                Number(b.dataset.id);
+            const aEditedTime =getRecentTime(
+                		localStorage.getItem("exam_edited_" + a.dataset.id), now);
 
+            const bEditedTime =getRecentTime(
+                    localStorage.getItem("exam_edited_" + b.dataset.id),now);
 
-            const aCreatedTime =
-                getRecentTime(
-                    a.dataset.createdAt,
-                    now
-                );
-
-
-            const bCreatedTime =
-                getRecentTime(
-                    b.dataset.createdAt,
-                    now
-                );
-
-
-            const aEditedTime =
-                getRecentTime(
-                    localStorage.getItem(
-                        "exam_edited_" + a.dataset.id
-                    ),
-                    now
-                );
-
-
-            const bEditedTime =
-                getRecentTime(
-                    localStorage.getItem(
-                        "exam_edited_" + b.dataset.id
-                    ),
-                    now
-                );
-
-
-            /* Latest activity */
-
-            const aLatest =
-                Math.max(
-                    aCreatedTime,
-                    aEditedTime
-                );
-
-            const bLatest =
-                Math.max(
-                    bCreatedTime,
-                    bEditedTime
-                );
-
-
-            /* NEW / EDITED first */
+            const aLatest = Math.max( aCreatedTime, aEditedTime);
+            const bLatest = Math.max( bCreatedTime,bEditedTime);
 
             if (aLatest > 0 && bLatest === 0) {
                 return -1;
             }
-
             if (aLatest === 0 && bLatest > 0) {
                 return 1;
             }
-
-
-            /* Latest action first */
-
             if (aLatest > 0 && bLatest > 0) {
                 return bLatest - aLatest;
             }
-
-
-            /* Normal exams */
-
             return bId - aId;
         });
-
-
-        /* Put rows back */
 
         rows.forEach(function(row) {
             tbody.appendChild(row);
         });
     }
-
-    /* ================= PAGE LOAD ================= */
 
     document.addEventListener("DOMContentLoaded", function () {
 
@@ -1394,17 +1465,12 @@
         const typeFilter = document.getElementById("examTypeFilter");
         const statusFilter = document.getElementById("examStatusFilter");
 
-        // Search Box ထဲ စာရိုက်တိုင်း ရှာမယ်
         if (searchInput) {
             searchInput.addEventListener("input", filterExams);
         }
-
-        // Exam Type ပြောင်းတိုင်း Filter လုပ်မယ်
         if (typeFilter) {
             typeFilter.addEventListener("change", filterExams);
         }
-
-        // Status ပြောင်းတိုင်း Filter လုပ်မယ်
         if (statusFilter) {
             statusFilter.addEventListener("change", filterExams);
         }
@@ -1413,7 +1479,6 @@
     });
 
 
-    /* ================= EXAM SEARCH / FILTER ================= */
 function filterExams() {
 
     const searchInput = document.getElementById("examSearch");
@@ -1427,44 +1492,31 @@ function filterExams() {
     const searchText = searchInput.value.trim().toLowerCase();
     const selectedType = typeFilter.value.trim().toUpperCase();
     const selectedStatus = statusFilter.value.trim().toUpperCase();
-
-    const rows = document.querySelectorAll(
-        "table tbody tr[data-id]"
-    );
+    const rows = document.querySelectorAll("table tbody tr[data-id]");
 
     let visibleCount = 0;
 
     rows.forEach(function(row) {
-
-        // Table ထဲက Exam Title ကို ယူမယ်
         const titleElement = row.querySelector(".title");
 
-        const title = (
-            titleElement
-                ? titleElement.textContent
-                : row.cells[1]?.textContent || ""
-        ).trim().toLowerCase();
+        const title = ( titleElement ? titleElement.textContent
+                : row.cells[1]?.textContent || "").trim().toLowerCase();
 
         const type = (row.dataset.type || "").trim().toUpperCase();
         const status = (row.dataset.status || "").trim().toUpperCase();
-
-        // Title ကို ရှာမယ်
         const titleMatch = title.includes(searchText);
 
-        // Exam Type ကို စစ်မယ်
         const typeMatch =
             selectedType === "" ||
             selectedType === "ALL" ||
             type === selectedType;
 
-        // Status ကို စစ်မယ်
         const statusMatch =
             selectedStatus === "" ||
             selectedStatus === "ALL" ||
             status === selectedStatus;
 
         const show = titleMatch && typeMatch && statusMatch;
-
         row.style.display = show ? "" : "none";
 
         if (show) {
@@ -1475,42 +1527,28 @@ function filterExams() {
     updateExamNumbers();
     updateNoSearchResult(visibleCount, rows.length);
 }
-    /* ================= UPDATE ROW NUMBER ================= */
 
     function updateExamNumbers() {
-
-        const rows = document.querySelectorAll(
-            "table tbody tr[data-id]"
-        );
+        const rows = document.querySelectorAll("table tbody tr[data-id]");
 
         let number = 1;
 
         rows.forEach(function (row) {
-
             if (row.style.display !== "none") {
-
                 const firstCell = row.querySelector("td:first-child");
-
                 if (firstCell) {
                     firstCell.textContent = number;
                 }
-
                 number++;
             }
         });
     }
 
-
-    /* ================= NO SEARCH RESULT ================= */
-
     function updateNoSearchResult(visibleCount, totalCount) {
-
         const tbody = document.querySelector("table tbody");
-
         if (!tbody) {
             return;
         }
-
         let noResultRow = document.getElementById("noSearchResult");
 
         if (!noResultRow) {
@@ -1524,14 +1562,11 @@ function filterExams() {
                         <div>
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </div>
-
                         <strong>No matching exams found</strong>
-
                         <p>Try another search or filter.</p>
                     </div>
                 </td>
             `;
-
             tbody.appendChild(noResultRow);
         }
 
@@ -1542,19 +1577,13 @@ function filterExams() {
         }
     }
 
-
-    /* ================= RESET SEARCH ================= */
-
     function resetExamSearch() {
-
         document.getElementById("examSearch").value = "";
         document.getElementById("examTypeFilter").value = "";
         document.getElementById("examStatusFilter").value = "";
-
         filterExams();
     }
 </script>
 </div>
 </body>
-
 </html>

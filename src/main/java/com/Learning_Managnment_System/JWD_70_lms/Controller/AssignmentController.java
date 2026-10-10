@@ -146,11 +146,6 @@ public class AssignmentController {
 
         AssignmentBean assignment = assignmentService.getAssignmentById(id);
 
-//        BatchBean batch =
-//        		batchRepository.findById(
-//                        assignment.getBatchId()
-//                ).orElseThrow(
-//                        () -> new IllegalArgumentException("Batch not found"));
         List<Map<String, Object>> batchList =
                 jdbcTemplate.queryForList(
                     """
@@ -168,8 +163,7 @@ public class AssignmentController {
         Map<String, Object> batch = batchList.get(0);
 
         LessonBean lesson =
-                lessonRepository.findById(
-                        assignment.getLessonId()
+                lessonRepository.findById( assignment.getLessonId()
                 ).orElseThrow(
                         () -> new IllegalArgumentException("Lesson not found"));
 
@@ -184,7 +178,7 @@ public class AssignmentController {
         AssignmentBean assignment = assignmentService.getAssignmentById(id);
         model.addAttribute("assignment",assignment);
         loadDropdownData(model);
-
+        
         return "assignment-form";
     }
 
@@ -280,25 +274,15 @@ public class AssignmentController {
         return "/uploads/assignments/" + newFileName;
     }
 
-//    private void loadDropdownData(Model model) {
-//        List<BatchBean> batches = batchRepository.findAll();
-//        List<LessonBean> lessons = lessonRepository.findAll();     
-//        model.addAttribute("batches", batches);
-//        model.addAttribute("lessons", lessons);
-//    }
     private void loadDropdownData(Model model) {
-
         String sql = """
             SELECT batch_id, batch_code, title
             FROM batches
             ORDER BY batch_id DESC
             """;
 
-        List<Map<String, Object>> batches =
-                jdbcTemplate.queryForList(sql);
-
-        List<LessonBean> lessons =
-                lessonRepository.findAll();
+        List<Map<String, Object>> batches = jdbcTemplate.queryForList(sql);
+        List<LessonBean> lessons = lessonRepository.findAll();
 
         model.addAttribute("batches", batches);
         model.addAttribute("lessons", lessons);

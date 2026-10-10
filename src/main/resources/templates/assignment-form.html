@@ -13,64 +13,40 @@
 <div class="container form-container">
 
     <div class="form-header">
-
         <h2 th:text="${assignment.assignmentId == null ? 'Create Assignment'
             : 'Edit Assignment'}">
             Assignment Form
         </h2>
-
         <p> Manage assignment information and submission settings.</p>
-
     </div>
-
 
     <div class="form-card">
 
         <div class="error-box" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 
        <form th:object="${assignment}"
-      th:action="${assignment.assignmentId == null ? '/teacher/assignments/save' : '/teacher/assignments/update'}"
-      method="post" enctype="multipart/form-data">
+		      th:action="${assignment.assignmentId == null ? '/teacher/assignments/save' : '/teacher/assignments/update'}"
+		      method="post" enctype="multipart/form-data">
 
             <input type="hidden" th:field="*{assignmentId}">
 
             <div class="form-section">
                 <h3>Basic Information</h3>
-                
-                <div class="form-grid">
-                
-                    <!-- <div class="form-group">
-                        <label>Batch</label>
-
-                        <select th:field="*{batchId}" required>
-                            <option value=""> -- Select Batch -- </option>
-
-                            <option th:each="batch : ${batches}"
-                                    th:value="${batch.batchId}"
-                                    th:text="${batch.batchCode + ' - ' + batch.title}">
-                            </option>
-                        </select>
-                    </div>
- -->
+                <div class="form-grid">               
  
- <div class="form-group">
-    <label>Batch</label>
-
-    <select th:field="*{batchId}" required>
-
-        <option value="">-- Select Batch --</option>
-
-        <option th:each="batch : ${batches}"
-                th:value="${batch['batch_id']}"
-                th:text="${batch['title']}">
-        </option>
-
-    </select>
-</div>
+				 <div class="form-group">
+				    <label>Batch</label>
+				    <select th:field="*{batchId}" required>				
+				        <option value="">-- Select Batch --</option>
+				        <option th:each="batch : ${batches}"
+				                th:value="${batch['batch_id']}"
+				                th:text="${batch['title']}">
+				        </option>				
+				    </select>
+				</div>
+				
                     <div class="form-group">
-
                         <label>Lesson</label>
-                        
                         <select th:field="*{lessonId}" required>
                             <option value=""> -- Select Lesson --</option>
                             <option th:each="lesson : ${lessons}"
@@ -78,14 +54,12 @@
                                     th:text="${lesson.title}">
                             </option>
                         </select>
-
                     </div>
 
                     <div class="form-group full">
                         <label>Assignment Title</label>
                         <input type="text" th:field="*{title}"
-                               placeholder="Enter assignment title"
-                               required>
+                               placeholder="Enter assignment title" required>
                     </div>
 
                     <div class="form-group full">
@@ -98,17 +72,14 @@
                     <div class="form-group full">
 
                         <label>Attachment</label>
-                        <input type="file"
-                               name="attachmentFile"
-                               accept=".pdf,.zip,.doc,.docx">
-
+                        <input type="file" name="attachmentFile" accept=".pdf,.zip,.doc,.docx">
                         <small> Allowed file types:  PDF, ZIP, DOC, DOCX </small>
 
                         <div th:if="${assignment.attachment != null and !assignment.attachment.isEmpty()}"
                              style="margin-top: 8px;">
-
+                             
                             <strong>Current File:</strong>
-
+                            
                             <a th:href="@{${assignment.attachment}}"
                                th:text="${assignment.attachment}"
                                target="_blank">
@@ -118,24 +89,21 @@
                     </div>
 
                 </div>
-
             </div>
 
             <div class="form-section">
                 <h3>Assignment Schedule</h3>
-
+                
                 <div class="form-grid">
                 
                     <div class="form-group">
                         <label>Start At</label>
-                        <input type="datetime-local"
-                               th:field="*{startAt}" required>
+                        <input type="datetime-local" th:field="*{startAt}" required>
                     </div>
 
                     <div class="form-group">
                         <label>Due At</label>
-                        <input type="datetime-local"
-                               th:field="*{dueAt}" required>
+                        <input type="datetime-local" th:field="*{dueAt}" required>
                     </div>
 
 						<div class="late-deadline-row">
@@ -168,17 +136,14 @@
                 
                     <div class="form-group">
                         <label>Total Mark</label>
-
                         <input type="number"step="0.01"
-                               min="0" th:field="*{totalMark}"
-                               required>
+                               min="0" th:field="*{totalMark}" required>
                     </div>
 
                     <div class="form-group">
                         <label>Pass Mark</label>
                         <input type="number" step="0.01"
-                               min="0" th:field="*{passMark}"
-                               required>
+                               min="0" th:field="*{passMark}" required>
                     </div>
 
                     <div class="form-group">
@@ -217,6 +182,5 @@
     </div>
 
 </div>
-
 </body>
 </html>
