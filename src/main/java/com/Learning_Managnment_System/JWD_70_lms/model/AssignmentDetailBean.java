@@ -11,21 +11,15 @@ import lombok.Setter;
 public class AssignmentDetailBean {
 
     private Integer assignmentId;
-
     private String title;
     private String description;
-
     private String batchName;
     private String lessonName;
-
     private String attachment;
-
     private LocalDateTime startAt;
     private LocalDateTime dueAt;
-
     private Boolean allowLateSubmit;
     private LocalDateTime lateDeadline;
-
     private BigDecimal totalMark;
     private BigDecimal passMark;
 
