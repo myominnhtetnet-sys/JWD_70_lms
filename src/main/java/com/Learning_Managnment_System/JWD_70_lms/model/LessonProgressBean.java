@@ -11,4 +11,11 @@ public class LessonProgressBean {
     private String contentType;
     private int durationMin;
     private boolean isDone;
+    
+    // 🟢 ADDED TO SUPPORT CONTENT VIEWS
+    private String content;
+    private String videoUrl;
+    private String materialTitle;
+    private String filePath;
+    private String fileType;
 }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Classroom Timeline</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+<link rel="stylesheet" th:href="@{/css/style.css(v=1.0)}" href="/css/style.css">
 
     <!-- Premium Zero-Whitespace Timeline Styles -->
     <style>
@@ -64,6 +64,8 @@
 
         <!-- Dynamic Lesson Flow List -->
         <div style="display: block; margin: 0; padding: 0;">
+            
+            <!-- 🟢 FIXED: Explicitly named variable loop target to 'lesson' to match your attributes -->
             <div th:each="lesson : ${lessons}" class="lesson-row-item">
                 
                 <!-- Left Details Description block -->
@@ -75,13 +77,25 @@
                     </div>
                 </div>
 
-                <!-- Right Interaction Badge Node -->
-                <div>
-                    <span th:if="${lesson.isDone}" class="badge-done">✓ Completed</span>
-                    <span th:unless="${lesson.isDone}" class="badge-lock">○ Ongoing</span>
+                <!-- Right Interaction Badge Node & Link Stack -->
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div>
+                        <span th:if="${lesson.done}" class="badge-done">✓ Completed</span>
+                        <span th:unless="${lesson.done}" class="badge-lock">○ Ongoing</span>
+                    </div>
+                    
+			                   
+			<a th:href="@{/student/course/lesson/{id}(id=${lesson.lessonId}, courseId=${course.courseId})}" 
+			   class="btn btn-sm" 
+			   style="background: #0f172a; color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">
+			    Study →
+			</a>
+
+
                 </div>
 
             </div>
+            
         </div>
     </div>
 

@@ -1,6 +1,7 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import com.Learning_Managnment_System.JWD_70_lms.Service.MyCourseService;
+import com.Learning_Managnment_System.JWD_70_lms.model.LessonProgressBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.MyCourseBean;
 
 import jakarta.servlet.http.HttpSession;
@@ -8,7 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.List;
 
 @Controller
@@ -71,6 +75,33 @@ public class MyCourseController {
         model.addAttribute("lessons", lessonTimeline);
         
         return "student-classroom";
+    }
+    @GetMapping("/course/lesson/{id}")
+    public String showLessonWorkspace(@PathVariable("id") int lessonId, 
+                                      @RequestParam("courseId") int courseId,
+                                      Model model, HttpSession session) {
+        String studentEmail = (String) session.getAttribute("email");
+        Object roleId = session.getAttribute("roleId");
+        
+        if (studentEmail == null || roleId == null || (int) roleId != 3) {
+            return "redirect:/login";
+        }
+
+        LessonProgressBean lessonDetail = courseService.getSingleLessonDetails(lessonId, courseId);
+                
+        if (lessonDetail == null) {
+            return "redirect:/student/course/" + courseId;
+        }
+
+        MyCourseBean courseMeta = courseService.getCourseMetaDetails(courseId, studentEmail);
+        java.util.List<LessonProgressBean> lessonTimeline = 
+                courseService.getCourseLessonTimeline(courseId, courseMeta.getBatchCode());
+
+        model.addAttribute("lesson", lessonDetail);
+        model.addAttribute("course", courseMeta);
+        model.addAttribute("sidebarLessons", lessonTimeline);
+        
+        return "student-lesson-view";
     }
 
 }

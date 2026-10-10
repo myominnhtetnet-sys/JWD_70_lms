@@ -121,5 +121,37 @@ public class MyCourseService {
             return bean;
         }, batchCode, courseId);
     }
+    
+    /**
+     * 🟢 Retrieves text bodies, video URLs, and material files linked to a specific lesson.
+     */
+    public com.Learning_Managnment_System.JWD_70_lms.model.LessonProgressBean getSingleLessonDetails(int lessonId, int courseId) {
+        String sql = 
+            "SELECT l.lesson_id, m.title AS module_title, l.title AS lesson_title, l.content_type, " +
+            "l.content, l.video_url, l.duration_min, lm.title AS material_title, lm.file_path, lm.file_type " +
+            "FROM lms_db.lessons l " +
+            "JOIN lms_db.course_modules m ON l.module_id = m.module_id " +
+            "LEFT JOIN lms_db.lesson_materials lm ON lm.lesson_id = l.lesson_id " +
+            "WHERE l.lesson_id = ? AND m.course_id = ? AND l.status = 'PUBLISHED'";
+
+        List<com.Learning_Managnment_System.JWD_70_lms.model.LessonProgressBean> results = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            com.Learning_Managnment_System.JWD_70_lms.model.LessonProgressBean bean = 
+                new com.Learning_Managnment_System.JWD_70_lms.model.LessonProgressBean();
+            bean.setLessonId(rs.getInt("lesson_id"));
+            bean.setModuleTitle(rs.getString("module_title"));
+            bean.setLessonTitle(rs.getString("lesson_title"));
+            bean.setContentType(rs.getString("content_type"));
+            bean.setContent(rs.getString("content"));
+            bean.setVideoUrl(rs.getString("video_url"));
+            bean.setDurationMin(rs.getInt("duration_min"));
+            bean.setMaterialTitle(rs.getString("material_title"));
+            bean.setFilePath(rs.getString("file_path"));
+            bean.setFileType(rs.getString("file_type"));
+            return bean;
+        }, lessonId, courseId);
+
+        return results.isEmpty() ? null : results.get(0);
+    }
+
 
 }
