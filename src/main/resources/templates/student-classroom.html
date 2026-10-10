@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Timeline</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <!-- Premium Zero-Whitespace Timeline Styles -->
+    <style>
+        .classroom-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+        .timeline-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px 20px !important;
+            margin-bottom: 12px !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            display: block !important;
+            height: auto !important;
+        }
+        .lesson-row-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            margin-top: 8px;
+            background: #ffffff;
+            transition: all 0.2s ease;
+        }
+        .lesson-row-item:hover {
+            border-color: #2563eb !important;
+            background-color: #f8fafc !important;
+        }
+        .badge-done { background: #dcfce7; color: #15803d; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; }
+        .badge-lock { background: #f1f5f9; color: #64748b; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 6px; }
+    </style>
+</head>
+
+<body class="student-result-page">
+<div class="classroom-container">
+
+    <!-- Header Block -->
+    <div class="result-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <div>
+            <h1 style="margin: 0; font-size: 22px; font-weight: 700; color: #0f172a;" th:text="${course.courseTitle}">Course Title</h1>
+            <p style="margin: 4px 0 0 0; color: #64748b; font-size: 13.5px;" th:text="'Batch: ' + ${course.batchCode} + ' | Instructor: ' + ${course.teacherName}">Instructor</p>
+        </div>
+        <a th:href="@{/student/my-courses}" class="back-btn" style="background: #ffffff; color: #475569; font-size: 13px; font-weight: 600; text-decoration: none; padding: 6px 14px; border-radius: 6px; border: 1px solid #e2e8f0;">
+            ← Back to Courses
+        </a>
+    </div>
+
+    <!-- Syllabus Track Checklist Container -->
+    <div class="timeline-card">
+        <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 700; color: #0f172a;">Course Lessons & Modules</h3>
+        <p style="margin: 0 0 12px 0; color: #64748b; font-size: 13px;">Lessons automatically unlock as complete once your teacher finishes the class session.</p>
+
+        <!-- Dynamic Lesson Flow List -->
+        <div style="display: block; margin: 0; padding: 0;">
+            <div th:each="lesson : ${lessons}" class="lesson-row-item">
+                
+                <!-- Left Details Description block -->
+                <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <span style="font-size: 11px; font-weight: 700; color: #2563eb; text-transform: uppercase;" th:text="${lesson.moduleTitle}">Module Name</span>
+                        <span style="font-size: 14px; font-weight: 700; color: #0f172a;" th:text="${lesson.lessonTitle}">Lesson Title</span>
+                        <span style="font-size: 12px; color: #64748b;" th:text="${lesson.contentType} + ' • ' + ${lesson.durationMin} + ' mins'">VIDEO • 45 mins</span>
+                    </div>
+                </div>
+
+                <!-- Right Interaction Badge Node -->
+                <div>
+                    <span th:if="${lesson.isDone}" class="badge-done">✓ Completed</span>
+                    <span th:unless="${lesson.isDone}" class="badge-lock">○ Ongoing</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
