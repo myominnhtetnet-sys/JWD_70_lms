@@ -24,7 +24,6 @@ public class StudentAssignmentRepository {
     }
 
     public List<AssignmentBean> findAllAssignments() {
-
         String sql = """
                 SELECT *
                 FROM assignments
@@ -36,7 +35,6 @@ public class StudentAssignmentRepository {
     }
     
     public List<Integer> findSubmittedAssignmentIds(Integer enrollmentId) {
-
         String sql = """
             SELECT DISTINCT assignment_id
             FROM submissions

@@ -13,16 +13,24 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(
             ResourceHandlerRegistry registry) {
 
-        String uploadPath =
-                Paths.get("uploads/assignments")
-                     .toAbsolutePath()
-                     .normalize()
-                     .toUri()
-                     .toString();
+        // Assignment Attachments
+        String assignmentPath = Paths.get("uploads/assignments")
+                .toAbsolutePath()
+                .normalize()
+                .toUri()
+                .toString();
 
-        registry.addResourceHandler(
-                "/uploads/assignments/**"
-        )
-        .addResourceLocations(uploadPath);
+        registry.addResourceHandler("/uploads/assignments/**")
+                .addResourceLocations(assignmentPath);
+
+        // Student Submission Attachments
+        String submissionPath = Paths.get("uploads")
+                .toAbsolutePath()
+                .normalize()
+                .toUri()
+                .toString();
+
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations(submissionPath);
     }
 }
