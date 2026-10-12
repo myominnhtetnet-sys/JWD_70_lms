@@ -91,11 +91,11 @@
                         <i class="fa-solid fa-bookmark text-indigo-600"></i> တက်ရောက်နေသော သင်တန်းများ (Enrolled Batches)
                     </h3>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" th:if="${not #lists.isEmpty(batches)}">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" th:if="${batches != null and not #lists.isEmpty(batches)}">
                         <div th:each="batch : ${batches}" class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-2">
                             <div class="flex justify-between items-center">
                                 <span class="px-2.5 py-1 text-xs font-bold bg-indigo-100 text-indigo-700 rounded-lg" th:text="${batch['batch_code']}">BATCH-001</span>
-                                <span class="text-xs text-slate-400 font-medium" th:text="${batch['start_date']} + ' ~ ' + ${batch['end_date']}"></span>
+                                <span class="text-xs text-slate-400 font-medium" th:text="${batch['start_date'] + ' ~ ' + batch['end_date']}"></span>
                             </div>
                             <h4 class="font-bold text-slate-800 text-sm" th:text="${batch['batch_title']}">Batch Title</h4>
                             <p class="text-xs font-semibold text-indigo-600">
@@ -104,7 +104,7 @@
                         </div>
                     </div>
 
-                    <div th:if="${#lists.isEmpty(batches)}" class="text-center text-slate-400 text-sm py-4">
+                    <div th:if="${batches == null or #lists.isEmpty(batches)}" class="text-center text-slate-400 text-sm py-4">
                         တက်ရောက်နေသော Batch မရှိသေးပါ။
                     </div>
                 </div>
@@ -125,14 +125,16 @@
                                     <th class="p-3">Time</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                <tr th:each="session : ${classSessions}" class="hover:bg-slate-50/50">
-                                    <td class="p-3 font-bold text-slate-800" th:text="${session['batch_title']}">Batch Title</td>
-                                    <td class="p-3" th:text="${session['topic']}">Topic</td>
-                                    <td class="p-3 font-semibold text-indigo-600" th:text="${session['session_date']}">Date</td>
-                                    <td class="p-3" th:text="${session['start_time']} + ' - ' + ${session['end_time']}">Time</td>
+                            <tbody class="divide-y divide-slate-100" th:if="${classSessions != null and not #lists.isEmpty(classSessions)}">
+                                <tr th:each="cls : ${classSessions}" class="hover:bg-slate-50/50">
+                                    <td class="p-3 font-bold text-slate-800" th:text="${cls['batch_title']}">Batch Title</td>
+                                    <td class="p-3" th:text="${cls['topic']}">Topic</td>
+                                    <td class="p-3 font-semibold text-indigo-600" th:text="${cls['session_date']}">Date</td>
+                                    <td class="p-3" th:text="${cls['start_time'] + ' - ' + cls['end_time']}">Time</td>
                                 </tr>
-                                <tr th:if="${#lists.isEmpty(classSessions)}">
+                            </tbody>
+                            <tbody class="divide-y divide-slate-100" th:if="${classSessions == null or #lists.isEmpty(classSessions)}">
+                                <tr>
                                     <td colspan="4" class="p-4 text-center text-slate-400">အတန်းချိန် ဇယားများ မရှိသေးပါ။</td>
                                 </tr>
                             </tbody>
@@ -156,14 +158,16 @@
                                     <th class="p-3">Duration</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100">
+                            <tbody class="divide-y divide-slate-100" th:if="${exams != null and not #lists.isEmpty(exams)}">
                                 <tr th:each="exam : ${exams}" class="hover:bg-slate-50/50">
                                     <td class="p-3 font-bold text-slate-800" th:text="${exam['title']}">Exam Title</td>
                                     <td class="p-3" th:text="${exam['course_name']}">Course</td>
                                     <td class="p-3 font-semibold text-rose-500" th:text="${exam['exam_date']}">Date</td>
-                                    <td class="p-3" th:text="${exam['duration_minutes']} + ' Mins'">Duration</td>
+                                    <td class="p-3" th:text="${exam['duration_minutes'] + ' Mins'}">Duration</td>
                                 </tr>
-                                <tr th:if="${#lists.isEmpty(exams)}">
+                            </tbody>
+                            <tbody class="divide-y divide-slate-100" th:if="${exams == null or #lists.isEmpty(exams)}">
+                                <tr>
                                     <td colspan="4" class="p-4 text-center text-slate-400">လက်ရှိ ဖြေဆိုရန် စာမေးပွဲ မရှိသေးပါ။</td>
                                 </tr>
                             </tbody>
