@@ -26,7 +26,7 @@ public class StudentAssignmentRepository {
     public List<AssignmentBean> findAssignmentsByStudentId(int userId) {
  
 
-    public List<AssignmentBean> findAllAssignments() {
+//    public List<AssignmentBean> findAllAssignments() {
         String sql = """
                 SELECT a.*, b.batch_code AS batch_code, b.title AS batch_title, l.title AS lesson_title
                 FROM assignments a

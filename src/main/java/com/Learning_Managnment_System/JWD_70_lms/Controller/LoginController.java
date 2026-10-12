@@ -62,7 +62,7 @@ public class LoginController {
         if (session.getAttribute("roleId") == null || (int) session.getAttribute("roleId") != 2) {
             return "redirect:/login";
         }
-        return "teacher";
+        return "dashboard";
     }
 
     @GetMapping("/student")
