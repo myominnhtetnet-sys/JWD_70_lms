@@ -154,6 +154,11 @@ function renderSidebar(role) {
 			        window.location.href = '/teacher/assignments';
 			        return;
 			    }
+				// Exams
+				   if (item.label === 'Exams') {
+				       window.location.href = '/teacher/exams';
+				       return;
+				   }
 
 			    setActiveNavItem(navItem);
 			    showToast(`Navigated to ${item.label}`);

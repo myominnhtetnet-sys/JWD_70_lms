@@ -24,6 +24,9 @@ public class StudentAssignmentRepository {
     private SubmissionRowMapper submissionRowMapper;
 
     public List<AssignmentBean> findAssignmentsByStudentId(int userId) {
+ 
+
+    public List<AssignmentBean> findAllAssignments() {
         String sql = """
                 SELECT a.*, b.batch_code AS batch_code, b.title AS batch_title, l.title AS lesson_title
                 FROM assignments a
@@ -36,6 +39,17 @@ public class StudentAssignmentRepository {
         return jdbcTemplate.query(sql, assignmentRowMapper, userId);
     }
 
+    
+    public List<Integer> findSubmittedAssignmentIds(Integer enrollmentId) {
+        String sql = """
+            SELECT DISTINCT assignment_id
+            FROM submissions
+            WHERE enrollment_id = ?
+        """;
+
+        return jdbcTemplate.queryForList(sql,Integer.class,enrollmentId);
+    }
+    
     public Optional<AssignmentBean> findAssignmentById(Integer assignmentId) {
         String sql = "SELECT * FROM assignments WHERE assignment_id = ? AND status = 'PUBLISHED'";
         List<AssignmentBean> result = jdbcTemplate.query(sql, assignmentRowMapper, assignmentId);

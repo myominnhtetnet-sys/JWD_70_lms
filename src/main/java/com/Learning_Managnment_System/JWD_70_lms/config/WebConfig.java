@@ -19,5 +19,27 @@ public class WebConfig implements WebMvcConfigurer {
         // straight to your physical local directory file resource context locations!
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:/" + uploadPath + "/");
+    public void addResourceHandlers(
+            ResourceHandlerRegistry registry) {
+
+        // Assignment Attachments
+        String assignmentPath = Paths.get("uploads/assignments")
+                .toAbsolutePath()
+                .normalize()
+                .toUri()
+                .toString();
+
+        registry.addResourceHandler("/uploads/assignments/**")
+                .addResourceLocations(assignmentPath);
+
+        // Student Submission Attachments
+        String submissionPath = Paths.get("uploads")
+                .toAbsolutePath()
+                .normalize()
+                .toUri()
+                .toString();
+
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations(submissionPath);
     }
 }
