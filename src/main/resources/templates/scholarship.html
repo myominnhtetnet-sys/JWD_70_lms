@@ -44,7 +44,9 @@
                     <div>
                         <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Account</div>
                         <div class="space-y-1">
-                            
+                            <a th:href="@{/student/enroll-payment}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                                <i class="fa-regular fa-credit-card text-base"></i> Payments
+                            </a>
                             <!-- Active Scholarships Menu Link -->
                             <a th:href="@{/student/scholarship}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600/90 shadow-sm transition">
                                 <i class="fa-solid fa-user-graduate text-base"></i> Scholarships
@@ -112,9 +114,15 @@
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 <tr th:each="sch : ${scholarships}" class="hover:bg-slate-50/80 transition">
-                                    <td class="p-3.5 font-semibold text-slate-900" th:text="${sch.title}">IT Excellence Scholarship</td>
+                                    <!-- Changed from sch.title to sch.programName -->
+                                    <td class="p-3.5 font-semibold text-slate-900" th:text="${sch.programName}">IT Excellence Scholarship</td>
+                                    
+                                    <!-- Changed from sch.appliedDate to sch.appliedDate -->
                                     <td class="p-3.5 text-slate-500" th:text="${sch.appliedDate}">2026-03-15</td>
-                                    <td class="p-3.5 font-semibold text-indigo-600" th:text="${sch.discountPercentage + '%'}">50%</td>
+                                    
+                                    <!-- Changed from sch.discountPercentage to sch.discountPercent -->
+                                    <td class="p-3.5 font-semibold text-indigo-600" th:text="${sch.discountPercent + '%'}">50%</td>
+                                    
                                     <td class="p-3.5">
                                         <span th:text="${sch.status}" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700">
                                             Pending
