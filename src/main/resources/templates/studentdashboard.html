@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - LearnHub LMS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased font-sans">
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar Navigation Menu -->
+        <aside class="w-64 bg-slate-900 text-slate-300 hidden md:flex flex-col justify-between shrink-0 sticky top-0 h-screen overflow-y-auto border-r border-slate-800">
+            <div>
+                <!-- Logo -->
+                <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
+                        <i class="fa-solid fa-graduation-cap text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-base font-bold text-white tracking-wide block leading-none">LearnHub</span>
+                        <small class="text-[11px] font-medium text-slate-400">Student Portal</small>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="p-4 space-y-6">
+                    <div>
+                        <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Learning</div>
+                        <div class="space-y-1">
+                            <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 shadow-sm transition">
+                                <i class="fa-solid fa-border-all text-base"></i> Dashboard
+                            </a>
+                            <a th:href="@{/student/my-courses}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                                <i class="fa-solid fa-book-open text-base"></i> My Courses
+                            </a>
+                            <a th:href="@{/student/schedule}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                <i class="fa-regular fa-calendar-check text-base"></i> Schedule
+                            </a>
+                            <a th:href="@{/student/assignments}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                <div class="flex items-center gap-3">
+                                    <i class="fa-regular fa-file-lines text-base"></i> Assignments
+                                </div>
+                            </a>
+                            <a th:href="@{/student/exams}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                <i class="fa-solid fa-square-check text-base"></i> Exams
+                            </a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Account</div>
+                        <div class="space-y-1">
+                            <a th:href="@{/student/checkout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                <i class="fa-regular fa-credit-card text-base"></i> Payments
+                            </a>
+                            <a th:href="@{/student/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                <i class="fa-regular fa-user text-base"></i> My Profile
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="p-4 border-t border-slate-800">
+                <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                    <i class="fa-solid fa-right-from-bracket text-base"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+            <!-- Header -->
+            <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 leading-tight">Welcome, <span th:text="${fullName}">Student</span>!</h2>
+                    <p class="text-xs text-slate-400 font-medium">Student ID: <span th:text="${studentId}">STU-001</span></p>
+                </div>
+            </header>
+
+            <main class="p-6 lg:p-8 space-y-6 max-w-[1400px] mx-auto w-full">
+                <div class="bg-indigo-600 text-white p-6 rounded-2xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold">LearnHub Student Portal မှ ကြိုဆိုပါတယ်</h3>
+                        <p class="text-xs text-indigo-100 mt-1">သင်၏ အတန်းချိန်များနှင့် စာမေးပွဲ ဇယားများကို Schedule မီနူးတွင် ကြည့်ရှုနိုင်ပါသည်။</p>
+                    </div>
+                    <a th:href="@{/student/schedule}" class="px-4 py-2 bg-white text-indigo-600 text-xs font-bold rounded-xl hover:bg-indigo-50 transition">
+                        View Schedule
+                    </a>
+                </div>
+            </main>
+        </div>
+    </div>
+
+</body>
+</html>

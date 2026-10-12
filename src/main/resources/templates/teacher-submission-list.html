@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>Submission Management</title>
+
+<style>
+* {
+	box-sizing: border-box;
+}
+body {
+	margin: 0;
+	font-family: Arial, sans-serif;
+	background: #f8fafc;
+	color: #1e293b;
+}
+.container {
+	width: 95%;
+	max-width: 1250px;
+	margin: 30px auto;
+}
+.page-header {
+	margin-bottom: 22px;
+}
+.page-header h1 {
+	margin: 0 0 7px;
+	font-size: 25px;
+}
+.page-header p {
+	margin: 0;
+	font-size: 14px;
+	color: #64748b;
+}
+.summary-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 12px;
+	margin-bottom: 18px;
+	max-width: 750px;
+}
+.summary-card {
+	background: white;
+	padding: 12px 16px;
+	border-radius: 8px;
+	border: 1px solid #e2e8f0;
+}
+.summary-card p {
+	margin: 0 0 6px;
+	color: #64748b;
+	font-size: 12px;
+}
+.summary-card h2 {
+	margin: 0;
+	font-size: 21px;
+	font-weight: 700;
+}
+.search-card {
+	background: white;
+	padding: 18px;
+	border-radius: 10px;
+	border: 1px solid #e2e8f0;
+	margin-bottom: 20px;
+}
+.search-grid {
+	display: grid;
+	grid-template-columns: 2fr 1.4fr 1fr auto;
+	gap: 12px;
+	align-items: end;
+}
+.form-group label {
+	display: block;
+	font-size: 12px;
+	font-weight: 600;
+	margin-bottom: 7px;
+}
+.form-control {
+	width: 100%;
+	height: 40px;
+	padding: 0 12px;
+	border: 1px solid #cbd5e1;
+	border-radius: 7px;
+	font-size: 13px;
+	background: white;
+}
+.form-control:focus {
+	outline: none;
+	border-color: #6366f1;
+}
+.btn {
+	border: none;
+	border-radius: 7px;
+	padding: 10px 15px;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	text-decoration: none;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	gap: 6px;
+}
+.btn-primary {
+	background: #4f46e5;
+	color: white;
+}
+.btn-secondary {
+	background: #e2e8f0;
+	color: #334155;
+}
+.btn-outline {
+	background: #eef2ff;
+	color: #4338ca;
+}
+.btn-success {
+	background: #059669;
+	color: white;
+}
+.table-card {
+	background: white;
+	border-radius: 10px;
+	border: 1px solid #e2e8f0;
+	overflow: hidden;
+}
+.table-header {
+	padding: 18px 20px;
+	border-bottom: 1px solid #e2e8f0;
+}
+.table-header h2 {
+	margin: 0;
+	font-size: 17px;
+}
+.table-wrapper {
+	overflow-x: auto;
+}
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+th {
+	background: #f8fafc;
+	padding: 14px;
+	text-align: left;
+	font-size: 12px;
+	color: #475569;
+	white-space: nowrap;
+}
+td {
+	padding: 14px;
+	font-size: 13px;
+	border-top: 1px solid #f1f5f9;
+	vertical-align: middle;
+}
+tbody tr:hover {
+	background: #f8fafc;
+}
+
+.assignment-cell {
+	max-width: 240px;
+	overflow-wrap: anywhere;
+}
+
+.badge {
+	display: inline-block;
+	padding: 5px 9px;
+	border-radius: 20px;
+	font-size: 11px;
+	font-weight: 600;
+}
+.badge-graded {
+	background: #dcfce7;
+	color: #166534;
+}
+.badge-pending {
+	background: #fef3c7;
+	color: #92400e;
+}
+.badge-late {
+	background: #fee2e2;
+	color: #991b1b;
+}
+.badge-ontime {
+	background: #dcfce7;
+	color: #166534;
+}
+.action-buttons {
+	display: flex;
+	gap: 6px;
+}
+.empty-row {
+	padding: 35px;
+	text-align: center;
+	color: #64748b;
+}
+.alert {
+	padding: 12px 15px;
+	border-radius: 7px;
+	margin-bottom: 16px;
+	font-size: 13px;
+}
+.alert-success {
+	background: #dcfce7;
+	color: #166534;
+}
+.alert-error {
+	background: #fee2e2;
+	color: #991b1b;
+}
+.modal-overlay {
+	display: none;
+	position: fixed;
+	inset: 0;
+	backdrop-filter: blur(4px);
+	background: rgba(15, 23, 42, 0.55);
+	z-index: 1000;
+	align-items: center;
+	justify-content: center;
+	padding: 15px;
+}
+.modal-overlay.active {
+	display: flex;
+}
+.modal-box {
+	width: 100%;
+	max-width: 520px;
+	max-height: 90vh;
+	overflow-y: auto;
+	background: white;
+	border-radius: 12px;
+	padding: 22px;
+}
+.modal-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 18px;
+}
+.modal-header h2 {
+	margin: 0;
+	font-size: 19px;
+}
+.close-btn {
+	border: none;
+	background: transparent;
+	font-size: 24px;
+	cursor: pointer;
+	color: #64748b;
+}
+.detail-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 14px;
+	margin-bottom: 18px;
+}
+.detail-item span {
+	display: block;
+	font-size: 11px;
+	color: #64748b;
+	margin-bottom: 5px;
+}
+.detail-item strong {
+	font-size: 13px;
+	overflow-wrap: anywhere;
+}
+.answer-box {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 7px;
+	padding: 12px;
+	font-size: 13px;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+	max-height: 160px;
+	overflow-y: auto;
+}
+.modal-section {
+	margin-bottom: 16px;
+}
+.modal-section h3 {
+	font-size: 14px;
+	margin: 0 0 9px;
+}
+.modal-footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 20px;
+}
+textarea.form-control {
+	height: auto;
+	padding: 10px 12px;
+	resize: vertical;
+}
+@media ( max-width : 850px) {
+	.search-grid {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+@media ( max-width : 600px) {
+	.summary-grid {
+		grid-template-columns: 1fr;
+	}
+	.search-grid {
+		grid-template-columns: 1fr;
+	}
+	.detail-grid {
+		grid-template-columns: 1fr;
+	}
+	.modal-box {
+		padding: 16px;
+	}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="page-header">
+        <h1>Submission Management</h1>
+        <p>Review and grade student assignment submissions</p>
+    </div>
+
+    <div th:if="${success}"
+         class="alert alert-success"
+         th:text="${success}"></div>
+
+    <div th:if="${error}"
+         class="alert alert-error"
+         th:text="${error}"></div>
+
+
+    <div class="summary-grid">
+
+        <div class="summary-card">
+            <p>Total Submissions</p>
+            <h2 id="totalCount">0</h2>
+        </div>
+
+        <div class="summary-card">
+            <p>Pending Grading</p>
+            <h2 id="pendingCount">0</h2>
+        </div>
+
+        <div class="summary-card">
+            <p>Graded Submissions</p>
+            <h2 id="gradedCount">0</h2>
+        </div>
+
+    </div>
+
+    <!-- Search / Filter -->
+
+    <div class="search-card">
+
+        <div class="search-grid">
+
+            <div class="form-group">
+                <label>Search</label>
+                <input type="text"
+                       id="searchInput"
+                       class="form-control"
+                       placeholder="Student or assignment..."
+                       oninput="filterSubmissions()">
+            </div>
+
+            <div class="form-group">
+                <label>Assignment</label>
+                <select id="assignmentFilter"
+                        class="form-control"
+                        onchange="filterSubmissions()">
+                    <option value="">All Assignments</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <select id="statusFilter"
+                        class="form-control"
+                        onchange="filterSubmissions()">
+                    <option value="">All Status</option>
+                    <option value="SUBMITTED">Submitted</option>
+                    <option value="GRADED">Graded</option>
+                </select>
+            </div>
+
+            <button type="button"
+                    class="btn btn-secondary"
+                    onclick="resetFilters()">
+                Reset
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Submission Table -->
+
+    <div class="table-card">
+
+        <div class="table-header">
+            <h2>Student Submissions</h2>
+        </div>
+
+        <div class="table-wrapper">
+
+            <table>
+                <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Student</th>
+                    <th>Assignment</th>
+                    <th>Submitted At</th>
+                    <th>Late</th>
+                    <th>Status</th>
+                    <th>Mark</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody id="submissionTableBody">
+
+                <tr th:each="item, stat : ${submissions}"
+                    class="submission-row"
+                    th:attr="data-student=${item.studentName},
+                             data-assignment=${item.assignmentTitle},
+                             data-assignment-id=${item.assignmentId},
+                             data-status=${item.status},
+                             data-graded-at=${item.gradedAt}">
+
+                    <td th:text="${stat.count}"></td>
+
+                    <td th:text="${item.studentName}"></td>
+
+                    <td class="assignment-cell"
+                        th:text="${item.assignmentTitle}"></td>
+
+                    <td th:text="${item.submittedAt != null
+                            ? #temporals.format(item.submittedAt,
+                            'dd MMM yyyy, HH:mm') : '-'}"></td>
+
+                    <td>
+                        <span class="badge"
+                              th:classappend="${item.isLate}
+                              ? ' badge-late' : ' badge-ontime'"
+                              th:text="${item.isLate ? 'LATE' : 'ON TIME'}">
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="badge"
+                              th:classappend="${item.status == 'GRADED'}
+                              ? ' badge-graded' : ' badge-pending'"
+                              th:text="${item.status}">
+                        </span>
+                    </td>
+
+                    <td>
+                        <span th:text="${item.score != null
+                            ? item.score : 'Not Graded'}"></span>
+                        /
+                        <span th:text="${item.totalMark}"></span>
+                    </td>
+
+                    <td>
+                        <div class="action-buttons">
+                            
+						<button type="button"
+						        class="btn btn-outline"
+						        th:attr="data-id=${item.submissionId},
+						                 data-student=${item.studentName},
+						                 data-assignment=${item.assignmentTitle},
+						                 data-date=${item.submittedAt},
+						                 data-graded-at=${item.gradedAt},
+						                 data-status=${item.status},
+						                 data-late=${item.isLate},
+						                 data-answer=${item.answerText},
+						                 data-attachment=${item.attachment},
+						                 data-score=${item.score},
+						                 data-total=${item.totalMark},
+						                 data-feedback=${item.feedback}"
+						        onclick="openViewModal(this)">
+						    View
+						</button>
+
+                            <button type="button"
+                                    class="btn btn-primary"
+                                    th:attr="data-id=${item.submissionId},
+                                             data-student=${item.studentName},
+                                             data-assignment=${item.assignmentTitle},
+                                             data-score=${item.score},
+                                             data-total=${item.totalMark},
+                                             data-feedback=${item.feedback}"
+                                    onclick="openGradeModal(this)">
+                                Grade
+                            </button>
+
+                        </div>
+                    </td>
+
+                </tr>
+
+                <tr id="emptyRow" style="display:none;">
+                    <td colspan="8" class="empty-row">
+                        No matching submissions found.
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="viewModal" class="modal-overlay"
+     onclick="closeOnOverlay(event, 'viewModal')">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+            <h2>Submission Details</h2>
+            <button type="button" class="close-btn"
+                    onclick="closeModal('viewModal')">&times;</button>
+        </div>
+
+        <div class="detail-grid">
+
+            <div class="detail-item">
+                <span>Student</span>
+                <strong id="viewStudent"></strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Assignment</span>
+                <strong id="viewAssignment"></strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Submitted At</span>
+                <strong id="viewDate"></strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Status</span>
+                <strong id="viewStatus"></strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Submission Timing</span>
+                <strong id="viewLate"></strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Mark</span>
+                <strong id="viewMark"></strong>
+            </div>
+            
+			<div class="detail-item">
+			    <span>Graded At</span>
+			    <strong id="viewGradedAt">Not Graded Yet</strong>
+			</div>
+
+        </div>
+
+        <div class="modal-section">
+            <h3>Student Answer</h3>
+            <div id="viewAnswer" class="answer-box"></div>
+        </div>
+
+        <div class="modal-section">
+            <h3>Attachment</h3>
+            <div id="viewAttachment"></div>
+        </div>
+
+        <div class="modal-section">
+            <h3>Teacher Feedback</h3>
+            <div id="viewFeedback" class="answer-box"></div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button"
+                    class="btn btn-secondary"
+                    onclick="closeModal('viewModal')">
+                Close
+            </button>
+
+            <button type="button"
+                    class="btn btn-primary"
+                    onclick="gradeFromView()">
+                Grade Submission
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<div id="gradeModal" class="modal-overlay"
+     onclick="closeOnOverlay(event, 'gradeModal')">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+            <h2>Grade Submission</h2>
+            <button type="button" class="close-btn"
+                    onclick="closeModal('gradeModal')">&times;</button>
+        </div>
+
+        <div class="detail-grid">
+
+            <div class="detail-item">
+                <span>Student</span>
+                <strong id="gradeStudent"></strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Assignment</span>
+                <strong id="gradeAssignment"></strong>
+            </div>
+
+        </div>
+
+        <form th:action="@{/teacher/submissions/grade}"
+              method="post">
+
+            <input type="hidden"
+                   name="submissionId"
+                   id="gradeSubmissionId">
+
+            <div class="form-group" style="margin-bottom:16px;">
+                <label for="gradeScore">Mark</label>
+
+                <input type="number" id="gradeScore"
+                       name="score" min="0"
+                       step="0.01"
+                       class="form-control"
+                       required>
+
+                <small id="gradeTotalText"></small>
+            </div>
+
+            <div class="form-group">
+                <label for="gradeFeedback">Teacher Feedback</label>
+
+                <textarea id="gradeFeedback"
+                          name="feedback" rows="4"
+                          class="form-control"
+                          required></textarea>
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        onclick="closeModal('gradeModal')">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="btn btn-success">
+                    Save Grade
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<script>
+    let currentSubmissionId = null;
+
+    function getRows() {
+        return Array.from(
+            document.querySelectorAll(".submission-row")
+        );
+    }
+
+    function initializePage() {
+        const rows = getRows();
+
+        let pending = 0;
+        let graded = 0;
+
+        const assignmentMap = new Map();
+
+        rows.forEach(row => {
+            const status = row.dataset.status;
+
+            if (status === "GRADED") {
+                graded++;
+            } else {
+                pending++;
+            }
+
+            const id = row.dataset.assignmentId;
+            const title = row.dataset.assignment;
+
+            if (id && !assignmentMap.has(id)) {
+                assignmentMap.set(id, title);
+            }
+        });
+
+        document.getElementById("totalCount").textContent =
+            rows.length;
+
+        document.getElementById("pendingCount").textContent =
+            pending;
+
+        document.getElementById("gradedCount").textContent =
+            graded;
+
+        const select =
+            document.getElementById("assignmentFilter");
+
+        assignmentMap.forEach((title, id) => {
+            const option = document.createElement("option");
+            option.value = id;
+            option.textContent = title;
+            select.appendChild(option);
+        });
+
+        filterSubmissions();
+    }
+
+    function filterSubmissions() {
+        const keyword = document.getElementById("searchInput")
+            .value.trim().toLowerCase();
+
+        const assignmentId =
+            document.getElementById("assignmentFilter").value;
+
+        const status =
+            document.getElementById("statusFilter").value;
+
+        let visible = 0;
+
+        getRows().forEach(row => {
+            const student =
+                (row.dataset.student || "").toLowerCase();
+
+            const assignment =
+                (row.dataset.assignment || "").toLowerCase();
+
+            const matchKeyword =
+                student.includes(keyword) ||
+                assignment.includes(keyword);
+
+            const matchAssignment =
+                !assignmentId ||
+                row.dataset.assignmentId === assignmentId;
+
+            const matchStatus =
+                !status || row.dataset.status === status;
+
+            const show =
+                matchKeyword && matchAssignment && matchStatus;
+
+            row.style.display = show ? "" : "none";
+
+            if (show) visible++;
+        });
+
+        document.getElementById("emptyRow").style.display =
+            visible === 0 ? "" : "none";
+    }
+
+    function resetFilters() {
+        document.getElementById("searchInput").value = "";
+        document.getElementById("assignmentFilter").value = "";
+        document.getElementById("statusFilter").value = "";
+        filterSubmissions();
+    }
+
+    function openModal(id) {
+        document.getElementById(id).classList.add("active");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.remove("active");
+        document.body.style.overflow = "";
+    }
+
+    function closeOnOverlay(event, id) {
+        if (event.target.id === id) {
+            closeModal(id);
+        }
+    }
+
+    function openViewModal(button) {
+        const d = button.dataset;
+
+        currentSubmissionId = d.id;
+
+        document.getElementById("viewStudent").textContent =
+            d.student || "-";
+
+        document.getElementById("viewAssignment").textContent =
+            d.assignment || "-";
+
+        document.getElementById("viewDate").textContent =
+            d.date || "-";
+
+        document.getElementById("viewStatus").textContent =
+            d.status || "-";
+
+        const gradedAtElement = document.getElementById("viewGradedAt");
+        if (d.gradedAt && d.gradedAt.trim() !== "") {
+            gradedAtElement.textContent = d.gradedAt.replace("T", " ").substring(0, 16);
+        } else {
+            gradedAtElement.textContent = "Not Graded Yet";
+        }
+
+        document.getElementById("viewLate").textContent =
+            d.late === "true" ? "LATE" : "ON TIME";
+
+        document.getElementById("viewMark").textContent =
+            (d.score || "Not Graded") + " / " + (d.total || "0");
+
+        document.getElementById("viewAnswer").textContent =
+            d.answer || "No answer provided.";
+
+        document.getElementById("viewFeedback").textContent =
+            d.feedback || "No feedback yet.";
+
+        const attachment =
+            document.getElementById("viewAttachment");
+
+        attachment.textContent = "";
+
+        if (d.attachment) {
+            const link = document.createElement("a");
+            /* link.href = d.attachment; */
+           const filePath = d.attachment.trim();
+
+			link.href = filePath.startsWith("/")
+			    ? filePath
+			    : "/" + filePath;
+            link.textContent = "View Attachment";
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            attachment.appendChild(link);
+        } else {
+            attachment.textContent = "No attachment.";
+        }
+        openModal("viewModal");
+    }
+
+    function openGradeModal(button) {
+        const d = button.dataset;
+        currentSubmissionId = d.id;
+
+        document.getElementById("gradeSubmissionId").value =
+            d.id;
+
+        document.getElementById("gradeStudent").textContent =
+            d.student || "-";
+
+        document.getElementById("gradeAssignment").textContent =
+            d.assignment || "-";
+
+        document.getElementById("gradeScore").value =
+            d.score || "";
+
+        document.getElementById("gradeScore").max =
+            d.total || "0";
+
+        document.getElementById("gradeTotalText").textContent =
+            "Maximum Mark: " + (d.total || "0");
+
+        document.getElementById("gradeFeedback").value =
+            d.feedback || "";
+
+        openModal("gradeModal");
+    }
+
+    function gradeFromView() {
+        const button = document.querySelector(
+            '.submission-row button[data-id="' +
+            currentSubmissionId + '"]:last-child');
+
+        if (!button) return;
+
+        closeModal("viewModal");
+        openGradeModal(button);
+    }
+
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape") {
+            closeModal("viewModal");
+            closeModal("gradeModal");
+        }
+    });
+    
+    document.addEventListener("DOMContentLoaded",initializePage);
+</script>
+
+</body>
+</html>

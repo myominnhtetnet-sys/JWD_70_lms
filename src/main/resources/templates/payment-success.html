@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Receipt</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .receipt-card {
+            max-width: 450px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+        .success-icon {
+            font-size: 50px;
+            color: #198754;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container">
+    <div class="receipt-card text-center">
+        <div class="mb-3">
+            <i class="fa-solid fa-circle-check success-icon"></i>
+        </div>
+        <h4 class="fw-bold text-success mb-1">Payment Successful!</h4>
+        <p class="text-muted small mb-4">ငွေပေးချေမှု အောင်မြင်ပါသည်။</p>
+
+        <!-- Receipt Details Box -->
+        <div class="border rounded p-3 bg-light text-start mb-4">
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">Amount Paid:</span>
+                <span class="fw-bold text-dark" th:text="${amount != null ? amount + ' MMK' : '0 MMK'}"></span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">Payment Purpose:</span>
+                <span class="fw-semibold text-dark" th:text="${paymentType != null ? paymentType : '-'}"></span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">Transaction No:</span>
+                <span class="fw-semibold text-dark" th:text="${transactionNo != null ? transactionNo : '-'}"></span>
+            </div>
+            <div class="d-flex justify-content-between" th:if="${note != null and !#strings.isEmpty(note)}">
+                <span class="text-muted small">Note:</span>
+                <span class="fw-semibold text-dark" th:text="${note}"></span>
+            </div>
+        </div>
+
+        <a th:href="@{/student}" class="btn btn-primary w-100 py-2 fw-bold">Back to Dashboard</a>
+    </div>
+</div>
+
+</body>
+</html>

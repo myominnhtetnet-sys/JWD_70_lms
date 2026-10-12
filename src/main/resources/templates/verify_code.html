@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>LMS - Verify Code</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4e9ff;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            height: 65px;
+            background: white;
+            border-bottom: 2px solid #8e44ad;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 40px;
+        }
+
+        .logo {
+            color: #4b176b;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .home-link {
+            text-decoration: none;
+            color: #4b176b;
+        }
+
+        .home-link i {
+            margin-right: 6px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+
+            margin: 70px auto;
+
+            background: white;
+
+            padding: 35px;
+
+            border-radius: 12px;
+
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .title {
+            text-align: center;
+            color: #4b176b;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .email-box {
+            background: #f4e9ff;
+            color: #4b176b;
+
+            padding: 12px;
+
+            border-radius: 7px;
+
+            text-align: center;
+
+            margin-bottom: 18px;
+
+            font-weight: bold;
+        }
+
+        .otp-box {
+            background: #f4e9ff;
+
+            border: 2px dashed #8e44ad;
+
+            padding: 15px;
+
+            text-align: center;
+
+            border-radius: 8px;
+
+            margin-bottom: 20px;
+        }
+
+        .otp-label {
+            font-size: 13px;
+            color: #666;
+
+            margin-bottom: 5px;
+        }
+
+        .otp-code {
+            color: #4b176b;
+
+            font-size: 30px;
+
+            font-weight: bold;
+
+            letter-spacing: 5px;
+        }
+
+        .error {
+            background: #ffe6e6;
+
+            color: #c0392b;
+
+            border: 1px solid #e74c3c;
+
+            padding: 10px;
+
+            border-radius: 6px;
+
+            margin-bottom: 18px;
+
+            text-align: center;
+
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+
+            padding: 13px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 7px;
+
+            font-size: 18px;
+
+            text-align: center;
+
+            letter-spacing: 4px;
+
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #8e44ad;
+        }
+
+        .verify-btn {
+            width: 100%;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background: #8e44ad;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .verify-btn:hover {
+            background: #6c3483;
+        }
+
+        .back-link {
+            text-align: center;
+
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #8e44ad;
+
+            text-decoration: none;
+
+            font-weight: bold;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+    <!-- Navbar -->
+
+    <div class="navbar">
+
+        <div class="logo">
+            LMS
+        </div>
+
+        <a th:href="@{/login}"
+           class="home-link">
+
+            <i class="fa-solid fa-house"></i>
+            Login
+
+        </a>
+
+    </div>
+
+
+    <!-- Main -->
+
+    <div class="container">
+
+        <h1 class="title">
+            Verify Code
+        </h1>
+
+        <p class="subtitle">
+            Enter the verification code to continue.
+        </p>
+
+
+        <!-- Email -->
+
+        <div class="email-box"
+             th:if="${email != null}">
+
+            <i class="fa-solid fa-envelope"></i>
+
+            <span th:text="${email}">
+                user@example.com
+            </span>
+
+        </div>
+
+
+        <!-- Demo OTP -->
+
+        <div class="otp-box"
+             th:if="${generatedCode != null}">
+
+            <div class="otp-label">
+                Your Verification Code
+            </div>
+
+            <div class="otp-code"
+                 th:text="${generatedCode}">
+                123456
+            </div>
+
+        </div>
+
+
+        <!-- Error -->
+
+        <div class="error"
+             th:if="${error != null}"
+             th:text="${error}">
+        </div>
+
+
+        <!-- IMPORTANT:
+             URL must be /verify-code
+             NOT /verify_code
+        -->
+
+        <form th:action="@{/verify-code}"
+              th:object="${forgotPassword}"
+              method="post">
+
+
+            <div class="form-group">
+
+                <label for="code">
+                    Verification Code
+                </label>
+
+                <input type="text"
+                       id="code"
+                       th:field="*{code}"
+                       placeholder="Enter 6 digit code"
+                       maxlength="6"
+                       autocomplete="off">
+
+            </div>
+
+
+            <button type="submit"
+                    class="verify-btn">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                Verify Code
+
+            </button>
+
+        </form>
+
+
+        <div class="back-link">
+
+            <a th:href="@{/forgot-password}">
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+                Back to Forgot Password
+
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

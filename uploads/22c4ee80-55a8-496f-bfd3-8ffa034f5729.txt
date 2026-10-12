@@ -1,0 +1,28 @@
+ 		((  JPA  ))
+
+ - transient
+
+ - managed   
+
+ - deteched
+
+ - remove 
+
+find and get reference -> id ပေးပီးရှာ (managed state)
+find မတွေ့ရင် -> null
+find -> entity ရပီးသား
+cat obj ရ
+get reference -> proxy object 
+
+peristance content -> entity manager (ပိတ်)
+
+Remove -> delete query (ထွက်)
+
+cat ထဲ  members အ‌နေနဲ့ရေး
+one to one 
+many to one 
+one to many -> collecton type (remove method ရှိ)
+            ->  
+many to many
+4 ခုလုံးသုံးလို့ရတာက ->   chat မေး
+

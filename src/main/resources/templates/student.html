@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Student View</title>
+</head>
+<body>
+
+<div th:fragment="student" class="space-y-6">
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Welcome Back, Alex! 👋</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400">You have 2 assignments due this week. Keep up the momentum!</p>
+        </div>
+        <button onclick="openModal('submit-work-modal')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-2">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            Submit Homework
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Enrolled Courses</span>
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                    <i class="fa-solid fa-book text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between">
+                <span class="text-2xl font-bold text-slate-900 dark:text-white">5 Courses</span>
+                <span class="text-xs font-semibold text-indigo-600">Active Term</span>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Completed Hours</span>
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <i class="fa-regular fa-clock text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between">
+                <span class="text-2xl font-bold text-slate-900 dark:text-white">48.5 hrs</span>
+                <span class="text-xs text-emerald-600 font-semibold">+6 hrs this week</span>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Overall GPA</span>
+                <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                    <i class="fa-solid fa-award text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between">
+                <span class="text-2xl font-bold text-slate-900 dark:text-white">3.85 / 4.0</span>
+                <span class="text-xs font-semibold text-purple-600">Top 5% Rank</span>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Upcoming Deadlines</span>
+                <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between">
+                <span class="text-2xl font-bold text-rose-600 dark:text-rose-400">2 Due Soon</span>
+                <span class="text-xs font-semibold text-rose-600 bg-rose-50 dark:bg-rose-950/50 px-2 py-0.5 rounded-full">Next in 8h</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-4">
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Continue Learning</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="student-courses-container">
+                <!-- Static Course Card 1 -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm space-y-3">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950 px-2 py-0.5 rounded">CS-301</span>
+                            <h4 class="font-bold text-sm text-slate-900 dark:text-white mt-1">Advanced Data Structures</h4>
+                        </div>
+                        <span class="text-xs font-bold text-slate-500">75%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-indigo-600 h-full rounded-full" style="width: 75%"></div>
+                    </div>
+                    <div class="flex justify-between items-center text-xs text-slate-500 pt-2 border-t border-slate-100 dark:border-slate-700">
+                        <span>Prof. Vance</span>
+                        <span class="font-semibold text-indigo-600">Resume &rarr;</span>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm space-y-3">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded">AI-402</span>
+                            <h4 class="font-bold text-sm text-slate-900 dark:text-white mt-1">Machine Learning Fundamentals</h4>
+                        </div>
+                        <span class="text-xs font-bold text-slate-500">40%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-emerald-500 h-full rounded-full" style="width: 40%"></div>
+                    </div>
+                    <div class="flex justify-between items-center text-xs text-slate-500 pt-2 border-t border-slate-100 dark:border-slate-700">
+                        <span>Dr. Aris</span>
+                        <span class="font-semibold text-indigo-600">Resume &rarr;</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <!-- Deadlines Box -->
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                <h3 class="font-bold text-base text-slate-900 dark:text-white mb-4">Upcoming Deadlines</h3>
+                <div class="space-y-3" id="student-deadlines-list">
+                    <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border-l-4 border-rose-500">
+                        <div>
+                            <h5 class="text-xs font-bold text-slate-900 dark:text-white">B-Trees Implementation Lab</h5>
+                            <p class="text-[11px] text-slate-500">CS-301 • Due Today at 11:59 PM</p>
+                        </div>
+                        <button onclick="openModal('submit-work-modal')" class="px-2.5 py-1 text-[11px] font-bold bg-indigo-600 text-white rounded-lg">Submit</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                <h3 class="font-bold text-base text-slate-900 dark:text-white mb-3">Recent Grades & Feedback</h3>
+                <div class="space-y-3">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs font-bold text-slate-900 dark:text-white">Algorithm Design - Quiz 2</span>
+                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded">98% (A+)</span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 italic">"Excellent optimization analysis on dynamic programming!"</p>
+                        <span class="text-[10px] text-slate-400 mt-1 block">Graded yesterday by Prof. Vance</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

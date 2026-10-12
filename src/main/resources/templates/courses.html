@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Course Catalog Management</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 30px; background-color: #f4f6f9; color: #333; }
+        h2 { color: #2c3e50; margin-bottom: 20px; }
+     /* Ultra-Modern Minimalist Filter Bar */
+.filter-container { 
+    background: #ffffff;
+    padding: 16px 24px; 
+    border-radius: 14px; 
+    border: 1px solid #eef2f6;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04);
+    margin-bottom: 35px;
+}
+
+/* Linear Layout System */
+.filter-form { 
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    width: 100%;
+}
+
+/* Form Groups as Frameless Interactive Elements */
+.form-group { 
+    display: flex; 
+    flex-direction: column; 
+    flex: 1 1 170px;
+    position: relative;
+}
+
+/* Dedicated scaling for Search Input text box */
+.form-group.search-main {
+    flex: 2 1 260px;
+}
+
+.form-group label { 
+    font-size: 11px; 
+    font-weight: 600; 
+    margin-bottom: 6px; 
+    color: #94a3b8; 
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Frameless Inputs Wrapper */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input-icon {
+    position: absolute;
+    left: 14px;
+    color: #94a3b8;
+    pointer-events: none;
+    width: 15px;
+    height: 15px;
+    transition: color 0.2s ease;
+}
+
+/* Sleek Inputs with Soft Backgrounds */
+.form-group input, .form-group select { 
+    width: 100%;
+    padding: 11px 14px 11px 38px; 
+    border: 1px solid #e2e8f0; 
+    border-radius: 10px; 
+    font-size: 13.5px; 
+    font-weight: 500;
+    background-color: #f8fafc; 
+    color: #1e293b;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+    appearance: none;
+}
+
+/* Refined custom arrow for select fields */
+.form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://w3.org' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 14px;
+    padding-right: 36px;
+}
+
+/* Seamless Focus States */
+.form-group input:focus, .form-group select:focus { 
+    outline: none; 
+    border-color: #0f172a; 
+    background-color: #ffffff;
+    box-shadow: 0 0 0 1px #0f172a;
+}
+
+/* Light up icon on parent element focus */
+.form-group:focus-within .input-icon {
+    color: #0f172a;
+}
+
+/* Inline Dynamic Action Control Block */
+.button-group { 
+    display: flex; 
+    align-items: center;
+    gap: 8px; 
+    flex: 0 0 auto;
+    margin-top: 17px; /* Matches label height displacement */
+}
+
+.btn-submit { 
+    background-color: #0f172a; 
+    color: #ffffff; 
+    border: none; 
+    padding: 11px 22px; 
+    border-radius: 10px; 
+    cursor: pointer; 
+    font-weight: 600; 
+    font-size: 13.5px; 
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.btn-submit:hover { 
+    background-color: #1e293b;
+    transform: translateY(-1px);
+}
+
+.btn-reset { 
+    background-color: #f1f5f9; /* Soft modern slate-gray background */
+    color: #475569; /* Balanced slate text */
+    text-decoration: none; 
+    text-align: center; 
+    padding: 11px 18px; 
+    border-radius: 10px; 
+    font-size: 13.5px; 
+    font-weight: 600; 
+    border: 1px solid #e2e8f0; /* Subtle matching border definition */
+    transition: all 0.15s ease; 
+}
+
+.btn-reset:hover { 
+    background-color: #e2e8f0; /* Clear, reactive hover darken step */
+    color: #0f172a; /* Deep contrast dark text shift */
+    border-color: #cbd5e0;
+}
+
+
+@media (max-width: 1024px) {
+    .button-group {
+        margin-top: 0;
+        width: 100%;
+        justify-content: flex-end;
+        border-top: 1px dashed #e2e8f0;
+        padding-top: 14px;
+    }
+}
+
+
+        
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block; }
+        .badge-yes { background-color: #c6f6d5; color: #22543d; }
+        .badge-no { background-color: #fed7d7; color: #742a2a; }
+        .no-data { text-align: center; color: #718096; padding: 30px; font-style: italic; }
+        
+        /* Responsive Grid Configuration */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            padding: 5px;
+        }
+
+        /* Individual Course Card Design */
+        .course-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+
+        /* Card Header Section */
+        .card-header {
+            background-color: #f7fafc;
+            padding: 15px 20px;
+            border-bottom: 1px solid #edf2f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .course-number {
+            font-size: 12px;
+            font-weight: 700;
+            color: #a0aec0;
+            text-transform: uppercase;
+        }
+
+        .course-meta-top {
+            font-size: 11px;
+            background-color: #e2e8f0;
+            color: #4a5568;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        /* Card Body Section */
+        .card-body {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .course-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2b6cb0;
+            margin: 0 0 8px 0;
+            line-height: 1.4;
+        }
+
+        .course-slug {
+            font-size: 12px;
+            color: #718096;
+            font-family: monospace;
+            margin-bottom: 12px;
+            word-break: break-all;
+        }
+
+        .course-desc {
+            font-size: 14px;
+            color: #4a5568;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        /* Attributes Row (Level, Language, Duration) */
+        .course-attributes {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px dashed #e2e8f0;
+            border-bottom: 1px dashed #e2e8f0;
+            padding: 12px 0;
+            margin-bottom: 20px;
+        }
+
+        .attr-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .attr-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #a0aec0;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .attr-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        /* Card Footer Section */
+        .card-footer {
+            padding: 0 20px 20px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .course-price {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .badges-container {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        /* Sleek Modern Pagination Container */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 40px 0 20px 0;
+    width: 100%;
+}
+
+/* Base Style for Interactive Pagination Controls */
+.pagination-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    height: 38px;
+    padding: 0 6px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+}
+
+/* Hover, Focus, Active Interaction System States */
+.pagination-link:hover:not(.disabled) {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    border-color: #cbd5e0;
+}
+
+/* Active Highlight Style for Current Page */
+.pagination-link.active {
+    background-color: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+    cursor: default;
+}
+
+/* Immutable Disabled UI Control Layout state */
+.pagination-link.disabled {
+    color: #cbd5e0;
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Clickable Card Interactive Mechanics */
+.course-card-link {
+    outline: none;
+}
+
+.course-card-link:focus-visible .course-card {
+    border-color: #0f172a;
+    box-shadow: 0 0 0 2px #0f172a;
+}
+
+/* Elevate the card smoothly when hovering over the anchor link */
+.course-card-link:hover .course-card {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
+    border-color: #cbd5e0;
+    cursor: pointer;
+}
+
+/* Modal Mask Background Layout overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Clicking target activates modal view layer visibility */
+.modal-overlay:target {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Modal Inner Wrapper Panel */
+.modal-content {
+    background: #ffffff;
+    width: 90%;
+    max-width: 680px;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.modal-overlay:target .modal-content {
+    transform: translateY(0);
+}
+
+/* Transparent close click target filling background behind modal box container */
+.modal-close-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: default;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+}
+
+.modal-close-btn {
+    text-decoration: none;
+    color: #94a3b8;
+    font-size: 28px;
+    line-height: 20px;
+    transition: color 0.15s;
+}
+
+.modal-close-btn:hover {
+    color: #0f172a;
+}
+
+/* Pure CSS HTML Radio Tab Selection Navigation Matrices */
+.modal-tabs {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.tab-radio {
+    display: none;
+}
+
+.tab-label {
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #64748b;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.tab-panel {
+    width: 100%;
+    padding-top: 20px;
+    display: none;
+    order: 99; /* Forces all panel contents below tab selectors row */
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: #334155;
+}
+
+/* Active tab CSS bindings */
+.tab-radio:checked + .tab-label {
+    color: #0f172a;
+    border-bottom-color: #0f172a;
+}
+
+.tab-radio:checked + .tab-label + .tab-panel {
+    display: block;
+}
+
+/* Extra tab panel sub-element styles */
+.nested-content-list {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.nested-content-list li {
+    margin-bottom: 10px;
+}
+
+.preview-video-placeholder {
+    background-color: #f8fafc;
+    border: 2px dashed #e2e8f0;
+    border-radius: 10px;
+    padding: 30px 20px;
+    text-align: center;
+    color: #64748b;
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.preview-video-placeholder:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e0;
+}
+
+/* Reviews Stream & Item Layout Card */
+.review-item-card {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+}
+
+.review-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.reviewer-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+}
+
+.review-stars {
+    color: #f59e0b;
+    font-size: 13px;
+}
+
+.review-text {
+    margin: 0;
+    font-size: 13.5px;
+    color: #475569;
+    line-height: 1.5;
+}
+
+/* Interactive Add Review Box Container */
+.add-review-box {
+    border-top: 1px dashed #e2e8f0;
+    padding-top: 18px;
+}
+
+.review-form-row {
+    display: flex;
+    gap: 10px;
+}
+
+/* Frameless Smooth Review Inputs styling */
+.review-input-field {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #f8fafc;
+    color: #1e293b;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.review-input-field:focus {
+    outline: none;
+    border-color: #0f172a;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 1px #0f172a;
+}
+
+.review-textarea {
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* Custom Dropdown Styling Adjustment */
+.review-input-field.select-rating {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://w3.org' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+    padding-right: 28px;
+}
+
+/* Micro Accent Review Action Button */
+.btn-submit-review {
+    background-color: #0f172a;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.btn-submit-review:hover {
+    background-color: #1e293b;
+}
+
+
+        
+    </style>
+</head>
+<body>
+
+   <h2>Course Catalog</h2>
+
+<div class="filter-container">
+    <form th:action="@{/courses/show}" method="get" class="filter-form">
+        
+        <!-- Search Keyword -->
+        <div class="form-group search-main">
+            <label for="title">Course Title</label>
+            <div class="input-wrapper">
+                <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input type="text" id="title" name="title" th:value="${param.title}" placeholder="Search key topics...">
+            </div>
+        </div>
+
+        <!-- Level Option -->
+        <div class="form-group">
+            <label for="level">Level</label>
+            <div class="input-wrapper">
+                <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
+                <select id="level" name="level">
+                    <option value="">All Levels</option>
+                    <option value="BEGINNER" th:selected="${#strings.equals(param.level, 'BEGINNER')}">Beginner</option>
+                    <option value="INTERMEDIATE" th:selected="${#strings.equals(param.level, 'INTERMEDIATE')}">Intermediate</option>
+                    <option value="ADVANCED" th:selected="${#strings.equals(param.level, 'ADVANCED')}">Advanced</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Max Price -->
+        <div class="form-group">
+            <label for="price">Max Price</label>
+            <div class="input-wrapper">
+                <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <input type="number" step="0.01" id="price" name="price" th:value="${param.price}" placeholder="Max budget">
+            </div>
+        </div>
+
+        <!-- Discount Option -->
+        <div class="form-group">
+            <label for="allow_discount">Discount</label>
+            <div class="input-wrapper">
+                <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 7h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <select id="allow_discount" name="allow_discount">
+                    <option value="">All Options</option> 
+                    <option value="1" th:selected="${#strings.equals(param.allow_discount, '1')}">Allowed</option>
+                    <option value="0" th:selected="${#strings.equals(param.allow_discount, '0')}">Not Allowed</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Installment Option -->
+        <div class="form-group">
+            <label for="allow_installment">Installment</label>
+            <div class="input-wrapper">
+                <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <select id="allow_installment" name="allow_installment">
+                    <option value="">All Options</option> 
+                    <option value="1" th:selected="${#strings.equals(param.allow_installment, '1')}">Allowed</option>
+                    <option value="0" th:selected="${#strings.equals(param.allow_installment, '0')}">Not Allowed</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 🎓 Scholarship Option (Added) -->
+        <div class="form-group">
+            <label for="allow_scholarship">Scholarship</label>
+            <div class="input-wrapper">
+                <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 12.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7"/></svg>
+                <select id="allow_scholarship" name="allow_scholarship">
+                    <option value="">All Options</option> 
+                    <option value="1" th:selected="${#strings.equals(param.allow_scholarship, '1')}">Allowed</option>
+                    <option value="0" th:selected="${#strings.equals(param.allow_scholarship, '0')}">Not Allowed</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- 🗓️ Batch Status Option (Added) -->
+<!-- 🗓️ Dynamic Batch Status Filter Dropdown -->
+<div class="form-group">
+    <label for="batchStatus">Batch Status</label>
+    <div class="input-wrapper">
+        <select id="batchStatus" name="batchStatus">
+            <option value="">All Statuses</option> 
+            <option value="UPCOMING" th:selected="${selectedBatchStatus == 'UPCOMING'}">Upcoming</option>
+            <option value="OPEN" th:selected="${selectedBatchStatus == 'OPEN'}">Open / Enrolling</option>
+            <option value="ONGOING" th:selected="${selectedBatchStatus == 'ONGOING'}">Ongoing</option>
+        </select>
+    </div>
+</div>
+
+        
+        
+        <!-- Inline Integrated Actions -->
+        <div class="button-group">
+            <a th:href="@{/courses/show}" class="btn-reset">Reset</a>
+            <button type="submit" class="btn-submit">Filter</button>
+        </div>
+        
+    </form>
+</div>
+
+
+
+
+    <!-- Grid Container Replacing the Table -->
+ <!-- Grid Container -->
+<div class="cards-grid" th:if="${!#lists.isEmpty(list)}">
+    
+    <!-- Iterative Card Component Loop -->
+    <div th:each="course, index : ${list}" style="display: block;">
+        
+        <!-- Clickable Card Body -->
+        <a th:href="'#detailModal-' + ${course.course_id}" class="course-card-link" style="text-decoration: none; color: inherit; display: block;">
+            <div class="course-card" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s;">
+                
+                <!-- Header -->
+                <div class="card-header" style="padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9;">
+                    <span class="course-number" th:text="${'#' + index.count}">#1</span>
+                    <span class="course-meta-top" th:text="${'ID: ' + course.course_id}">ID: 101</span>
+                </div>
+                
+                <!-- 🟢 DYNAMIC THUMBNAIL COVER DISPLAY (ADDED HERE) -->
+                <div class="course-thumbnail-wrapper" style="width: 100%; height: 160px; background-color: #f8fafc; overflow: hidden; border-bottom: 1px solid #e2e8f0;">
+                    <img th:src="${course.thumbnail != null ? course.thumbnail : '/images/default-course-cover.jpg'}" 
+                         alt="Course Cover Thumbnail" 
+                         style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                </div>
+                
+                <!-- Card Body Details -->
+                <div class="card-body" style="padding: 16px;">
+                    <h3 class="course-title" th:text="${course.title}" style="margin: 0 0 8px 0; font-size: 18px; color: #0f172a;">Course Title</h3> 
+                    <p class="course-desc" th:text="${course.short_description != null ? course.short_description : 'No description provided for this course.'}" style="font-size: 13px; color: #64748b; margin: 0 0 12px 0; line-height: 1.5;">Short Description</p>
+                    
+                    <div class="course-attributes" style="display: flex; gap: 12px; font-size: 12px; color: #475569;">
+                        <div class="attr-item"><span class="attr-label" style="color: #94a3b8; margin-right: 4px;">Level:</span><span class="attr-value" th:text="${course.level}">Beginner</span></div>
+                        <div class="attr-item"><span class="attr-label" style="color: #94a3b8; margin-right: 4px;">Lang:</span><span class="attr-value" th:text="${course.language}">English</span></div>
+                        <div class="attr-item"><span class="attr-label" style="color: #94a3b8; margin-right: 4px;">Duration:</span><span class="attr-value" th:text="${course.duration_weeks + ' Wks'}">12 Wks</span></div>
+                    </div>
+
+                    <!-- Direct Sub-Page Navigation Action Button -->
+                    <div style="margin-top: 15px;">
+                        <a th:href="@{/courses/detail/{slug}(slug=${course.slug})}" 
+                           class="btn-view-details" 
+                           style="display: inline-block; padding: 8px 16px; background-color: #0f172a; color: white; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; text-align: center;">
+                            View Course Details
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="card-footer" style="padding: 12px 16px; background-color: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                    <div class="course-price" th:text="${'$' + #numbers.formatDecimal(course.price, 1, 2)}" style="font-size: 16px; font-weight: 700; color: #0f172a;">$0.00</div>
+                    <div class="badges-container" style="display: flex; gap: 6px;">
+                        <span th:if="${course.allow_discount == 1}" class="badge badge-yes" style="font-size: 11px; padding: 2px 6px; background: #dcfce7; color: #16a34a; border-radius: 4px;">% Disc</span>
+                        <span th:if="${course.allow_discount != 1}" class="badge badge-no" style="font-size: 11px; padding: 2px 6px; background: #fee2e2; color: #dc2626; border-radius: 4px;">% Disc</span>
+                        <span th:if="${course.allow_installment == 1}" class="badge badge-yes" style="font-size: 11px; padding: 2px 6px; background: #dcfce7; color: #16a34a; border-radius: 4px;">⌛ Inst</span>
+                        <span th:if="${course.allow_scholarship == 1}" class="badge badge-yes" style="font-size: 11px; padding: 2px 6px; background: #dcfce7; color: #16a34a; border-radius: 4px;">🎓 Schol</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <!-- Modal boxes segment continues underneath... -->
+
+        <!-- ========================================== -->
+        <!-- PREMIUM DYNAMIC MODAL BOX OVERLAY          -->
+       <!-- ========================================== -->
+<!-- PREMIUM DYNAMIC MODAL BOX OVERLAY          -->
+<!-- ========================================== -->
+<div th:id="'detailModal-' + ${course.course_id}" class="modal-overlay">
+    <a th:href="@{/courses/show}" class="modal-close-backdrop"></a>
+    
+    <div class="modal-content">
+        <!-- Modal Close Header -->
+        <div class="modal-header">
+            <div>
+                <!-- 🟢 FIXED: Kept the title but completely removed the raw slug text display -->
+                <h2 th:text="${course.title}" style="margin:0; font-size: 22px;">Dynamic Course Details</h2>
+            </div>
+            <a th:href="@{/courses/show}" class="modal-close-btn">&times;</a>
+        </div>
+        
+        <!-- Modal Navigation Matrix (Pure HTML Radio-Driven Tabs) -->
+        <div class="modal-tabs">
+    <!-- Tab 1: Overview -->
+    <input type="radio" th:id="'tab-overview-' + ${course.course_id}" th:name="'modal-tabs-' + ${course.course_id}" checked class="tab-radio">
+    <label th:for="'tab-overview-' + ${course.course_id}" class="tab-label">Overview</label>
+    <div class="tab-panel">
+        <h4 style="margin-top:0;">Course Description</h4>
+        <p th:text="${course.short_description != null ? course.short_description : 'No description structural setup.'}">Detailed info goes here...</p>
+        <div style="font-size: 24px; font-weight: 700; margin-top:20px;" th:text="${'$' + #numbers.formatDecimal(course.price, 1, 2)}">$0.00</div>
+    </div>
+
+    <!-- Tab 2: Dynamic Outline -->
+    <input type="radio" th:id="'tab-outline-' + ${course.course_id}" th:name="'modal-tabs-' + ${course.course_id}" class="tab-radio">
+    <label th:for="'tab-outline-' + ${course.course_id}" class="tab-label">📋 Outline</label>
+    <div class="tab-panel">
+        <!-- 🟢 DYNAMICALLY RENDER LABELS BASED ON THE COURSE STATUS OR TITLE -->
+        <h4 style="margin-top:0;">Curriculum Specification</h4>
+        <p style="font-size: 13px; color: #64748b; margin-bottom: 12px;">
+            This program covers targeted industry execution paths optimized for <span th:text="${course.level}">Beginner</span> level.
+        </p>
+        <ul class="nested-content-list">
+            <li><strong>Phase 1:</strong> Intro to <span th:text="${course.title}">Course Title</span> Basics & Workspace Installation</li>
+            <li><strong>Phase 2:</strong> Core Implementation, Program Lifecycle Loops & State Control</li>
+            <li><strong>Phase 3:</strong> Testing Strategies, Optimizations, and Production System Architecture</li>
+        </ul>
+    </div>
+    
+ <!-- Tab 3: Reviews (Separate View Panel)      -->
+<!-- ========================================== -->
+<!-- 🟢 FIXED: Using pure Thymeleaf logic to auto-check the tab without JavaScript -->
+<input type="radio" 
+       th:id="'tab-reviews-' + ${course.course_id}" 
+       th:name="'modal-tabs-' + ${course.course_id}" 
+       class="tab-radio"
+       th:checked="${reviewSubmitted != null}"> 
+
+<label th:for="'tab-reviews-' + ${course.course_id}" class="tab-label">⭐ Reviews</label>
+
+<div class="tab-panel">
+    <h4 style="margin-top:0; color: #0f172a;">Student Feedback</h4>
+
+    <!-- Form Submission Block: Show if user is logged in -->
+    <div class="add-review-box" th:if="${session.currentUser != null}" style="background-color: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; border-top: none;">
+        <h5 style="margin: 0 0 12px 0; font-size: 14px; color: #0f172a;">Share your feedback</h5>
+        
+       <form th:action="@{/courses/{id}/review(id=${course.course_id})}" method="POST" class="review-submit-form">
+            
+            <!-- Explicit Spring Security CSRF Token Payload Injection -->
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            
+            <!-- Hidden logged-in user tracking element -->
+            <input type="hidden" name="userId" th:value="${session.currentUser?.user_id}">
+
+            <div class="review-form-row" style="display: flex; gap: 16px; margin-bottom: 12px; align-items: center;">
+                <div class="review-form-group" style="flex: 1;">
+                    <label style="font-size: 11px; color:#64748b; text-transform:uppercase; font-weight:700; display:block; margin-bottom:4px;">Reviewing as:</label>
+                    <div style="font-size: 14px; font-weight: 600; color: #0f172a;" th:text="${session.currentUser?.full_name}">Logged In User Name</div>
+                </div>
+                
+                <div class="review-form-group" style="width: 130px; flex: 0 0 auto;">
+                    <label style="font-size: 11px; color:#64748b; text-transform:uppercase; font-weight:700; display:block; margin-bottom:4px;">Rating:</label>
+                    <select name="rating" required class="review-input-field select-rating" style="width:100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                        <option value="5">⭐⭐⭐⭐⭐</option>
+                        <option value="4">⭐⭐⭐⭐</option>
+                        <option value="3">⭐⭐⭐</option>
+                        <option value="2">⭐⭐</option>
+                        <option value="1">⭐</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 🟢 FIXED: Wrapped inside an explicitly balanced division tag element block layout container -->
+            <div class="review-form-group" style="margin-bottom: 12px;">
+                <label style="font-size: 11px; color:#64748b; text-transform:uppercase; font-weight:700; display:block; margin-bottom:4px;">Your Comment:</label>
+                <textarea name="comment" rows="3" required placeholder="Write your review comments here..." class="review-input-field review-textarea" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; resize: vertical;"></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end;">
+                <button type="submit" class="btn-submit-review" style="background-color: #0f172a; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer;">Submit Review</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Fallback Alert Box if the user isn't logged in -->
+    <div class="add-review-box" th:if="${session.currentUser == null}" style="text-align: center; padding: 15px; background-color: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1; margin-bottom: 20px; border-top: none;">
+        <p style="font-size: 13px; color: #64748b; margin: 0;">Please <a th:href="@{/login}" style="color:#0f172a; font-weight:600; text-decoration: none;">log in</a> to submit a course review.</p>
+    </div>
+
+<!-- Live Historical Reviews Feed List Display -->
+<div style="margin-top: 16px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+    
+    <!-- 🟢 FIXED: Safe lookup matching the String.valueOf() keys from the controller -->
+    <div th:if="${reviewsMap == null or reviewsMap[#strings.toString(course.course_id)] == null or #lists.isEmpty(reviewsMap[#strings.toString(course.course_id)])}" 
+         style="padding: 20px; text-align: center; color: #64748b; font-size: 13px; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;">
+        No student reviews submitted yet for this course.
+    </div>
+
+    <!-- 🟢 FIXED: Loops natively over the exact course index sublist key -->
+    <ul th:unless="${reviewsMap == null or reviewsMap[#strings.toString(course.course_id)] == null or #lists.isEmpty(reviewsMap[#strings.toString(course.course_id)])}" 
+        style="list-style-type: none; padding: 0; margin: 0;">
+        <li th:each="rev : ${reviewsMap[#strings.toString(course.course_id)]}" class="review-item-card" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <!-- 🟢 FIXED: Targets lowercase keys map entries coming from the database join execution -->
+                <strong th:text="${rev.full_name}" style="font-size: 13px; color: #0f172a;">Student Name</strong>
+                <span th:text="${rev.rating == 5 ? '⭐⭐⭐⭐⭐' : (rev.rating == 4 ? '⭐⭐⭐⭐' : (rev.rating == 3 ? '⭐⭐⭐' : (rev.rating == 2 ? '⭐⭐' : '⭐')))}" style="font-size: 12px;">⭐⭐⭐⭐⭐</span>
+            </div>
+            <p th:text="${rev.comment}" style="margin: 0; font-size: 13px; color: #475569; line-height: 1.4;">Review comments content text...</p>
+        </li>
+    </ul>
+</div>
+
+
+
+    
+</div>
+
+
+
+
+   <!-- Tab 4: Live Dynamic Database Batches -->
+<input type="radio" th:id="'tab-batches-' + ${course.course_id}" th:name="'modal-tabs-' + ${course.course_id}" class="tab-radio">
+<label th:for="'tab-batches-' + ${course.course_id}" class="tab-label">🗓️ Batches</label>
+<div class="tab-panel">
+    <h4 style="margin-top:0; color: #0f172a;">Active Enrollment Schedules</h4>
+    
+    <!-- State A: No batch schedules available in the database for this course -->
+    <div th:if="${#lists.isEmpty(course.batches)}" style="padding: 15px; text-align: center; color: #64748b; font-size: 13px;">
+        No active enrollment slots or batches found for this track.
+    </div>
+
+    <!-- State B: Loop and list real database batch records -->
+    <ul th:unless="${#lists.isEmpty(course.batches)}" class="nested-content-list" style="padding-left: 20px; margin: 0; line-height: 1.6;">
+        <li th:each="batch : ${course.batches}" style="margin-bottom: 12px; font-size: 13px; color: #334155; list-style-type: none; border-bottom: 1px dashed #e2e8f0; padding-bottom: 10px;">
+            
+            <!-- Status Badge Custom Styling Logic -->
+            <span th:text="${batch.status}" 
+                  th:style="'display: inline-block; padding: 2px 6px; font-size: 10px; font-weight: 700; border-radius: 4px; margin-right: 6px; ' + 
+                            (${batch.status == 'OPEN' || batch.status == 'UPCOMING'} ? 'background-color: #dcfce7; color: #16a34a;' : 'background-color: #f1f5f9; color: #64748b;')">
+                UPCOMING
+            </span>
+
+            <!-- Batch Code Reference Tracking Label -->
+          
+			<strong th:text="${batch.title + ' (' + batch.batch_code + ')'}" style="color: #0f172a;">Batch Title (CODE-101)</strong>
+
+            
+            <!-- Schedule Note Text (e.g. Mon/Wed/Fri 7-9 PM) -->
+            <div style="color: #475569; margin-top: 4px; font-size: 12.5px;">
+                ⏰ <span th:text="${batch.schedule_note != null ? batch.schedule_note : 'Schedule timings to be announced'}">Mon/Wed/Fri 7-9 PM</span>
+            </div>
+
+            <!-- Date Range Timeline Tracking Label -->
+           <!-- Ensure these lines use underscores instead of camelCase -->
+			<div style="color: #94a3b8; font-size: 11.5px; margin-top: 2px;">
+			    Timeline: <span th:text="${batch.start_date}">2026-01-01</span> to <span th:text="${batch.end_date}">2026-04-01</span>
+			</div>
+
+            
+        </li>
+    </ul>
+</div>
+
+
+                <!-- 2. Write a Review Form Submission Block Linked to Session User -->
+<!--<di v class="add-review-box" th:if="${session.currentUser != null}">
+    <h4 style="margin: 0 0 12px 0; font-size: 14px; color: #0f172a;">Share your feedback</h4>
+    
+    <form th:action="@{/courses/{id}/review(id=${course.course_id})}" method="POST" class="review-submit-form">
+        
+        Pass the logged-in User's ID implicitly
+        <input type="hidden" name="userId" th:value="${session.currentUser.user_id}">
+
+        <div class="review-form-row" style="align-items: center;">
+            Read-Only Username Visual Anchor Display
+            <div class="review-form-group" style="flex: 1;">
+                <label style="font-size: 11px; color:#64748b; margin-bottom: 4px; text-transform:none;">Reviewing as:</label>
+                <div style="font-size: 14px; font-weight: 600; color: #0f172a; padding: 6px 0;" 
+                     th:text="${session.currentUser.full_name}">Logged In User Name</div>
+            </div>
+            
+            Rating Selector Dropdown
+            <div class="review-form-group" style="width: 110px; flex: 0 0 auto;">
+                <label style="font-size: 11px; color:#64748b; margin-bottom: 4px; text-transform:none;">Rating:</label>
+                <select name="rating" required class="review-input-field select-rating">
+                    <option value="5">⭐⭐⭐⭐⭐</option>
+                    <option value="4">⭐⭐⭐⭐</option>
+                    <option value="3">⭐⭐⭐</option>
+                    <option value="2">⭐⭐</option>
+                    <option value="1">⭐</option>
+                </select>
+            </div>
+        </div>
+
+        Comment Textarea Input Area
+        <div class="review-form-group" style="margin-top: 10px;">
+            <textarea name="comment" rows="3" required placeholder="Write your review comments here..." class="review-input-field review-textarea"></textarea>
+        </div>
+
+        Action Button Submission Row
+        <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+            <button type="submit" class="btn-submit-review">Submit Review</button>
+        </div>
+    </form>
+</div> -->
+
+
+
+    </div>
+
+</div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+<!-- Dynamic Empty Condition Alert Block -->
+<div th:if="${#lists.isEmpty(list)}" class="filter-container" style="text-align: center; padding: 40px 20px;">
+    <p class="no-data" style="margin: 0; font-size: 16px;">No courses found matching the filtering criteria.</p>
+</div>
+
+<!-- Dynamic Pagination Navigation Bar -->
+<div class="pagination-container" th:if="${totalPages > 0}">
+    
+    <!-- Previous Page Action Link Button -->
+    <a th:href="@{/courses/show(page=${currentPage - 1}, title=${param.title}, level=${param.level}, price=${param.price}, allow_discount=${param.allow_discount}, allow_installment=${param.allow_installment})}"
+       class="pagination-link"
+       th:classappend="${currentPage == 0} ? 'disabled' : ''">
+        <svg style="width:16px; height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+    </a>
+
+    <!-- Interactive Sequenced Numeric Page Elements Array Iterator Loop -->
+    <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+        <a th:href="@{/courses/show(page=${i}, title=${param.title}, level=${param.level}, price=${param.price}, allow_discount=${param.allow_discount}, allow_installment=${param.allow_installment})}"
+           th:text="${i + 1}"
+           class="pagination-link"
+           th:classappend="${currentPage == i} ? 'active' : ''">
+            1
+        </a>
+    </th:block>
+
+    <!-- Next Page Action Link Button -->
+    <a th:href="@{/courses/show(page=${currentPage + 1}, title=${param.title}, level=${param.level}, price=${param.price}, allow_discount=${param.allow_discount}, allow_installment=${param.allow_installment})}"
+       class="pagination-link"
+       th:classappend="${currentPage == totalPages - 1} ? 'disabled' : ''">
+        <svg style="width:16px; height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+    </a>
+    
+</div>
+
+
+</body>
+</html>
