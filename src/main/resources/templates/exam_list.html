@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Examinations</title>
+    <link rel="stylesheet" th:href="@{/css/style.css(v=1.0)}" href="/css/style.css">
+    <style>
+        .exam-row-card { display: flex; align-items: center; justify-content: space-between; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px !important; margin-bottom: 12px !important; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .badge-quiz { background: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; }
+    </style>
+</head>
+<body class="student-result-page">
+<div class="result-container" style="max-width: 800px; margin: 0 auto; padding: 20px 16px;">
+
+    <div class="result-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h1 style="margin: 0; font-size: 22px; font-weight: 700; color: #0f172a;">My Active Exams</h1>
+            <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">View your pending course quizes, midterm constraints, and finals updates.</p>
+        </div>
+        <a th:href="@{/student}" class="back-btn" style="background: #ffffff; color: #475569; font-size: 13px; font-weight: 600; text-decoration: none; padding: 6px 14px; border-radius: 6px; border: 1px solid #e2e8f0;">Back to Dashboard</a>
+    </div>
+
+    <!-- Empty State -->
+    <div th:if="${#lists.isEmpty(exams)}" class="result-card" style="background: #ffffff; padding: 32px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0;">
+        <div style="font-size: 32px; margin-bottom: 12px;">📝</div>
+        <h3 style="margin: 0; font-size: 16px; color: #0f172a; font-weight: 700;">No Pending Examinations</h3>
+    </div>
+
+    <!-- Dynamic Exam Checklist Grid -->
+    <div th:unless="${#lists.isEmpty(exams)}" style="display: block;">
+        <div th:each="exam : ${exams}" class="exam-row-card">
+            <div style="text-align: left;">
+                <span class="badge-quiz" th:text="${exam.exam_type}">QUIZ</span>
+                <h3 style="margin: 8px 0 4px 0; font-size: 16px; font-weight: 700; color: #0f172a;" th:text="${exam.title}">Java Quiz</h3>
+                <span style="font-size: 12.5px; color: #64748b;" th:text="${exam.duration_min} + ' mins • ' + ${exam.total_mark} + ' Max Marks'"></span>
+            </div>
+            <div>
+               <a th:href="@{/student/exam-take/{id}(id=${exam.exam_id})}" style="background: #0f172a; color: #ffffff; text-decoration: none; font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: 8px; display: inline-block;">Start →</a>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

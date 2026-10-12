@@ -64,7 +64,7 @@ public class QuestionController {
 
     @PostMapping("/{id}/options")
     public int saveOption(
-            @PathVariable("id") Long questionId,
+            @PathVariable("id") int questionId,
             @RequestBody QuestionOptionBean option) {
         option.setQuestionId(questionId);
         return questionService.saveOption(option);

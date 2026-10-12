@@ -7,8 +7,8 @@ import lombok.Setter;
 @Setter
 public class QuestionOptionBean {
 
-	private Long optionId;
-	private Long questionId;
+	private Integer optionId;
+	private Integer questionId;
 	private String optionLabel;
 	private String optionText;
 	private Boolean isCorrect;
