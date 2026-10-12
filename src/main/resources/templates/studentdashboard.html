@@ -45,9 +45,17 @@
                                     <i class="fa-regular fa-file-lines text-base"></i> Assignments
                                 </div>
                             </a>
-                            <a th:href="@{/student/exams}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                <i class="fa-solid fa-square-check text-base"></i> Exams
-                            </a>
+                           
+							<a th:href="@{/student/exam-list}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+						    <i class="fa-solid fa-square-check text-base"></i>
+						    <span>My Exams</span>
+						</a>
+							
+					<a th:href="@{/student/exam-results}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+					    <i class="fa-solid fa-chart-simple text-base"></i>
+					    <span>My Results</span>
+					</a>
+
                         </div>
                     </div>
 
