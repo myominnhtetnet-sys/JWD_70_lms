@@ -13,22 +13,27 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // 1. Disable CSRF to allow your custom HTML form POST requests to submit safely
             .csrf(csrf -> csrf.disable())
             
-            // 2. 🟢 THE FIX: Permit everyone to access your CSS, JS, and Images static folders!
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**").permitAll() // Allow assets
-                .anyRequest().permitAll() // Permit your custom routes to pass through as well
+                // Whitelists local project static directory assets and hard-drive upload streams publicly
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**", "/webfonts/**", "/uploads/**", "/favicon.ico").permitAll()
+                .anyRequest().permitAll()
             )
             
-            // 3. Explicitly turn off Spring Security's auto-generated overlay forms
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
             
-            // 4. Keep your frame options set to sameOrigin so your YouTube frames connect cleanly
             .headers(headers -> headers
                 .frameOptions(frameOptions -> frameOptions.sameOrigin())
+                // 🟢 FIXED: Added wildcards (https://*.domain) to properly whitelist Content Delivery Networks (CDNs)
+                .contentSecurityPolicy(csp -> csp.policyDirectives(
+                    "default-src 'self'; " +
+                    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.tailwindcss.com https://*.jsdelivr.net; " +
+                    "style-src 'self' 'unsafe-inline' https://*.cloudflare.com https://*.googleapis.com; " +
+                    "font-src 'self' data: https://*.cloudflare.com https://*.gstatic.com; " +
+                    "img-src 'self' data: https://*;"
+                ))
             );
             
         return http.build();

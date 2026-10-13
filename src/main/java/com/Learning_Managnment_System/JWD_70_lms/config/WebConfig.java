@@ -11,29 +11,29 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 1. Resolve the absolute path location of your physical hard drive folder
+        // Resolve the absolute path location of your physical upload folder
         Path uploadDir = Paths.get("uploads");
         String uploadPath = uploadDir.toFile().getAbsolutePath();
         
-        // 2. 🟢 FIXED: Map any public URL pattern starting with /uploads/** 
-        // straight to your physical local directory file resource context locations!
+        // Maps public uploads safely to local hard disk directory
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:/" + uploadPath + "/");
         
-        registry.addResourceHandler("**/css/**")
-        .addResourceLocations("classpath:/static/css/");
+        // 🟢 THE FIX: Explicitly handle root paths AND nested paths separately.
+        // This removes the multiple '**' elements and makes it 100% compliant with Spring Boot.
+        registry.addResourceHandler("/css/**", "/student/css/**", "/student/exam-take/css/**", "/student/awards/css/**")
+                .addResourceLocations("classpath:/static/css/");
         
-		registry.addResourceHandler("**/js/**")
-		        .addResourceLocations("classpath:/static/js/");
+        registry.addResourceHandler("/js/**", "/student/js/**", "/student/exam-take/js/**", "/student/awards/js/**")
+                .addResourceLocations("classpath:/static/js/");
 		        
-		registry.addResourceHandler("**/images/**")
-		        .addResourceLocations("classpath:/static/images/");
+        registry.addResourceHandler("/images/**", "/student/images/**", "/student/exam-take/images/**", "/student/awards/images/**")
+                .addResourceLocations("classpath:/static/images/");
 		        
-		registry.addResourceHandler("**/assets/**")
-		        .addResourceLocations("classpath:/static/assets/");
+        registry.addResourceHandler("/assets/**", "/student/assets/**", "/student/exam-take/assets/**", "/student/awards/assets/**")
+                .addResourceLocations("classpath:/static/assets/");
 		        
-		registry.addResourceHandler("**/webfonts/**")
-		        .addResourceLocations("classpath:/static/webfonts/");
-		        
+        registry.addResourceHandler("/webfonts/**", "/student/webfonts/**", "/student/exam-take/webfonts/**", "/student/awards/webfonts/**")
+                .addResourceLocations("classpath:/static/webfonts/");
     }
 }
