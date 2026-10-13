@@ -26,11 +26,11 @@ public class SecurityConfig {
             
             .headers(headers -> headers
                 .frameOptions(frameOptions -> frameOptions.sameOrigin())
-                // 🟢 FIXED: Added wildcards (https://*.domain) to properly whitelist Content Delivery Networks (CDNs)
+                // 🟢 FIXED: Added jsdelivr.net to support Bootstrap styles and scripts alongside Tailwind and FontAwesome!
                 .contentSecurityPolicy(csp -> csp.policyDirectives(
                     "default-src 'self'; " +
                     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.tailwindcss.com https://*.jsdelivr.net; " +
-                    "style-src 'self' 'unsafe-inline' https://*.cloudflare.com https://*.googleapis.com; " +
+                    "style-src 'self' 'unsafe-inline' https://*.cloudflare.com https://*.googleapis.com https://*.jsdelivr.net; " +
                     "font-src 'self' data: https://*.cloudflare.com https://*.gstatic.com; " +
                     "img-src 'self' data: https://*;"
                 ))

@@ -11,16 +11,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Resolve the absolute path location of your physical upload folder
         Path uploadDir = Paths.get("uploads");
         String uploadPath = uploadDir.toFile().getAbsolutePath();
         
-        // Maps public uploads safely to local hard disk directory
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:/" + uploadPath + "/");
         
-        // 🟢 THE FIX: Explicitly handle root paths AND nested paths separately.
-        // This removes the multiple '**' elements and makes it 100% compliant with Spring Boot.
+        // 🟢 FIXED: Explicitly handle root paths AND nested paths separately.
         registry.addResourceHandler("/css/**", "/student/css/**", "/student/exam-take/css/**", "/student/awards/css/**")
                 .addResourceLocations("classpath:/static/css/");
         
