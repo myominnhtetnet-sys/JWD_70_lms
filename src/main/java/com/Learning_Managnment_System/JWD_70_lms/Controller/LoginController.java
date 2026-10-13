@@ -216,56 +216,45 @@ public class LoginController {
         // Use SAME session key: role_id
         // =====================================================
 
-        session.setAttribute(
-                "role_id",
-                user.getRole_id()
-        );
+//        session.setAttribute(
+//                "role_id",
+//                user.getRole_id()
+//        );
+//
+//        session.setAttribute(
+//                "fullName",
+//                user.getFull_name()
+//        );
+//
+//        session.setAttribute(
+//                "email",
+//                user.getEmail()
+//        );
+//
+//        session.setAttribute(
+//                "password_hash",
+//                user.getPassword_hash()
+//        );
+        
+        
+        session.setAttribute("role_id", user.getRole_id());
+        session.setAttribute("fullName", user.getFull_name());
+        session.setAttribute("email", user.getEmail());
 
-        session.setAttribute(
-                "fullName",
-                user.getFull_name()
-        );
-
-        session.setAttribute(
-                "email",
-                user.getEmail()
-        );
-
-        session.setAttribute(
-                "password_hash",
-                user.getPassword_hash()
-        );
-
-
-        // =====================================================
-        // ROLE ROUTING
-        // =====================================================
-
+        // Role routing
         if (user.getRole_id() == 1) {
-
-            // ADMIN
-            return "redirect:/admin";
-
+            return "redirect:/admin/dashboard";
         } else if (user.getRole_id() == 2) {
-
-            // TEACHER
             return "redirect:/teacher";
-
         } else if (user.getRole_id() == 3) {
-
-            // STUDENT
             return "redirect:/student";
         }
 
-
-        // Unknown role
+        session.invalidate();
         redirectAttributes.addFlashAttribute(
                 "error",
                 "Invalid user role."
         );
-
-        session.invalidate();
-
         return "redirect:/login";
     }
 

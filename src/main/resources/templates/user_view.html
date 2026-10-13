@@ -3,231 +3,136 @@
       xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>View User - LMS</title>
+    <title>User Details | LMS</title>
 
     <style>
-
         * {
             box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4e9ff;
+            padding: 35px 15px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f6fa;
+            color: #24243a;
         }
 
-        .page {
-            min-height: 100vh;
-            padding: 40px;
-        }
-
-        .container {
-            max-width: 750px;
+        .card {
+            max-width: 650px;
             margin: auto;
-            background: white;
             padding: 30px;
-            border-radius: 14px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e9eaf2;
+            border-radius: 15px;
+            background: white;
         }
 
         h1 {
-            color: #4b176b;
-            margin-bottom: 25px;
+            margin-top: 0;
         }
 
         .row {
-            display: grid;
-            grid-template-columns: 180px 1fr;
-            padding: 14px 0;
-            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+            border-bottom: 1px solid #eeeef5;
         }
 
         .label {
-            font-weight: bold;
-            color: #555;
+            display: block;
+            margin-bottom: 7px;
+            color: #85859b;
+            font-size: 12px;
         }
 
         .value {
-            color: #222;
+            font-size: 14px;
+            overflow-wrap: anywhere;
         }
 
-        .status {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        .active {
-            background: #d9f7e8;
-            color: #087443;
-        }
-
-        .inactive {
-            background: #eee;
-            color: #666;
-        }
-
-        .suspended {
-            background: #ffe2e2;
-            color: #b30000;
-        }
-
-        .back-btn {
+        .back {
             display: inline-block;
             margin-top: 25px;
-            padding: 12px 20px;
-            background: #8e44ad;
+            padding: 12px 18px;
+            border-radius: 8px;
+            background: #7565f5;
             color: white;
             text-decoration: none;
-            border-radius: 7px;
         }
-
-        @media (max-width: 600px) {
-
-            .row {
-                grid-template-columns: 1fr;
-                gap: 5px;
-            }
-
-        }
-
     </style>
-
 </head>
 
 <body>
 
-<div class="page">
+<div class="card">
 
-    <div class="container">
+    <h1>User Details</h1>
 
-        <h1>User Details</h1>
-
-
-        <div class="row">
-
-            <div class="label">
-                User ID
-            </div>
-
-            <div class="value"
-                 th:text="${user.user_id}">
-            </div>
-
-        </div>
-
-
-        <div class="row">
-
-            <div class="label">
-                Full Name
-            </div>
-
-            <div class="value"
-                 th:text="${user.full_name}">
-            </div>
-
-        </div>
-
-
-        <div class="row">
-
-            <div class="label">
-                Email
-            </div>
-
-            <div class="value"
-                 th:text="${user.email}">
-            </div>
-
-        </div>
-
-
-        <div class="row">
-
-            <div class="label">
-                Phone
-            </div>
-
-            <div class="value"
-                 th:text="${user.phone != null ? user.phone : '-'}">
-            </div>
-
-        </div>
-
-
-        <div class="row">
-
-            <div class="label">
-                Role
-            </div>
-
-            <div class="value"
-                 th:text="${user.role_name}">
-            </div>
-
-        </div>
-
-
-        <div class="row">
-
-            <div class="label">
-                Status
-            </div>
-
-            <div>
-
-                <span class="status"
-                      th:classappend="${#strings.toLowerCase(user.status)}"
-                      th:text="${user.status}">
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <div class="row">
-
-            <div class="label">
-                Created At
-            </div>
-
-            <div class="value"
-                 th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm') : '-'}">
-            </div>
-
-        </div>
-
-
-        <div class="row">
-
-            <div class="label">
-                Updated At
-            </div>
-
-            <div class="value"
-                 th:text="${user.updatedAt != null ? #temporals.format(user.updatedAt, 'yyyy-MM-dd HH:mm') : '-'}">
-            </div>
-
-        </div>
-
-
-        <a th:href="@{/admin}"
-           class="back-btn">
-            Back to Dashboard
-        </a>
-
+    <div class="row">
+        <span class="label">User ID</span>
+        <span class="value" th:text="${user.user_id}">1</span>
     </div>
+
+    <div class="row">
+        <span class="label">Full Name</span>
+        <span class="value" th:text="${user.full_name}">User</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Email</span>
+        <span class="value" th:text="${user.email}">user@example.com</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Phone</span>
+        <span class="value"
+              th:text="${user.phone != null ? user.phone : '-'}">-</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Role</span>
+        <span class="value" th:text="${user.role_name}">Student</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Status</span>
+        <span class="value" th:text="${user.status}">ACTIVE</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Date of Birth</span>
+        <span class="value"
+              th:text="${user.dob != null ? user.dob : '-'}">-</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Gender</span>
+        <span class="value"
+              th:text="${user.gender != null ? user.gender : '-'}">-</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Address</span>
+        <span class="value"
+              th:text="${user.address != null ? user.address : '-'}">-</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Created At</span>
+
+        <span class="value"
+              th:if="${user.created_at != null}"
+              th:text="${#temporals.format(user.created_at, 'yyyy-MM-dd HH:mm')}">
+        </span>
+
+        <span class="value"
+              th:if="${user.created_at == null}">-</span>
+    </div>
+
+    <a th:href="@{/admin/users}" class="back">
+        Back to User Management
+    </a>
 
 </div>
 

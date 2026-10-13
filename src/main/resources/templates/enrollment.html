@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Enrollment - LMS</title>
+
+    <!-- Reuse CSS from dashboard.html -->
+    <th:block th:replace="~{dashboard :: adminStyles}"></th:block>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Enrollment page CSS -->
+    <style>
+        .enrollment-card {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+            overflow-x: auto;
+        }
+
+        .enrollment-card h1 {
+            color: #4b176b;
+            margin-bottom: 8px;
+        }
+
+        .enrollment-card .description {
+            color: #777;
+            margin-bottom: 22px;
+        }
+
+        .enrollment-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        .enrollment-table th,
+        .enrollment-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .enrollment-table th {
+            background: #f8f0fc;
+            color: #4b176b;
+        }
+
+        .enrollment-table tbody tr:hover {
+            background: #faf7fc;
+        }
+
+        .empty-message {
+            text-align: center !important;
+            color: #777;
+            padding: 25px !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Topbar from dashboard.html -->
+    <div th:replace="~{dashboard :: topbar}"></div>
+
+    <!-- Keep Sidebar and Content in the same layout -->
+    <div class="layout">
+
+        <!-- Sidebar from dashboard.html -->
+        <div th:replace="~{dashboard :: sidebar}"></div>
+
+        <!-- Enrollment content -->
+        <main class="content">
+
+            <div class="enrollment-card">
+
+                <h1>
+                    <i class="fa-solid fa-user-check"></i>
+                    Enrollment Management
+                </h1>
+
+                <p class="description">
+                    View student enrollments and payment information.
+                </p>
+
+                <table class="enrollment-table">
+
+                    <thead>
+                        <tr>
+                            <th>Enrollment ID</th>
+                            <th>Student Name</th>
+                            <th>Email</th>
+                            <th>Course</th>
+                            <th>Batch Code</th>
+                            <th>Batch Title</th>
+                            <th>Enrolled At</th>
+                            <th>Final Amount</th>
+                            <th>Payment Type</th>
+                            <th>Payment Status</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr th:each="enrollment : ${enrollments}">
+
+                            <td th:text="${enrollment.enrollmentId}"></td>
+
+                            <td th:text="${enrollment.studentName}"></td>
+
+                            <td th:text="${enrollment.email}"></td>
+
+                            <td th:text="${enrollment.courseTitle}"></td>
+
+                            <td th:text="${enrollment.batchCode}"></td>
+
+                            <td th:text="${enrollment.batchTitle}"></td>
+
+                            <td th:text="${enrollment.enrolledAt}"></td>
+
+                            <td th:text="${enrollment.finalAmount}"></td>
+
+                            <td th:text="${enrollment.paymentType}"></td>
+
+                            <td th:text="${enrollment.paymentStatus}"></td>
+
+                            <td th:text="${enrollment.status}"></td>
+
+                        </tr>
+                        
+                        
+                        <tr th:if="${enrollments == null or #lists.isEmpty(enrollments)}">
+                            <td colspan="11" class="empty-message">
+                                No enrollment records found.
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

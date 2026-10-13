@@ -1,2089 +1,832 @@
-<!-- <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-full bg-slate-50">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduPulse LMS - Enterprise Learning Platform</title>
-    Tailwind CSS CDN
-    <script src="https://cdn.tailwindcss.com"></script>
-    FontAwesome Icons
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    Chart.js
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    Google Fonts: Inter
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#eef2ff',
-                            100: '#e0e7ff',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
-                            800: '#3730a3',
-                            900: '#312e81',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.05);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(0,0,0,0.2);
-            border-radius: 3px;
-        }
-        .fade-in {
-            animation: fadeIn 0.25s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        
-        
-        
-        
-        .user-management {
-    background: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    margin-top: 25px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.06);
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.section-header h2 {
-    color: #4b176b;
-    margin: 0;
-}
-
-.section-header p {
-    color: #777;
-}
-
-.add-user-btn {
-    background: #8e44ad;
-    color: white;
-    padding: 10px 18px;
-    border-radius: 7px;
-    text-decoration: none;
-}
-
-.search-form {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.search-form input {
-    flex: 1;
-    padding: 11px;
-    border: 1px solid #ccc;
-    border-radius: 7px;
-}
-
-.search-form button {
-    background: #8e44ad;
-    color: white;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 7px;
-    cursor: pointer;
-}
-
-.search-form a {
-    padding: 10px 18px;
-    background: #eee;
-    border-radius: 7px;
-    text-decoration: none;
-    color: #333;
-}
-
-.table-container {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-table th,
-table td {
-    padding: 13px;
-    border-bottom: 1px solid #eee;
-    text-align: left;
-}
-
-table th {
-    background: #f8f0fc;
-    color: #4b176b;
-}
-
-.status {
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.status.active {
-    background: #dff5e5;
-    color: #198754;
-}
-
-.status.inactive {
-    background: #eee;
-    color: #666;
-}
-
-.status.suspended {
-    background: #ffe0e0;
-    color: #c0392b;
-}
-
-.actions {
-    white-space: nowrap;
-}
-
-.actions a,
-.actions button {
-    border: none;
-    margin-right: 5px;
-    padding: 7px 9px;
-    border-radius: 5px;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.view-btn {
-    background: #eee;
-    color: #333;
-}
-
-.edit-btn {
-    background: #f4e9ff;
-    color: #8e44ad;
-}
-
-.suspend-btn {
-    background: #fff0d5;
-    color: #d68910;
-}
-
-.activate-btn {
-    background: #dff5e5;
-    color: #198754;
-}
-
-.delete-btn {
-    background: #ffe0e0;
-    color: #c0392b;
-}
-
-.alert {
-    padding: 12px;
-    border-radius: 7px;
-    margin-bottom: 15px;
-}
-
-.alert.success {
-    background: #dff5e5;
-    color: #198754;
-}
-
-.alert.error {
-    background: #ffe0e0;
-    color: #c0392b;
-}
-        
-        
-        
-        
-        
-        
-        
-    </style>
-</head>
-<body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
-
-    <div id="app" class="min-h-screen flex flex-col">
-        
-        TOP HEADER BAR
-        <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 shadow-sm transition-colors duration-200">
-            <div class="px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
-                
-                Left: Branding & Search
-                <div class="flex items-center gap-6 flex-1 max-w-xl">
-                    <div class="flex items-center gap-3 cursor-pointer" onclick="switchRole('admin')">
-                        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-200 dark:shadow-none">
-                            <i class="fa-solid font-bold text-lg">E</i>
-                        </div>
-                        <div>
-                            <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-indigo-600 to-indigo-800 dark:from-indigo-400 dark:to-indigo-200 bg-clip-text text-transparent">EduPulse</span>
-                            <span class="text-xs px-2 py-0.5 ml-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold border border-indigo-200 dark:border-indigo-800/50">LMS</span>
-                        </div>
-                    </div>
-
-                    Global Search
-                    <div class="relative flex-1 hidden md:block">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                        <input id="globalSearch" type="text" placeholder="Search courses, users, materials..." 
-                            class="w-full pl-10 pr-4 py-2 text-sm bg-slate-100 dark:bg-slate-700/60 border border-transparent dark:border-slate-600 rounded-lg focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-indigo-500 transition-all text-slate-800 dark:text-slate-100 placeholder-slate-400">
-                    </div>
-                </div>
-
-                Center: Prominent Role Switcher
-                <div class="bg-slate-100 dark:bg-slate-700/80 p-1 rounded-xl border border-slate-200 dark:border-slate-600 flex items-center gap-1 shadow-inner">
-                    <button onclick="switchRole('admin')" id="role-btn-admin" class="role-btn text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all">
-                        <i class="fa-solid fa-user-shield"></i>
-                        <span class="hidden sm:inline">Admin</span>
-                    </button>
-                    <button onclick="switchRole('teacher')" id="role-btn-teacher" class="role-btn text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all">
-                        <i class="fa-solid fa-chalkboard-user"></i>
-                        <span class="hidden sm:inline">Teacher</span>
-                    </button>
-                    <button onclick="switchRole('student')" id="role-btn-student" class="role-btn text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all">
-                        <i class="fa-solid fa-user-graduate"></i>
-                        <span class="hidden sm:inline">Student</span>
-                    </button>
-                </div>
-
-                Right: Utilities & User Profile
-                <div class="flex items-center gap-3">
-                    Dark Mode Toggle
-                    <button onclick="toggleDarkMode()" class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition">
-                        <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
-                    </button>
-
-                    Notifications Button
-                    <div class="relative">
-                        <button onclick="toggleNotifications()" class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition relative">
-                            <i class="fa-regular fa-bell text-lg"></i>
-                            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-600 rounded-full ring-2 ring-white dark:ring-slate-800"></span>
-                        </button>
-                        Notifications Dropdown
-                        <div id="notif-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 fade-in">
-                            <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                                <span class="font-bold text-sm">Notifications</span>
-                                <span class="text-xs text-indigo-600 dark:text-indigo-400 cursor-pointer hover:underline" onclick="showToast('All marked as read')">Mark read</span>
-                            </div>
-                            <div class="divide-y divide-slate-100 dark:divide-slate-700 max-h-64 overflow-y-auto">
-                                <div class="p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition cursor-pointer">
-                                    <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">Assignment Submitted</p>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Alex Morgan submitted "Physics Lab 3"</p>
-                                    <span class="text-[10px] text-slate-400 mt-1 block">10 mins ago</span>
-                                </div>
-                                <div class="p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition cursor-pointer">
-                                    <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">System Maintenance</p>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Scheduled downtime tonight at 02:00 AM</p>
-                                    <span class="text-[10px] text-slate-400 mt-1 block">1 hour ago</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    User Profile Dropdown
-                    <div class="flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-slate-700">
-                        <img id="user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120" alt="Avatar" class="w-9 h-9 rounded-full object-cover ring-2 ring-indigo-500/30">
-                        <div class="hidden lg:block text-left">
-                            <div id="user-name" class="text-xs font-bold leading-tight">Sarah Jenkins</div>
-                            <div id="user-role-label" class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Administrator</div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </header>
-
-        MAIN APP CONTENT AREA (Sidebar + Dynamic View)
-        <div class="flex-1 flex overflow-hidden">
-            
-            DYNAMIC SIDEBAR
-            <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex-shrink-0 border-r border-slate-800 flex flex-col justify-between transition-all duration-300">
-                <div class="p-4">
-                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-3" id="sidebar-category">Admin Portal</div>
-                    <nav id="sidebar-menu" class="space-y-1">
-                        Populated by JavaScript based on active role
-                    </nav>
-                </div>
-                
-                <div class="p-4 border-t border-slate-800">
-                    <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                        <div class="flex items-center gap-3">
-                            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                            <span class="text-xs font-medium text-slate-300">EduPulse v2.4 Active</span>
-                        </div>
-                        <p class="text-[11px] text-slate-500 mt-1">All systems operational</p>
-                    </div>
-                </div>
-            </aside>
-
-            MAIN DYNAMIC CONTENT CONTAINER
-            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-slate-900">
-                
-                ================= ADMIN VIEW =================
-                <div id="view-admin" class="role-view space-y-6 hidden">
-                    Title & Header
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Admin Dashboard</h1>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Overview of platform metrics, global users, and institution performance.</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <button onclick="openModal('announcement-modal')" class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center gap-2">
-                                <i class="fa-solid fa-bullhorn text-indigo-500"></i>
-                                New Announcement
-                            </button>
-                            <button onclick="openModal('user-modal')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-2">
-                                <i class="fa-solid fa-user-plus"></i>
-                                Add New User
-                            </button>
-                        </div>
-                    </div>
-
-                    Admin Stat Cards
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Users</span>
-                                <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-users text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">1,248</span>
-                                <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                                    <i class="fa-solid fa-arrow-trend-up"></i> +12%
-                                </span>
-                            </div>
-                            <p class="text-xs text-slate-400 mt-1">1,050 Students • 198 Teachers</p>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active Courses</span>
-                                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-book-open text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">64</span>
-                                <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                                    <i class="fa-solid fa-plus"></i> 4 new
-                                </span>
-                            </div>
-                            <p class="text-xs text-slate-400 mt-1">across 12 departments</p>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Monthly Revenue</span>
-                                <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-dollar-sign text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">$42,850</span>
-                                <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                                    <i class="fa-solid fa-arrow-trend-up"></i> +8.4%
-                                </span>
-                            </div>
-                            <p class="text-xs text-slate-400 mt-1">98.2% invoice collection rate</p>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">System Health</span>
-                                <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-server text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">99.98%</span>
-                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Normal</span>
-                            </div>
-                            <p class="text-xs text-slate-400 mt-1">Server load: 24%</p>
-                        </div>
-                    </div>
-
-                    Visual Analytics Charts Row
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between mb-4">
-                                <div>
-                                    <h3 class="font-bold text-base text-slate-900 dark:text-white">Enrollment Growth</h3>
-                                    <p class="text-xs text-slate-500">New student registrations over the last 6 months</p>
-                                </div>
-                                <select class="text-xs bg-slate-100 dark:bg-slate-700 border-none rounded-lg px-3 py-1.5 font-medium">
-                                    <option>2026 Academic Year</option>
-                                    <option>2025 Academic Year</option>
-                                </select>
-                            </div>
-                            <div class="h-64 relative">
-                                <canvas id="adminEnrollmentChart"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
-                            <div>
-                                <h3 class="font-bold text-base text-slate-900 dark:text-white mb-1">System Resource Usage</h3>
-                                <p class="text-xs text-slate-500 mb-6">Realtime server & cloud storage distribution</p>
-                                
-                                <div class="space-y-4">
-                                    <div>
-                                        <div class="flex justify-between text-xs font-semibold mb-1">
-                                            <span>Cloud Storage (AWS S3)</span>
-                                            <span>1.4 TB / 2.0 TB</span>
-                                        </div>
-                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                                            <div class="h-full bg-indigo-600 rounded-full" style="width: 70%"></div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div class="flex justify-between text-xs font-semibold mb-1">
-                                            <span>Database Capacity</span>
-                                            <span>42%</span>
-                                        </div>
-                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                                            <div class="h-full bg-emerald-500 rounded-full" style="width: 42%"></div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div class="flex justify-between text-xs font-semibold mb-1">
-                                            <span>Active Bandwidth</span>
-                                            <span>810 Mbps</span>
-                                        </div>
-                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                                            <div class="h-full bg-amber-500 rounded-full" style="width: 85%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
-                                <button onclick="showToast('Initiating server diagnostic backup...')" class="w-full py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 transition">
-                                    Run System Diagnostic
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    User Management Table
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm overflow-hidden">
-                        <div class="p-6 border-b border-slate-100 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                                <h3 class="font-bold text-base text-slate-900 dark:text-white">User Management</h3>
-                                <p class="text-xs text-slate-500">Filter, edit, and manage accounts and permissions</p>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <input type="text" id="userTableSearch" onkeyup="filterUserTable()" placeholder="Filter users..." class="text-xs px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-transparent rounded-lg focus:outline-none focus:bg-white dark:focus:bg-slate-800 border-slate-200 dark:border-slate-600">
-                                <select id="roleFilter" onchange="filterUserTable()" class="text-xs px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg font-medium">
-                                    <option value="all">All Roles</option>
-                                    <option value="Student">Students</option>
-                                    <option value="Teacher">Teachers</option>
-                                    <option value="Admin">Admins</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
-                                <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-700">
-                                    <tr>
-                                        <th class="px-6 py-3.5">User</th>
-                                        <th class="px-6 py-3.5">Role</th>
-                                        <th class="px-6 py-3.5">Status</th>
-                                        <th class="px-6 py-3.5">Joined Date</th>
-                                        <th class="px-6 py-3.5 text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="userTableBody" class="divide-y divide-slate-100 dark:divide-slate-700/60 font-medium">
-                                    Dynamic rows via JavaScript
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-================= USER MANAGEMENT =================
-
-<div class="user-management">
-
-    <div class="section-header">
-
-        <div>
-            <h2>
-                <i class="fa-solid fa-users"></i>
-                User Management
-            </h2>
-
-            <p>
-                Manage LMS users, roles and account status.
-            </p>
-        </div>
-
-        <a th:href="@{/admin/users/add}"
-           class="add-user-btn">
-
-            <i class="fa-solid fa-user-plus"></i>
-
-            Add User
-
-        </a>
-
-    </div>
-
-
-    ================= ALERT =================
-
-    <div class="alert success"
-         th:if="${success}"
-         th:text="${success}">
-    </div>
-
-
-    <div class="alert error"
-         th:if="${error}"
-         th:text="${error}">
-    </div>
-
-
-    ================= SEARCH =================
-
-    <form th:action="@{/admin/users/search}"
-          method="get"
-          class="search-form">
-
-        <input type="text"
-               name="keyword"
-               th:value="${keyword}"
-               placeholder="Search by name, email, phone, role or status...">
-
-        <button type="submit">
-
-            <i class="fa-solid fa-magnifying-glass"></i>
-
-            Search
-
-        </button>
-
-        <a th:href="@{/admin}">
-
-            <i class="fa-solid fa-rotate-left"></i>
-
-            Reset
-
-        </a>
-
-    </form>
-
-
-    ================= USER TABLE =================
-
-    <div class="table-container">
-
-        <table>
-
-            <thead>
-
-            <tr>
-
-                <th>ID</th>
-
-                <th>Full Name</th>
-
-                <th>Email</th>
-
-                <th>Role</th>
-
-                <th>Status</th>
-
-                <th>Created At</th>
-
-                <th>Actions</th>
-
-            </tr>
-
-            </thead>
-
-
-            <tbody>
-
-            <tr th:each="user : ${users}">
-
-                <td th:text="${user.userId}">
-                </td>
-
-
-                <td th:text="${user.fullName}">
-                </td>
-
-
-                <td th:text="${user.email}">
-                </td>
-
-
-                <td>
-
-                    <span class="role-badge"
-                          th:text="${user.roleName}">
-                    </span>
-
-                </td>
-
-
-                <td>
-
-                    <span class="status"
-                          th:classappend="${#strings.toLowerCase(user.status)}"
-                          th:text="${user.status}">
-                    </span>
-
-                </td>
-
-
-                <td th:text="${user.createdAt != null
-                    ? #temporals.format(user.createdAt,'yyyy-MM-dd HH:mm')
-                    : '-'}">
-                </td>
-
-
-                <td>
-
-                    <div class="actions">
-
-                        VIEW
-
-                        <a th:href="@{/admin/users/view/{id}(id=${user.userId})}"
-                           class="view-btn"
-                           title="View">
-
-                            <i class="fa-solid fa-eye"></i>
-
-                        </a>
-
-
-                        EDIT
-
-                        <a th:href="@{/admin/users/edit/{id}(id=${user.userId})}"
-                           class="edit-btn"
-                           title="Edit">
-
-                            <i class="fa-solid fa-pen"></i>
-
-                        </a>
-
-
-                        SUSPEND
-
-                        <form th:if="${user.status == 'ACTIVE'}"
-                              th:action="@{/admin/users/suspend}"
-                              method="post">
-
-                            <input type="hidden"
-                                   name="userId"
-                                   th:value="${user.userId}">
-
-                            <button type="submit"
-                                    class="suspend-btn"
-                                    title="Suspend"
-                                    onclick="return confirm('Are you sure you want to suspend this user?');">
-
-                                <i class="fa-solid fa-ban"></i>
-
-                            </button>
-
-                        </form>
-
-
-                        ACTIVATE
-
-                        <form th:if="${user.status == 'SUSPENDED' or user.status == 'INACTIVE'}"
-                              th:action="@{/admin/users/activate}"
-                              method="post">
-
-                            <input type="hidden"
-                                   name="userId"
-                                   th:value="${user.userId}">
-
-                            <button type="submit"
-                                    class="activate-btn"
-                                    title="Activate"
-                                    onclick="return confirm('Are you sure you want to activate this user?');">
-
-                                <i class="fa-solid fa-check"></i>
-
-                            </button>
-
-                        </form>
-
-
-                        DELETE
-
-                        <form th:action="@{/admin/users/delete}"
-                              method="post">
-
-                            <input type="hidden"
-                                   name="userId"
-                                   th:value="${user.userId}">
-
-                            <button type="submit"
-                                    class="delete-btn"
-                                    title="Delete"
-                                    onclick="return confirm('Are you sure you want to delete this user?');">
-
-                                <i class="fa-solid fa-trash"></i>
-
-                            </button>
-
-                        </form>
-
-                    </div>
-
-                </td>
-
-            </tr>
-
-
-            EMPTY
-
-            <tr th:if="${users == null or #lists.isEmpty(users)}">
-
-                <td colspan="7"
-                    class="empty-row">
-
-                    <i class="fa-solid fa-users-slash"></i>
-
-                    No users found.
-
-                </td>
-
-            </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-
-================= END USER MANAGEMENT =================
-
-
-
-
-
-                ================= TEACHER VIEW =================
-                <div id="view-teacher" class="role-view space-y-6 hidden">
-                    Title & Header
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Teacher Dashboard</h1>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Welcome back, Professor David Vance. Here is your teaching schedule and grading queue.</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <button onclick="openModal('create-course-modal')" class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center gap-2">
-                                <i class="fa-solid fa-plus text-indigo-500"></i>
-                                New Class Module
-                            </button>
-                            <button onclick="openModal('assignment-modal')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-2">
-                                <i class="fa-solid fa-file-circle-plus"></i>
-                                Create Assignment
-                            </button>
-                        </div>
-                    </div>
-
-                    Teacher Stats
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Enrolled Students</span>
-                                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-graduation-cap text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">284</span>
-                                <span class="text-xs text-slate-400">Across 4 courses</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pending Grading</span>
-                                <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-amber-600 dark:text-amber-400">12</span>
-                                <span class="text-xs font-semibold text-amber-600 bg-amber-50 dark:bg-amber-950/50 px-2 py-0.5 rounded-full">Requires Action</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Avg Class GPA</span>
-                                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-chart-line text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">3.68</span>
-                                <span class="text-xs font-semibold text-emerald-600">+0.2 vs last term</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Upcoming Lectures</span>
-                                <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                                    <i class="fa-regular fa-calendar-check text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">3 Today</span>
-                                <span class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">Next @ 2:00 PM</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    Teacher Section: Active Classes & Grading Queue
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        My Active Classes
-                        <div class="lg:col-span-2 space-y-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="font-bold text-base text-slate-900 dark:text-white">My Managed Courses</h3>
-                                <a href="#" onclick="showToast('Redirecting to full course list...')" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">View All Courses</a>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                Course Card 1
-                                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
-                                    <div>
-                                        <div class="flex justify-between items-start mb-3">
-                                            <span class="px-2.5 py-1 text-[10px] font-bold uppercase rounded-md bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">CS-301</span>
-                                            <span class="text-xs text-slate-400">72 Students</span>
-                                        </div>
-                                        <h4 class="font-bold text-slate-900 dark:text-white text-base">Advanced Data Structures</h4>
-                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Syllabus progression: Week 8 of 14</p>
-                                    </div>
-                                    <div class="mt-6">
-                                        <div class="flex justify-between text-xs font-semibold mb-1 text-slate-600 dark:text-slate-300">
-                                            <span>Syllabus Completion</span>
-                                            <span>62%</span>
-                                        </div>
-                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-4">
-                                            <div class="h-full bg-indigo-600 rounded-full" style="width: 62%"></div>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <button onclick="showToast('Opening module editor...')" class="flex-1 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition">
-                                                Edit Syllabus
-                                            </button>
-                                            <button onclick="showToast('Loading analytics for CS-301')" class="p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition">
-                                                <i class="fa-solid fa-chart-pie"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                Course Card 2
-                                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
-                                    <div>
-                                        <div class="flex justify-between items-start mb-3">
-                                            <span class="px-2.5 py-1 text-[10px] font-bold uppercase rounded-md bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400">AI-402</span>
-                                            <span class="text-xs text-slate-400">95 Students</span>
-                                        </div>
-                                        <h4 class="font-bold text-slate-900 dark:text-white text-base">Machine Learning Fundamentals</h4>
-                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Syllabus progression: Week 10 of 14</p>
-                                    </div>
-                                    <div class="mt-6">
-                                        <div class="flex justify-between text-xs font-semibold mb-1 text-slate-600 dark:text-slate-300">
-                                            <span>Syllabus Completion</span>
-                                            <span>78%</span>
-                                        </div>
-                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-4">
-                                            <div class="h-full bg-emerald-500 rounded-full" style="width: 78%"></div>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <button onclick="showToast('Opening module editor...')" class="flex-1 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition">
-                                                Edit Syllabus
-                                            </button>
-                                            <button onclick="showToast('Loading analytics for AI-402')" class="p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition">
-                                                <i class="fa-solid fa-chart-pie"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        Grading Submissions Quick Box
-                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-4">
-                                    <h3 class="font-bold text-base text-slate-900 dark:text-white">Grading Queue</h3>
-                                    <span class="text-xs bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 font-bold px-2 py-0.5 rounded-full">12 Pending</span>
-                                </div>
-                                <div id="grading-queue-list" class="space-y-3">
-                                    Grading Items via JS
-                                </div>
-                            </div>
-                            <button onclick="showToast('Opening full grading suite...')" class="mt-4 w-full py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-xs font-bold text-slate-700 dark:text-slate-200 rounded-lg transition">
-                                View Full Submissions Log
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-
-                ================= STUDENT VIEW =================
-                <div id="view-student" class="role-view space-y-6 hidden">
-                    Title & Header
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Welcome Back, Alex! 👋</h1>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">You have 2 assignments due this week. Keep up the momentum!</p>
-                        </div>
-                        <button onclick="openModal('submit-work-modal')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-2">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                            Submit Homework
-                        </button>
-                    </div>
-
-                    Student Stat Cards
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Enrolled Courses</span>
-                                <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-book text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">5 Courses</span>
-                                <span class="text-xs font-semibold text-indigo-600">Active Term</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Completed Hours</span>
-                                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                                    <i class="fa-regular fa-clock text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">48.5 hrs</span>
-                                <span class="text-xs text-emerald-600 font-semibold">+6 hrs this week</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Overall GPA</span>
-                                <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-award text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">3.85 / 4.0</span>
-                                <span class="text-xs font-semibold text-purple-600">Top 5% Rank</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Upcoming Deadlines</span>
-                                <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-rose-600 dark:text-rose-400">2 Due Soon</span>
-                                <span class="text-xs font-semibold text-rose-600 bg-rose-50 dark:bg-rose-950/50 px-2 py-0.5 rounded-full">Next in 8h</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    Enrolled Courses & Homework Deadlines
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        Active Enrolled Courses Cards
-                        <div class="lg:col-span-2 space-y-4">
-                            <h3 class="font-bold text-base text-slate-900 dark:text-white">Continue Learning</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="student-courses-container">
-                                Enrolled Course cards generated via JS
-                            </div>
-                        </div>
-
-                        Side panel: Deadlines & Teacher Feedback
-                        <div class="space-y-6">
-                            Deadlines Box
-                            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                                <h3 class="font-bold text-base text-slate-900 dark:text-white mb-4">Upcoming Deadlines</h3>
-                                <div class="space-y-3" id="student-deadlines-list">
-                                    Dynamic Deadlines
-                                </div>
-                            </div>
-
-                            Recent Teacher Feedback
-                            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                                <h3 class="font-bold text-base text-slate-900 dark:text-white mb-3">Recent Grades & Feedback</h3>
-                                <div class="space-y-3">
-                                    <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
-                                        <div class="flex justify-between items-center mb-1">
-                                            <span class="text-xs font-bold text-slate-900 dark:text-white">Algorithm Design - Quiz 2</span>
-                                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded">98% (A+)</span>
-                                        </div>
-                                        <p class="text-xs text-slate-500 dark:text-slate-400 italic">"Excellent optimization analysis on dynamic programming!"</p>
-                                        <span class="text-[10px] text-slate-400 mt-1 block">Graded yesterday by Prof. Vance</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </main>
-        </div>
-    </div>
-
-    MODAL DIALOGS
-    
-    Modal 1: Add New User (Admin)
-    <div id="user-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Add New User</h3>
-                <button onclick="closeModal('user-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <form onsubmit="handleAddUser(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Full Name</label>
-                    <input type="text" id="new-user-name" required placeholder="e.g. Elena Rostova" class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg focus:ring-2 focus:ring-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Email Address</label>
-                    <input type="email" id="new-user-email" required placeholder="elena@edupulse.edu" class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg focus:ring-2 focus:ring-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assigned Role</label>
-                    <select id="new-user-role" class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg focus:ring-2 focus:ring-indigo-500">
-                        <option value="Student">Student</option>
-                        <option value="Teacher">Teacher</option>
-                        <option value="Admin">Admin</option>
-                    </select>
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('user-modal')" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow">Create Account</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    Modal 2: Create Assignment (Teacher)
-    <div id="assignment-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Create New Assignment</h3>
-                <button onclick="closeModal('assignment-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <form onsubmit="handleCreateAssignment(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assignment Title</label>
-                    <input type="text" required placeholder="e.g. Midterm Project Proposal" class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Select Course</label>
-                    <select class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg">
-                        <option>CS-301 Advanced Data Structures</option>
-                        <option>AI-402 Machine Learning Fundamentals</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Due Date</label>
-                    <input type="date" required class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg">
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('assignment-modal')" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">Publish Assignment</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    Modal 3: Submit Work (Student)
-    <div id="submit-work-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Submit Assignment</h3>
-                <button onclick="closeModal('submit-work-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <form onsubmit="handleSubmitAssignment(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assignment</label>
-                    <select class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg">
-                        <option>CS-301: B-Trees Implementation Lab</option>
-                        <option>AI-402: Neural Nets Gradient Descent Notebook</option>
-                    </select>
-                </div>
-                <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-6 text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/40 transition">
-                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-indigo-500 mb-2"></i>
-                    <p class="text-xs font-semibold text-slate-700 dark:text-slate-300">Click or drag file to upload</p>
-                    <p class="text-[10px] text-slate-400 mt-1">PDF, ZIP, IPYNB up to 25MB</p>
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('submit-work-modal')" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">Upload & Submit</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    Modal 4: Announcement (Global)
-    <div id="announcement-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Broadcast Announcement</h3>
-                <button onclick="closeModal('announcement-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <form onsubmit="handleSendAnnouncement(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Title</label>
-                    <input type="text" required placeholder="System Update / Holiday notice" class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Message</label>
-                    <textarea rows="3" required placeholder="Type broadcast message..." class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg"></textarea>
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('announcement-modal')" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">Send Broadcast</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    TOAST NOTIFICATION BANNER
-    <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl z-50 flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 border border-slate-700">
-        <i class="fa-solid fa-circle-check text-emerald-400 text-base" id="toast-icon"></i>
-        <span id="toast-message" class="text-xs font-semibold">Notification message</span>
-    </div>
-
-    JAVASCRIPT LOGIC
-    <script>
-        // State Management
-        let currentRole = 'admin';
-        
-        // Mock Data
-        let usersData = [
-            { id: 1, name: 'Sarah Jenkins', email: 'sarah.j@edupulse.edu', role: 'Admin', status: 'Active', joined: 'Jan 12, 2024', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120' },
-            { id: 2, name: 'Dr. David Vance', email: 'david.vance@edupulse.edu', role: 'Teacher', status: 'Active', joined: 'Mar 04, 2023', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120' },
-            { id: 3, name: 'Alex Morgan', email: 'alex.m@student.edu', role: 'Student', status: 'Active', joined: 'Sep 01, 2025', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120' },
-            { id: 4, name: 'Prof. Marcus Brody', email: 'm.brody@edupulse.edu', role: 'Teacher', status: 'Active', joined: 'Nov 18, 2022', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=120' },
-            { id: 5, name: 'Chloe Zhao', email: 'chloe.z@student.edu', role: 'Student', status: 'Suspended', joined: 'Oct 14, 2025', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=120' }
-        ];
-
-        const teacherGradingQueue = [
-            { id: 101, student: 'Alex Morgan', course: 'CS-301', title: 'B-Tree Indexing Project', submitted: '2 hours ago' },
-            { id: 102, student: 'Liam Neeson', course: 'AI-402', title: 'Gradient Descent Analysis', submitted: '5 hours ago' },
-            { id: 103, student: 'Emma Watson', course: 'CS-301', title: 'Hash Collisions Lab', submitted: 'Yesterday' }
-        ];
-
-        const studentCourses = [
-            { id: 'CS-301', title: 'Advanced Data Structures', instructor: 'Prof. David Vance', progress: 78, nextLesson: 'B-Trees & Indexing' },
-            { id: 'AI-402', title: 'Machine Learning Fundamentals', instructor: 'Prof. Marcus Brody', progress: 45, nextLesson: 'Neural Networks Basics' },
-            { id: 'ENG-201', title: 'Technical Writing for Engineers', instructor: 'Dr. Linda Carter', progress: 90, nextLesson: 'Final Research Paper' }
-        ];
-
-        const studentDeadlines = [
-            { course: 'CS-301', title: 'B-Trees Implementation Lab', due: 'Today, 11:59 PM', badgeBg: 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300' },
-            { course: 'AI-402', title: 'Linear Regression Notebook', due: 'Oct 2, 2026', badgeBg: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' }
-        ];
-
-        // Sidebar Navigation Definitions
-        const navMenus = {
-            admin: [
-                { icon: 'fa-chart-pie', label: 'Dashboard', active: true },
-                { icon: 'fa-users', label: 'Users & Roles' },
-                { icon: 'fa-book-open', label: 'Global Courses' },
-                { icon: 'fa-chart-line', label: 'Analytics' },
-                { icon: 'fa-file-invoice-dollar', label: 'Financials' },
-                { icon: 'fa-gear', label: 'System Settings' }
-            ],
-            teacher: [
-                { icon: 'fa-house', label: 'Overview', active: true },
-                { icon: 'fa-chalkboard', label: 'My Classes' },
-                { icon: 'fa-list-check', label: 'Grading Queue' },
-                { icon: 'fa-graduation-cap', label: 'Student Performance' },
-                { icon: 'fa-folder-tree', label: 'Curriculum Builder' },
-                { icon: 'fa-comments', label: 'Messages' }
-            ],
-            student: [
-                { icon: 'fa-compass', label: 'Dashboard', active: true },
-                { icon: 'fa-book-bookmark', label: 'My Courses' },
-                { icon: 'fa-pencil', label: 'Assignments' },
-                { icon: 'fa-trophy', label: 'Grades & Certificates' },
-                { icon: 'fa-box-archive', label: 'Availiable Courses', path: '/courses/show', active: true  },
-                { icon: 'fa-calendar', label: 'Schedule' }
-            ]
-        };
-
-        // User Profiles Mapping
-        const profiles = {
-            admin: { name: 'Sarah Jenkins', role: 'Administrator', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120' },
-            teacher: { name: 'Prof. David Vance', role: 'Senior Lecturer', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120' },
-            student: { name: 'Alex Morgan', role: 'Computer Science Major', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120' }
-        };
-
-        // Initialize App
-        window.onload = function() {
-            switchRole('admin');
-            renderUserTable();
-            renderTeacherGradingQueue();
-            renderStudentViews();
-            initCharts();
-        };
-
-        // Role Switching Logic
-        function switchRole(role) {
-            currentRole = role;
-
-            // Update role toggle buttons visually
-            document.querySelectorAll('.role-btn').forEach(btn => {
-                btn.className = "role-btn text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-600";
-            });
-            const activeBtn = document.getElementById(`role-btn-${role}`);
-            if (activeBtn) {
-                activeBtn.className = "role-btn text-xs font-bold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm border border-slate-200/50 dark:border-slate-700";
-            }
-
-            // Update Header User Profile Info
-            const p = profiles[role];
-            document.getElementById('user-name').innerText = p.name;
-            document.getElementById('user-role-label').innerText = p.role;
-            document.getElementById('user-avatar').src = p.avatar;
-
-            // Update Sidebar Navigation
-            renderSidebar(role);
-
-            // Hide all view containers & show target
-            document.querySelectorAll('.role-view').forEach(v => v.classList.add('hidden'));
-            const targetView = document.getElementById(`view-${role}`);
-            if (targetView) {
-                targetView.classList.remove('hidden');
-                targetView.classList.add('fade-in');
-            }
-
-            showToast(`Switched to ${role.toUpperCase()} View`);
-        }
-
-     // Render Dynamic Sidebar Menu Connected to Backend
-        function renderSidebar(role) {
-            const menuContainer = document.getElementById('sidebar-menu');
-            const categoryLabel = document.getElementById('sidebar-category');
-            
-            categoryLabel.innerText = `${role.toUpperCase()} MENU`;
-            menuContainer.innerHTML = '';
-
-            // Get the current path in the browser bar (e.g., "/courses/show")
-            const currentPath = window.location.pathname;
-
-            navMenus[role].forEach(item => {
-                const navItem = document.createElement('a');
-                
-                // FIXED: Assign the real backend URL path from your array definition
-                navItem.href = item.path || '#'; 
-                
-                // Determine active highlighting by matching the item's path with the current browser URL
-                const isCurrentPage = currentPath === item.path;
-
-                const baseClasses = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all";
-                
-                // FIXED: Applies styling dynamically depending on what page the browser is currently rendering
-                const activeClasses = isCurrentPage 
-                    ? "bg-indigo-600 text-white font-semibold shadow-md shadow-indigo-600/30" 
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/80";
-
-                navItem.className = `${baseClasses} ${activeClasses}`;
-                navItem.innerHTML = `<i class="fa-solid ${item.icon} w-4 text-center"></i> <span>${item.label}</span>`;
-                
-                menuContainer.appendChild(navItem);
-            });
-        }
-
-
-        function setActiveNavItem(selectedItem) {
-            const items = document.querySelectorAll('#sidebar-menu a');
-            items.forEach(el => {
-                el.className = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 transition-all";
-            });
-            selectedItem.className = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition-all";
-        }
-
-        // Render Admin User Management Table
-        function renderUserTable(filteredData = usersData) {
-            const tbody = document.getElementById('userTableBody');
-            tbody.innerHTML = '';
-
-            filteredData.forEach(user => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-700/30 transition";
-
-                const roleColor = user.role === 'Admin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' :
-                                  user.role === 'Teacher' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' :
-                                  'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
-
-                const statusColor = user.status === 'Active' ? 'bg-emerald-500' : 'bg-rose-500';
-
-                tr.innerHTML = `
-                    <td class="px-6 py-4 flex items-center gap-3">
-                        <img src="${user.avatar}" class="w-8 h-8 rounded-full object-cover">
-                        <div>
-                            <div class="font-bold text-slate-900 dark:text-white">${user.name}</div>
-                            <div class="text-xs text-slate-400">${user.email}</div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <span class="text-[10px] font-bold px-2.5 py-1 rounded-full ${roleColor}">${user.role}</span>
-                    </td>
-                    <td class="px-6 py-4">
-                        <span class="flex items-center gap-1.5 text-xs">
-                            <span class="w-1.5 h-1.5 rounded-full ${statusColor}"></span> ${user.status}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 text-xs text-slate-400">${user.joined}</td>
-                    <td class="px-6 py-4 text-right">
-                        <button onclick="deleteUser(${user.id})" class="text-slate-400 hover:text-rose-500 transition p-1"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function filterUserTable() {
-            const searchVal = document.getElementById('userTableSearch').value.toLowerCase();
-            const roleVal = document.getElementById('roleFilter').value;
-
-            const filtered = usersData.filter(user => {
-                const matchesSearch = user.name.toLowerCase().includes(searchVal) || user.email.toLowerCase().includes(searchVal);
-                const matchesRole = (roleVal === 'all') || (user.role === roleVal);
-                return matchesSearch && matchesRole;
-            });
-
-            renderUserTable(filtered);
-        }
-
-        function deleteUser(userId) {
-            usersData = usersData.filter(u => u.id !== userId);
-            renderUserTable();
-            showToast('User removed successfully');
-        }
-
-        // Render Teacher Submissions
-        function renderTeacherGradingQueue() {
-            const list = document.getElementById('grading-queue-list');
-            list.innerHTML = '';
-
-            teacherGradingQueue.forEach(item => {
-                const div = document.createElement('div');
-                div.className = "p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl flex items-center justify-between border border-slate-100 dark:border-slate-700";
-                div.innerHTML = `
-                    <div>
-                        <div class="text-xs font-bold text-slate-900 dark:text-white">${item.student}</div>
-                        <div class="text-[11px] text-slate-500">${item.course}: ${item.title}</div>
-                        <div class="text-[10px] text-slate-400 mt-0.5">${item.submitted}</div>
-                    </div>
-                    <button onclick="gradeSubmission(${item.id})" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition">
-                        Grade
-                    </button>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        function gradeSubmission(id) {
-            showToast('Grade submitted for assignment #' + id);
-        }
-
-        // Render Student Views
-        function renderStudentViews() {
-            const coursesContainer = document.getElementById('student-courses-container');
-            coursesContainer.innerHTML = '';
-
-            studentCourses.forEach(c => {
-                const div = document.createElement('div');
-                div.className = "bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between";
-                div.innerHTML = `
-                    <div>
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">${c.id}</span>
-                            <span class="text-xs font-bold text-indigo-600">${c.progress}%</span>
-                        </div>
-                        <h4 class="font-bold text-slate-900 dark:text-white text-base">${c.title}</h4>
-                        <p class="text-xs text-slate-400 mt-1">${c.instructor}</p>
-                    </div>
-                    <div class="mt-6">
-                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-3">
-                            <div class="h-full bg-indigo-600 rounded-full" style="width: ${c.progress}%"></div>
-                        </div>
-                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3"><i class="fa-solid fa-play-circle text-indigo-500 mr-1"></i> Next: ${c.nextLesson}</p>
-                        <button onclick="showToast('Resuming lesson: ${c.nextLesson}')" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition shadow-sm">
-                            Resume Learning
-                        </button>
-                    </div>
-                `;
-                coursesContainer.appendChild(div);
-            });
-
-            const deadlinesList = document.getElementById('student-deadlines-list');
-            deadlinesList.innerHTML = '';
-
-            studentDeadlines.forEach(d => {
-                const div = document.createElement('div');
-                div.className = "p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl flex items-center justify-between";
-                div.innerHTML = `
-                    <div>
-                        <div class="text-xs font-bold text-slate-900 dark:text-white">${d.title}</div>
-                        <div class="text-[11px] text-slate-500">${d.course}</div>
-                    </div>
-                    <span class="text-[10px] font-bold px-2 py-1 rounded ${d.badgeBg}">${d.due}</span>
-                `;
-                deadlinesList.appendChild(div);
-            });
-        }
-
-        // Modal Helpers
-        function openModal(id) {
-            document.getElementById(id).classList.remove('hidden');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
-
-        // Action Handlers
-        function handleAddUser(e) {
-            e.preventDefault();
-            const name = document.getElementById('new-user-name').value;
-            const email = document.getElementById('new-user-email').value;
-            const role = document.getElementById('new-user-role').value;
-
-            usersData.unshift({
-                id: Date.now(),
-                name,
-                email,
-                role,
-                status: 'Active',
-                joined: 'Just now',
-                avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120'
-            });
-
-            renderUserTable();
-            closeModal('user-modal');
-            showToast(`User ${name} created as ${role}!`);
-            e.target.reset();
-        }
-
-        function handleCreateAssignment(e) {
-            e.preventDefault();
-            closeModal('assignment-modal');
-            showToast('Assignment successfully published to students!');
-        }
-
-        function handleSubmitAssignment(e) {
-            e.preventDefault();
-            closeModal('submit-work-modal');
-            showToast('Homework file uploaded successfully!');
-        }
-
-        function handleSendAnnouncement(e) {
-            e.preventDefault();
-            closeModal('announcement-modal');
-            showToast('Broadcast notification sent to all users!');
-        }
-
-        // Toast Helper
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-message').innerText = message;
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
-        }
-
-        // Toggle Utilities
-        function toggleNotifications() {
-            document.getElementById('notif-dropdown').classList.toggle('hidden');
-        }
-
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
-            const themeIcon = document.getElementById('theme-icon');
-            if (document.documentElement.classList.contains('dark')) {
-                themeIcon.className = "fa-solid fa-sun text-amber-400 text-lg";
-            } else {
-                themeIcon.className = "fa-solid fa-moon text-lg";
-            }
-        }
-
-        // Initialize Admin Enrollment Chart
-        function initCharts() {
-            const ctx = document.getElementById('adminEnrollmentChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'Student Registrations',
-                        data: [650, 720, 800, 890, 960, 1050],
-                        borderColor: '#4f46e5',
-                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            grid: { color: 'rgba(0,0,0,0.05)' }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
-                    }
-                }
-            });
-        }
-    </script>
-</body>
-</html> -->
-
-
-
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Admin Dashboard - LMS</title>
+    <title>Admin Dashboard | LMS</title>
 
-    <!-- Font Awesome -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
-
-        /* =========================
-           RESET
-        ========================== */
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --bg: #0f1118;
+            --sidebar: #181d28;
+            --card: #181d28;
+            --border: #293142;
+            --primary: #6c4ce5;
+            --primary-light: #8068f0;
+            --text: #f1f3f9;
+            --muted: #929bb0;
+            --green: #36c995;
+            --yellow: #f4bd50;
+            --red: #ff7373;
+            --input: #202634;
+        }
+
+        body.light-mode {
+            --bg: #f4f6fb;
+            --sidebar: #ffffff;
+            --card: #ffffff;
+            --border: #e2e6ef;
+            --text: #242938;
+            --muted: #727c91;
+            --input: #f5f6fa;
+        }
+
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background: #f7f5fa;
-            color: #333;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            transition: background .2s, color .2s;
         }
 
         a {
+            color: inherit;
             text-decoration: none;
         }
 
+        button, input, select {
+            font: inherit;
+        }
 
-        /* =========================
-           TOP NAVBAR
-        ========================== */
+        button {
+            cursor: pointer;
+        }
+
+        .app {
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 260px;
+            position: fixed;
+            inset: 0 auto 0 0;
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+            padding: 25px 18px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 5px 10px 32px;
+        }
+
+        .brand-icon {
+            width: 45px;
+            height: 45px;
+            background: #7895ff;
+            color: white;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
+            font-size: 21px;
+        }
+
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .brand-subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .menu-heading {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            padding: 17px 12px 12px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 14px;
+            margin-bottom: 5px;
+            border-radius: 10px;
+            color: var(--muted);
+            font-size: 14px;
+            transition: .2s;
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(108, 76, 229, .19);
+            color: #9b8aff;
+        }
+
+        .nav-link.active {
+            font-weight: 700;
+        }
+
+        .sidebar-bottom {
+            margin-top: 30px;
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+        }
+
+        .logout-link:hover {
+            color: var(--red);
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* TOPBAR */
 
         .topbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-
-            height: 70px;
-
-            background: #ffffff;
-
-            border-bottom: 1px solid #e5dbea;
-
+            min-height: 88px;
+            padding: 18px 30px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-
-            padding: 0 30px;
-
-            z-index: 1000;
+            gap: 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #4b176b;
+        .page-heading h1 {
+            font-size: 23px;
+            margin-bottom: 7px;
+        }
+
+        .page-heading p {
+            color: var(--muted);
+            font-size: 13px;
         }
 
         .topbar-right {
             display: flex;
             align-items: center;
-            gap: 25px;
-        }
-
-        .top-link {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-
-            color: #555;
-
-            font-size: 14px;
-            font-weight: 500;
-
-            transition: 0.2s;
-        }
-
-        .top-link:hover {
-            color: #8e44ad;
-        }
-
-        .top-link i {
-            font-size: 16px;
-        }
-
-        .logout-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-
-            padding: 10px 16px;
-
-            background: #8e44ad;
-            color: white;
-
-            border-radius: 8px;
-
-            font-size: 14px;
-            font-weight: 500;
-
-            transition: 0.2s;
-        }
-
-        .logout-btn:hover {
-            background: #71368a;
-        }
-
-
-        /* =========================
-           SIDEBAR
-        ========================== */
-
-        .sidebar {
-            position: fixed;
-
-            top: 70px;
-            left: 0;
-            bottom: 0;
-
-            width: 250px;
-
-            background: #ffffff;
-
-            border-right: 1px solid #e5dbea;
-
-            padding: 25px 15px;
-
-            overflow-y: auto;
-        }
-
-        .sidebar-title {
-            padding: 0 15px 15px;
-
-            color: #888;
-
-            font-size: 13px;
-            font-weight: bold;
-
-            text-transform: uppercase;
-        }
-
-        .sidebar-link {
-            display: flex;
-            align-items: center;
-
             gap: 13px;
-
-            width: 100%;
-
-            padding: 13px 15px;
-
-            margin-bottom: 6px;
-
-            border-radius: 8px;
-
-            color: #555;
-
-            font-size: 14px;
-
-            transition: 0.2s;
         }
 
-        .sidebar-link i {
-            width: 20px;
-            text-align: center;
-        }
-
-        .sidebar-link:hover {
-            background: #f4e9ff;
-            color: #8e44ad;
-        }
-
-        .sidebar-link.active {
-            background: #f4e9ff;
-            color: #8e44ad;
-            font-weight: bold;
-        }
-
-        .logout-link {
-            margin-top: 25px;
-            color: #c0392b;
-        }
-
-        .logout-link:hover {
-            background: #fff0f0;
-            color: #c0392b;
-        }
-
-
-        /* =========================
-           MAIN CONTENT
-        ========================== */
-
-        .content {
-            margin-left: 250px;
-
-            padding: 105px 35px 40px;
-
-            min-height: 100vh;
-        }
-
-
-        /* =========================
-           PAGE HEADER
-        ========================== */
-
-        .page-header {
+        .search-box {
+            width: 290px;
+            height: 44px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-
-            margin-bottom: 30px;
+            gap: 11px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0 14px;
+            color: var(--muted);
         }
 
-        .page-header h1 {
-            font-size: 30px;
-            color: #333;
-
-            margin-bottom: 8px;
+        .search-box input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text);
+            min-width: 0;
         }
 
-        .page-header p {
-            color: #777;
+        .icon-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            color: var(--text);
+            border-color: var(--primary);
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: 5px;
+        }
+
+        .avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
             font-size: 15px;
         }
 
-        .page-header strong {
-            color: #4b176b;
+        .profile-name {
+            font-weight: 700;
+            font-size: 14px;
         }
 
+        .profile-role {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
 
-        /* =========================
-           STAT CARDS
-        ========================== */
+        /* CONTENT */
+
+        .content {
+            padding: 28px 30px 40px;
+        }
+
+        .welcome {
+            background: linear-gradient(115deg, #4930a9, #7358ed);
+            padding: 29px 32px;
+            border-radius: 17px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 23px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .welcome::after {
+            content: "";
+            position: absolute;
+            width: 230px;
+            height: 230px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.07);
+            right: 80px;
+            top: -110px;
+        }
+
+        .welcome-text,
+        .welcome-actions {
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome h2 {
+            font-size: 26px;
+            margin-bottom: 12px;
+        }
+
+        .welcome p {
+            color: #e5dfff;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .welcome-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 190px;
+        }
+
+        .welcome-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 13px 17px;
+            border-radius: 10px;
+            background: rgba(255,255,255,.16);
+            color: white;
+            border: 1px solid rgba(255,255,255,.15);
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .welcome-btn.primary {
+            background: white;
+            color: #4930a9;
+        }
+
+        .welcome-btn:hover {
+            opacity: .9;
+        }
+
+        /* STATISTICS */
 
         .stats-grid {
             display: grid;
-
-            grid-template-columns: repeat(4, 1fr);
-
-            gap: 20px;
-
-            margin-bottom: 30px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 23px;
         }
 
         .stat-card {
-            background: #ffffff;
-
-            border: 1px solid #eee5f3;
-
-            border-radius: 12px;
-
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
             padding: 22px;
-
             display: flex;
-            align-items: center;
-
-            gap: 18px;
-
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
-
-            transition: 0.2s;
+            align-items: flex-start;
+            gap: 15px;
+            min-width: 0;
+            transition: transform .2s;
         }
 
         .stat-card:hover {
             transform: translateY(-3px);
-
-            box-shadow:
-                0 6px 18px rgba(0, 0, 0, 0.08);
         }
 
         .stat-icon {
-            width: 55px;
-            height: 55px;
-
+            width: 49px;
+            height: 49px;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
             flex-shrink: 0;
+            font-size: 20px;
+        }
 
-            border-radius: 10px;
+        .purple {
+            background: rgba(108,76,229,.2);
+            color: #a697ff;
+        }
 
-            background: #f4e9ff;
+        .green {
+            background: rgba(54,201,149,.15);
+            color: var(--green);
+        }
 
-            color: #8e44ad;
+        .yellow {
+            background: rgba(244,189,80,.15);
+            color: var(--yellow);
+        }
 
+        .red {
+            background: rgba(255,115,115,.14);
+            color: var(--red);
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 13px;
+            margin: 3px 0 9px;
+        }
+
+        .stat-value {
+            font-size: 29px;
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        .stat-note {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        /* LOWER SECTIONS */
+
+        .section-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.65fr) minmax(280px, 1fr);
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 23px;
+            margin-bottom: 20px;
+            min-width: 0;
+        }
+
+        .panel-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-
-            font-size: 21px;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 23px;
         }
 
-        .stat-info h3 {
-            font-size: 13px;
-            color: #888;
-
-            margin-bottom: 6px;
-
-            font-weight: 500;
+        .panel-header h2 {
+            font-size: 17px;
         }
 
-        .stat-info p {
-            font-size: 28px;
-
-            color: #333;
-
-            font-weight: bold;
+        .panel-subtitle {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 7px;
         }
 
-
-        /* =========================
-           DASHBOARD SECTION
-        ========================== */
-
-        .dashboard-section {
-            background: #ffffff;
-
-            border: 1px solid #eee5f3;
-
-            border-radius: 12px;
-
-            padding: 25px;
-
-            margin-bottom: 25px;
-
-            box-shadow:
-                0 3px 12px rgba(0, 0, 0, 0.04);
+        .small-btn {
+            background: var(--input);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 9px 13px;
+            border-radius: 9px;
+            font-size: 12px;
         }
 
-        .section-title {
-            margin-bottom: 20px;
+        .small-btn:hover {
+            border-color: var(--primary);
         }
 
-        .section-title h2 {
-            font-size: 20px;
-            color: #333;
-        }
-
-
-        /* =========================
-           QUICK ACTIONS
-        ========================== */
+        /* QUICK ACTIONS */
 
         .quick-actions {
             display: grid;
-
-            grid-template-columns: repeat(4, 1fr);
-
-            gap: 15px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
         }
 
         .action-card {
             display: flex;
             align-items: center;
-
-            gap: 12px;
-
-            padding: 18px;
-
-            border: 1px solid #e7dced;
-
-            border-radius: 10px;
-
-            color: #444;
-
-            font-size: 14px;
-            font-weight: 500;
-
-            transition: 0.2s;
-        }
-
-        .action-card i {
-            color: #8e44ad;
-
-            font-size: 19px;
+            gap: 13px;
+            padding: 17px;
+            background: var(--input);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            text-align: left;
+            min-width: 0;
         }
 
         .action-card:hover {
-            background: #f4e9ff;
-
-            border-color: #8e44ad;
-
-            transform: translateY(-2px);
+            border-color: var(--primary);
+            background: rgba(108,76,229,.1);
         }
 
+        .action-icon {
+            width: 39px;
+            height: 39px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: rgba(108,76,229,.2);
+            color: #a697ff;
+            flex-shrink: 0;
+        }
 
-        /* =========================
-           WELCOME BOX
-        ========================== */
+        .action-card strong {
+            font-size: 13px;
+            display: block;
+        }
 
-        .welcome-box {
-            background: #f4e9ff;
+        .action-card small {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 5px;
+        }
 
-            border: 1px solid #8e44ad;
+        /* RECENT USERS */
 
-            border-radius: 12px;
+        .table-wrapper {
+            overflow-x: auto;
+        }
 
-            padding: 25px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            white-space: nowrap;
+        }
 
+        th {
+            text-align: left;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 13px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: rgba(108,76,229,.06);
+        }
+
+        .user-cell {
             display: flex;
             align-items: center;
-
-            gap: 20px;
+            gap: 10px;
         }
 
-        .welcome-icon {
-            width: 60px;
-            height: 60px;
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: rgba(108,76,229,.2);
+            color: #b5aaff;
+            font-weight: 700;
+        }
 
-            flex-shrink: 0;
+        .user-email {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 5px;
+        }
 
-            border-radius: 50%;
+        .badge {
+            display: inline-block;
+            padding: 6px 9px;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 700;
+        }
 
-            background: #ffffff;
+        .badge-active {
+            background: rgba(54,201,149,.13);
+            color: var(--green);
+        }
 
-            color: #8e44ad;
+        .badge-inactive {
+            background: rgba(244,189,80,.13);
+            color: var(--yellow);
+        }
 
-            display: flex;
+        .badge-suspended {
+            background: rgba(255,115,115,.13);
+            color: var(--red);
+        }
+
+        .empty-state {
+            color: var(--muted);
+            text-align: center;
+            padding: 28px;
+        }
+
+        .flash-message {
+            padding: 14px 17px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .flash-success {
+            background: rgba(54,201,149,.13);
+            color: var(--green);
+            border: 1px solid rgba(54,201,149,.25);
+        }
+
+        .flash-error {
+            background: rgba(255,115,115,.13);
+            color: var(--red);
+            border: 1px solid rgba(255,115,115,.25);
+        }
+
+        /* MODAL */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: rgba(0,0,0,.72);
+            display: none;
             align-items: center;
             justify-content: center;
-
-            font-size: 25px;
+            padding: 20px;
+            overflow-y: auto;
         }
 
-        .welcome-box h2 {
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--sidebar);
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            width: 100%;
+            max-width: 600px;
+            padding: 27px;
+            margin: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
             margin-bottom: 8px;
+        }
 
-            color: #4b176b;
-
+        .modal-header h2 {
             font-size: 21px;
         }
 
-        .welcome-box p {
-            color: #666;
-
-            font-size: 14px;
-
+        .modal-description {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 25px;
             line-height: 1.6;
         }
 
+        .close-btn {
+            width: 37px;
+            height: 37px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: var(--input);
+            color: var(--text);
+        }
 
-        /* =========================
-           RESPONSIVE
-        ========================== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 17px;
+        }
 
-        @media (max-width: 1100px) {
+        .form-group {
+            min-width: 0;
+        }
 
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 9px;
+            color: var(--text);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            outline: none;
+            background: var(--input);
+            color: var(--text);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary);
+        }
+
+        .form-group input::placeholder {
+            color: var(--muted);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 9px;
+            padding: 12px 17px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-secondary {
+            background: var(--input);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1250px) {
             .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
-            .quick-actions {
-                grid-template-columns: repeat(2, 1fr);
+            .section-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box {
+                width: 220px;
             }
         }
 
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 78px;
+                padding: 22px 10px;
+            }
 
-        @media (max-width: 768px) {
+            .brand {
+                justify-content: center;
+                padding: 5px 0 28px;
+            }
+
+            .brand-text,
+            .menu-heading,
+            .nav-link span {
+                display: none;
+            }
+
+            .nav-link {
+                justify-content: center;
+                padding: 15px 5px;
+            }
+
+            .nav-link i {
+                font-size: 18px;
+            }
+
+            .main {
+                margin-left: 78px;
+            }
 
             .topbar {
-                padding: 0 15px;
-            }
-
-            .top-link {
-                display: none;
-            }
-
-            .sidebar {
-                width: 210px;
+                padding: 15px 20px;
             }
 
             .content {
-                margin-left: 210px;
+                padding: 22px 20px;
+            }
 
-                width: calc(100% - 210px);
+            .profile-info {
+                display: none;
+            }
+        }
 
-                padding: 100px 20px 30px;
+        @media (max-width: 600px) {
+            .topbar {
+                flex-wrap: wrap;
+            }
+
+            .topbar-right {
+                width: 100%;
+            }
+
+            .search-box {
+                flex: 1;
+                width: auto;
+            }
+
+            .welcome {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 24px;
+            }
+
+            .welcome h2 {
+                font-size: 22px;
+            }
+
+            .welcome-actions {
+                width: 100%;
             }
 
             .stats-grid {
@@ -2093,429 +836,776 @@ table th {
             .quick-actions {
                 grid-template-columns: 1fr;
             }
-        }
 
-
-        @media (max-width: 500px) {
-
-            .sidebar {
-                width: 70px;
+            .form-grid {
+                grid-template-columns: 1fr;
             }
 
-            .sidebar-title {
-                display: none;
-            }
-
-            .sidebar-link {
-                justify-content: center;
-            }
-
-            .sidebar-link span {
-                display: none;
+            .form-group.full {
+                grid-column: auto;
             }
 
             .content {
-                margin-left: 70px;
-
-                width: calc(100% - 70px);
-
-                padding-left: 15px;
-                padding-right: 15px;
+                padding: 17px 12px;
             }
 
-            .page-header h1 {
-                font-size: 24px;
+            .panel {
+                padding: 16px;
             }
 
-            .welcome-box {
-                flex-direction: column;
-                text-align: center;
+            .page-heading h1 {
+                font-size: 19px;
             }
         }
-
     </style>
-
 </head>
-
 
 <body>
 
+<div class="app">
 
-    <!-- =====================================================
-         TOP NAVBAR
-    ====================================================== -->
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
 
-    <header class="topbar">
-
-        <!-- Logo -->
-        <div class="logo">
-            LMS
-        </div>
-
-
-        <!-- Right Side -->
-        <div class="topbar-right">
-
-            <!-- Notifications -->
-            <a th:href="@{/admin/notifications}"
-               class="top-link">
-
-                <i class="fa-regular fa-bell"></i>
-
-                <span>Notifications</span>
-
-            </a>
-
-
-            <!-- My Profile -->
-            <a th:href="@{/admin/profile}"
-               class="top-link">
-
-                <i class="fa-regular fa-user"></i>
-
-                <span>My Profile</span>
-
-            </a>
-
-
-            <!-- Logout -->
-            <a th:href="@{/admin/logout}"
-               class="logout-btn">
-
-                <i class="fa-solid fa-right-from-bracket"></i>
-
-                <span>Logout</span>
-
-            </a>
-
-        </div>
-
-    </header>
-
-
-
-    <!-- =====================================================
-         PAGE LAYOUT
-    ====================================================== -->
-
-    <div class="layout">
-
-
-        <!-- =================================================
-             SIDEBAR
-        ================================================== -->
-
-        <aside class="sidebar">
-
-            <div class="sidebar-title">
-                Admin Portal
+        <a th:href="@{/admin/dashboard}" class="brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
             </div>
 
+            <div class="brand-text">
+                <div class="brand-name">LearnHub</div>
+                <div class="brand-subtitle">Admin Portal</div>
+            </div>
+        </a>
 
-            <!-- Dashboard -->
-            <a th:href="@{/admin}"
-               class="sidebar-link active">
+        <div class="menu-heading">Overview</div>
 
-                <i class="fa-solid fa-gauge-high"></i>
+        <a th:href="@{/admin/dashboard}"
+           class="nav-link active">
+            <i class="fa-solid fa-table-columns"></i>
+            <span>Dashboard</span>
+        </a>
 
-                <span>Dashboard</span>
+        <a href="#recent-users" class="nav-link">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Reports</span>
+        </a>
 
-            </a>
+        <div class="menu-heading">Users</div>
 
+        <a th:href="@{/admin/users}" class="nav-link">
+            <i class="fa-solid fa-users"></i>
+            <span>Users</span>
+        </a>
 
-            <!-- User & Role -->
-            <a th:href="@{/admin/users}"
-               class="sidebar-link">
+        <a href="#quick-actions" class="nav-link">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Roles &amp; Permissions</span>
+        </a>
 
-                <i class="fa-solid fa-users"></i>
+        <div class="menu-heading">Catalog</div>
 
-                <span>User &amp; Role</span>
+        <a href="#quick-actions" class="nav-link">
+            <i class="fa-regular fa-folder-open"></i>
+            <span>Categories</span>
+        </a>
 
-            </a>
+        <a href="#quick-actions" class="nav-link">
+            <i class="fa-solid fa-book-open"></i>
+            <span>Courses</span>
+        </a>
 
+        <a href="#quick-actions" class="nav-link">
+            <i class="fa-regular fa-calendar"></i>
+            <span>Batches</span>
+        </a>
 
-            <!-- Notifications -->
-            <a th:href="@{/admin/notification}"
-               class="sidebar-link">
+        <div class="menu-heading">Enrollment</div>
 
+        <a href="#quick-actions" class="nav-link">
+            <i class="fa-solid fa-user-check"></i>
+            <span>Enrollments</span>
+        </a>
+
+        <div class="sidebar-bottom">
+
+            <a th:href="@{/admin/notification}" class="nav-link">
                 <i class="fa-regular fa-bell"></i>
-
                 <span>Notifications</span>
-
             </a>
 
-
-            <!-- My Profile -->
-            <a th:href="@{/admin/profile}"
-               class="sidebar-link">
-
+            <a th:href="@{/admin/profile}" class="nav-link">
                 <i class="fa-regular fa-user"></i>
-
                 <span>My Profile</span>
-
             </a>
 
-
-            <!-- Logout -->
             <a th:href="@{/admin/logout}"
-               class="sidebar-link logout-link">
-
+               class="nav-link logout-link">
                 <i class="fa-solid fa-right-from-bracket"></i>
-
                 <span>Logout</span>
-
             </a>
 
-        </aside>
+        </div>
+
+    </aside>
 
 
+    <!-- MAIN -->
+    <main class="main">
 
-        <!-- =================================================
-             MAIN CONTENT
-        ================================================== -->
+        <!-- TOPBAR -->
+        <header class="topbar">
 
-        <main class="content">
+            <div class="page-heading">
+                <h1>Dashboard</h1>
+                <p id="current-date">Learning Management System</p>
+            </div>
 
+            <div class="topbar-right">
 
-            <!-- Page Header -->
-            <div class="page-header">
+                <label class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
 
-                <div>
+                    <input type="search"
+                           id="dashboardSearch"
+                           placeholder="Search users..."
+                           aria-label="Search users">
+                </label>
 
-                    <h1>
-                        Admin Dashboard
-                    </h1>
+                <button type="button"
+                        class="icon-btn"
+                        id="themeToggle"
+                        title="Toggle light and dark mode"
+                        aria-label="Toggle theme">
+                    <i class="fa-regular fa-moon"></i>
+                </button>
 
-                    <p>
-                        Welcome,
-                        <strong th:text="${session.fullName}">
+                <a th:href="@{/admin/notification}"
+                   class="icon-btn"
+                   style="display:grid;place-items:center"
+                   title="Notifications">
+                    <i class="fa-regular fa-bell"></i>
+                </a>
+
+                <div class="profile">
+
+                    <div class="avatar" id="adminAvatar">AD</div>
+
+                    <div class="profile-info">
+                        <div class="profile-name"
+                             id="adminName"
+                             th:text="${session.fullName}">
                             Admin
-                        </strong>
-                    </p>
+                        </div>
 
-                </div>
-
-            </div>
-
-
-
-            <!-- =================================================
-                 STATISTICS
-            ================================================== -->
-
-            <div class="stats-grid">
-
-
-                <!-- Total Users -->
-                <div class="stat-card">
-
-                    <div class="stat-icon">
-
-                        <i class="fa-solid fa-users"></i>
-
-                    </div>
-
-                    <div class="stat-info">
-
-                        <h3>
-                            Total Users
-                        </h3>
-
-                        <p th:text="${totalUsers}">
-                            0
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- Total Roles -->
-                <div class="stat-card">
-
-                    <div class="stat-icon">
-
-                        <i class="fa-solid fa-user-shield"></i>
-
-                    </div>
-
-                    <div class="stat-info">
-
-                        <h3>
-                            Total Roles
-                        </h3>
-
-                        <p th:text="${totalRoles}">
-                            0
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- Active Users -->
-                <div class="stat-card">
-
-                    <div class="stat-icon">
-
-                        <i class="fa-solid fa-user-check"></i>
-
-                    </div>
-
-                    <div class="stat-info">
-
-                        <h3>
-                            Active Users
-                        </h3>
-
-                        <p th:text="${activeUsers}">
-                            0
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- Inactive Users -->
-                <div class="stat-card">
-
-                    <div class="stat-icon">
-
-                        <i class="fa-solid fa-user-slash"></i>
-
-                    </div>
-
-                    <div class="stat-info">
-
-                        <h3>
-                            Inactive Users
-                        </h3>
-
-                        <p th:text="${inactiveUsers}">
-                            0
-                        </p>
-
+                        <div class="profile-role">Administrator</div>
                     </div>
 
                 </div>
 
             </div>
 
+        </header>
 
 
-            <!-- =================================================
-                 QUICK ACTIONS
-            ================================================== -->
+        <!-- PAGE CONTENT -->
+        <div class="content">
 
-            <div class="dashboard-section">
+            <!-- FLASH MESSAGES -->
+            <div th:if="${success}"
+                 class="flash-message flash-success"
+                 th:text="${success}">
+                Success
+            </div>
 
-                <div class="section-title">
+            <div th:if="${error}"
+                 class="flash-message flash-error"
+                 th:text="${error}">
+                Error
+            </div>
+
+
+            <!-- WELCOME BANNER -->
+            <section class="welcome">
+
+                <div class="welcome-text">
 
                     <h2>
-                        Quick Actions
-                    </h2>
-
-                </div>
-
-
-                <div class="quick-actions">
-
-
-                    <!-- Manage Users -->
-                    <a th:href="@{/admin/users}"
-                       class="action-card">
-
-                        <i class="fa-solid fa-users"></i>
-
-                        <span>
-                            Manage Users
-                        </span>
-
-                    </a>
-
-
-                    <!-- Create User -->
-                    <a th:href="@{/admin/users/create}"
-                       class="action-card">
-
-                        <i class="fa-solid fa-user-plus"></i>
-
-                        <span>
-                            Create User
-                        </span>
-
-                    </a>
-
-
-                    <!-- Notifications -->
-                    <a th:href="@{/admin/notification}"
-                       class="action-card">
-
-                        <i class="fa-regular fa-bell"></i>
-
-                        <span>
-                            Notifications
-                        </span>
-
-                    </a>
-
-
-                    <!-- My Profile -->
-                    <a th:href="@{/admin/profile}"
-                       class="action-card">
-
-                        <i class="fa-regular fa-user"></i>
-
-                        <span>
-                            My Profile
-                        </span>
-
-                    </a>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- =================================================
-                 WELCOME MESSAGE
-            ================================================== -->
-
-            <div class="welcome-box">
-
-                <div class="welcome-icon">
-
-                    <i class="fa-solid fa-graduation-cap"></i>
-
-                </div>
-
-
-                <div>
-
-                    <h2>
-                        Learning Management System
+                        Welcome back,
+                        <span th:text="${session.fullName}">Admin</span>!
                     </h2>
 
                     <p>
-                        Manage users, roles and LMS administration
-                        from this dashboard.
+                        Here's what's happening with your LMS today.<br>
+                        Manage users, roles and your learning platform in one place.
                     </p>
 
+                </div>
+
+                <div class="welcome-actions">
+
+                    <button type="button"
+                            class="welcome-btn primary"
+                            onclick="openAddUserModal()">
+                        <i class="fa-solid fa-user-plus"></i>
+                        Add New User
+                    </button>
+
+                    <a th:href="@{/admin/users}"
+                       class="welcome-btn">
+                        <i class="fa-solid fa-users"></i>
+                        Manage Users
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <!-- STATISTICS -->
+            <section class="stats-grid">
+
+                <article class="stat-card">
+
+                    <div class="stat-icon purple">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+
+                    <div>
+                        <div class="stat-label">Total Users</div>
+
+                        <div class="stat-value"
+                             th:text="${totalUsers}">0</div>
+
+                        <div class="stat-note">Registered accounts</div>
+                    </div>
+
+                </article>
+
+
+                <article class="stat-card">
+
+                    <div class="stat-icon green">
+                        <i class="fa-solid fa-user-check"></i>
+                    </div>
+
+                    <div>
+                        <div class="stat-label">Active Users</div>
+
+                        <div class="stat-value"
+                             th:text="${activeUsers}">0</div>
+
+                        <div class="stat-note">Currently active accounts</div>
+                    </div>
+
+                </article>
+
+
+                <article class="stat-card">
+
+                    <div class="stat-icon yellow">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+
+                    <div>
+                        <div class="stat-label">Total Roles</div>
+
+                        <div class="stat-value"
+                             th:text="${totalRoles}">0</div>
+
+                        <div class="stat-note">Available system roles</div>
+                    </div>
+
+                </article>
+
+
+                <article class="stat-card">
+
+                    <div class="stat-icon red">
+                        <i class="fa-solid fa-user-slash"></i>
+                    </div>
+
+                    <div>
+                        <div class="stat-label">Inactive Users</div>
+
+                        <div class="stat-value"
+                             th:text="${inactiveUsers}">0</div>
+
+                        <div class="stat-note">Accounts not active</div>
+                    </div>
+
+                </article>
+
+            </section>
+
+
+            <!-- MAIN GRID -->
+            <div class="section-grid">
+
+                <section class="panel" id="recent-users">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h2>Recent Users</h2>
+
+                            <p class="panel-subtitle">
+                                Latest registered LMS accounts
+                            </p>
+                        </div>
+
+                        <a th:href="@{/admin/users}"
+                           class="small-btn">
+                            View All
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+
+                    </div>
+
+
+                    <div class="table-wrapper">
+
+                        <table id="usersTable">
+
+                            <thead>
+                            <tr>
+                                <th>USER</th>
+                                <th>ROLE</th>
+                                <th>STATUS</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+
+                            <tr th:each="user, stat : ${users}"
+                                th:if="${stat.index < 6}">
+
+                                <td>
+
+                                    <div class="user-cell">
+
+                                        <div class="user-avatar"
+                                             th:text="${#strings.substring(user.full_name, 0, 1)}">
+                                            U
+                                        </div>
+
+                                        <div>
+                                            <div th:text="${user.full_name}">
+                                                User Name
+                                            </div>
+
+                                            <div class="user-email"
+                                                 th:text="${user.email}">
+                                                user@example.com
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+                                <td th:text="${user.role_name}">
+                                    Student
+                                </td>
+
+                                <td>
+
+                                    <span class="badge"
+                                          th:classappend="${user.status == 'ACTIVE'} ? ' badge-active' : (${user.status == 'SUSPENDED'} ? ' badge-suspended' : ' badge-inactive')"
+                                          th:text="${user.status}">
+                                        ACTIVE
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                            <tr th:if="${#lists.isEmpty(users)}">
+                                <td colspan="3" class="empty-state">
+                                    <i class="fa-solid fa-users"></i>
+                                    <p style="margin-top:10px">
+                                        No users found.
+                                    </p>
+                                </td>
+                            </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+
+                <!-- QUICK ACTIONS -->
+                <section class="panel" id="quick-actions">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h2>Quick Actions</h2>
+
+                            <p class="panel-subtitle">
+                                Common administration tasks
+                            </p>
+                        </div>
+
+                        <i class="fa-solid fa-bolt"
+                           style="color:#a697ff"></i>
+
+                    </div>
+
+
+                    <div class="quick-actions">
+
+                        <button type="button"
+                                class="action-card"
+                                onclick="openAddUserModal()">
+
+                            <span class="action-icon">
+                                <i class="fa-solid fa-user-plus"></i>
+                            </span>
+
+                            <span>
+                                <strong>Add User</strong>
+                                <small>Create an account</small>
+                            </span>
+
+                        </button>
+
+
+                        <a th:href="@{/admin/users}"
+                           class="action-card">
+
+                            <span class="action-icon">
+                                <i class="fa-solid fa-users"></i>
+                            </span>
+
+                            <span>
+                                <strong>Manage Users</strong>
+                                <small>View all accounts</small>
+                            </span>
+
+                        </a>
+
+
+                        <a th:href="@{/admin/profile}"
+                           class="action-card">
+
+                            <span class="action-icon">
+                                <i class="fa-regular fa-user"></i>
+                            </span>
+
+                            <span>
+                                <strong>My Profile</strong>
+                                <small>View admin profile</small>
+                            </span>
+
+                        </a>
+
+
+                        <a th:href="@{/admin/notification}"
+                           class="action-card">
+
+                            <span class="action-icon">
+                                <i class="fa-regular fa-bell"></i>
+                            </span>
+
+                            <span>
+                                <strong>Notifications</strong>
+                                <small>View notifications</small>
+                            </span>
+
+                        </a>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+
+            <footer style="text-align:center;color:var(--muted);font-size:12px;padding:15px">
+                LearnHub LMS Admin Portal
+            </footer>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- ADD USER MODAL -->
+<div class="modal-overlay"
+     id="addUserModal"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="modalTitle"
+     onclick="overlayClose(event)">
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <h2 id="modalTitle">
+                <i class="fa-solid fa-user-plus"
+                   style="color:#a697ff;margin-right:8px"></i>
+                Add New User
+            </h2>
+
+            <button type="button"
+                    class="close-btn"
+                    onclick="closeAddUserModal()"
+                    aria-label="Close modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+        <p class="modal-description">
+            Create a new account for your Learning Management System.
+            Complete the form below.
+        </p>
+
+
+        <!-- Form UI is ready. Controller/Repository integration is next. -->
+        <form id="addUserForm"
+              th:action="@{/admin/users/create}"
+              method="post">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="full_name">Full Name *</label>
+
+                    <input type="text"
+                           id="full_name"
+                           name="full_name"
+                           placeholder="Enter full name"
+                           required
+                           maxlength="100">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           placeholder="Enter email address"
+                           required
+                           maxlength="150">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+
+                    <input type="tel"
+                           id="phone"
+                           name="phone"
+                           placeholder="Enter phone number"
+                           maxlength="30">
+                </div>
+
+
+             <div class="form-group">
+    <label for="dashboardRole">Role <span style="color: red;">*</span></label>
+
+    <select id="dashboardRole"
+            name="role_id"
+            class="form-control"
+            required>
+
+        <option value="">-- Select Role --</option>
+
+        <option th:each="r : ${roles}"
+                th:value="${r.role_id}"
+                th:text="${r.role_name}">
+        </option>
+
+    </select>
+</div>
+
+
+                <div class="form-group">
+                    <label for="password_hash">Password *</label>
+
+                    <input type="password"
+                           id="password_hash"
+                           name="password_hash"
+                           placeholder="Enter password"
+                           required
+                           minlength="6"
+                           autocomplete="new-password">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="status">Account Status</label>
+
+                    <select id="status" name="status">
+
+                        <option value="ACTIVE">Active</option>
+                        <option value="INACTIVE">Inactive</option>
+
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+
+                    <input type="date"
+                           id="dob"
+                           name="dob">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+
+                    <select id="gender" name="gender">
+
+                        <option value="">Select gender</option>
+                        <option value="MALE">Male</option>
+                        <option value="FEMALE">Female</option>
+                        <option value="OTHER">Other</option>
+
+                    </select>
+                </div>
+
+
+                <div class="form-group full">
+                    <label for="address">Address</label>
+
+                    <input type="text"
+                           id="address"
+                           name="address"
+                           placeholder="Enter address"
+                           maxlength="255">
                 </div>
 
             </div>
 
 
-        </main>
+            <div class="modal-actions">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        onclick="closeAddUserModal()">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i>
+                    Create User
+                </button>
+
+            </div>
+
+        </form>
 
     </div>
 
-</body>
+</div>
 
+
+<script>
+    // Current date
+    const dateElement = document.getElementById("current-date");
+
+    dateElement.textContent = new Date().toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+
+
+    // Admin avatar initials
+    const adminNameElement = document.getElementById("adminName");
+    const avatarElement = document.getElementById("adminAvatar");
+
+    if (adminNameElement && avatarElement) {
+        const name = adminNameElement.textContent.trim();
+
+        if (name && name !== "Admin") {
+            avatarElement.textContent = name
+                .split(/\s+/)
+                .slice(0, 2)
+                .map(part => part.charAt(0))
+                .join("")
+                .toUpperCase();
+        }
+    }
+
+
+    // Add User Modal
+    function openAddUserModal() {
+        const modal = document.getElementById("addUserModal");
+
+        modal.classList.add("show");
+        document.body.style.overflow = "hidden";
+
+        setTimeout(() => {
+            document.getElementById("full_name").focus();
+        }, 100);
+    }
+
+    function closeAddUserModal() {
+        document.getElementById("addUserModal").classList.remove("show");
+        document.body.style.overflow = "";
+    }
+
+    function overlayClose(event) {
+        if (event.target.id === "addUserModal") {
+            closeAddUserModal();
+        }
+    }
+
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape") {
+            closeAddUserModal();
+        }
+    });
+
+
+    // Dark / Light mode
+    const themeToggle = document.getElementById("themeToggle");
+
+    function applyTheme(isLight) {
+        document.body.classList.toggle("light-mode", isLight);
+
+        themeToggle.innerHTML = isLight
+            ? '<i class="fa-solid fa-sun"></i>'
+            : '<i class="fa-regular fa-moon"></i>';
+
+        localStorage.setItem("lmsTheme", isLight ? "light" : "dark");
+    }
+
+    applyTheme(localStorage.getItem("lmsTheme") === "light");
+
+    themeToggle.addEventListener("click", function() {
+        applyTheme(!document.body.classList.contains("light-mode"));
+    });
+
+
+    // Search users in the visible dashboard table
+    document.getElementById("dashboardSearch").addEventListener("input", function() {
+        const query = this.value.toLowerCase().trim();
+
+        document.querySelectorAll("#usersTable tbody tr").forEach(row => {
+            const rowText = row.textContent.toLowerCase();
+
+            row.style.display = rowText.includes(query) ? "" : "none";
+        });
+    });
+</script>
+
+</body>
 </html>
