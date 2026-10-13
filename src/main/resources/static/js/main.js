@@ -159,6 +159,11 @@ function renderSidebar(role) {
 				       window.location.href = '/teacher/exams';
 				       return;
 				   }
+				//
+				if(item.label == "Grade Submissions"){
+					window.location.href = '/teacher/submissions';
+					return;
+				}
 
 			    setActiveNavItem(navItem);
 			    showToast(`Navigated to ${item.label}`);
