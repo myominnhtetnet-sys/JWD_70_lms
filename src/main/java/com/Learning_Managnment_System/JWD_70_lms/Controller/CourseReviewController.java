@@ -1,61 +1,85 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
-import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.Learning_Managnment_System.JWD_70_lms.Service.CourseService;
-import com.Learning_Managnment_System.JWD_70_lms.Service.ReviewService;
-import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
-import com.Learning_Managnment_System.JWD_70_lms.model.Review;
-import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
+import com.Learning_Managnment_System.JWD_70_lms.Service.CourseReviewService;
+import com.Learning_Managnment_System.JWD_70_lms.model.CourseReviewBean;
 
 @Controller
-@RequestMapping("/coursesReview")
+@RequestMapping("/admin/reviews")
 public class CourseReviewController {
 
-    private final ReviewService reviewService;
-    private final CourseService courseService;
+    private final CourseReviewService reviewService;
 
-    public CourseReviewController(ReviewService reviewService, CourseService courseService) {
+    public CourseReviewController(CourseReviewService reviewService) {
         this.reviewService = reviewService;
-        this.courseService = courseService;
     }
 
-    @PostMapping("/{id}/review")
-    public String submitReview(@PathVariable("id") int courseId,
-                               @RequestParam("rating") int rating,
-                               @RequestParam("comment") String comment,
-                               HttpSession session,
-                               RedirectAttributes redirectAttributes) {
+    // 1. Review Moderation Page (List All Reviews or Filter by Course)
+    // URL: GET /admin/reviews
+    @GetMapping
+    public String showReviewModerationPage(@RequestParam(name = "courseId", required = false) Long courseId, Model model) {
+        List<CourseReviewBean> reviewList;
+
+        if (courseId != null) {
+            // Course ID အလိုက် Filter လုပ်ပြီးဆွဲမည်
+            reviewList = reviewService.getReviewsByCourseId(courseId);
+        } else {
+            // Review အားလုံးကို ဆွဲမည်
+            reviewList = reviewService.getAllReviews();
+        }
+
+        model.addAttribute("reviews", reviewList);
+        model.addAttribute("selectedCourseId", courseId);
         
-        // 1. Backend Security Check: Verify user session exists
-        StudentBean currentUser = (StudentBean) session.getAttribute("currentUser");
-        if (currentUser == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to leave a review.");
-            return "redirect:/login";
+        return "Course_Review_Moderation"; // သက်ဆိုင်ရာ HTML template နာမည် ပြန်ပေးမည်
+    }
+
+    // 2. JS / Fetch API အတွက် JSON Return ပြန်ပေးမည့် Endpoint
+    // URL: GET /admin/reviews/api/list
+    @GetMapping("/api/list")
+    @ResponseBody
+    public List<CourseReviewBean> getReviewsApi() {
+        return reviewService.getAllReviews();
+    }
+
+    // 3. Toggle Visibility (Show / Hide Review)
+    // URL: POST /admin/reviews/toggle-visibility
+    @PostMapping("/toggle-visibility")
+    public String toggleReviewVisibility(
+            @RequestParam("reviewId") Long reviewId,
+            @RequestParam("isVisible") boolean isVisible,
+            RedirectAttributes redirectAttributes) {
+
+        boolean success = reviewService.toggleVisibility(reviewId, isVisible);
+
+        if (success) {
+            redirectAttributes.addFlashAttribute("message", "Review status updated successfully!");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update review status.");
         }
 
-        // 2. Fetch target course
-        CourseBean course = courseService.getCourseById(courseId);
-        if (course == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Course not found.");
-            return "redirect:/courses/show";
+        return "redirect:/admin/reviews";
+    }
+
+    // 4. Delete Review
+    // URL: POST /admin/reviews/delete
+    @PostMapping("/delete")
+    public String deleteReview(
+            @RequestParam("reviewId") Long reviewId,
+            RedirectAttributes redirectAttributes) {
+
+        boolean success = reviewService.deleteReview(reviewId);
+
+        if (success) {
+            redirectAttributes.addFlashAttribute("message", "Review deleted successfully!");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete review.");
         }
 
-        // 3. Create and populate the Review entity
-        Review review = new Review();
-        review.setRating(rating);
-        review.setComment(comment);
-        review.setUser(currentUser); // Link the session user
-        review.setCourse(course);    // Link the course
-
-        // 4. Save review via Service layer
-        reviewService.saveReview(review);
-
-        // 5. Success redirect back to the page
-        redirectAttributes.addFlashAttribute("successMessage", "Thank you! Your review has been submitted.");
-        return "redirect:/courses/show";
+        return "redirect:/admin/reviews";
     }
 }

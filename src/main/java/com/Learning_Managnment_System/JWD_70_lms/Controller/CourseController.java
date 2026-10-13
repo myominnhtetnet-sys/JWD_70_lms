@@ -1,120 +1,132 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.Learning_Managnment_System.JWD_70_lms.Service.CourseService;
-import com.Learning_Managnment_System.JWD_70_lms.Service.ReviewService;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.CourseRepository;
+import com.Learning_Managnment_System.JWD_70_lms.Service.CategoryService;
+import com.Learning_Managnment_System.JWD_70_lms.Service.CourseFileUploadService;
+import com.Learning_Managnment_System.JWD_70_lms.model.CategoryBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
-import com.Learning_Managnment_System.JWD_70_lms.model.Review;
-import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @Controller
-@RequestMapping("/courses")
+@RequestMapping("/admin/courses")
 public class CourseController {
 
-    @Autowired
-    private CourseService courseService;
+    private final CourseRepository courseRepository;
+    private final CategoryService categoryService;
+    private final CourseFileUploadService fileUploadService;
 
-    @Autowired
-    private ReviewService reviewService;
-
-    @Autowired
-    private CourseRepository courseRepository; 
-
-    @InitBinder
-    public void initBinder(WebDataBinder dataBinder) {
-        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
-        dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+    public CourseController(CourseRepository courseRepository, CategoryService categoryService, CourseFileUploadService fileUploadService) {
+        this.courseRepository = courseRepository;
+        this.categoryService = categoryService;
+        this.fileUploadService = fileUploadService;
     }
 
-    @GetMapping("/show")
-    public String showAndFilterCourses(
-            @ModelAttribute CourseBean filters, 
-            @RequestParam(value = "page", defaultValue = "0") int page, 
-            Model model) {
-        
-        int pageSize = 6;
-        
-        // 🟢 FIXED: Using pure JDBC offset-driven filtering methods instead of Spring Data Pageable
-        List<CourseBean> courseList = courseService.getFilteredCourses(filters, page, pageSize);
-        int totalPages = courseService.getTotalPagesForFilters(filters, pageSize);
-        
-        model.addAttribute("list", courseList);              
-        model.addAttribute("currentPage", page);                           
-        model.addAttribute("totalPages", totalPages);      
-        
-        // Binds your active pagination link params state mapping
-        model.addAttribute("courseBean", filters); 
-        
-        return "courses"; 
+    @GetMapping
+    public String courseListPage() {
+        return "Course_Management"; 
     }
 
-    @GetMapping("/detail/{slug}")
-    public String getCourseDetails(@PathVariable("slug") String slug, Model model) {
-        // Safe mapping using the rewritten class Optional structure container
-        Optional<CourseBean> courseOpt = courseRepository.findBySlug(slug);
-        
-        if (courseOpt.isEmpty()) {
-            return "error/404"; 
-        }
-        
-        CourseBean course = courseOpt.get();
-        
-        // Fetch corresponding user reviews using our pure JDBC repository method mapping
-        List<Review> courseReviews = courseRepository.findReviewsByCourseId(course.getCourse_id());
-        
-        model.addAttribute("course", course);
-        model.addAttribute("reviews", courseReviews); 
-        
-        return "course-detail"; 
+    @GetMapping("/api/list")
+    @ResponseBody
+    public ResponseEntity<List<CourseBean>> getAllCourses() {
+        return ResponseEntity.ok(courseRepository.findAll());
     }
 
-    @PostMapping("/{id}/review")
-    public String saveCourseReview(
-            @PathVariable("id") Long courseId,
-            @RequestParam("rating") int rating,
-            @RequestParam("comment") String comment,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
-            
-        // 1. Backend Security Check: Verify user session exists
-        StudentBean currentUser = (StudentBean) session.getAttribute("currentUser");
-        if (currentUser == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to leave a review.");
-            return "redirect:/login";
+    @GetMapping("/api/categories")
+    @ResponseBody
+    public ResponseEntity<List<CategoryBean>> getAllCategories() {
+        return ResponseEntity.ok(categoryService.getAllCategories());
+    }
+
+    @GetMapping("/api/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getCourseById(@PathVariable Integer id) {
+        CourseBean course = courseRepository.findById(id);
+        if (course != null) {
+            return ResponseEntity.ok(course);
         }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Course not found with ID: " + id));
+    }
 
-        // 2. 🟢 FIXED: Replaced .findById() with getCourseById from your service layer
-        CourseBean course = courseService.getCourseById(courseId.intValue());
-        if (course == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "The target course data record was not found.");
-            return "redirect:/courses/show";
+    // 🟢 CREATE COURSE
+    @PostMapping(value = "/api/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    public ResponseEntity<?> createCourse(
+            @RequestPart("course") CourseBean course,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+        try {
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String fileName = fileUploadService.saveFile(imageFile);
+                course.setThumbnail(fileName);
+            }
+
+            if (course.getLanguage() == null || course.getLanguage().trim().isEmpty()) {
+                course.setLanguage("Java");
+            }
+            if (course.getStatus() == null || course.getStatus().trim().isEmpty()) {
+                course.setStatus("DRAFT");
+            }
+            if (course.getCreated_by() == null) {
+                course.setCreated_by(1);
+            }
+
+            courseRepository.save(course);
+            return ResponseEntity.ok(Map.of("message", "Course created successfully!"));
+        } catch (IllegalArgumentException e) {
+            // Validation Error (2MB ကျော်ခြင်း သို့မဟုတ် Image မဟုတ်ခြင်း)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
         }
+    }
 
-        // 3. Build and map your concrete data POJO structure fields
-        Review review = new Review();
-        review.setRating(rating);
-        review.setComment(comment);
-        review.setUser(currentUser); 
-        review.setCourse(course);    
+    // 🟢 UPDATE COURSE
+    @PutMapping(value = "/api/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    public ResponseEntity<?> updateCourse(
+            @RequestPart("course") CourseBean course,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+        try {
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String fileName = fileUploadService.saveFile(imageFile);
+                course.setThumbnail(fileName);
+            }
 
-        // 4. Save review instance via raw JDBC write queries
-        reviewService.saveReview(review);
+            courseRepository.update(course);
+            return ResponseEntity.ok(Map.of("message", "Course updated successfully!"));
+        } catch (IllegalArgumentException e) {
+            // Validation Error (2MB ကျော်ခြင်း သို့မဟုတ် Image မဟုတ်ခြင်း)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
 
-        redirectAttributes.addFlashAttribute("successMessage", "Thank you! Your feedback has been published.");
-        
-        // 5. Auto-refresh page view layout while keeping active modal open natively
-        return "redirect:/courses/show#detailModal-" + courseId;
+    @DeleteMapping("/api/delete/{id}")
+    @ResponseBody
+    public ResponseEntity<?> deleteCourse(@PathVariable Integer id) {
+        try {
+            courseRepository.softDelete(id);
+            return ResponseEntity.ok(Map.of("message", "Course deleted successfully!"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 }

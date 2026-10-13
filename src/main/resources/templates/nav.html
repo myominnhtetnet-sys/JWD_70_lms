@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<aside th:fragment="nav" id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex-shrink-0 border-r border-slate-800 flex flex-col justify-between transition-all duration-300">
+    <div class="p-4">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-3" id="sidebar-category">Admin Portal</div>
+        
+        <nav id="sidebar-menu" class="space-y-1">
+            
+            <!-- 1. Dashboard -->
+            <a th:href="@{/admin/dashboard}" 
+               th:classappend="${#execInfo.processedTemplateName == 'dashboard'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
+               class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer">
+                <i class="fa-solid fa-chart-pie text-sm w-5 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <!-- 2. Users & Roles -->
+            <a th:href="@{/admin/users}" 
+               th:classappend="${#execInfo.processedTemplateName == 'users'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
+               class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer">
+                <i class="fa-solid fa-users text-sm w-5 text-center"></i>
+                <span>Users & Roles</span>
+            </a>
+            
+            <!-- Batch Management Sub-menu -->
+            <div th:with="isBatchActive=${#execInfo.processedTemplateName == 'batch-detail'}" class="w-full">
+
+                <button type="button" 
+                        onclick="toggleBatchSubmenu()"
+                        th:classappend="${isBatchActive} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
+                        class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer select-none">
+                    
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-layer-group text-sm w-5 text-center"></i>
+                        <span>Batch Management</span>
+                    </div>
+
+                    <i id="batchSubmenuArrow" 
+                       th:classappend="${isBatchActive} ? 'rotate-180' : ''"
+                       class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                </button>
+
+                <div id="batchSubmenu" 
+                     th:classappend="${isBatchActive} ? '' : 'hidden'"
+                     class="pl-8 pr-2 py-1 space-y-1 mt-1 transition-all">
+
+                    <a th:href="@{/admin/batches/{id}/students(id=${batchId != null ? batchId : 1})}" 
+                       th:classappend="${activeTab == 'students'} ? 'text-indigo-400 font-bold bg-indigo-500/10' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'"
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-md text-[11px] font-medium transition">
+                        <i class="fa-solid fa-users text-xs w-4 text-center"></i>
+                        <span>Students</span>
+                    </a>
+
+                    <a th:href="@{/admin/batches/{id}/sessions(id=${batchId != null ? batchId : 1})}" 
+                       th:classappend="${activeTab == 'sessions'} ? 'text-indigo-400 font-bold bg-indigo-500/10' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'"
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-md text-[11px] font-medium transition">
+                        <i class="fa-solid fa-chalkboard-user text-xs w-4 text-center"></i>
+                        <span>Class Sessions</span>
+                    </a>
+
+                    <a th:href="@{/admin/batches/{id}/progress(id=${batchId != null ? batchId : 1})}" 
+                       th:classappend="${activeTab == 'progress'} ? 'text-indigo-400 font-bold bg-indigo-500/10' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'"
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-md text-[11px] font-medium transition">
+                        <i class="fa-solid fa-chart-line text-xs w-4 text-center"></i>
+                        <span>Progress</span>
+                    </a>
+
+                    <a th:href="@{/admin/batches/{id}/announcements(id=${batchId != null ? batchId : 1})}" 
+                       th:classappend="${activeTab == 'announcements'} ? 'text-indigo-400 font-bold bg-indigo-500/10' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'"
+                       class="flex items-center gap-2.5 px-3 py-2 rounded-md text-[11px] font-medium transition">
+                        <i class="fa-solid fa-bullhorn text-xs w-4 text-center"></i>
+                        <span>Announcements</span>
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- 3. Course Management -->
+            <a th:href="@{/admin/courses}" 
+               th:classappend="${#execInfo.processedTemplateName == 'courses'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
+               class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer">
+                <i class="fa-solid fa-book-open text-sm w-5 text-center"></i>
+                <span>Course Management</span>
+            </a>
+            
+<a th:href="@{/admin/batches-manage}" 
+   th:classappend="${activeTab == 'batch_create'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
+   class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer">
+    <i class="fa-solid fa-folder-plus text-sm w-5 text-center"></i>
+    <span>Create Batch</span>
+</a>
+
+            <!-- 4. Analytics -->
+            <a th:href="@{/admin/analytics}" 
+               th:classappend="${#execInfo.processedTemplateName == 'analytics'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
+               class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer">
+                <i class="fa-solid fa-chart-line text-sm w-5 text-center"></i>
+                <span>Analytics</span>
+            </a>
+
+            <!-- 5. Audit Logs -->
+            <a th:href="@{/admin/audit-logs}" 
+               th:classappend="${#execInfo.processedTemplateName == 'audit-logs'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
+               class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer">
+                <i class="fa-solid fa-clock-rotate-left text-sm w-5 text-center"></i>
+                <span>Audit Logs</span>
+            </a>
+
+            <!-- 6. Announcements Management -->
+            <a th:href="@{/admin/announcements}" 
+               th:classappend="${#execInfo.processedTemplateName == 'announcements'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
+               class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer">
+                <i class="fa-solid fa-bullhorn text-sm w-5 text-center"></i>
+                <span>Announcements Management</span>
+            </a>
+
+            <!-- 7. Course Review -->
+            <a th:href="@{/admin/reviews}" 
+               th:classappend="${#execInfo.processedTemplateName == 'reviews'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
+               class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer">
+                <i class="fa-solid fa-comments text-sm w-5 text-center"></i>
+                <span>Course Review</span>
+            </a>
+
+            <!-- 8. Certificate Management -->
+            <a th:href="@{/admin/certificates}" 
+               th:classappend="${#execInfo.processedTemplateName == 'certificates'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
+               class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer">
+                <i class="fa-solid fa-certificate text-sm w-5 text-center"></i>
+                <span>Certificate Management</span>
+            </a>
+
+            <!-- 9. System Settings -->
+            <a th:href="@{/admin/settings}" 
+               th:classappend="${#execInfo.processedTemplateName == 'settings'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
+               class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer">
+                <i class="fa-solid fa-gear text-sm w-5 text-center"></i>
+                <span>System Settings</span>
+            </a>
+
+        </nav>
+    </div>
+
+    <script>
+        function toggleBatchSubmenu() {
+            const submenu = document.getElementById('batchSubmenu');
+            const arrow = document.getElementById('batchSubmenuArrow');
+            if (submenu && arrow) {
+                submenu.classList.toggle('hidden');
+                arrow.classList.toggle('rotate-180');
+            }
+        }
+    </script>
+</aside>
+
+</body>
+</html>

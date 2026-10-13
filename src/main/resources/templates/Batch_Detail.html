@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch Details - LMS Admin</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+    <div class="max-w-7xl mx-auto p-6">
+        
+        <!-- Page Header & Batch Overview -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            
+            <!-- 🌟 Batch Dropdown Selection Bar -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4 mb-4">
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <div>
+                        <label for="batchSelector" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Select Batch</label>
+                        <select id="batchSelector" onchange="changeBatch(this.value)" class="border border-gray-300 rounded-lg px-3 py-2 bg-white text-sm font-semibold text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <!-- Database မှလာသော batches စာရင်းကို loop ပတ်ပြသခြင်း -->
+                            <th:block th:each="b : ${batches}">
+                                <option th:value="${b.batchId}" 
+                                        th:text="${b.batchCode + ' - ' + b.title}" 
+                                        th:selected="${b.batchId == batchId}">
+                                </option>
+                            </th:block>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="openModal('announcementModal')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition">
+                        <i class="fa-solid fa-bullhorn"></i> New Announcement
+                    </button>
+                    <button onclick="openModal('sessionModal')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition">
+                        <i class="fa-solid fa-calendar-plus"></i> Add Session
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs with Thymeleaf dynamic active styles -->
+            <div class="flex border-b border-gray-200 text-sm font-medium gap-1">
+                
+                <!-- 1. Students Tab Link -->
+                <a th:href="@{/admin/batches/{id}/students(id=${batchId})}"
+                   th:classappend="${activeTab == 'students'} ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                   class="tab-btn px-4 py-3 border-b-2 flex items-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-users text-sm"></i>
+                    <span>Students</span>
+                </a>
+
+                <!-- 2. Class Sessions Tab Link -->
+                <a th:href="@{/admin/batches/{id}/sessions(id=${batchId})}"
+                   th:classappend="${activeTab == 'sessions'} ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                   class="tab-btn px-4 py-3 border-b-2 flex items-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-chalkboard-user text-sm"></i>
+                    <span>Class Sessions</span>
+                </a>
+
+                <!-- 3. Progress Tab Link -->
+                <a th:href="@{/admin/batches/{id}/progress(id=${batchId})}"
+                   th:classappend="${activeTab == 'progress'} ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                   class="tab-btn px-4 py-3 border-b-2 flex items-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-chart-line text-sm"></i>
+                    <span>Progress</span>
+                </a>
+
+                <!-- 4. Announcements Tab Link -->
+                <a th:href="@{/admin/batches/{id}/announcements(id=${batchId})}"
+                   th:classappend="${activeTab == 'announcements'} ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                   class="tab-btn px-4 py-3 border-b-2 flex items-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-bullhorn text-sm"></i>
+                    <span>Announcements</span>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- Dynamic Content Body -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div id="tabContentArea">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr id="dynamicTableHeader" class="bg-gray-50 border-b text-xs text-gray-500 uppercase tracking-wider">
+                                <!-- Headers injected dynamically by JS -->
+                            </tr>
+                        </thead>
+                        <tbody id="dynamicTableBody" class="divide-y text-sm">
+                            <tr>
+                                <td colspan="5" class="text-center p-4 text-gray-400">Loading data from database...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Session Modal -->
+    <div id="sessionModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg w-full max-w-md p-6 shadow-lg">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Add Class Session</h3>
+            <form id="sessionForm" onsubmit="submitSession(event)">
+                
+                <!-- 🌟 Database မှ Lessons များကို Dynamic ဆွဲထုတ်ပြသသော Dropdown -->
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold mb-1">Select Lesson</label>
+                    <select id="sessionLessonId" required class="w-full border rounded p-2 text-sm bg-white focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <option value="">-- Choose Lesson --</option>
+                        <th:block th:each="l : ${lessons}">
+                            <option th:value="${l.lessonId}" th:text="${l.title}"></option>
+                        </th:block>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold mb-1">Session Title</label>
+                    <input type="text" id="sessionTitle" required class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Start At</label>
+                        <input type="datetime-local" id="sessionStart" required class="w-full border rounded p-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">End At</label>
+                        <input type="datetime-local" id="sessionEnd" required class="w-full border rounded p-2 text-sm">
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-xs font-semibold mb-1">Meeting URL</label>
+                    <input type="url" id="sessionUrl" placeholder="https://zoom.us/j/..." class="w-full border rounded p-2 text-sm">
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('sessionModal')" class="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-sm text-white bg-emerald-600 rounded hover:bg-emerald-700">Save Session</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Announcement Modal -->
+    <div id="announcementModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg w-full max-w-md p-6 shadow-lg">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Post Announcement</h3>
+            <form id="announcementForm" onsubmit="submitAnnouncement(event)">
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold mb-1">Title</label>
+                    <input type="text" id="announceTitle" required class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-xs font-semibold mb-1">Message Body</label>
+                    <textarea id="announceBody" rows="4" required class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('announcementModal')" class="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-sm text-white bg-indigo-600 rounded hover:bg-indigo-700">Publish</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Data Fetching & Date Parsing Fixes -->
+    <script th:inline="javascript">
+        /* Extract Thymeleaf Variables from Controller Model */
+        const BATCH_ID = /*[[${batchId}]]*/ 1;
+        const ACTIVE_TAB = /*[[${activeTab}]]*/ 'students';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTabData(ACTIVE_TAB);
+        });
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        /**
+         * Dropdown မှ Batch ပြောင်းလိုက်သောအခါ အလုပ်လုပ်မည့် Function
+         */
+        function changeBatch(selectedBatchId) {
+            const currentPath = window.location.pathname; 
+            const pathParts = currentPath.split('/');
+            const currentTab = pathParts[pathParts.length - 1]; 
+            
+            window.location.href = `/admin/batches/${selectedBatchId}/${currentTab}`;
+        }
+
+        /**
+         * Safe Date Formatter
+         */
+        function safeFormatDate(dateVal) {
+            if (!dateVal) return '-';
+
+            if (Array.isArray(dateVal)) {
+                const [year, month, day, hour = 0, minute = 0] = dateVal;
+                const d = new Date(year, month - 1, day, hour, minute);
+                return isNaN(d.getTime()) ? '-' : d.toLocaleString();
+            }
+
+            let d = new Date(dateVal);
+            if (isNaN(d.getTime())) {
+                d = new Date(String(dateVal).replace(' ', 'T'));
+            }
+
+            return isNaN(d.getTime()) ? '-' : d.toLocaleString();
+        }
+
+        async function loadTabData(tab) {
+            const thead = document.getElementById('dynamicTableHeader');
+            const tbody = document.getElementById('dynamicTableBody');
+
+            try {
+                const response = await fetch(`/admin/batches/${BATCH_ID}/api/${tab}`);
+                const data = await response.json();
+
+                if (tab === 'students') {
+                    thead.innerHTML = `
+                        <th class="p-3">Student Name</th>
+                        <th class="p-3">Email</th>
+                        <th class="p-3">Enrolled Date</th>
+                        <th class="p-3">Payment Status</th>
+                        <th class="p-3">Status</th>`;
+                    
+                    tbody.innerHTML = data.length === 0 
+                        ? '<tr><td colspan="5" class="p-4 text-center text-gray-400">No enrolled students found.</td></tr>' 
+                        : data.map(s => `
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-3 font-medium text-gray-900">${s.fullName || '-'}</td>
+                                <td class="p-3 text-gray-600">${s.email || '-'}</td>
+                                <td class="p-3">${safeFormatDate(s.enrolledAt)}</td>
+                                <td class="p-3"><span class="px-2 py-1 text-xs rounded font-semibold ${s.paymentStatus === 'PAID' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${s.paymentStatus || 'PENDING'}</span></td>
+                                <td class="p-3"><span class="px-2 py-1 text-xs rounded bg-blue-100 text-blue-700 font-semibold">${s.enrollmentStatus || 'ACTIVE'}</span></td>
+                            </tr>
+                        `).join('');
+
+                } else if (tab === 'sessions') {
+                    thead.innerHTML = `
+                        <th class="p-3">Session Title</th>
+                        <th class="p-3">Start At</th>
+                        <th class="p-3">End At</th>
+                        <th class="p-3">Meeting Link</th>
+                        <th class="p-3">Status</th>`;
+
+                    tbody.innerHTML = data.length === 0 
+                        ? '<tr><td colspan="5" class="p-4 text-center text-gray-400">No class sessions scheduled.</td></tr>' 
+                        : data.map(s => `
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-3 font-medium text-gray-900">${s.title || '-'}</td>
+                                <td class="p-3 text-gray-600">${safeFormatDate(s.startAt)}</td>
+                                <td class="p-3 text-gray-600">${safeFormatDate(s.endAt)}</td>
+                                <td class="p-3">${s.meetingUrl ? `<a href="${s.meetingUrl}" target="_blank" class="text-indigo-600 hover:underline flex items-center gap-1"><i class="fa-solid fa-video"></i> Join Link</a>` : '-'}</td>
+                                <td class="p-3"><span class="px-2 py-1 text-xs rounded bg-gray-100 text-gray-700 font-semibold">${s.status || 'SCHEDULED'}</span></td>
+                            </tr>
+                        `).join('');
+
+                } else if (tab === 'progress') {
+                    thead.innerHTML = `
+                        <th class="p-3">Student Name</th>
+                        <th class="p-3">Completed Lessons</th>
+                        <th class="p-3">Total Lessons</th>
+                        <th class="p-3">Progress Rate</th>`;
+
+                    tbody.innerHTML = data.length === 0 
+                        ? '<tr><td colspan="4" class="p-4 text-center text-gray-400">No progress records found.</td></tr>' 
+                        : data.map(p => `
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-3 font-medium text-gray-900">${p.studentName || '-'}</td>
+                                <td class="p-3 text-gray-600">${p.completedLessons ?? 0}</td>
+                                <td class="p-3 text-gray-600">${p.totalLessons ?? 0}</td>
+                                <td class="p-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-indigo-600 h-2 rounded-full" style="width: ${p.overallProgressPercent || 0}%"></div>
+                                        </div>
+                                        <span class="text-xs font-bold text-gray-700">${(p.overallProgressPercent || 0).toFixed(0)}%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('');
+
+                } else if (tab === 'announcements') {
+                    thead.innerHTML = `<th class="p-3" colspan="2">Announcements List</th>`;
+
+                    tbody.innerHTML = data.length === 0 
+                        ? '<tr><td colspan="2" class="p-4 text-center text-gray-400">No announcements posted.</td></tr>' 
+                        : data.map(a => `
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-4" colspan="2">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <h4 class="font-bold text-gray-900 text-base">${a.title || '-'}</h4>
+                                        <span class="text-xs text-gray-400">${safeFormatDate(a.publishedAt)}</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-2">${a.body || ''}</p>
+                                    <span class="text-xs text-indigo-600 font-semibold">Posted by: ${a.postedByName || 'Admin'}</span>
+                                </td>
+                            </tr>
+                        `).join('');
+                }
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-red-500">Failed to load data from server.</td></tr>';
+                console.error("Error fetching tab data:", error);
+            }
+        }
+
+        async function submitSession(e) {
+            e.preventDefault();
+
+            const rawStart = document.getElementById('sessionStart').value;
+            const rawEnd = document.getElementById('sessionEnd').value;
+
+            const formattedStart = rawStart ? (rawStart.length === 16 ? rawStart + ":00" : rawStart) : null;
+            const formattedEnd = rawEnd ? (rawEnd.length === 16 ? rawEnd + ":00" : rawEnd) : null;
+
+            // 🌟 lessonId ကို Dropdown မှ ယူ၍ payload ထဲသို့ ထည့်သွင်းခြင်း
+            const payload = {
+                batchId: BATCH_ID,
+                lessonId: document.getElementById('sessionLessonId').value ? Number(document.getElementById('sessionLessonId').value) : null,
+                title: document.getElementById('sessionTitle').value,
+                startAt: formattedStart,
+                endAt: formattedEnd,
+                meetingUrl: document.getElementById('sessionUrl').value,
+                status: 'SCHEDULED'
+            };
+
+            try {
+                const res = await fetch(`/admin/batches/${BATCH_ID}/api/sessions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    closeModal('sessionModal');
+                    document.getElementById('sessionForm').reset();
+                    loadTabData(ACTIVE_TAB);
+                } else {
+                    alert('Failed to save session. Please check your inputs.');
+                }
+            } catch (err) {
+                console.error("Error saving session:", err);
+            }
+        }
+
+        async function submitAnnouncement(e) {
+            e.preventDefault();
+            const payload = {
+                batchId: BATCH_ID,
+                title: document.getElementById('announceTitle').value,
+                body: document.getElementById('announceBody').value,
+                postedBy: 1
+            };
+
+            try {
+                const res = await fetch(`/api/announcements`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    closeModal('announcementModal');
+                    document.getElementById('announcementForm').reset();
+                    loadTabData(ACTIVE_TAB);
+                }
+            } catch (err) {
+                console.error("Error posting announcement:", err);
+            }
+        }
+    </script>
+</body>
+</html>

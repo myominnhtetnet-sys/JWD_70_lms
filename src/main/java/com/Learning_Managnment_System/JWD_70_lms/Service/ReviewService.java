@@ -16,7 +16,7 @@ public class ReviewService {
 
     // 🟢 Pure JDBC manual write execution mapping to your table structure
     public void saveReview(Review review) {
-        String sql = "INSERT INTO lms_db.course_reviews (course_id, user_id, rating, comment, is_visible) " +
+        String sql = "INSERT INTO learning_db.course_reviews (course_id, user_id, rating, comment, is_visible) " +
                      "VALUES (?, ?, ?, ?, 1)";
                      
         jdbcTemplate.update(sql, 

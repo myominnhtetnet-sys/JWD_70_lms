@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch Management - LMS Admin</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+    <div class="max-w-7xl mx-auto p-6">
+        
+        <!-- Header & Action Bar -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">ADMIN PORTAL</span>
+                <h1 class="text-2xl font-bold text-gray-900 mt-1">Batch Create</h1>
+            </div>
+            <button onclick="openCreateModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition shadow-sm">
+                <i class="fa-solid fa-plus"></i> Create New Batch
+            </button>
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="bg-white rounded-lg shadow-sm p-4 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <!-- Search Input -->
+            <div class="w-full sm:w-96 relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <input type="text" id="searchInput" onkeyup="filterBatches()" placeholder="Search by batch code, title or course..." class="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <!-- Status Filter Dropdown -->
+            <div class="w-full sm:w-auto">
+                <select id="statusFilter" onchange="filterBatches()" class="w-full sm:w-48 border rounded-lg p-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <option value="">All Status</option>
+                    <option value="UPCOMING">UPCOMING</option>
+                    <option value="ONGOING">ONGOING</option>
+                    <option value="COMPLETED">COMPLETED</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Batches Table Card -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table id="batchTable" class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 border-b text-xs text-gray-500 uppercase tracking-wider">
+                            <th class="p-4">Batch Code</th>
+                            <th class="p-4">Batch Title</th>
+                            <th class="p-4">Course</th>
+                            <th class="p-4">Schedule</th>
+                            <th class="p-4">Duration</th>
+                            <th class="p-4">Seats</th>
+                            <th class="p-4">Status</th>
+                            <th class="p-4 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y text-sm">
+                        <!-- Database မှ အချက်အလက်များ အစဉ်လိုက် ပေါ်လာမည် -->
+                        <tr th:each="b : ${batches}" class="batch-row hover:bg-gray-50 transition" 
+                            th:data-code="${b.batchCode}" 
+                            th:data-title="${b.title}" 
+                            th:data-course="${b.courseTitle}" 
+                            th:data-status="${b.status}">
+                            <td class="p-4 font-semibold text-indigo-600" th:text="${b.batchCode}"></td>
+                            <td class="p-4 font-medium text-gray-900" th:text="${b.title}"></td>
+                            <td class="p-4 text-gray-600" th:text="${b.courseTitle ?: '-'}"></td>
+                            <td class="p-4 text-gray-500 text-xs" th:text="${b.scheduleNote}"></td>
+                            <td class="p-4 text-gray-500 text-xs" th:text="${b.startDate + ' to ' + b.endDate}"></td>
+                            <td class="p-4 text-gray-600" th:text="${b.maxSeats}"></td>
+                            <td class="p-4">
+                                <span class="px-2.5 py-1 text-xs rounded-full font-semibold"
+                                      th:classappend="${b.status == 'UPCOMING'} ? 'bg-amber-100 text-amber-700' : (${b.status == 'ONGOING'} ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700')"
+                                      th:text="${b.status}"></span>
+                            </td>
+                            <td class="p-4 text-center flex justify-center gap-2">
+                                <!-- View / Details Link -->
+                                <a th:href="@{/admin/batches/{id}/students(id=${b.batchId})}" title="View Details" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded transition">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                <!-- Edit Button -->
+                                <button th:onclick="'openEditModal(' + ${b.batchId} + ')'" title="Edit Batch" class="p-2 text-blue-600 hover:bg-blue-50 rounded transition">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <!-- Assign Instructor Button -->
+                                <button th:onclick="'openInstructorModal(' + ${b.batchId} + ')'" title="Assign Instructor" class="p-2 text-purple-600 hover:bg-purple-50 rounded transition">
+                                    <i class="fa-solid fa-chalkboard-user"></i>
+                                </button>
+                                <!-- Delete Button -->
+                                <button th:onclick="'deleteBatch(' + ${b.batchId} + ')'" title="Delete" class="p-2 text-red-600 hover:bg-red-50 rounded transition">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <!-- အချက်အလက် မရှိသေးပါက ပြသရန် -->
+                        <tr th:if="${#lists.isEmpty(batches)}">
+                            <td colspan="8" class="text-center p-6 text-gray-400">No batches found in database.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create / Edit Batch Modal -->
+    <div id="batchModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg w-full max-w-lg p-6 shadow-lg">
+            <h3 id="modalTitle" class="text-lg font-bold text-gray-800 mb-4">Create New Batch</h3>
+            <form id="batchForm" onsubmit="submitBatchForm(event)">
+                <input type="hidden" id="batchId">
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Batch Code</label>
+                        <input type="text" id="batchCode" required placeholder="e.g. BATCH-005" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Course ID</label>
+                        <input type="number" id="courseId" required placeholder="1" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold mb-1">Batch Title</label>
+                    <input type="text" id="batchTitle" required placeholder="Batch 3 - Advanced Java" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold mb-1">Schedule Note</label>
+                    <input type="text" id="scheduleNote" placeholder="Mon/Wed/Fri 7PM-9PM" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Start Date</label>
+                        <input type="date" id="startDate" required class="w-full border rounded p-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">End Date</label>
+                        <input type="date" id="endDate" required class="w-full border rounded p-2 text-sm">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Max Seats</label>
+                        <input type="number" id="maxSeats" value="30" required class="w-full border rounded p-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Status</label>
+                        <select id="batchStatus" class="w-full border rounded p-2 text-sm bg-white">
+                            <option value="UPCOMING">UPCOMING</option>
+                            <option value="ONGOING">ONGOING</option>
+                            <option value="COMPLETED">COMPLETED</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('batchModal')" class="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-sm text-white bg-indigo-600 rounded hover:bg-indigo-700">Save Batch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Assign Instructor Modal -->
+    <div id="instructorModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg w-full max-w-sm p-6 shadow-lg">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Assign Instructor</h3>
+            <form id="instructorForm" onsubmit="submitInstructorAssignment(event)">
+                <input type="hidden" id="assignBatchId">
+                <div class="mb-4">
+                    <label class="block text-xs font-semibold mb-1">Instructor ID</label>
+                    <input type="number" id="instructorId" required placeholder="Enter Instructor ID" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-purple-500 outline-none">
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('instructorModal')" class="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-sm text-white bg-purple-600 rounded hover:bg-purple-700">Assign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Functions -->
+    <script>
+        function openCreateModal() {
+            document.getElementById('modalTitle').innerText = 'Create New Batch';
+            document.getElementById('batchForm').reset();
+            document.getElementById('batchId').value = '';
+            document.getElementById('batchModal').classList.remove('hidden');
+        }
+
+        async function openEditModal(batchId) {
+            document.getElementById('modalTitle').innerText = 'Edit Batch';
+            document.getElementById('batchForm').reset();
+            
+            const res = await fetch(`/admin/batches-manage/api`);
+            if (res.ok) {
+                const batches = await res.json();
+                const batch = batches.find(b => b.batchId === batchId);
+                if (batch) {
+                    document.getElementById('batchId').value = batch.batchId;
+                    document.getElementById('batchCode').value = batch.batchCode;
+                    document.getElementById('courseId').value = batch.courseId;
+                    document.getElementById('batchTitle').value = batch.title;
+                    document.getElementById('scheduleNote').value = batch.scheduleNote || '';
+                    document.getElementById('startDate').value = batch.startDate;
+                    document.getElementById('endDate').value = batch.endDate;
+                    document.getElementById('maxSeats').value = batch.maxSeats;
+                    document.getElementById('batchStatus').value = batch.status;
+                    
+                    document.getElementById('batchModal').classList.remove('hidden');
+                }
+            } else {
+                alert('Failed to load batch details for editing.');
+            }
+        }
+
+        function openInstructorModal(batchId) {
+            document.getElementById('assignBatchId').value = batchId;
+            document.getElementById('instructorForm').reset();
+            document.getElementById('instructorModal').classList.add('hidden'); // Fix toggle
+            document.getElementById('instructorModal').classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Search and Filter Functionality
+        function filterBatches() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const selectedStatus = document.getElementById('statusFilter').value;
+            const rows = document.querySelectorAll('.batch-row');
+
+            rows.forEach(row => {
+                const code = row.getAttribute('data-code').toLowerCase();
+                const title = row.getAttribute('data-title').toLowerCase();
+                const course = (row.getAttribute('data-course') || '').toLowerCase();
+                const status = row.getAttribute('data-status');
+
+                const matchesSearch = code.includes(searchText) || title.includes(searchText) || course.includes(searchText);
+                const matchesStatus = selectedStatus === "" || status === selectedStatus;
+
+                if (matchesSearch && matchesStatus) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        async function submitBatchForm(e) {
+            e.preventDefault();
+            const batchId = document.getElementById('batchId').value;
+            const payload = {
+                courseId: Number(document.getElementById('courseId').value),
+                batchCode: document.getElementById('batchCode').value,
+                title: document.getElementById('batchTitle').value,
+                scheduleNote: document.getElementById('scheduleNote').value,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+                maxSeats: Number(document.getElementById('maxSeats').value),
+                status: document.getElementById('batchStatus').value
+            };
+
+            const url = batchId ? `/admin/batches-manage/api/${batchId}` : `/admin/batches-manage/api`;
+            const method = batchId ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                location.reload();
+            } else {
+                alert('Operation failed. Please check inputs.');
+            }
+        }
+
+        async function deleteBatch(batchId) {
+            if (confirm('Are you sure you want to delete this batch?')) {
+                const res = await fetch(`/admin/batches-manage/api/${batchId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    location.reload();
+                } else {
+                    const errorMsg = await res.text();
+                    alert(errorMsg || 'Failed to delete batch.');
+                }
+            }
+        }
+
+        async function submitInstructorAssignment(e) {
+            e.preventDefault();
+            const batchId = document.getElementById('assignBatchId').value;
+            const instructorId = document.getElementById('instructorId').value;
+
+            const res = await fetch(`/admin/batches-manage/api/${batchId}/instructors?instructorId=${instructorId}`, {
+                method: 'POST'
+            });
+
+            if (res.ok) {
+                closeModal('instructorModal');
+                alert('Instructor assigned successfully!');
+            } else {
+                alert('Failed to assign instructor.');
+            }
+        }
+    </script>
+</body>
+</html>
