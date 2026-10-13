@@ -25,17 +25,20 @@ public class SecurityConfig {
             .httpBasic(basic -> basic.disable())
             
             .headers(headers -> headers
-                .frameOptions(frameOptions -> frameOptions.sameOrigin())
-                // 🟢 FIXED: Added jsdelivr.net to support Bootstrap styles and scripts alongside Tailwind and FontAwesome!
-                .contentSecurityPolicy(csp -> csp.policyDirectives(
-                    "default-src 'self'; " +
-                    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.tailwindcss.com https://*.jsdelivr.net; " +
-                    "style-src 'self' 'unsafe-inline' https://*.cloudflare.com https://*.googleapis.com https://*.jsdelivr.net; " +
-                    "font-src 'self' data: https://*.cloudflare.com https://*.gstatic.com; " +
-                    "img-src 'self' data: https://*;"
-                ))
-            );
-            
+                    .frameOptions(frameOptions -> frameOptions.sameOrigin())
+                    // 🟢 FIXED: Added media-src and frame-src directly to the CSP policy directives 
+                    // to support local mp4 files as well as YouTube/Vimeo player frame integrations!
+                    .contentSecurityPolicy(csp -> csp.policyDirectives(
+                        "default-src 'self'; " +
+                        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.tailwindcss.com https://*.jsdelivr.net; " +
+                        "style-src 'self' 'unsafe-inline' https://*.cloudflare.com https://*.googleapis.com https://*.jsdelivr.net; " +
+                        "font-src 'self' data: https://*.cloudflare.com https://*.gstatic.com; " +
+                        "img-src 'self' data: https://*; " +
+                        "media-src 'self' https://*.youtube.com https://*.vimeo.com https://*; " +
+                        "frame-src 'self' https://*.youtube.com https://*.vimeo.com;"
+                    ))
+                );
+
         return http.build();
     }
 }

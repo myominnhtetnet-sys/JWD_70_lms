@@ -3,9 +3,12 @@ package com.Learning_Managnment_System.JWD_70_lms.Service;
 import com.Learning_Managnment_System.JWD_70_lms.model.LessonProgressBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.MyCourseBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MyCourseService {
@@ -14,144 +17,128 @@ public class MyCourseService {
     private JdbcTemplate jdbcTemplate;
 
     /**
-     * 🟢 Pulls all enrolled courses and calculates progress percentage bar values
-     * strictly by reading DONE class sessions based on the student's active email.
+     * 🟢 1. FETCH MAIN ENROLLED COURSES PROFILE PROGRESSION DATA
+     * Subquery calculates totals isolated EXCLUSIVELY for this student's email signature token.
      */
-    public List<MyCourseBean> getEnrolledCoursesProgressByEmail(String email) {
-        String sql = 
-            "SELECT " +
-            "    c.course_id, " +
-            "    c.title AS course_title, " +
-            "    b.batch_code, " +
-            "    b.status AS batch_status, " +
-            /* 🟢 FIXED: Changed u.name to u.full_name to match your users table columns exactly */
-            "    COALESCE(u.full_name, 'Staff Instructor') AS teacher_name, " +
-            "    (" +
-            "        SELECT COUNT(DISTINCT cs.lesson_id) " +
-            "        FROM learning_db.class_sessions cs " +
-            "        WHERE cs.batch_id = b.batch_id AND cs.status = 'DONE' AND cs.lesson_id IS NOT NULL" +
-            "    ) AS completed_lessons, " +
-            "    (" +
-            "        SELECT COUNT(DISTINCT l.lesson_id) " +
-            "        FROM learning_db.course_modules m " +
-            "        JOIN learning_db.lessons l ON l.module_id = m.module_id " +
-            "        WHERE m.course_id = c.course_id AND l.status = 'PUBLISHED'" +
-            "    ) AS total_lessons " +
-            "FROM learning_db.enrollments e " +
-            "JOIN learning_db.users su ON e.user_id = su.user_id " +
-            "JOIN learning_db.batches b ON e.batch_id = b.batch_id " +
-            "JOIN learning_db.courses c ON b.course_id = c.course_id " +
-            "LEFT JOIN learning_db.course_instructors ci ON ci.course_id = c.course_id AND ci.is_primary = 1 " +
-            "LEFT JOIN learning_db.users u ON ci.instructor_id = u.user_id " +
-            "WHERE su.email = ? AND e.status = 'ACTIVE'";
+    public List<Map<String, Object>> getEnrolledCoursesProgressByEmail(String email) {
+        String sql = "SELECT c.course_id, b.batch_id, c.title AS course_title, b.batch_code, b.status AS batch_status, " +
+                     "COALESCE(u.full_name, 'Staff Instructor') AS teacher_name, " +
+                     "( " +
+                     "  SELECT COUNT(DISTINCT cs.lesson_id) " +
+                     "  FROM lms_db.class_sessions cs " +
+                     "  WHERE cs.batch_id = b.batch_id " +
+                     "  AND cs.status = 'DONE' " +
+                     "  AND cs.title LIKE CONCAT('% [', ?, ']') " + // Only count this user's checkmarks!
+                     "  AND cs.lesson_id IS NOT NULL " +
+                     ") AS completed_lessons, " +
+                     "( " +
+                     "  SELECT COUNT(DISTINCT l.lesson_id) " +
+                     "  FROM lms_db.course_modules m " +
+                     "  JOIN lms_db.lessons l ON l.module_id = m.module_id " +
+                     "  WHERE m.course_id = c.course_id AND l.status = 'PUBLISHED' " +
+                     ") AS total_lessons " +
+                     "FROM lms_db.enrollments e " +
+                     "JOIN lms_db.users su ON e.user_id = su.user_id " +
+                     "JOIN lms_db.batches b ON e.batch_id = b.batch_id " +
+                     "JOIN lms_db.courses c ON b.course_id = c.course_id " +
+                     "LEFT JOIN lms_db.course_instructors ci ON ci.course_id = c.course_id AND ci.is_primary = 1 " +
+                     "LEFT JOIN lms_db.users u ON ci.instructor_id = u.user_id " +
+                     "WHERE su.email = ? AND e.status = 'ACTIVE'";
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            MyCourseBean bean = new MyCourseBean();
-            bean.setCourseId(rs.getInt("course_id"));
-            bean.setCourseTitle(rs.getString("course_title"));
-            bean.setBatchCode(rs.getString("batch_code"));
-            bean.setBatchStatus(rs.getString("batch_status"));
-            bean.setTeacherName(rs.getString("teacher_name"));
-            
-            int completed = rs.getInt("completed_lessons");
-            int total = rs.getInt("total_lessons");
-            
-            bean.setCompletedLessons(completed);
-            bean.setTotalLessons(total);
-            bean.setProgressPercent((total > 0) ? (completed * 100) / total : 0);
-            
-            return bean;
-        }, email);
+        return jdbcTemplate.queryForList(sql, email, email);
     }
-    
+
     /**
-     * 🟢 Fetches individual course title and metadata for the classroom header block.
+     * 🟢 2. FETCH SPECIFIC CLASSROOM METADATA HEADER DETAILS
      */
     public MyCourseBean getCourseMetaDetails(int courseId, String email) {
-        String sql = 
-            "SELECT c.course_id, c.title AS course_title, b.batch_code, b.status AS batch_status, " +
-            "COALESCE(u.full_name, 'Staff Instructor') AS teacher_name " +
-            "FROM learning_db.enrollments e " +
-            "JOIN learning_db.users su ON e.user_id = su.user_id " +
-            "JOIN learning_db.batches b ON e.batch_id = b.batch_id " +
-            "JOIN learning_db.courses c ON b.course_id = c.course_id " +
-            "LEFT JOIN learning_db.course_instructors ci ON ci.course_id = c.course_id AND ci.is_primary = 1 " +
-            "LEFT JOIN learning_db.users u ON ci.instructor_id = u.user_id " +
-            "WHERE c.course_id = ? AND su.email = ? AND e.status = 'ACTIVE'";
-            
-        List<MyCourseBean> results = jdbcTemplate.query(sql, (rs, rowNum) -> {
-            MyCourseBean bean = new MyCourseBean();
-            bean.setCourseId(rs.getInt("course_id"));
-            bean.setCourseTitle(rs.getString("course_title"));
-            bean.setBatchCode(rs.getString("batch_code"));
-            bean.setBatchStatus(rs.getString("batch_status"));
-            bean.setTeacherName(rs.getString("teacher_name"));
-            return bean;
-        }, courseId, email);
-        
-        return results.isEmpty() ? null : results.get(0);
+        String sql = "SELECT c.course_id AS courseId, c.title AS courseTitle, b.batch_code AS batchCode, b.status AS batchStatus " +
+                     "FROM lms_db.courses c " +
+                     "JOIN lms_db.batches b ON b.course_id = c.course_id " +
+                     "JOIN lms_db.enrollments en ON en.batch_id = b.batch_id " +
+                     "JOIN lms_db.users u ON en.user_id = u.user_id " +
+                     "WHERE u.email = ? AND c.course_id = ? AND en.status = 'ACTIVE' LIMIT 1";
+        try {
+            return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(MyCourseBean.class), email, courseId);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
-     * 🟢 Pulls all published lessons ordered by module sorting, checking real-time 
-     * class session status rows to mark completions automatically.
+     * 🟢 3. FETCH INDIVIDUAL CLASSROOM TIMELINE SYLLABUS LIST
      */
     public List<LessonProgressBean> getCourseLessonTimeline(int courseId, String batchCode) {
-        String sql = 
-            "SELECT l.lesson_id, m.title AS module_title, l.title AS lesson_title, l.content_type, l.duration_min, " +
-            "EXISTS(" +
-            "    SELECT 1 FROM learning_db.class_sessions cs " +
-            "    JOIN learning_db.batches b ON cs.batch_id = b.batch_id " +
-            "    WHERE b.batch_code = ? AND cs.lesson_id = l.lesson_id AND cs.status = 'DONE'" +
-            ") AS is_done " +
-            "FROM learning_db.course_modules m " +
-            "JOIN learning_db.lessons l ON l.module_id = m.module_id " +
-            "WHERE m.course_id = ? AND l.status = 'PUBLISHED' " +
-            "ORDER BY m.sort_order ASC, l.sort_order ASC";
-
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-          LessonProgressBean bean = 
-                new LessonProgressBean();
-            bean.setLessonId(rs.getInt("lesson_id"));
-            bean.setModuleTitle(rs.getString("module_title"));
-            bean.setLessonTitle(rs.getString("lesson_title"));
-            bean.setContentType(rs.getString("content_type"));
-            bean.setDurationMin(rs.getInt("duration_min"));
-            bean.setDone(rs.getBoolean("is_done"));
-            return bean;
-        }, batchCode, courseId);
+        String sql = "SELECT l.lesson_id AS lessonId, l.title AS lessonTitle, l.content_type AS contentType, " +
+                     "l.duration_min AS durationMin, m.title AS moduleTitle " +
+                     "FROM lms_db.lessons l " +
+                     "JOIN lms_db.course_modules m ON l.module_id = m.module_id " +
+                     "JOIN lms_db.batches b ON b.course_id = m.course_id " +
+                     "WHERE b.course_id = ? AND b.batch_code = ? AND l.status = 'PUBLISHED' " +
+                     "ORDER BY m.module_id ASC, l.lesson_id ASC";
+        
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(LessonProgressBean.class), courseId, batchCode);
     }
-    
+
     /**
-     * 🟢 Retrieves text bodies, video URLs, and material files linked to a specific lesson.
+     * 🟢 4. SEPARATE PROGRESS ENGINE FOR LESSONS
+     * Marks a specific lesson as completed uniquely for the logged-in student's email context string.
      */
-    public com.Learning_Managnment_System.JWD_70_lms.model.LessonProgressBean getSingleLessonDetails(int lessonId, int courseId) {
-        String sql = 
-            "SELECT l.lesson_id, m.title AS module_title, l.title AS lesson_title, l.content_type, " +
-            "l.content, l.video_url, l.duration_min, lm.title AS material_title, lm.file_path, lm.file_type " +
-            "FROM learning_db.lessons l " +
-            "JOIN learning_db.course_modules m ON l.module_id = m.module_id " +
-            "LEFT JOIN learning_db.lesson_materials lm ON lm.lesson_id = l.lesson_id " +
-            "WHERE l.lesson_id = ? AND m.course_id = ? AND l.status = 'PUBLISHED'";
+    public void markLessonAsCompleted(int batchId, int lessonId, String studentEmail) {
+        String lessonTitleSql = "SELECT title FROM lms_db.lessons WHERE lesson_id = ? LIMIT 1";
+        String plainLessonTitle;
+        try {
+            plainLessonTitle = jdbcTemplate.queryForObject(lessonTitleSql, String.class, lessonId);
+        } catch (Exception e) {
+            plainLessonTitle = "Completed Student Session";
+        }
 
-        List<com.Learning_Managnment_System.JWD_70_lms.model.LessonProgressBean> results = jdbcTemplate.query(sql, (rs, rowNum) -> {
-            com.Learning_Managnment_System.JWD_70_lms.model.LessonProgressBean bean = 
-                new com.Learning_Managnment_System.JWD_70_lms.model.LessonProgressBean();
-            bean.setLessonId(rs.getInt("lesson_id"));
-            bean.setModuleTitle(rs.getString("module_title"));
-            bean.setLessonTitle(rs.getString("lesson_title"));
-            bean.setContentType(rs.getString("content_type"));
-            bean.setContent(rs.getString("content"));
-            bean.setVideoUrl(rs.getString("video_url"));
-            bean.setDurationMin(rs.getInt("duration_min"));
-            bean.setMaterialTitle(rs.getString("material_title"));
-            bean.setFilePath(rs.getString("file_path"));
-            bean.setFileType(rs.getString("file_type"));
-            return bean;
-        }, lessonId, courseId);
+        // Form an iron-clad compound title token to isolate this student from peers
+        String isolatedSessionTitle = plainLessonTitle + " [" + studentEmail + "]";
 
-        return results.isEmpty() ? null : results.get(0);
+        String checkSql = "SELECT COUNT(*) FROM lms_db.class_sessions WHERE batch_id = ? AND lesson_id = ? AND title = ?";
+        Integer count = jdbcTemplate.queryForObject(checkSql, Integer.class, batchId, lessonId, isolatedSessionTitle);
+
+        if (count != null && count > 0) {
+            String updateSql = "UPDATE lms_db.class_sessions SET status = 'DONE' WHERE batch_id = ? AND lesson_id = ? AND title = ?";
+            jdbcTemplate.update(updateSql, batchId, lessonId, isolatedSessionTitle);
+        } else {
+            // Passes NOW() directly to satisfy mandatory non-nullable database table columns
+            String insertSql = "INSERT INTO lms_db.class_sessions (batch_id, lesson_id, title, start_at, end_at, status) VALUES (?, ?, ?, NOW(), NOW(), 'DONE')";
+            jdbcTemplate.update(insertSql, batchId, lessonId, isolatedSessionTitle);
+        }
     }
 
+    /**
+     * 🟢 5. REGRESSION PROGRESS ENGINE CLEANUP
+     * Erases a student's completed lesson log using their text suffix context.
+     */
+    public void regressLessonProgress(int batchId, int lessonId, String studentEmail) {
+        String lessonTitleSql = "SELECT title FROM lms_db.lessons WHERE lesson_id = ? LIMIT 1";
+        String plainLessonTitle;
+        try {
+            plainLessonTitle = jdbcTemplate.queryForObject(lessonTitleSql, String.class, lessonId);
+        } catch (Exception e) {
+            plainLessonTitle = "";
+        }
 
+        String isolatedSessionTitle = plainLessonTitle + " [" + studentEmail + "]";
+
+        String deleteSql = "DELETE FROM lms_db.class_sessions WHERE batch_id = ? AND lesson_id = ? AND title = ?";
+        jdbcTemplate.update(deleteSql, batchId, lessonId, isolatedSessionTitle);
+    }
+
+    /**
+     * 🟢 6. MANUALLY PROCESS TOTAL COURSE GRADUATION STATE SHIFT
+     */
+    public boolean finalizeCourseManualCheckout(String email, int courseId) {
+        String updateSql = "UPDATE lms_db.enrollments e " +
+                           "JOIN lms_db.batches b ON e.batch_id = b.batch_id " +
+                           "JOIN lms_db.users u ON e.user_id = u.user_id " +
+                           "SET e.status = 'COMPLETED', e.completed_at = NOW() " +
+                           "WHERE u.email = ? AND b.course_id = ? AND e.status = 'ACTIVE'";
+                           
+        int rowsAffected = jdbcTemplate.update(updateSql, email, courseId);
+        return rowsAffected > 0;
+    }
 }
