@@ -1,7 +1,7 @@
 
 /*<![CDATA[*/
 // State Management
-let currentRole = 'admin';
+let currentRole = 'teacher';
 
 // Mock Data
 let usersData = [
@@ -80,7 +80,7 @@ const profiles = {
 
 // Initialize App
 window.onload = function() {
-	switchRole('admin');
+	switchRole('teacher');
 	renderUserTable();
 	renderTeacherGradingQueue();
 	renderStudentViews();
