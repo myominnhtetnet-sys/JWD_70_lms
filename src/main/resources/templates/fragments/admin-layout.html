@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <!-- SIDEBAR FRAGMENT -->
+    <aside class="sidebar" th:fragment="sidebar(activePage)">
+        <a th:href="@{/admin/dashboard}" class="brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div class="brand-text">
+                <div class="brand-name">LearnHub</div>
+                <div class="brand-subtitle">Admin Portal</div>
+            </div>
+        </a>
+
+        <div class="menu-heading">Overview</div>
+        <a th:href="@{/admin/dashboard}" class="nav-link" th:classappend="${activePage == 'dashboard'} ? ' active' : ''">
+            <i class="fa-solid fa-table-columns"></i>
+            <span>Dashboard</span>
+        </a>
+        <a th:href="@{/admin/dashboard#recent-users}" class="nav-link">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Reports</span>
+        </a>
+
+        <div class="menu-heading">Users</div>
+        <a th:href="@{/admin/users}" class="nav-link" th:classappend="${activePage == 'users'} ? ' active' : ''">
+            <i class="fa-solid fa-users"></i>
+            <span>Users</span>
+        </a>
+
+        <div class="menu-heading">Catalog</div>
+        <a href="#" class="nav-link">
+            <i class="fa-solid fa-book-open"></i>
+            <span>Courses</span>
+        </a>
+        <a href="#" class="nav-link">
+            <i class="fa-regular fa-calendar"></i>
+            <span>Batches</span>
+        </a>
+
+        <div class="menu-heading">Enrollment</div>
+        <a th:href="@{/admin/enrollments}" class="nav-link" th:classappend="${activePage == 'enrollments'} ? ' active' : ''">
+            <i class="fa-solid fa-user-check"></i>
+            <span>Enrollments</span>
+        </a>
+
+        <div class="sidebar-bottom">
+            <a th:href="@{/admin/notification}" class="nav-link">
+                <i class="fa-regular fa-bell"></i>
+                <span>Notifications</span>
+            </a>
+            <a th:href="@{/admin/profile}" class="nav-link">
+                <i class="fa-regular fa-user"></i>
+                <span>My Profile</span>
+            </a>
+            <a th:href="@{/admin/logout}" class="nav-link logout-link">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- TOPBAR FRAGMENT -->
+    <header class="topbar" th:fragment="topbar(title, subtitle)">
+        <div class="page-heading">
+            <h1 th:text="${title}">Dashboard</h1>
+            <p id="current-date" th:text="${subtitle}">Learning Management System</p>
+        </div>
+
+        <div class="topbar-right">
+            <button type="button" class="icon-btn" id="themeToggle" title="Toggle light and dark mode">
+                <i class="fa-regular fa-moon"></i>
+            </button>
+            <div class="profile">
+                <div class="avatar" id="adminAvatar">AD</div>
+                <div class="profile-info">
+                    <div class="profile-name" id="adminName" th:text="${fullName != null ? fullName : 'Admin'}">Admin</div>
+                    <div class="profile-role">Administrator</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+</body>
+</html>

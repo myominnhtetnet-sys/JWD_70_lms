@@ -113,48 +113,96 @@ public class Admin_Controller {
         return "dashboard";
     }
 
-    // =====================================================
-    // USER MANAGEMENT
-    // URL: /admin/users
-    // =====================================================
+   
     @GetMapping("/users")
     public String users(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String role,
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false, defaultValue = "") String keyword,
+            @RequestParam(required = false, defaultValue = "") String role,
+            @RequestParam(required = false, defaultValue = "") String status,
             HttpSession session,
             Model model) {
 
+        // 1. Check Admin Login
         if (!checkAdmin(session)) {
             return "redirect:/login";
         }
 
-        // Search and Filter
-        List<AdminUserBean> users =
-                userRepo.searchUsers(keyword, role, status);
+        // 2. Get users from the existing Repository method
+        List<AdminUserBean> allUsers = userRepo.getAllUsers();
 
-        // Send users to HTML
-        model.addAttribute("users", users);
+        // 3. Search and Filter
+        String searchKeyword = keyword.trim().toLowerCase();
+        String selectedRole = role.trim().toLowerCase();
+        String selectedStatus = status.trim().toLowerCase();
 
-        // Send roles from database to HTML
+        List<AdminUserBean> filteredUsers = allUsers.stream()
+                .filter(user -> {
+
+                    String name = user.getFull_name() == null
+                            ? ""
+                            : user.getFull_name().toLowerCase();
+
+                    String email = user.getEmail() == null
+                            ? ""
+                            : user.getEmail().toLowerCase();
+
+                    String phone = user.getPhone() == null
+                            ? ""
+                            : user.getPhone().toLowerCase();
+
+                    String roleName = user.getRole_name() == null
+                            ? ""
+                            : user.getRole_name().toLowerCase();
+
+                    String userStatus = user.getStatus() == null
+                            ? ""
+                            : user.getStatus().toLowerCase();
+
+                    boolean matchesKeyword =
+                            searchKeyword.isEmpty()
+                            || name.contains(searchKeyword)
+                            || email.contains(searchKeyword)
+                            || phone.contains(searchKeyword);
+
+                    boolean matchesRole =
+                            selectedRole.isEmpty()
+                            || selectedRole.equals("all")
+                            || roleName.equals(selectedRole)
+                            || String.valueOf(user.getRole_id())
+                                    .equals(selectedRole);
+
+                    boolean matchesStatus =
+                            selectedStatus.isEmpty()
+                            || selectedStatus.equals("all")
+                            || userStatus.equals(selectedStatus);
+
+                    return matchesKeyword
+                            && matchesRole
+                            && matchesStatus;
+                })
+                .toList();
+
+        // 4. Send data to dashboard.html
+        model.addAttribute("users", filteredUsers);
         model.addAttribute("roles", userRepo.getAllRoles());
-
-        // Form object
         model.addAttribute("adminUser", new AdminUserBean());
 
         model.addAttribute("keyword", keyword);
         model.addAttribute("selectedRole", role);
         model.addAttribute("selectedStatus", status);
-        model.addAttribute("currentPage", "users");
 
+        // 5. Dashboard Statistics
         model.addAttribute("totalUsers", userRepo.countUsers());
+        model.addAttribute("totalRoles", userRepo.countRoles());
         model.addAttribute("activeUsers", userRepo.countActiveUsers());
         model.addAttribute("inactiveUsers", userRepo.countInactiveUsers());
-        model.addAttribute("suspendedUsers", userRepo.countSuspendedUsers());
 
-        return "users";
+        // 6. Tell dashboard.html which content to show
+        model.addAttribute("currentPage", "users");
+
+        // IMPORTANT: Keep the original dashboard layout
+        return "dashboard";
     }
-
     // =====================================================
     // CREATE USER
     // URL: POST /admin/users/create
