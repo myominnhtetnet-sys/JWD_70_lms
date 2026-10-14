@@ -1,8 +1,9 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+
+import jakarta.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -31,15 +32,23 @@ public class TeacherExamResultController {
         this.service = service;
     }
 
+    // ================= LIST / VIEW / GRADE MODAL =================
+
     @GetMapping
     public String listResults(
             @RequestParam(required = false) Long attemptId,
             @RequestParam(defaultValue = "view") String mode,
-            Principal principal,
+            HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        Long teacherId = teacherId(principal);
+        if (!isLoggedIn(session)) {
+            return "redirect:/login";
+        }
+
+        requireTeacher(session);
+
+        Long teacherId = teacherId(session);
 
         loadList(model, teacherId);
 
@@ -55,6 +64,7 @@ public class TeacherExamResultController {
 
                 model.addAttribute("attempt", attempt);
                 model.addAttribute("examAnswers", answers);
+
                 model.addAttribute(
                         "gradingForm",
                         service.createForm(attempt, answers));
@@ -75,24 +85,31 @@ public class TeacherExamResultController {
         return "teacher-exam-result-list";
     }
 
+    // ================= SAVE GRADES =================
+
     @PostMapping("/{attemptId}/grade")
     public String saveGrades(
             @PathVariable Long attemptId,
             @ModelAttribute("gradingForm") ExamGradingForm form,
             BindingResult bindingResult,
-            Principal principal,
+            HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        Long teacherId = teacherId(principal);
+        if (!isLoggedIn(session)) {
+            return "redirect:/login";
+        }
 
-        /*
-         * Load authorized details before processing the form.
-         */
+        requireTeacher(session);
+
+        Long teacherId = teacherId(session);
+
         Map<String, Object> attempt;
 
         try {
+
             attempt = service.getAttempt(attemptId, teacherId);
+
         } catch (IllegalArgumentException e) {
 
             redirectAttributes.addFlashAttribute(
@@ -101,7 +118,8 @@ public class TeacherExamResultController {
             return "redirect:/teacher/exam-results";
         }
 
-        List<Map<String, Object>> answers = service.getAnswers(attempt);
+        List<Map<String, Object>> answers =
+                service.getAnswers(attempt);
 
         try {
 
@@ -113,16 +131,14 @@ public class TeacherExamResultController {
             service.gradeAttempt(attemptId, teacherId, form);
 
             redirectAttributes.addFlashAttribute(
-                    "success", "Exam graded successfully!");
+                    "success",
+                    "Exam graded successfully!");
 
             return "redirect:/teacher/exam-results";
 
         } catch (IllegalArgumentException e) {
 
-            /*
-             * Render the same modal with the submitted form so the
-             * teacher does not need to type all marks again.
-             */
+            // Keep the submitted marks when validation fails.
             loadList(model, teacherId);
 
             model.addAttribute("attempt", attempt);
@@ -133,6 +149,8 @@ public class TeacherExamResultController {
             return "teacher-exam-result-list";
         }
     }
+
+    // ================= SUMMARY / TABLE DATA =================
 
     private void loadList(Model model, Long teacherId) {
 
@@ -149,15 +167,39 @@ public class TeacherExamResultController {
         model.addAttribute("pendingCount", results.size() - graded);
     }
 
-    private Long teacherId(Principal principal) {
+    // ================= SESSION LOGIN CHECK =================
 
-        if (principal == null) {
+    private boolean isLoggedIn(HttpSession session) {
+
+        Object email = session.getAttribute("email");
+
+        return session.getAttribute("currentUser") != null
+                && email instanceof String
+                && !((String) email).isBlank();
+    }
+
+    // ================= TEACHER ROLE CHECK =================
+
+    private void requireTeacher(HttpSession session) {
+
+        Object roleId = session.getAttribute("roleId");
+
+        if (!(roleId instanceof Number)
+                || ((Number) roleId).intValue() != 2) {
+
             throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Please log in.");
+                    HttpStatus.FORBIDDEN,
+                    "Only teachers can access exam grading.");
         }
+    }
 
-        // Assumption: the login username is users.email.
-        return service.getTeacherId(principal.getName());
+    // ================= CURRENT TEACHER USER ID =================
+
+    private Long teacherId(HttpSession session) {
+
+        String email = (String) session.getAttribute("email");
+
+        // Uses the existing Service and Repository email lookup.
+        return service.getTeacherId(email);
     }
 }
