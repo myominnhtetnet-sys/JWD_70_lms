@@ -1,130 +1,172 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
-import com.Learning_Managnment_System.JWD_70_lms.Mapper.ExamQuestionRowMapper;
-import com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean;
-import com.Learning_Managnment_System.JWD_70_lms.model.QuestionOptionBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.Learning_Managnment_System.JWD_70_lms.Mapper.ExamRowMapper;
+import com.Learning_Managnment_System.JWD_70_lms.Mapper.ExamAttemptRowMapper;
+import com.Learning_Managnment_System.JWD_70_lms.Mapper.ExamQuestionRowMapper;
+import com.Learning_Managnment_System.JWD_70_lms.model.ExamBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.ExamAttemptBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.QuestionOptionBean;
 
 @Repository
 public class ExamRepository {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    public List<Map<String, Object>> findAvailableExams(String email) {
-        String sql = "SELECT e.exam_id, e.title, e.exam_type, e.duration_min, e.total_mark " +
-                     "FROM lms_db.exams e " +
-                     "JOIN lms_db.batches b ON e.batch_id = b.batch_id " +
-                     "JOIN lms_db.enrollments en ON b.batch_id = en.batch_id " +
-                     "JOIN lms_db.users u ON en.user_id = u.user_id " +
-                     "WHERE u.email = ? AND e.status = 'PUBLISHED' AND en.status = 'ACTIVE'";
-        return jdbcTemplate.queryForList(sql, email);
+    public ExamRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Map<String, Object>> findHistoricResults(String email) {
-        String sql = "SELECT ea.attempt_id, e.title, e.exam_type, ea.attempt_no, " +
-                     "ea.submitted_at, ea.score, e.total_mark, ea.result, ea.status " +
-                     "FROM lms_db.exam_attempts ea " +
-                     "JOIN lms_db.exams e ON ea.exam_id = e.exam_id " +
-                     "JOIN lms_db.enrollments en ON ea.enrollment_id = en.enrollment_id " +
-                     "JOIN lms_db.users u ON en.user_id = u.user_id " +
-                     "WHERE u.email = ? AND ea.status IN ('SUBMITTED', 'GRADED') " +
-                     "ORDER BY ea.submitted_at DESC";
-        return jdbcTemplate.queryForList(sql, email);
+    public List<ExamBean> findAvailableExams(String email) {
+        String sql = """
+                SELECT e.* FROM lms_db.exams e 
+                JOIN lms_db.batches b ON e.course_id = b.course_id 
+                JOIN lms_db.enrollments en ON en.batch_id = b.batch_id 
+                JOIN lms_db.users u ON en.user_id = u.user_id 
+                WHERE u.email = ? AND en.status = 'ACTIVE' AND e.status = 'PUBLISHED'
+                """;
+        return jdbcTemplate.query(sql, new ExamRowMapper(), email);
     }
 
-    public int findEnrollmentIdByEmail(String email) {
-        String sql = "SELECT e.enrollment_id FROM lms_db.enrollments e JOIN lms_db.users u ON e.user_id = u.user_id WHERE u.email = ? AND e.status = 'ACTIVE' LIMIT 1";
-        Integer num = jdbcTemplate.queryForObject(sql, Integer.class, email);
-        return num != null ? num.intValue() : 0;
+    public List<ExamAttemptBean> findExamResultsHistory(String email) {
+        String sql = """
+                SELECT e.title AS exam_title, ea.* 
+                FROM lms_db.exam_attempts ea 
+                JOIN lms_db.exams e ON ea.exam_id = e.exam_id 
+                JOIN lms_db.enrollments en ON ea.enrollment_id = en.enrollment_id 
+                JOIN lms_db.users u ON en.user_id = u.user_id 
+                WHERE u.email = ? ORDER BY ea.submitted_at DESC
+                """;
+        return jdbcTemplate.query(sql, new ExamAttemptRowMapper(), email);
     }
 
-    public Map<String, Object> findExamById(int examId) {
-        String sql = "SELECT title, duration_min, total_mark, max_attempts FROM lms_db.exams WHERE exam_id = ? AND status = 'PUBLISHED'";
-        return jdbcTemplate.queryForMap(sql, examId);
-    }
-
-    public List<Map<String, Object>> findActiveProgressAttempt(int examId, int enrollmentId) {
-        String sql = "SELECT attempt_id, attempt_no FROM lms_db.exam_attempts WHERE exam_id = ? AND enrollment_id = ? AND status = 'IN_PROGRESS' LIMIT 1";
-        return jdbcTemplate.queryForList(sql, examId, enrollmentId);
-    }
-
-    public int countTotalAttempts(int examId, int enrollmentId) {
-        String sql = "SELECT COUNT(*) FROM lms_db.exam_attempts WHERE exam_id = ? AND enrollment_id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, examId, enrollmentId);
-        return count != null ? count.intValue() : 0;
-    }
-
-    public List<Integer> findQuestionPoolIds(int examId) {
-        String sql = "SELECT question_id FROM lms_db.exam_questions WHERE exam_id = ? ORDER BY sort_order ASC";
-        return jdbcTemplate.queryForList(sql, Integer.class, examId);
-    }
-
-    public int findFirstValidQuestionId(int examId) {
-        String sql = "SELECT question_id FROM lms_db.exam_questions WHERE exam_id = ? ORDER BY sort_order ASC LIMIT 1";
-        List<Integer> ids = jdbcTemplate.queryForList(sql, Integer.class, examId);
-        return !ids.isEmpty() ? ids.get(0) : 1;
-    }
-
-    public ExamQuestionBean findQuestionMetadata(int questionId) {
-        String sql = "SELECT question_id, question_text, question_type, points FROM lms_db.exam_questions WHERE question_id = ? LIMIT 1";
-        ExamQuestionBean question = jdbcTemplate.queryForObject(sql, new ExamQuestionRowMapper(), questionId);
-        
-        if (question != null && "MCQ".equalsIgnoreCase(question.getQuestionType())) {
-            String optionsSql = "SELECT option_id AS optionId, option_text AS optionText FROM lms_db.question_options WHERE question_id = ?";
-            List<QuestionOptionBean> options = jdbcTemplate.query(optionsSql, new BeanPropertyRowMapper<>(QuestionOptionBean.class), questionId);
-            question.setOptions(options);
-        }
-        return question;
-    }
-
-    public void forceTerminateAttempt(int attemptId) {
-        String sql = "UPDATE lms_db.exam_attempts SET status = 'SUBMITTED', started_at = started_at WHERE attempt_id = ?";
-        jdbcTemplate.update(sql, attemptId);
-    }
-
-    public void insertNewAttempt(int examId, int enrollmentId, int attemptNo) {
-        String sql = "INSERT INTO lms_db.exam_attempts (exam_id, enrollment_id, attempt_no, started_at, status) VALUES (?, ?, ?, NOW(), 'IN_PROGRESS')";
-        jdbcTemplate.update(sql, examId, enrollmentId, attemptNo);
-    }
-
-    public int getLastInsertId() {
-        Number lastId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Number.class);
-        return lastId != null ? lastId.intValue() : 0;
-    }
-
-    public void saveOrUpdateAnswer(int attemptId, int questionId, String text) {
-        String sql = "INSERT INTO lms_db.attempt_answers (attempt_id, question_id, answer_text, is_correct, mark_awarded) VALUES (?, ?, ?, NULL, 0.0) ON DUPLICATE KEY UPDATE answer_text = ?";
-        jdbcTemplate.update(sql, attemptId, questionId, text, text);
-    }
-
-    public void finalizeAttemptSubmission(int attemptId) {
-        String sql = "UPDATE lms_db.exam_attempts SET submitted_at = NOW(), score = 0.0, result = 'PENDING', status = 'SUBMITTED' WHERE attempt_id = ?";
-        jdbcTemplate.update(sql, attemptId);
-    }
-
-    public Map<String, Object> findAttemptResultSummary(int attemptId) {
-        String sql = "SELECT ea.score, ea.result, ea.status, e.title, e.total_mark, e.pass_mark " +
-                     "FROM lms_db.exam_attempts ea " +
-                     "JOIN lms_db.exams e ON ea.exam_id = e.exam_id " +
-                     "WHERE ea.attempt_id = ?";
+    public Integer findEnrollmentIdByEmail(String email) {
+        String sql = "SELECT enrollment_id FROM lms_db.enrollments en JOIN lms_db.users u ON en.user_id = u.user_id WHERE u.email = ? AND en.status = 'ACTIVE' LIMIT 1";
         try {
-            return jdbcTemplate.queryForMap(sql, attemptId);
-        } catch (Exception e) {
-            Map<String, Object> fallback = new HashMap<>();
-            fallback.put("title", "Assessment Assignment");
-            fallback.put("score", 0.0);
-            fallback.put("total_mark", 100.0);
-            fallback.put("pass_mark", 50.0);
-            fallback.put("status", "SUBMITTED");
-            fallback.put("result", "PENDING");
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getInt(1), email);
+        } catch (EmptyResultDataAccessException e) {
+            return 0;
+        }
+    }
+
+    public ExamBean findExamMetadata(int examId) {
+        String sql = "SELECT * FROM lms_db.exams WHERE exam_id = ? LIMIT 1";
+        return jdbcTemplate.queryForObject(sql, new ExamRowMapper(), examId);
+    }
+
+    public List<ExamAttemptBean> findActiveAttempts(int examId, int enrollmentId) {
+        String sql = "SELECT * FROM lms_db.exam_attempts WHERE exam_id = ? AND enrollment_id = ? AND status = 'IN_PROGRESS'";
+        return jdbcTemplate.query(sql, new ExamAttemptRowMapper(), examId, enrollmentId);
+    }
+
+    @Transactional
+    public void updateAttemptToTerminated(int attemptId) {
+        String sql = "UPDATE lms_db.exam_attempts SET status = 'EXPIRED', result = 'FAILED', submitted_at = NOW() WHERE attempt_id = ?";
+        jdbcTemplate.update(sql, attemptId);
+    }
+
+    @Transactional(readOnly = true)
+    public Integer countPastAttempts(int examId, int enrollmentId) {
+        String sql = "SELECT COUNT(*) FROM lms_db.exam_attempts WHERE exam_id = ? AND enrollment_id = ? AND status IN ('SUBMITTED', 'GRADED', 'EXPIRED')";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getInt(1), examId, enrollmentId);
+    }
+
+    public List<Integer> findQuestionSequence(int examId) {
+        String sql = "SELECT question_id FROM lms_db.exam_questions WHERE exam_id = ? ORDER BY sort_order ASC";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("question_id"), examId);
+    }
+
+    @Transactional
+    public int insertNewAttemptSession(int examId, int enrollmentId, int attemptNo) {
+        String sql = "INSERT INTO lms_db.exam_attempts (exam_id, enrollment_id, attempt_no, status, result, started_at) VALUES (?, ?, ?, 'IN_PROGRESS', 'PENDING', NOW())";
+        jdbcTemplate.update(sql, examId, enrollmentId, attemptNo);
+        return jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", (rs, rowNum) -> rs.getInt(1));
+    }
+
+    public List<ExamQuestionBean> findQuestionsBySequence(String queryIds) {
+        if (queryIds == null || queryIds.trim().isEmpty()) return new ArrayList<>();
+        
+        String sql = """
+                SELECT 
+                    eq.question_id, 
+                    q.question_text, 
+                    q.question_type, 
+                    eq.mark 
+                FROM lms_db.exam_questions eq
+                JOIN lms_db.questions q ON eq.question_id = q.question_id
+                WHERE eq.question_id IN (""" + queryIds + ") ORDER BY eq.sort_order ASC";
+        
+        List<ExamQuestionBean> questions = jdbcTemplate.query(sql, new ExamQuestionRowMapper());
+        
+        for (ExamQuestionBean q : questions) {
+            List<QuestionOptionBean> options = new ArrayList<>();
+            
+            try {
+                String optionsSql = "SELECT option_id, question_id, option_label, option_text FROM lms_db.question_options WHERE question_id = ?";
+                options = jdbcTemplate.query(optionsSql, (rs, rowNum) -> {
+                    QuestionOptionBean opt = new QuestionOptionBean();
+                    opt.setOptionId(rs.getInt("option_id"));
+                    opt.setQuestionId(rs.getInt("question_id"));
+                    opt.setOptionLabel(rs.getString("option_label"));
+                    opt.setOptionText(rs.getString("option_text"));
+                    return opt;
+                }, q.getQuestionId());
+            } catch (Exception e) {
+                options = new ArrayList<>();
+            }
+            
+            // 🟢 TRUE/FALSE SYSTEM SAFEGUARD: Automatically generates option buttons if table lines are blank
+            if ("TRUE_FALSE".equals(q.getQuestionType()) && options.isEmpty()) {
+                String[] tfTexts = {"True", "False"};
+                String[] tfLabels = {"A", "B"};
+                for (int i = 0; i < 2; i++) {
+                    QuestionOptionBean tfOpt = new QuestionOptionBean();
+                    tfOpt.setOptionId(i + 1); // Generates standard optionId tokens (1 and 2)
+                    tfOpt.setQuestionId(q.getQuestionId());
+                    tfOpt.setOptionLabel(tfLabels[i]);
+                    tfOpt.setOptionText(tfTexts[i]);
+                    options.add(tfOpt);
+                }
+            }
+            
+            q.setOptions(options);
+        }
+        
+        return questions;
+    }
+
+    @Transactional
+    public void saveSubmissionResponse(int examId, int attemptId, String answerText) {
+        String sql = "UPDATE lms_db.exam_attempts SET remark = ?, status = 'SUBMITTED', submitted_at = NOW() WHERE attempt_id = ?";
+        jdbcTemplate.update(sql, answerText, attemptId);
+    }
+
+    public ExamAttemptBean findAttemptResultSummary(int attemptId) {
+        String sql = """
+                SELECT e.title AS exam_title, e.total_mark, e.pass_mark, ea.* 
+                FROM lms_db.exam_attempts ea 
+                JOIN lms_db.exams e ON ea.exam_id = e.exam_id 
+                WHERE ea.attempt_id = ? LIMIT 1
+                """;
+        try {
+            return jdbcTemplate.queryForObject(sql, new ExamAttemptRowMapper(), attemptId);
+        } catch (EmptyResultDataAccessException e) {
+            ExamAttemptBean fallback = new ExamAttemptBean();
+            fallback.setAttempt_id(attemptId);
+            fallback.setTitle("Assessment Report");
+            fallback.setStatus("SUBMITTED");
+            fallback.setResult("PENDING");
+            fallback.setScore(java.math.BigDecimal.ZERO);
+            fallback.setTotal_mark(java.math.BigDecimal.valueOf(100.00));
+            fallback.setPass_mark(java.math.BigDecimal.valueOf(50.00));
             return fallback;
         }
     }

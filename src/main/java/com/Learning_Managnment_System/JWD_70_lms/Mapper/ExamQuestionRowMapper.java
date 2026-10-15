@@ -5,31 +5,26 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- * 🟢 Dedicated RowMapper for Exam Questions
- * Maps raw JDBC result sets directly into type-safe ExamQuestionBean model instances.
- */
 public class ExamQuestionRowMapper implements RowMapper<ExamQuestionBean> {
 
     @Override
     public ExamQuestionBean mapRow(ResultSet rs, int rowNum) throws SQLException {
         ExamQuestionBean questionNode = new ExamQuestionBean();
         
-        // Maps the primary relational table key identifier
+        // 🟢 FIXED: Synchronized precisely with your exact camelCase model setters
         questionNode.setQuestionId(rs.getInt("question_id"));
-        
-        // Maps the unique question string text pool block
         questionNode.setQuestionText(rs.getString("question_text"));
         
-        // Maps the evaluation system discriminator layout ('MCQ' or 'SHORT_ANSWER')
-        questionNode.setQuestionType(rs.getString("question_type"));
+        // Trims white spaces and forces uppercase formatting to match Thymeleaf checks perfectly
+        String rawType = rs.getString("question_type");
+        if (rawType != null) {
+            questionNode.setQuestionType(rawType.trim().toUpperCase());
+        } else {
+            questionNode.setQuestionType("MCQ");
+        }
         
-        // Maps the points weight assigned to this individual question row block
-        // Handles type conversions safely across different MySQL database driver version matrix profiles
-        questionNode.setQuestionMark(((Number) rs.getObject("points")).doubleValue());
+        questionNode.setQuestionMark(((Number) rs.getObject("mark")).doubleValue());
         
-        // Note: The List<QuestionOptionBean> options array is left as null here.
-        // It is dynamically populated by the repository slice using a distinct subquery.
         return questionNode;
     }
 }

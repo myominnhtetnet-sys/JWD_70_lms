@@ -39,20 +39,19 @@
                 
                 <h3 style="font-size: 15.5px; font-weight: 600; color: #1e293b; margin: 0 0 12px 0;" th:text="${q.questionText}">Question text goes here?</h3>
 
-                <!-- MCQ CHOICE RADIO OPTIONS -->
-                <div th:if="${q.questionType == 'MCQ'}" style="display: block; margin: 0; padding: 0;">
-                    <div th:each="opt : ${q.options}">
-                        <label class="option-label">
-                            <input type="radio" th:name="'question_' + ${q.questionId}" th:value="${opt.optionId}" required style="accent-color: #0f172a;">
-                            <span th:text="${opt.optionText}">Choice Options Text</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- TEXT SHORT ANSWER MODULE FIELD -->
-                <div th:if="${q.questionType == 'SHORT_ANSWER'}" style="display: block; margin: 0; padding: 0;">
-                    <textarea th:name="'question_' + ${q.questionId}" rows="3" class="text-area-box" placeholder="Type your answer response securely here..." required></textarea>
-                </div>
+            	 <div th:if="${q.questionType == 'MCQ' or q.questionType == 'TRUE_FALSE'}" style="display: block; margin: 0; padding: 0;">
+			    <div th:each="opt : ${q.options}">
+			        <label class="option-label">
+			            <input type="radio" th:name="'question_' + ${q.questionId}" th:value="${opt.optionId}" required style="accent-color: #0f172a;">
+			            <span th:text="${opt.optionText}">Choice Options Text</span>
+			        </label>
+			    </div>
+			</div>
+			
+			<!-- TEXT SHORT ANSWER MODULE FIELD -->
+			<div th:if="${q.questionType == 'SHORT_ANSWER'}" style="display: block; margin: 0; padding: 0;">
+			    <textarea th:name="'question_' + ${q.questionId}" rows="3" class="text-area-box" placeholder="Type your answer response securely here..." required></textarea>
+			</div>
             </div>
 
             <!-- Submit Footer Anchor Bar Row -->
@@ -64,17 +63,19 @@
         </form>
     </div>
 
-        <!-- JavaScript Complete Proctor Armor Engine -->
+        <!-- JavaScript Complete Simplified Proctor Armor Engine -->
     <script th:inline="javascript">
-        // 1. Core Exam Countdown Timer Configuration
-        let durationMinutes = /*[[${exam.duration_min}]]*/ 30;
+        // 1. Countdown Clock Configuration Setup
+        const rawDurationElement = document.getElementById('raw-duration');
+        let durationMinutes = rawDurationElement ? parseInt(rawDurationElement.value) : 30;
+        if (isNaN(durationMinutes) || durationMinutes <= 0) { durationMinutes = 30; }
+        
         let timeRemainingSeconds = durationMinutes * 60;
         const display = document.getElementById('clock-display');
         const form = document.getElementById('exam-form');
-        
-        // 🟢 FIXED: Safely maps properties to match your controller attributes exactly
-        const activeAttemptId = /*[[${attemptId}]]*/ 0;
-        const activeExamId = /*[[${examId}]]*/ 0;
+
+        // Flag tracks if a legitimate browser popup dialog box is currently open
+        let popupActive = false;
 
         const interval = setInterval(() => {
             let minutes = Math.floor(timeRemainingSeconds / 60);
@@ -93,60 +94,84 @@
             }
         }, 1000);
 
-        // 2. THE BACK-BUTTON HISTORY SANDBOX TRAP
+        // 2. 🟢 FIXED: BACK-BUTTON SECOND-CHANCE WARNING (NO AUTO-SUBMIT LOOP)
         history.pushState(null, null, window.location.href);
         window.addEventListener('popstate', () => {
-            history.pushState(null, null, window.location.href);
-            alert("🔒 INTERCEPTED: Back navigation is disabled for the duration of this examination.");
+            popupActive = true; 
+            
+            // OK (true) exits the exam room, Cancel (false) keeps them locked on the page safely
+            const leavePage = confirm("⚠️ Browser Back Action Detected!\n\nAre you sure you want to leave the exam room? Your current entries will not be saved.");
+            
+            if (!leavePage) {
+                history.pushState(null, null, window.location.href);
+                // Settles focus states down completely before re-engaging the scanner
+                setTimeout(() => { popupActive = false; }, 2000);
+            } else {
+                clearProctorArmorListeners();
+                window.location.href = "/student/exam-list";
+            }
         });
 
-        // 3. Tab Close, Page Refresh & Browser Exit Prompt Interceptor
-        window.addEventListener('beforeunload', handlePageExitWarning);
-        function handlePageExitWarning(event) {
+        // 3. Browser Refresh/Reload Interception
+        window.addEventListener('beforeunload', handlePageReloadWarning);
+        function handlePageReloadWarning(event) {
+            popupActive = true;
             event.preventDefault();
-            const warningMsg = "Warning: Leaving this exam will consume your attempt and submit your current entries instantly.";
+            const warningMsg = "Are you sure you want to refresh? Your inputs will be lost.";
             event.returnValue = warningMsg;
+            setTimeout(() => { popupActive = false; }, 2000);
             return warningMsg;
         }
 
-        // 4. 🟢 FIXED REAL-TIME TAB-SWITCH DISQUALIFICATION PANEL
-        // Instantly intercepts when a student switches windows or tabs to lookup answers
+        // 4. TAB-SWITCH AND WINDOW MINIMIZATION RESTRICTION
         document.addEventListener('visibilitychange', handleTabSwitchDisqualification);
         function handleTabSwitchDisqualification() {
-            if (document.hidden) {
+            if (document.hidden && !popupActive) {
                 clearProctorArmorListeners();
                 clearInterval(interval);
-                
-                alert("🚨 SECURITY VIOLATION:\n\nYou left the active exam window boundary screen environment. This attempt has been finalized and auto-submitted.");
-                if (form) form.submit();
+                alert("🚨 SECURITY VIOLATION DETECTED!\n\nYou switched tabs or left the active exam environment. Your paper has been auto-submitted.");
+                form.submit();
             }
         }
 
         // 5. THE MULTI-SCREEN & SPLIT WINDOW DETECTION INTERCEPTOR
-        window.addEventListener('blur', () => {
+        window.addEventListener('blur', handleWindowBlurDisqualification);
+        function handleWindowBlurDisqualification() {
             setTimeout(() => {
-                if (document.activeElement && document.activeElement.tagName !== "IFRAME" && !document.hidden) {
+                if (!popupActive && document.activeElement && document.activeElement.tagName !== "IFRAME" && !document.hidden) {
                     clearProctorArmorListeners();
                     clearInterval(interval);
                     alert("🚨 CHEAT PREVENTION LOCK: Window focus lost. Force-submitting test paper.");
                     if (form) form.submit();
                 }
-            }, 500);
-        });
+            }, 600);
+        }
 
         // Helper cleanup utility routine
         function clearProctorArmorListeners() {
-            window.removeEventListener('beforeunload', handlePageExitWarning);
+            window.removeEventListener('beforeunload', handlePageReloadWarning);
             document.removeEventListener('visibilitychange', handleTabSwitchDisqualification);
+            window.removeEventListener('blur', handleWindowBlurDisqualification);
         }
 
-        // Clean Release On Legitimate Submit button interaction
+        // 6. Submit Handler Enforces Double-Verification Before Database Push
         if (form) {
-            form.addEventListener('submit', () => {
-                clearProctorArmorListeners();
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); 
+                popupActive = true; 
+                
+                const userConfirmed = confirm("Are you completely sure you want to hand in your paper? Unanswered slots will be marked as zero.");
+                if (userConfirmed) {
+                    clearProctorArmorListeners();
+                    clearInterval(interval);
+                    form.submit();
+                } else {
+                    popupActive = false; 
+                }
             });
         }
     </script>
+
 
 
 
