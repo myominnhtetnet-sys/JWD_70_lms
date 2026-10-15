@@ -12,31 +12,55 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.Learning_Managnment_System.JWD_70_lms.Repository.EnrollmentRepository;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.PaymentRepository;
+import com.Learning_Managnment_System.JWD_70_lms.Repository.StudentRepository;
 import com.Learning_Managnment_System.JWD_70_lms.model.PaymentBean;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-public class PaymentController {
+public class CheckoutController {
+
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
 
     @Autowired
     private PaymentRepository paymentRepository;
 
     @GetMapping("/student/checkout")
-    public String showCheckoutPage(HttpSession session, Model model) {
+    public String showCheckoutPage(@RequestParam(value = "courseId", required = false, defaultValue = "1") int courseId, HttpSession session, Model model) {
         String email = (String) session.getAttribute("email");
         if (email == null) {
             return "redirect:/login";
         }
 
-        List<Map<String, Object>> paymentMethods = paymentRepository.getActivePaymentMethods();
-        model.addAttribute("paymentMethods", paymentMethods);
-        model.addAttribute("fullName", session.getAttribute("fullName"));
+        Map<String, Object> student = studentRepository.findByEmail(email);
+        Map<String, Object> course = enrollmentRepository.getCourseById(courseId);
+        
+       
+        if (course == null) {
+            course = enrollmentRepository.getCourseById(1);
+        }
 
-        return "checkout";
+        List<Map<String, Object>> discounts = enrollmentRepository.getDiscountsByCourseId(courseId);
+        List<Map<String, Object>> installments = enrollmentRepository.getInstallmentRules(courseId);
+        List<Map<String, Object>> paymentMethods = paymentRepository.getActivePaymentMethods();
+
+        model.addAttribute("student", student);
+        model.addAttribute("course", course);
+        model.addAttribute("discounts", discounts);
+        model.addAttribute("installments", installments);
+        model.addAttribute("paymentMethods", paymentMethods);
+        model.addAttribute("fullName", student != null ? student.get("full_name") : "Student");
+
+        return "checkout"; 
     }
 
+   
     @PostMapping("/student/process-payment")
     public String processPayment(@RequestParam(value = "paymentMethodId", defaultValue = "0") int paymentMethodId,
                                  @RequestParam("amount") double amount,
@@ -59,10 +83,7 @@ public class PaymentController {
 
         int userId = (studentIdObj != null) ? Integer.parseInt(studentIdObj.toString()) : 1;
         
-        // Database ထဲမှ Valid ဖြစ်သော Enrollment ID ကို ရှာဖွေခြင်း
         Integer validEnrollmentId = paymentRepository.getEnrollmentIdByUserId(userId);
-
-        // System မှ Random Transaction Number အလိုအလျောက် ထုတ်ပေးခြင်း (ဥပမာ- TXN-A1B2C3D4)
         String generatedTxnNo = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
         PaymentBean payment = new PaymentBean();
@@ -70,7 +91,7 @@ public class PaymentController {
         payment.setScheduleId(1);
         payment.setPaymentMethodId(paymentMethodId);
         payment.setAmount(amount);
-        payment.setTransactionNo(generatedTxnNo); // Auto Generated Transaction No
+        payment.setTransactionNo(generatedTxnNo);
         payment.setPaymentType(paymentType);
         payment.setNote(note);
         payment.setProofImage(null);
@@ -79,7 +100,6 @@ public class PaymentController {
         int result = paymentRepository.savePayment(payment);
 
         if (result > 0) {
-            // Receipt Page တွင် Auto ထွက်လာသော Transaction No ကို ပြသရန် ထည့်ပေးလိုက်ပါသည်
             redirectAttributes.addFlashAttribute("amount", amount);
             redirectAttributes.addFlashAttribute("transactionNo", generatedTxnNo);
             redirectAttributes.addFlashAttribute("paymentType", paymentType);
@@ -91,6 +111,7 @@ public class PaymentController {
         }
     }
 
+   
     @GetMapping("/student/payment-success")
     public String showSuccessPage(HttpSession session) {
         if (session.getAttribute("email") == null) {
