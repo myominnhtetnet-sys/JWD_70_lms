@@ -40,6 +40,9 @@ public class CourseController {
         dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
     }
 
+    /**
+     * 🟢 1. FETCH AND FILTER CATALOG PROGRAM DASHBOARDS
+     */
     @GetMapping("/show")
     public String showAndFilterCourses(
             @ModelAttribute CourseBean filters, 
@@ -51,12 +54,10 @@ public class CourseController {
         List<CourseBean> courseList = courseService.getFilteredCourses(filters, batchStatus, page, pageSize);
         int totalPages = courseService.getTotalPagesForFilters(filters, batchStatus, pageSize);
         
-        // 🟢 FIXED: Create a robust, universally queryable flat hash map instance container 
-        java.util.Map<String, List<java.util.Map<String, Object>>> reviewsMap = new java.util.HashMap<>();
+        Map<String, List<java.util.Map<String, Object>>> reviewsMap = new java.util.HashMap<>();
         
         for (CourseBean course : courseList) {
-            List<java.util.Map<String, Object>> reviews = reviewService.getReviewsByCourseId(course.getCourse_id());
-            // Stringify the course ID mapping key accurately to prevent lookup evaluation errors
+            List<Map<String, Object>> reviews = reviewService.getReviewsByCourseId(course.getCourse_id());
             reviewsMap.put(String.valueOf(course.getCourse_id()), reviews);
         }
         
@@ -65,13 +66,14 @@ public class CourseController {
         model.addAttribute("totalPages", totalPages);      
         model.addAttribute("courseBean", filters); 
         model.addAttribute("selectedBatchStatus", batchStatus); 
-        
-        // Pass the unified database review list tracker map container down to your template engine
         model.addAttribute("reviewsMap", reviewsMap); 
         
         return "courses"; 
     }
 
+    /**
+     * 🟢 2. DETAILED SINGLE VIEW VIA TEXT PATH SLUGS
+     */
     @GetMapping("/detail/{slug}")
     public String getCourseDetails(@PathVariable("slug") String slug, Model model) {
         Optional<CourseBean> courseOpt = courseRepository.findBySlug(slug);
@@ -81,18 +83,18 @@ public class CourseController {
         }
         
         CourseBean course = courseOpt.get();
-        
-        // 🟢 FIX: Fetch using your service's working JOIN method
         List<Map<String, Object>> courseReviews = reviewService.getReviewsByCourseId(course.getCourse_id());
         
         model.addAttribute("course", course);
-        model.addAttribute("courseReviews", courseReviews); // Passed straight as a clean list
+        model.addAttribute("courseReviews", courseReviews);
         
         return "course-detail"; 
     }
     
-    // 🟢 FIXED: Added an explicit absolute context path slash to ensure it binds to /courses/{id}/review cleanly
-    @PostMapping("/{id}/review") // Resolves to /courses/{id}/review natively
+    /**
+     * 🟢 3. PROCESS TRANS-SUBMISSION OF AN INDIVIDUAL USER COURSE EVALUATION REVIEW
+     */
+    @PostMapping("/{id}/review")
     public String saveCourseReview(
             @PathVariable("id") Long courseId,
             @RequestParam("rating") int rating,
@@ -112,11 +114,10 @@ public class CourseController {
             return "redirect:/login";
         }
 
-        // Duplicate Review Prevention Check
         if (reviewService.hasUserReviewedCourse(realMasterUserId, courseId.intValue())) {
             redirectAttributes.addFlashAttribute("errorMessage", "You have already submitted a review for this course.");
             CourseBean course = courseService.getCourseById(courseId.intValue());
-            return "redirect:/courses/detail/" + course.getSlug(); // Redirect back to details page
+            return "redirect:/courses/detail/" + course.getSlug();
         }
 
         CourseBean course = courseService.getCourseById(courseId.intValue());
@@ -133,18 +134,11 @@ public class CourseController {
         StudentBean studentUser = new StudentBean();
         review.setUser(studentUser); 
 
-        // Save row into your MySQL DB
         reviewService.saveReview(review, realMasterUserId);
 
-     // This tells the page a new review was just successfully added
-     redirectAttributes.addFlashAttribute("reviewSubmitted", true); 
-     redirectAttributes.addFlashAttribute("successMessage", "Thank you! Your feedback has been published.");
+        redirectAttributes.addFlashAttribute("reviewSubmitted", true); 
+        redirectAttributes.addFlashAttribute("successMessage", "Thank you! Your feedback has been published.");
 
-     return "redirect:/courses/show#detailModal-" + courseId;
+        return "redirect:/courses/show#detailModal-" + courseId;
     }
-
-
-
-   
-
 }

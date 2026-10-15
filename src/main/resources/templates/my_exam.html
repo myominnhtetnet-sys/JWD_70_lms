@@ -64,15 +64,17 @@
         </form>
     </div>
 
-     <!-- JavaScript Clock Countdown Automation & Tab-Escape Prevention Blocker -->
-       <!-- JavaScript Clock Countdown, Anti-Cheat Tab-Switch Blocker & Focus Proctor -->
-       <!-- JavaScript Complete Proctor Armor Engine -->
+        <!-- JavaScript Complete Proctor Armor Engine -->
     <script th:inline="javascript">
         // 1. Core Exam Countdown Timer Configuration
         let durationMinutes = /*[[${exam.duration_min}]]*/ 30;
         let timeRemainingSeconds = durationMinutes * 60;
         const display = document.getElementById('clock-display');
         const form = document.getElementById('exam-form');
+        
+        // 🟢 FIXED: Safely maps properties to match your controller attributes exactly
+        const activeAttemptId = /*[[${attemptId}]]*/ 0;
+        const activeExamId = /*[[${examId}]]*/ 0;
 
         const interval = setInterval(() => {
             let minutes = Math.floor(timeRemainingSeconds / 60);
@@ -84,19 +86,18 @@
             if (display) display.textContent = minutes + ':' + seconds;
 
             if (--timeRemainingSeconds < 0) {
-                window.removeEventListener('beforeunload', handlePageExitWarning);
+                clearProctorArmorListeners();
                 clearInterval(interval);
                 alert("Time's up! Your exam paper will be submitted automatically.");
                 form.submit();
             }
         }, 1000);
 
-        // 2. 🟢 THE BACK-BUTTON HISTORY SANDBOX TRAP
-        // Pushes a dead history frame stack loop continuously so clicking the back arrow does absolutely nothing
+        // 2. THE BACK-BUTTON HISTORY SANDBOX TRAP
         history.pushState(null, null, window.location.href);
         window.addEventListener('popstate', () => {
             history.pushState(null, null, window.location.href);
-            alert("🔒 INTERCEPTED: Back navigation is disabled for the duration of this examination, proceding will consume your attempt and submit your current entries instantly.");
+            alert("🔒 INTERCEPTED: Back navigation is disabled for the duration of this examination.");
         });
 
         // 3. Tab Close, Page Refresh & Browser Exit Prompt Interceptor
@@ -108,13 +109,45 @@
             return warningMsg;
         }
 
+        // 4. 🟢 FIXED REAL-TIME TAB-SWITCH DISQUALIFICATION PANEL
+        // Instantly intercepts when a student switches windows or tabs to lookup answers
+        document.addEventListener('visibilitychange', handleTabSwitchDisqualification);
+        function handleTabSwitchDisqualification() {
+            if (document.hidden) {
+                clearProctorArmorListeners();
+                clearInterval(interval);
+                
+                alert("🚨 SECURITY VIOLATION:\n\nYou left the active exam window boundary screen environment. This attempt has been finalized and auto-submitted.");
+                if (form) form.submit();
+            }
+        }
+
+        // 5. THE MULTI-SCREEN & SPLIT WINDOW DETECTION INTERCEPTOR
+        window.addEventListener('blur', () => {
+            setTimeout(() => {
+                if (document.activeElement && document.activeElement.tagName !== "IFRAME" && !document.hidden) {
+                    clearProctorArmorListeners();
+                    clearInterval(interval);
+                    alert("🚨 CHEAT PREVENTION LOCK: Window focus lost. Force-submitting test paper.");
+                    if (form) form.submit();
+                }
+            }, 500);
+        });
+
+        // Helper cleanup utility routine
+        function clearProctorArmorListeners() {
+            window.removeEventListener('beforeunload', handlePageExitWarning);
+            document.removeEventListener('visibilitychange', handleTabSwitchDisqualification);
+        }
+
         // Clean Release On Legitimate Submit button interaction
         if (form) {
             form.addEventListener('submit', () => {
-                window.removeEventListener('beforeunload', handlePageExitWarning);
+                clearProctorArmorListeners();
             });
         }
     </script>
+
 
 
 
