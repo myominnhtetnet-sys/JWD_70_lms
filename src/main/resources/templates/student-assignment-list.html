@@ -314,17 +314,65 @@
     cursor: not-allowed;
     pointer-events: none;
 }
+
+.home-nav-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background-color: #ffffff !important;
+    color: #475569 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    padding: 10px 18px !important;
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer !important;
+}
+.home-nav-btn:hover {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05) !important;
+}
+.home-nav-btn:active {
+    transform: translateY(0px) !important;
+}
+
     </style>
+    
+    
+    
 </head>
 <body>
 
     <div class="dashboard-wrapper">
         
-        <!-- Header Summary Section -->
-        <div class="header-section">
-            <h1 class="header-title">My Assignment Space</h1>
-            <p class="header-subtitle">Track, manage, and turn in your coursework submissions.</p>
-        </div>
+        <!-- 🟢 LAYOUT WRAPPER: Flex configuration pushes the title to the left and your styled button to the right side seamlessly -->
+<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px; margin-bottom: 32px; width: 100%;">
+    
+    <!-- Left Column: Title and Subtitle -->
+    <div style="text-align: left;">
+        <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin: 0 0 8px 0; letter-spacing: -0.025em;">My Assignments</h1>
+        <p style="font-size: 15px; color: #334155; margin: 0;">Track your coursework deliverables, milestones, and grading feedback details.</p>
+    </div>
+    
+    <!-- Right Column: Premium Home Badge -->
+    <div>
+        <a th:href="@{/student}" class="home-nav-btn">
+            <svg style="width: 15px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.5; position: relative; top: -1px;" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            <span>Back to Home</span>
+        </a>
+    </div>
+
+</div>
+
+        
 
         <!-- Feedback Messages Container -->
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>

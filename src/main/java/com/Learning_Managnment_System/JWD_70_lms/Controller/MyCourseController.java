@@ -35,24 +35,24 @@ public class MyCourseController {
      */
     @GetMapping("/my-courses")
     public String showMyCoursesDashboard(Model model, HttpSession session) {
-        // 1. Recover the secure email string token set directly by your LoginController
         String studentEmail = (String) session.getAttribute("email");
-        Object roleId = session.getAttribute("roleId");
-        
-        // Safety verification check: If user session has expired or role isn't STUDENT (3), kick to login page
-        if (studentEmail == null || roleId == null || (int) roleId != 3) {
-            System.out.println("❌ SESSION SECURITY CHECK FAILED: Redirecting to login context.");
-            return "redirect:/login";
-        }
-        
-        System.out.println("Base URL Mapping initialized. Fetching enrolled courses for Student Email: " + studentEmail);
-        
-        // 2. Query the data layer using the active email variable string token
+        if (studentEmail == null) return "redirect:/login";
+
         List<Map<String, Object>> enrolledCourses = courseService.getEnrolledCoursesProgressByEmail(studentEmail);
+
+        for (Map<String, Object> course : enrolledCourses) {
+            int completed = ((Number) course.get("completed_lessons")).intValue();
+            int total = ((Number) course.get("total_lessons")).intValue();
+            int percent = (total > 0) ? (completed * 100 / total) : 0;
+            
+            // 🟢 FIXED: Changed map key definition target parameter string to lowercase snake_case
+            course.put("progress_percent", percent); 
+        }
+
         model.addAttribute("enrolledCourses", enrolledCourses);
-        
         return "my-courses";
     }
+
     
     /**
      * 🟢 2. RENDER CLASSROOM MOODLE TIMELINE MODULE MAP

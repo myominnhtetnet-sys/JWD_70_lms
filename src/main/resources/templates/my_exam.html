@@ -64,8 +64,11 @@
         </form>
     </div>
 
-    <!-- JavaScript Clock Countdown Automation Controller Routine -->
+     <!-- JavaScript Clock Countdown Automation & Tab-Escape Prevention Blocker -->
+       <!-- JavaScript Clock Countdown, Anti-Cheat Tab-Switch Blocker & Focus Proctor -->
+       <!-- JavaScript Complete Proctor Armor Engine -->
     <script th:inline="javascript">
+        // 1. Core Exam Countdown Timer Configuration
         let durationMinutes = /*[[${exam.duration_min}]]*/ 30;
         let timeRemainingSeconds = durationMinutes * 60;
         const display = document.getElementById('clock-display');
@@ -78,14 +81,43 @@
             minutes = minutes < 10 ? '0' + minutes : minutes;
             seconds = seconds < 10 ? '0' + seconds : seconds;
             
-            display.textContent = minutes + ':' + seconds;
+            if (display) display.textContent = minutes + ':' + seconds;
 
             if (--timeRemainingSeconds < 0) {
+                window.removeEventListener('beforeunload', handlePageExitWarning);
                 clearInterval(interval);
                 alert("Time's up! Your exam paper will be submitted automatically.");
                 form.submit();
             }
         }, 1000);
+
+        // 2. 🟢 THE BACK-BUTTON HISTORY SANDBOX TRAP
+        // Pushes a dead history frame stack loop continuously so clicking the back arrow does absolutely nothing
+        history.pushState(null, null, window.location.href);
+        window.addEventListener('popstate', () => {
+            history.pushState(null, null, window.location.href);
+            alert("🔒 INTERCEPTED: Back navigation is disabled for the duration of this examination, proceding will consume your attempt and submit your current entries instantly.");
+        });
+
+        // 3. Tab Close, Page Refresh & Browser Exit Prompt Interceptor
+        window.addEventListener('beforeunload', handlePageExitWarning);
+        function handlePageExitWarning(event) {
+            event.preventDefault();
+            const warningMsg = "Warning: Leaving this exam will consume your attempt and submit your current entries instantly.";
+            event.returnValue = warningMsg;
+            return warningMsg;
+        }
+
+        // Clean Release On Legitimate Submit button interaction
+        if (form) {
+            form.addEventListener('submit', () => {
+                window.removeEventListener('beforeunload', handlePageExitWarning);
+            });
+        }
     </script>
+
+
+
+
 </body>
 </html>

@@ -6,7 +6,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lesson Workspace</title>
+    <title>Lesson Workspace - Learning Platform</title>
     <link rel="stylesheet" th:href="@{/css/style.css(v=1.0)}" href="/css/style.css">
 
     <!-- Premium Split Workspace Layout System (Zero-Whitespace Configuration) -->
@@ -26,6 +26,33 @@
         .sidebar-item.active { border-color: #2563eb !important; background: #eff6ff !important; }
         .premium-btn { display: inline-flex; align-items: center; gap: 8px; background: #0f172a; color: #ffffff; text-decoration: none; padding: 10px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 600; border: 1px solid #0f172a; }
         .premium-btn:hover { background: #1e293b; }
+
+        /* 🟢 NEW PREMIUM EXIT BUTTON STYLING */
+        .exit-classroom-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            background-color: #ffffff !important;
+            color: #64748b !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+            padding: 8px 14px !important;
+            border-radius: 10px !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        .exit-classroom-btn:hover {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+            transform: translateX(-1px) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+        }
+        .exit-classroom-btn:active {
+            transform: translateX(0px) !important;
+        }
     </style>
 </head>
 <body>
@@ -36,17 +63,21 @@
     <!-- LEFT SIDE: CORE LESSON MEDIA CONTENT WORKSPACE PLAYER     -->
     <!-- ========================================================= -->
     <div class="content-pane">
-        <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
-            <a th:href="@{/student/course/{id}(id=${course.courseId != null ? course.courseId : course.course_id})}" style="color: #64748b; text-decoration: none; font-weight: 600; font-size: 14px;">← Exit Classroom</a>
-            <span style="background: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; text-transform: uppercase;" th:text="${lesson.moduleTitle != null ? lesson.moduleTitle : (lesson.module_title != null ? lesson.module_title : 'Module')}">Module</span>
+        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <!-- 🟢 STYLED EXIT BUTTON LINK: Transformed from raw text into a premium outline badge -->
+            <a th:href="@{/student/course/{id}(id=${course.courseId})}" class="exit-classroom-btn">
+                <i class="fa-solid fa-chevron-left" style="font-size: 10px;"></i>
+                <span>Exit Classroom</span>
+            </a>
+            <span style="background: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 8px; text-transform: uppercase;" th:text="${lesson.moduleTitle}">Module</span>
         </div>
 
-        <h1 style="color: #0f172a; font-size: 24px; font-weight: 800; margin: 0 0 4px 0;" th:text="${lesson.lessonTitle != null ? lesson.lessonTitle : (lesson.title != null ? lesson.title : 'Lesson')}">Lesson Title</h1>
-        <p style="color: #64748b; font-size: 14px; margin: 0 0 20px 0;" th:text="${lesson.durationMin != null ? lesson.durationMin + ' minutes duration module chapter' : (lesson.duration_min != null ? lesson.duration_min + ' minutes duration' : '0m')}"></p>
+        <h1 style="color: #0f172a; font-size: 24px; font-weight: 800; margin: 0 0 4px 0;" th:text="${lesson.lessonTitle}">Lesson Title</h1>
+        <p style="color: #64748b; font-size: 14px; margin: 0 0 20px 0;" th:text="${lesson.durationMin} + ' minutes duration module chapter'"></p>
 
         <!-- A. VIDEO CONTENT TYPE PLAYER CONTAINER -->
-        <div th:if="${(lesson.contentType != null ? lesson.contentType : lesson.content_type) == 'VIDEO' and (lesson.videoUrl != null ? lesson.videoUrl : lesson.video_url) != null}" class="video-container">
-            <iframe th:src="${lesson.videoUrl != null ? lesson.videoUrl : lesson.video_url}" 
+        <div th:if="${lesson.contentType == 'VIDEO' and lesson.videoUrl != null}" class="video-container">
+            <iframe th:src="${lesson.videoUrl}" 
 		        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
 		        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
 		        allowfullscreen>
@@ -54,11 +85,11 @@
         </div>
 
         <!-- B. TEXT CONTENT TYPE DATA CONTAINER ENVELOPE -->
-        <div th:if="${(lesson.contentType != null ? lesson.contentType : lesson.content_type) == 'TEXT' and lesson.content != null}" class="text-content-box">
+        <div th:if="${lesson.contentType == 'TEXT' and lesson.content != null}" class="text-content-box">
             <div th:text="${lesson.content}" style="white-space: pre-wrap;">Lesson content body text written by teacher goes here...</div>
         </div>
 
-        <!-- C. DOWNLOADABLE LESSON MATERIALS ATTACHMENTS (Defensively protected from schema absences) -->
+        <!-- C. DOWNLOADABLE LESSON MATERIALS ATTACHMENTS -->
         <div th:if="${lesson.containsKey('file_path') and lesson['file_path'] != null}" style="margin-top: 20px;">
             <h4 style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Resource Material Files</h4>
             <a th:href="@{/{path}(path=${lesson['file_path']})}" target="_blank" class="premium-btn">
@@ -79,36 +110,34 @@
             
             <div style="display: block;">
                 <a th:each="item : ${sidebarLessons}" 
-                   th:href="@{/student/course/lesson/{id}(id=${item.lessonId != null ? item.lessonId : item.lesson_id}, courseId=${course.courseId != null ? course.courseId : course.course_id})}" 
+                   th:href="@{/student/course/lesson/{id}(id=${item.lessonId}, courseId=${course.courseId})}" 
                    class="sidebar-item" 
-                   th:classappend="${(item.lessonId != null ? item.lessonId : item.lesson_id) == (lesson.lessonId != null ? lesson.lessonId : lesson.lesson_id)} ? 'active' : ''">
+                   th:classappend="${item.lessonId == lesson.lessonId} ? 'active' : ''">
                     
                     <div style="display: flex; flex-direction: column; gap: 1px;">
-                        <span style="font-size: 13px; font-weight: 700; color: #1e293b;" th:text="${item.lessonTitle != null ? item.lessonTitle : item.title}">Lesson Sibling Title</span>
-                        <span style="font-size: 11px; color: #64748b;" th:text="${(item.contentType != null ? item.contentType : item.content_type) + ' • ' + (item.durationMin != null ? item.durationMin : item.duration_min) + 'm'}">VIDEO • 20m</span>
+                        <span style="font-size: 13px; font-weight: 700; color: #1e293b;" th:text="${item.lessonTitle}">Lesson Sibling Title</span>
+                        <span style="font-size: 11px; color: #64748b;" th:text="${item.contentType} + ' • ' + ${item.durationMin} + 'm'">VIDEO • 20m</span>
                     </div>
                     
-                    <span th:if="${item.done}" style="color: #166534; font-size: 13px; font-weight: 700;">✓</span>
+                    <span th:if="${item.done}" style="color: #166534; font-size: 13px; font-weight: 700;"><i class="fa-solid fa-circle-check"></i></span>
                 </a>
             </div>
         </div>
 
-               <!-- Individual Lesson Completion Self-Check Module -->
+        <!-- Individual Lesson Completion & Regression Self-Check Footer Module -->
         <div class="sidebar-footer">
             
             <!-- A. Display if already marked completed -->
-            <div th:if="${lesson.done}" style="text-align: center; padding: 6px 0;">
-                <span style="display: inline-flex; align-items: center; gap: 6px; color: #166534; font-size: 14px; font-weight: 700; background: #dcfce7; padding: 8px 16px; border-radius: 8px; width: 100%; justify-content: center; margin-bottom: 8px;">
+            <div th:if="${lesson.done}" style="text-align: center; padding: 4px 0;">
+                <span style="display: inline-flex; align-items: center; gap: 6px; color: #166534; font-size: 13px; font-weight: 700; background: #dcfce7; padding: 10px 14px; border-radius: 8px; width: 100%; justify-content: center; margin-bottom: 8px;">
                     <i class="fa-solid fa-circle-check"></i> Lesson Completed
                 </span>
                 
-                <!-- 🟢 ADDED: Regression form to undo lesson progress cleanly -->
                 <form th:action="@{/student/course/lesson/regress}" method="post" style="margin: 0; padding: 0;">
-                    <input type="hidden" name="lessonId" th:value="${lesson.lessonId != null ? lesson.lessonId : lesson.lesson_id}">
-                    <input type="hidden" name="courseId" th:value="${course.courseId != null ? course.courseId : course.course_id}">
-                    
-                    <button type="submit" style="background: none; border: none; color: #ef4444; font-size: 11.5px; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 2px 4px;">
-                        🔄 Oops, mark this lesson as incomplete
+                    <input type="hidden" name="lessonId" th:value="${lesson.lessonId}">
+                    <input type="hidden" name="courseId" th:value="${course.courseId}">
+                    <button type="submit" style="background: none; border: none; color: #dc2626; font-size: 11px; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 2px 4px;">
+                        🔄 Mark as incomplete
                     </button>
                 </form>
             </div>
@@ -117,26 +146,10 @@
             <div th:unless="${lesson.done}">
                 <div style="margin-bottom: 10px;">
                     <h4 style="margin: 0; font-size: 13px; font-weight: 700; color: #0f172a;">Finished this chapter?</h4>
-                    <p style="margin: 2px 0 0 0; color: #64748b; font-size: 11.5px; line-height: 1.4;">Mark it complete to save your progress on the syllabus timeline.</p>
+                    <p style="margin: 2px 0 0 0; color: #64748b; font-size: 11px; line-height: 1.4;">Mark it complete to save your isolated progress metrics.</p>
                 </div>
                 
                 <form th:action="@{/student/course/lesson/complete}" method="post" style="margin: 0; padding: 0;">
-                    <input type="hidden" name="lessonId" th:value="${lesson.lessonId != null ? lesson.lessonId : lesson.lesson_id}">
-                    <input type="hidden" name="courseId" th:value="${course.courseId != null ? course.courseId : course.course_id}">
-                    <input type="hidden" name="batchId" th:value="${course.batchId != null ? course.batchId : (course.batch_id != null ? course.batch_id : 1)}">
+                    <input type="hidden" name="lessonId" th:value="${lesson.lessonId}">
+                    <input type="hidden" name="courseId" th:value="${course.courseId}">
                     
-                    <button type="submit" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; background: #2563eb; color: #ffffff; border: 1px solid #2563eb; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 4px rgba(37,99,235,0.1);">
-                        <i class="fa-solid fa-square-check"></i>
-                        <span>Mark Lesson as Done</span>
-                    </button>
-                </form>
-            </div>
-        </div>
-
-
-    </div>
-
-</div>
-
-</body>
-</html>
