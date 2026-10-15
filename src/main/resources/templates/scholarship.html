@@ -44,9 +44,7 @@
                     <div>
                         <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Account</div>
                         <div class="space-y-1">
-                            <a th:href="@{/student/enroll-payment}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
-                                <i class="fa-regular fa-credit-card text-base"></i> Payments
-                            </a>
+                            
                             <!-- Active Scholarships Menu Link -->
                             <a th:href="@{/student/scholarship}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600/90 shadow-sm transition">
                                 <i class="fa-solid fa-user-graduate text-base"></i> Scholarships
@@ -129,8 +127,11 @@
                                         </span>
                                     </td>
                                     <td class="p-3.5 text-right">
-                                        <button class="text-xs px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition">View Details</button>
-                                    </td>
+    <a th:href="@{/student/scholarship/details/{id}(id=${sch.applicationId})}" 
+       class="text-xs px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition inline-block">
+       View Details
+    </a>
+</td>
                                 </tr>
                                 
                                 <!-- Empty State -->
