@@ -26,7 +26,7 @@ public class ExamController {
      * Target URLs: http://localhost:8080/student/exam-list OR http://localhost:8080/student/exam
      * Return view: exam_list.html
      */
-    @GetMapping({"/exam-list", "/exam"})
+    @GetMapping("/exam-list")
     public String showExamList(Model model, HttpSession session) {
         String studentEmail = (String) session.getAttribute("email");
         if (studentEmail == null) return "redirect:/login";
@@ -67,17 +67,18 @@ public class ExamController {
         return "exam_history";
     }
 
+   
     /**
-     * 🟢 3. LAUNCH INTERACTIVE COUNTDOWN EXAM SESSION WORKSPACE ROOM
+     * 🟢 SECURE EXAMINATION WORKSPACE PLAYER WITH MEMORY SHUFFLING
+     * Standard MVC Controller Method - Returns HTML View Templates Only.
      * Target URL: http://localhost:8080/student/exam-take/{id}
-     * Return view: my_exam.html
      */
     @GetMapping("/exam-take/{id}")
     public String takeExam(@PathVariable("id") int examId, Model model, HttpSession session) {
         String studentEmail = (String) session.getAttribute("email");
         if (studentEmail == null) return "redirect:/login";
 
-        // Safely fetch enrollment_id as a generic Number to handle cross-driver casting type variances
+        // Safely fetch active enrollment_id mapping context matching student email
         String enrollmentSql = "SELECT e.enrollment_id FROM lms_db.enrollments e JOIN lms_db.users u ON e.user_id = u.user_id WHERE u.email = ? AND e.status = 'ACTIVE' LIMIT 1";
         Number enrollmentIdNum = jdbcTemplate.queryForObject(enrollmentSql, Number.class, studentEmail);
         if (enrollmentIdNum == null) return "redirect:/student/my-courses";
@@ -86,45 +87,121 @@ public class ExamController {
         // Query Exam Parameters from core database fields
         String examSql = "SELECT title, duration_min, total_mark, max_attempts FROM lms_db.exams WHERE exam_id = ? AND status = 'PUBLISHED'";
         Map<String, Object> exam = jdbcTemplate.queryForMap(examSql, examId);
-        int maxAttempts = ((Number) exam.get("max_attempts")).intValue();
         
-        // Look for any existing unsubmitted entry currently marked as IN_PROGRESS
+        int maxAttempts = 1;
+        if (exam.get("max_attempts") != null) {
+            int dbAttempts = ((Number) exam.get("max_attempts")).intValue();
+            if (dbAttempts > 0) {
+                maxAttempts = dbAttempts;
+            }
+        }
+        
+        // Look for an existing active session currently marked as IN_PROGRESS
         String activeCheckSql = "SELECT attempt_id, attempt_no FROM lms_db.exam_attempts WHERE exam_id = ? AND enrollment_id = ? AND status = 'IN_PROGRESS' LIMIT 1";
         List<Map<String, Object>> activeAttempts = jdbcTemplate.queryForList(activeCheckSql, examId, enrollmentId);
         
         int attemptId;
         int currentAttemptNo;
+        String sessionCacheKey = "exam_" + examId + "_user_" + enrollmentId + "_questions";
+        
+        // 🟢 FIX 1: Pull the existing stable sequence text straight out of memory context if it exists
+        String targetedQuestionSequence = (String) session.getAttribute(sessionCacheKey);
+        if (targetedQuestionSequence == null) {
+            targetedQuestionSequence = "";
+        }
         
         if (!activeAttempts.isEmpty()) {
-            attemptId = ((Number) activeAttempts.get(0).get("attempt_id")).intValue();
-            currentAttemptNo = ((Number) activeAttempts.get(0).get("attempt_no")).intValue();
-        } else {
-            String countSql = "SELECT COUNT(*) FROM lms_db.exam_attempts WHERE exam_id = ? AND enrollment_id = ?";
-            Number pastAttemptsCount = jdbcTemplate.queryForObject(countSql, Number.class, examId, enrollmentId);
-            currentAttemptNo = (pastAttemptsCount != null ? pastAttemptsCount.intValue() : 0) + 1;
+            // 🛡️ ANTI-CHEAT ENFORCEMENT TRAP
+            // The student broke workspace focus, clicked refresh, or left the page panel live.
+            // We force-submit the old entry row cell as 'SUBMITTED' right now to consume the attempt!
+            int brokenAttemptId = ((Number) activeAttempts.get(0).get("attempt_id")).intValue();
+            String forceSubmitSql = "UPDATE lms_db.exam_attempts SET status = 'SUBMITTED', started_at = started_at WHERE attempt_id = ?";
+            jdbcTemplate.update(forceSubmitSql, brokenAttemptId);
             
-            // Access Restriction Boundary Check
-            if (currentAttemptNo > maxAttempts) return "redirect:/student/my-courses";
+            // Wipe the question ordering cache row straight out of their server memory bag
+            session.removeAttribute(sessionCacheKey);
+            System.out.println("🚨 ABSOLUTE LOCKOUT: Student exited an active test. Attempt ID " + brokenAttemptId + " has been forfeited.");
             
-            String insertAttempt = "INSERT INTO lms_db.exam_attempts (exam_id, enrollment_id, attempt_no, started_at, status) VALUES (?, ?, ?, NOW(), 'IN_PROGRESS')";
-            jdbcTemplate.update(insertAttempt, examId, enrollmentId, currentAttemptNo);
-            
-            Number lastId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Number.class);
-            attemptId = (lastId != null) ? lastId.intValue() : 0;
+            // Recalculate total historic rows to present the exact accurate count on the lockout page
+            String countAllSql = "SELECT COUNT(*) FROM lms_db.exam_attempts WHERE exam_id = ? AND enrollment_id = ?";
+            Number totalRowsCount = jdbcTemplate.queryForObject(countAllSql, Number.class, examId, enrollmentId);
+            int totalPastAttempts = (totalRowsCount != null) ? totalRowsCount.intValue() : 0;
+
+            model.addAttribute("examTitle", exam.get("title"));
+            model.addAttribute("maxAttempts", maxAttempts);
+            model.addAttribute("totalPastAttempts", totalPastAttempts);
+            return "exam_lockout"; // Displays the standard lockout HTML template view instantly
         }
 
-        // Resolves Foreign Key Constraints dynamically by reading a verified structural question_id node from your table rows
-        String validIdSql = "SELECT question_id FROM lms_db.exam_questions WHERE exam_id = ? ORDER BY sort_order ASC LIMIT 1";
-        List<Integer> validIds = jdbcTemplate.queryForList(validIdSql, Integer.class, examId);
-        int operationalQuestionId = !validIds.isEmpty() ? validIds.get(0) : 1;
+        // CALCULATE ATTEMPT INDEX SEQUENCE FOR FIRST TIME ENTRIES
+        String countAllSql = "SELECT COUNT(*) FROM lms_db.exam_attempts WHERE exam_id = ? AND enrollment_id = ?";
+        Number totalRowsCount = jdbcTemplate.queryForObject(countAllSql, Number.class, examId, enrollmentId);
+        int totalPastAttempts = (totalRowsCount != null) ? totalRowsCount.intValue() : 0;
+        
+        currentAttemptNo = totalPastAttempts + 1;
+        
+        // Enforce maximum allotment limits
+        if (currentAttemptNo > maxAttempts) {
+            model.addAttribute("examTitle", exam.get("title"));
+            model.addAttribute("maxAttempts", maxAttempts);
+            model.addAttribute("totalPastAttempts", totalPastAttempts);
+            return "exam_lockout"; 
+        }
+        
+        // Fetch list of basic structural question entries matching this blueprint
+        String validIdSql = "SELECT question_id FROM lms_db.exam_questions WHERE exam_id = ? ORDER BY sort_order ASC";
+        List<Integer> poolQuestionIds = jdbcTemplate.queryForList(validIdSql, Integer.class, examId);
+        
+        // 🎲 IN-MEMORY SHUFFLING: Scramble the primary question list rows on the fly
+        if (!poolQuestionIds.isEmpty()) {
+            java.util.Collections.shuffle(poolQuestionIds);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < poolQuestionIds.size(); i++) {
+                sb.append(poolQuestionIds.get(i));
+                if (i < poolQuestionIds.size() - 1) sb.append(",");
+            }
+            targetedQuestionSequence = sb.toString();
+        } else {
+            targetedQuestionSequence = "1";
+        }
+        
+        // Cache sequence layout securely in server-side session attributes
+        session.setAttribute(sessionCacheKey, targetedQuestionSequence);
+        
+        // Initialize attempt session row cleanly in database table
+        String insertAttempt = "INSERT INTO lms_db.exam_attempts (exam_id, enrollment_id, attempt_no, started_at, status) VALUES (?, ?, ?, NOW(), 'IN_PROGRESS')";
+        jdbcTemplate.update(insertAttempt, examId, enrollmentId, currentAttemptNo);
+        
+        Number lastId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Number.class);
+        attemptId = (lastId != null) ? lastId.intValue() : 0;
 
-        List<ExamQuestionBean> questions = new ArrayList<>();
-        ExamQuestionBean questionNode = new ExamQuestionBean();
-        questionNode.setQuestionId(operationalQuestionId); 
-        questionNode.setQuestionText("Assignment Essay: Provide a detailed architectural layout analysis summary report based on your study for '" + exam.get("title") + "'.");
-        questionNode.setQuestionType("SHORT_ANSWER");
-        questionNode.setQuestionMark(((Number) exam.get("total_mark")).doubleValue());
-        questions.add(questionNode);
+        // Reconstruct dynamic view beans based on shuffled order cache
+        List<com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean> questions = new java.util.ArrayList<>();
+        String[] orderedIds = targetedQuestionSequence.split(",");
+        for (String qIdStr : orderedIds) {
+            if (qIdStr.trim().isEmpty()) continue;
+            int targetedId = Integer.parseInt(qIdStr.trim());
+            
+            com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean questionNode = new com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean();
+            questionNode.setQuestionId(targetedId); 
+            
+            // 🟢 FIX 2: Dynamic row resolver extracts real unique question text from lms_db.exam_questions schema table row
+            try {
+                String lookupTextSql = "SELECT question_text, question_type, points FROM lms_db.exam_questions WHERE question_id = ? LIMIT 1";
+                Map<String, Object> dbQuestion = jdbcTemplate.queryForMap(lookupTextSql, targetedId);
+                
+                questionNode.setQuestionText((String) dbQuestion.get("question_text"));
+                questionNode.setQuestionType((String) dbQuestion.get("question_type"));
+                questionNode.setQuestionMark(((Number) dbQuestion.get("points")).doubleValue());
+            } catch (Exception e) {
+                // Secure fallback labels if the database fields are completely blank
+                questionNode.setQuestionText("Exam Core Module Question Analysis Node reference #" + targetedId);
+                questionNode.setQuestionType("SHORT_ANSWER");
+                questionNode.setQuestionMark(((Number) exam.get("total_mark")).doubleValue());
+            }
+            
+            questions.add(questionNode);
+        }
 
         model.addAttribute("exam", exam);
         model.addAttribute("examId", examId);
@@ -133,6 +210,8 @@ public class ExamController {
         
         return "my_exam"; 
     }
+
+
 
     /**
      * 🟢 4. SUBMIT EXAM ANSWERS SECURELY WITH ZERO DATABASE SCHEMA ALTERATIONS

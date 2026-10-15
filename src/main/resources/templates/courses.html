@@ -964,51 +964,6 @@
     </ul>
 </div>
 
-
-                <!-- 2. Write a Review Form Submission Block Linked to Session User -->
-<!--<di v class="add-review-box" th:if="${session.currentUser != null}">
-    <h4 style="margin: 0 0 12px 0; font-size: 14px; color: #0f172a;">Share your feedback</h4>
-    
-    <form th:action="@{/courses/{id}/review(id=${course.course_id})}" method="POST" class="review-submit-form">
-        
-        Pass the logged-in User's ID implicitly
-        <input type="hidden" name="userId" th:value="${session.currentUser.user_id}">
-
-        <div class="review-form-row" style="align-items: center;">
-            Read-Only Username Visual Anchor Display
-            <div class="review-form-group" style="flex: 1;">
-                <label style="font-size: 11px; color:#64748b; margin-bottom: 4px; text-transform:none;">Reviewing as:</label>
-                <div style="font-size: 14px; font-weight: 600; color: #0f172a; padding: 6px 0;" 
-                     th:text="${session.currentUser.full_name}">Logged In User Name</div>
-            </div>
-            
-            Rating Selector Dropdown
-            <div class="review-form-group" style="width: 110px; flex: 0 0 auto;">
-                <label style="font-size: 11px; color:#64748b; margin-bottom: 4px; text-transform:none;">Rating:</label>
-                <select name="rating" required class="review-input-field select-rating">
-                    <option value="5">⭐⭐⭐⭐⭐</option>
-                    <option value="4">⭐⭐⭐⭐</option>
-                    <option value="3">⭐⭐⭐</option>
-                    <option value="2">⭐⭐</option>
-                    <option value="1">⭐</option>
-                </select>
-            </div>
-        </div>
-
-        Comment Textarea Input Area
-        <div class="review-form-group" style="margin-top: 10px;">
-            <textarea name="comment" rows="3" required placeholder="Write your review comments here..." class="review-input-field review-textarea"></textarea>
-        </div>
-
-        Action Button Submission Row
-        <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
-            <button type="submit" class="btn-submit-review">Submit Review</button>
-        </div>
-    </form>
-</div> -->
-
-
-
     </div>
 
 </div>
