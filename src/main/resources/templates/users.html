@@ -1,1554 +1,269 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>User Management | LMS</title>
-
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-    <style>
-        :root {
-            --bg: #f5f6fa;
-            --sidebar: #17172b;
-            --sidebar-light: #24243f;
-            --primary: #7565f5;
-            --primary-light: #eeebff;
-            --text: #24243a;
-            --muted: #85859b;
-            --border: #e9eaf2;
-            --white: #ffffff;
-            --green: #16a36a;
-            --red: #e45161;
-            --orange: #e6a23c;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        button,
-        input,
-        select {
-            font: inherit;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        /* SIDEBAR */
-
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: 250px;
-            padding: 25px 16px;
-            background: var(--sidebar);
-            color: white;
-            overflow-y: auto;
-            z-index: 100;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 0 10px;
-            margin-bottom: 40px;
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .brand-icon {
-            width: 40px;
-            height: 40px;
-            display: grid;
-            place-items: center;
-            border-radius: 12px;
-            background: var(--primary);
-        }
-
-        .menu-title {
-            padding: 0 12px;
-            margin-bottom: 12px;
-            color: #9292b0;
-            font-size: 11px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 13px;
-            padding: 14px 15px;
-            margin-bottom: 7px;
-            color: #b8b8d1;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: .2s;
-        }
-
-        .nav-link i {
-            width: 20px;
-            text-align: center;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            background: var(--sidebar-light);
-            color: white;
-        }
-
-        .nav-link.active {
-            box-shadow: inset 3px 0 var(--primary);
-        }
-
-        .sidebar-bottom {
-            margin-top: 35px;
-        }
-
-        .logout-link {
-            color: #ff8f9b;
-        }
-
-        /* TOPBAR */
-
-        .topbar {
-            position: fixed;
-            top: 0;
-            left: 250px;
-            right: 0;
-            height: 75px;
-            padding: 0 35px;
-            background: white;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 90;
-        }
-
-        .breadcrumb {
-            font-size: 14px;
-            color: var(--muted);
-        }
-
-        .breadcrumb strong {
-            color: var(--text);
-        }
-
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 22px;
-        }
-
-        .top-icon {
-            font-size: 18px;
-            color: #65657e;
-        }
-
-        .profile-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            display: grid;
-            place-items: center;
-            border-radius: 50%;
-            background: var(--primary-light);
-            color: var(--primary);
-            font-weight: bold;
-        }
-
-        .profile-info small {
-            display: block;
-            margin-top: 4px;
-            color: var(--muted);
-        }
-
-        /* MAIN CONTENT */
-
-        .main {
-            margin-left: 250px;
-            padding: 110px 35px 40px;
-            min-height: 100vh;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 28px;
-        }
-
-        .page-header h1 {
-            font-size: 27px;
-            margin-bottom: 8px;
-        }
-
-        .page-header p {
-            color: var(--muted);
-            font-size: 14px;
-        }
-
-        .primary-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 9px;
-            padding: 12px 17px;
-            border: none;
-            border-radius: 9px;
-            background: var(--primary);
-            color: white;
-            font-weight: bold;
-            font-size: 13px;
-        }
-
-        .primary-btn:hover {
-            background: #6251e5;
-        }
-
-        /* FLASH MESSAGES */
-
-        .alert {
-            padding: 14px 17px;
-            margin-bottom: 20px;
-            border-radius: 9px;
-            font-size: 14px;
-        }
-
-        .alert-success {
-            color: #08784a;
-            background: #e4f8ed;
-            border: 1px solid #b9ebcf;
-        }
-
-        .alert-error {
-            color: #a52737;
-            background: #fff0f1;
-            border: 1px solid #ffd0d5;
-        }
-
-        /* STATISTICS */
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 18px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: white;
-            padding: 22px;
-            border: 1px solid var(--border);
-            border-radius: 13px;
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            display: grid;
-            place-items: center;
-            border-radius: 12px;
-            background: var(--primary-light);
-            color: var(--primary);
-            font-size: 19px;
-        }
-
-        .stat-card:nth-child(2) .stat-icon {
-            background: #e4f8ed;
-            color: var(--green);
-        }
-
-        .stat-card:nth-child(3) .stat-icon {
-            background: #fff3df;
-            color: var(--orange);
-        }
-
-        .stat-card:nth-child(4) .stat-icon {
-            background: #ffe9ec;
-            color: var(--red);
-        }
-
-        .stat-card small {
-            display: block;
-            color: var(--muted);
-            margin-bottom: 7px;
-            font-size: 12px;
-        }
-
-        .stat-card h2 {
-            font-size: 25px;
-        }
-
-        /* TABLE SECTION */
-
-        .table-section {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            overflow: hidden;
-        }
-
-        .table-heading {
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .table-heading h2 {
-            font-size: 18px;
-            margin-bottom: 6px;
-        }
-
-        .table-heading p {
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .filter-form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .search-box {
-            position: relative;
-            flex: 1;
-            min-width: 190px;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 13px;
-            top: 13px;
-            color: var(--muted);
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 12px 12px 12px 38px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            outline: none;
-        }
-
-        .filter-form select {
-            min-width: 135px;
-            padding: 12px;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            outline: none;
-        }
-
-        .filter-btn,
-        .reset-btn {
-            padding: 12px 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 13px;
-        }
-
-        .filter-btn {
-            background: var(--primary);
-            color: white;
-        }
-
-        .reset-btn {
-            background: #f0f0f6;
-            color: #55556c;
-        }
-
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            white-space: nowrap;
-        }
-
-        thead {
-            background: #fafaff;
-        }
-
-        th {
-            padding: 16px 20px;
-            color: var(--muted);
-            text-align: left;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: .5px;
-        }
-
-        td {
-            padding: 17px 20px;
-            border-top: 1px solid #f0f0f6;
-            font-size: 13px;
-        }
-
-        tbody tr:hover {
-            background: #fafaff;
-        }
-
-        .user-cell {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-        }
-
-        .user-avatar {
-            width: 38px;
-            height: 38px;
-            display: grid;
-            place-items: center;
-            flex-shrink: 0;
-            border-radius: 11px;
-            background: var(--primary-light);
-            color: var(--primary);
-            font-weight: bold;
-        }
-
-        .user-cell small {
-            display: block;
-            margin-top: 5px;
-            color: var(--muted);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 6px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .badge-active {
-            color: #08784a;
-            background: #e4f8ed;
-        }
-
-        .badge-inactive {
-            color: #98651a;
-            background: #fff3df;
-        }
-
-        .badge-suspended {
-            color: #b72b3b;
-            background: #ffe9ec;
-        }
-
-        .role-badge {
-            display: inline-block;
-            padding: 6px 9px;
-            border-radius: 6px;
-            background: #eeebff;
-            color: #6654df;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 7px;
-            align-items: center;
-        }
-
-        .icon-btn {
-            width: 31px;
-            height: 31px;
-            display: inline-grid;
-            place-items: center;
-            border: none;
-            border-radius: 7px;
-            background: #f0efff;
-            color: var(--primary);
-            font-size: 12px;
-        }
-
-        .icon-btn:hover {
-            filter: brightness(.95);
-        }
-
-        .icon-btn.green {
-            background: #e4f8ed;
-            color: var(--green);
-        }
-
-        .icon-btn.orange {
-            background: #fff3df;
-            color: #b77a1b;
-        }
-
-        .icon-btn.red {
-            background: #ffe9ec;
-            color: var(--red);
-        }
-
-        .empty-state {
-            padding: 45px 20px;
-            text-align: center;
-            color: var(--muted);
-        }
-
-        .empty-state i {
-            font-size: 35px;
-            margin-bottom: 15px;
-        }
-
-        /* MODAL */
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background: rgba(15, 15, 35, .65);
-            z-index: 500;
-        }
-
-        .modal-overlay.show {
-            display: flex;
-        }
-
-        .modal {
-            width: 100%;
-            max-width: 650px;
-            max-height: 90vh;
-            overflow-y: auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 70px rgba(0, 0, 0, .2);
-        }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 23px 25px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .modal-header h2 {
-            font-size: 20px;
-        }
-
-        .close-btn {
-            width: 34px;
-            height: 34px;
-            border: none;
-            border-radius: 8px;
-            background: #f1f1f7;
-            color: #555;
-        }
-
-        .modal-body {
-            padding: 25px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 18px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-group.full {
-            grid-column: 1 / -1;
-        }
-
-        .form-group label {
-            font-size: 12px;
-            font-weight: bold;
-            color: #55556c;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            outline: none;
-            background: white;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: var(--primary);
-        }
-
-        .form-note {
-            color: var(--muted);
-            font-size: 11px;
-            line-height: 1.5;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 25px;
-        }
-
-        .cancel-btn {
-            padding: 12px 18px;
-            border: none;
-            border-radius: 8px;
-            background: #f0f0f6;
-            color: #55556c;
-        }
-
-        /* RESPONSIVE */
-
-        @media (max-width: 1100px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
-            .main {
-                padding-left: 22px;
-                padding-right: 22px;
-            }
-        }
-
-        @media (max-width: 760px) {
-            .sidebar {
-                width: 72px;
-                padding: 20px 9px;
-            }
-
-            .brand {
-                justify-content: center;
-                padding: 0;
-            }
-
-            .brand-text,
-            .menu-title,
-            .nav-text {
-                display: none;
-            }
-
-            .nav-link {
-                justify-content: center;
-                padding: 15px 5px;
-            }
-
-            .topbar {
-                left: 72px;
-                padding: 0 15px;
-            }
-
-            .main {
-                margin-left: 72px;
-                padding: 100px 15px 25px;
-            }
-
-            .topbar-right {
-                gap: 12px;
-            }
-
-            .profile-name {
-                display: none;
-            }
-
-            .page-header {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .table-heading {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-        }
-
-        @media (max-width: 500px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .form-group.full {
-                grid-column: auto;
-            }
-
-            .page-header h1 {
-                font-size: 23px;
-            }
-
-            .filter-form {
-                padding: 15px;
-            }
-
-            .filter-form > * {
-                width: 100%;
-            }
-        }
-    </style>
+    <title>User Management | LearnHub LMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+        --bg: #0f1118; 
+        --sidebar: #181d28; 
+        --card: #181d28; 
+        --border: #293142;
+        --primary: #6c4ce5; 
+        --text: #f1f3f9; 
+        --muted: #929bb0; 
+        --input: #202634;
+        --green: #36c995; 
+        --red: #ff7373;
+    }
+    body { font-family: Arial, Helvetica, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    
+    /* Layout Structure - Fixed Sidebar & Margin Left */
+    .sidebar { 
+        width: 260px; 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        bottom: 0; 
+        height: 100vh; 
+        background: var(--sidebar); 
+        border-right: 1px solid var(--border); 
+        padding: 25px 18px; 
+        z-index: 1000; 
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .main { 
+        margin-left: 260px; 
+        min-height: 100vh; 
+        display: flex; 
+        flex-direction: column; 
+    }
+
+    /* Sidebar Brand & Navigation Styling */
+    .sidebar .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        margin-bottom: 25px;
+        padding: 0 5px;
+    }
+    .sidebar .brand-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--primary);
+        color: white;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+    .sidebar .brand-name { font-size: 16px; font-weight: 700; color: var(--text); }
+    .sidebar .brand-subtitle { font-size: 11px; color: var(--muted); }
+
+    .sidebar .menu-heading {
+        font-size: 11px;
+        text-transform: uppercase;
+        color: var(--muted);
+        letter-spacing: 0.5px;
+        margin: 20px 0 10px 5px;
+        font-weight: 600;
+    }
+    .sidebar .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 14px;
+        color: var(--muted);
+        text-decoration: none;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        margin-bottom: 4px;
+    }
+    .sidebar .nav-link:hover, 
+    .sidebar .nav-link.active {
+        background: rgba(108, 76, 229, 0.15);
+        color: var(--text);
+    }
+    .sidebar .nav-link.active {
+        color: #a894ff;
+        font-weight: 600;
+    }
+    .sidebar .nav-link i {
+        width: 18px;
+        text-align: center;
+        font-size: 15px;
+    }
+    .sidebar .sidebar-bottom {
+        margin-top: auto;
+        border-top: 1px solid var(--border);
+        padding-top: 15px;
+    }
+    .sidebar .logout-link:hover {
+        background: rgba(255, 115, 115, 0.15);
+        color: #ff7373;
+    }
+    
+    /* Topbar Styling */
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 22px 30px;
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+    }
+    .topbar-left h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .topbar-left p { font-size: 13px; color: var(--muted); }
+    .topbar-profile { display: flex; align-items: center; gap: 12px; }
+    .user-avatar { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
+
+    /* Content Area */
+    .content { padding: 28px 30px; flex: 1; }
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 23px; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    
+    .primary-btn { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 9px; cursor: pointer; font-weight: 700; font-size: 13px; }
+    .primary-btn:hover { opacity: 0.9; }
+
+    /* Table Design */
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; white-space: nowrap; }
+    th, td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13px; text-align: left; }
+    th { color: var(--muted); font-weight: 600; }
+    
+    .inline-form { display: inline-flex; gap: 8px; align-items: center; }
+    .inline-form select { padding: 6px 10px; background: var(--input); border: 1px solid var(--border); border-radius: 7px; color: var(--text); font-size: 12px; }
+    .mini-btn { padding: 6px 12px; border: none; border-radius: 7px; background: var(--primary); color: white; cursor: pointer; font-size: 12px; font-weight: 600; }
+
+    /* Modal Overlay */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 25px; width: 100%; max-width: 450px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+    .form-control { width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px; font-size: 13px; }
+</style>
 </head>
-
 <body>
 
-<!-- SIDEBAR -->
+    <!-- Sidebar Fragment -->
+<div th:replace="~{fragments/admin-layout :: sidebar(activePage='users')}"></div>
 
-<aside class="sidebar">
-
-    <a th:href="@{/admin/dashboard}" class="brand">
-        <span class="brand-icon">
-            <i class="fa-solid fa-graduation-cap"></i>
-        </span>
-
-        <span class="brand-text">EduPulse LMS</span>
-    </a>
-
-    <div class="menu-title">Main Menu</div>
-
-    <a th:href="@{/admin/dashboard}"
-       class="nav-link">
-        <i class="fa-solid fa-chart-line"></i>
-        <span class="nav-text">Dashboard</span>
-    </a>
-
-    <a th:href="@{/admin/users}"
-       class="nav-link active">
-        <i class="fa-solid fa-users"></i>
-        <span class="nav-text">User Management</span>
-    </a>
-
-    <a th:href="@{/admin/notification}"
-       class="nav-link">
-        <i class="fa-regular fa-bell"></i>
-        <span class="nav-text">Notifications</span>
-    </a>
-
-    <a th:href="@{/admin/profile}"
-       class="nav-link">
-        <i class="fa-regular fa-user"></i>
-        <span class="nav-text">My Profile</span>
-    </a>
-
-    <div class="sidebar-bottom">
-
-        <div class="menu-title">Account</div>
-
-        <a th:href="@{/admin/logout}"
-           class="nav-link logout-link">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span class="nav-text">Logout</span>
-        </a>
-
-    </div>
-
-</aside>
-
-
-<!-- TOPBAR -->
-
-<header class="topbar">
-
-    <div class="breadcrumb">
-        Admin Portal &nbsp; / &nbsp;
-        <strong>User Management</strong>
-    </div>
-
-    <div class="topbar-right">
-
-        <a th:href="@{/admin/notification}"
-           class="top-icon"
-           title="Notifications">
-            <i class="fa-regular fa-bell"></i>
-        </a>
-
-        <a th:href="@{/admin/profile}"
-           class="profile-info">
-
-            <div class="avatar">
-                <span
-                    th:text="${fullName != null and !#strings.isEmpty(fullName) ? #strings.substring(fullName, 0, 1).toUpperCase() : 'A'}">
-                    A
-                </span>
+    <main class="main">
+        <!-- Topbar Custom Layout -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1>User Management</h1>
+                <p>Manage system users, roles and statuses.</p>
             </div>
-
-            <div class="profile-name">
-                <strong th:text="${fullName != null ? fullName : 'Admin'}">
-                    Admin
-                </strong>
-
-                <small>Administrator</small>
+            <div class="topbar-profile">
+                <div class="user-avatar">AD</div>
+                <div>
+                    <div style="font-weight: 600; font-size: 14px;" th:text="${fullName}">Aung Aung</div>
+                    <div style="font-size: 11px; color: var(--muted);">Administrator</div>
+                </div>
             </div>
-
-        </a>
-
-    </div>
-
-</header>
-
-
-<!-- MAIN CONTENT -->
-
-<main class="main">
-
-    <!-- PAGE HEADER -->
-
-    <section class="page-header">
-
-        <div>
-            <h1>User Management</h1>
-
-            <p>
-                Manage accounts, roles and user access.
-            </p>
-        </div>
-
-        <button type="button"
-                class="primary-btn"
-                onclick="openAddModal()">
-
-            <i class="fa-solid fa-plus"></i>
-            Add New User
-
-        </button>
-
-    </section>
-
-
-    <!-- FLASH MESSAGES -->
-
-    <div class="alert alert-success"
-         th:if="${success != null}"
-         th:text="${success}">
-        Success
-    </div>
-
-    <div class="alert alert-error"
-         th:if="${error != null}"
-         th:text="${error}">
-        Error
-    </div>
-
-
-    <!-- STATISTICS -->
-
-    <section class="stats-grid">
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                <i class="fa-solid fa-users"></i>
-            </div>
-
-            <div>
-                <small>Total Users</small>
-                <h2 th:text="${totalUsers}">0</h2>
-            </div>
-
-        </div>
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                <i class="fa-solid fa-user-check"></i>
-            </div>
-
-            <div>
-                <small>Active Users</small>
-                <h2 th:text="${activeUsers}">0</h2>
-            </div>
-
-        </div>
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                <i class="fa-solid fa-user-clock"></i>
-            </div>
-
-            <div>
-                <small>Inactive Users</small>
-                <h2 th:text="${inactiveUsers}">0</h2>
-            </div>
-
-        </div>
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                <i class="fa-solid fa-user-slash"></i>
-            </div>
-
-            <div>
-                <small>Suspended Users</small>
-                <h2 th:text="${suspendedUsers}">0</h2>
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- USER TABLE -->
-
-    <section class="table-section">
-
-        <div class="table-heading">
-
-            <div>
-                <h2>All Users</h2>
-
-                <p>
-                    View and manage registered LMS users.
-                </p>
-            </div>
-
-            <span class="role-badge">
-                <i class="fa-solid fa-database"></i>
-                Live Database
-            </span>
-
-        </div>
-
-
-        <!-- SEARCH AND FILTER -->
-
-        <form th:action="@{/admin/users}"
-              method="get"
-              class="filter-form">
-
-            <div class="search-box">
-
-                <i class="fa-solid fa-magnifying-glass"></i>
-
-                <input type="text"
-                       name="keyword"
-                       placeholder="Search name or email..."
-                       th:value="${keyword}">
-
-            </div>
-
-
-            <select name="role">
-
-                <option value="">All Roles</option>
-
-                <option th:each="r : ${roles}"
-                        th:value="${r.role_id}"
-                        th:text="${r.role_name}"
-                        th:selected="${selectedRole != null and selectedRole == #strings.toString(r.role_id)}">
-                    Role
-                </option>
-
-            </select>
-
-
-            <select name="status">
-
-                <option value="">All Status</option>
-
-                <option value="ACTIVE"
-                        th:selected="${selectedStatus == 'ACTIVE'}">
-                    Active
-                </option>
-
-                <option value="INACTIVE"
-                        th:selected="${selectedStatus == 'INACTIVE'}">
-                    Inactive
-                </option>
-
-                <option value="SUSPENDED"
-                        th:selected="${selectedStatus == 'SUSPENDED'}">
-                    Suspended
-                </option>
-
-            </select>
-
-
-            <button type="submit" class="filter-btn">
-                <i class="fa-solid fa-filter"></i>
-                Filter
-            </button>
-
-            <a th:href="@{/admin/users}" class="reset-btn">
-                Reset
-            </a>
-
-        </form>
-
-
-        <!-- TABLE -->
-
-        <div class="table-wrapper">
-
-            <table>
-
-                <thead>
-
-                <tr>
-                    <th>User</th>
-                    <th>Role</th>
-                    <th>Phone</th>
-                    <th>Status</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                </tr>
-
-                </thead>
-
-                <tbody>
-
-                <tr th:each="u : ${users}">
-
-                    <!-- USER -->
-
-                    <td>
-
-                        <div class="user-cell">
-
-                            <div class="user-avatar">
-
-                                <span
-                                    th:text="${u.full_name != null and !#strings.isEmpty(u.full_name) ? #strings.substring(u.full_name, 0, 1).toUpperCase() : 'U'}">
-                                    U
-                                </span>
-
-                            </div>
-
-                            <div>
-
-                                <strong th:text="${u.full_name}">
-                                    User Name
-                                </strong>
-
-                                <small th:text="${u.email}">
-                                    user@example.com
-                                </small>
-
-                            </div>
-
-                        </div>
-
-                    </td>
-
-
-                    <!-- ROLE -->
-
-                    <td>
-                        <span class="role-badge"
-                              th:text="${u.role_name}">
-                            Student
-                        </span>
-                    </td>
-
-
-                    <!-- PHONE -->
-
-                    <td th:text="${u.phone != null and !#strings.isEmpty(u.phone) ? u.phone : '-'}">
-                        -
-                    </td>
-
-
-                    <!-- STATUS -->
-
-                    <td>
-
-                        <span class="badge"
-                              th:classappend="${u.status == 'ACTIVE' ? ' badge-active' : (u.status == 'SUSPENDED' ? ' badge-suspended' : ' badge-inactive')}"
-                              th:text="${u.status}">
-                            ACTIVE
-                        </span>
-
-                    </td>
-
-
-                    <!-- CREATED DATE -->
-
-                    <td>
-
-                        <span th:if="${u.created_at != null}"
-                              th:text="${#temporals.format(u.created_at, 'yyyy-MM-dd')}">
-                            2026-10-13
-                        </span>
-
-                        <span th:if="${u.created_at == null}">
-                            -
-                        </span>
-
-                    </td>
-
-
-                    <!-- ACTIONS -->
-
-                    <td>
-
-                        <div class="action-buttons">
-
-                            <!-- VIEW -->
-
-                            <a th:href="@{/admin/users/view/{id}(id=${u.user_id})}"
-                               class="icon-btn"
-                               title="View User">
-
-                                <i class="fa-solid fa-eye"></i>
-
-                            </a>
-
-
-                            <!-- EDIT -->
-
-                            <a th:href="@{/admin/users/edit/{id}(id=${u.user_id})}"
-                               class="icon-btn green"
-                               title="Edit User">
-
-                                <i class="fa-solid fa-pen"></i>
-
-                            </a>
-
-
-                            <!-- ACTIVATE -->
-
-                            <form th:if="${u.status != 'ACTIVE'}"
-                                  th:action="@{/admin/users/status/{id}(id=${u.user_id})}"
-                                  method="post">
-
-                                <input type="hidden"
-                                       name="status"
-                                       value="ACTIVE">
-
-                                <button type="submit"
-                                        class="icon-btn green"
-                                        title="Activate User">
-
-                                    <i class="fa-solid fa-check"></i>
-
-                                </button>
-
-                            </form>
-
-
-                            <!-- SUSPEND -->
-
-                            <form th:if="${u.status != 'SUSPENDED'}"
-                                  th:action="@{/admin/users/status/{id}(id=${u.user_id})}"
-                                  method="post"
-                                  onsubmit="return confirm('Suspend this user account?');">
-
-                                <input type="hidden"
-                                       name="status"
-                                       value="SUSPENDED">
-
-                                <button type="submit"
-                                        class="icon-btn orange"
-                                        title="Suspend User">
-
-                                    <i class="fa-solid fa-ban"></i>
-
-                                </button>
-
-                            </form>
-
-
-                            <!-- SOFT DELETE -->
-
-                            <form th:action="@{/admin/users/delete/{id}(id=${u.user_id})}"
-                                  method="post"
-                                  onsubmit="return confirm('Delete this user? This will hide the account from the normal user list.');">
-
-                                <button type="submit"
-                                        class="icon-btn red"
-                                        title="Delete User">
-
-                                    <i class="fa-solid fa-trash"></i>
-
-                                </button>
-
-                            </form>
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-
-                <!-- EMPTY RESULT -->
-
-                <tr th:if="${#lists.isEmpty(users)}">
-
-                    <td colspan="6">
-
-                        <div class="empty-state">
-
-                            <i class="fa-solid fa-folder-open"></i>
-
-                            <h3>No Users Found</h3>
-
-                            <p>
-                                Try changing your search or filter.
-                            </p>
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </section>
-
-</main>
-
-
-<!-- ADD USER MODAL -->
-
-<div class="modal-overlay"
-     id="addUserModal"
-     onclick="closeModalOnOverlay(event)">
-
-    <div class="modal">
-
-        <div class="modal-header">
-
-            <div>
-                <h2>Add New User</h2>
-                <p style="margin-top: 6px; color: #85859b; font-size: 12px;">
-                    Create a new LMS account.
-                </p>
-            </div>
-
-            <button type="button"
-                    class="close-btn"
-                    onclick="closeAddModal()">
-
-                <i class="fa-solid fa-xmark"></i>
-
-            </button>
-
-        </div>
-
-
-        <div class="modal-body">
-
-            <form th:action="@{/admin/users/create}"
-                  th:object="${adminUser}"
-                  method="post"
-                  id="addUserForm">
-
-                <div class="form-grid">
-
-                    <!-- FULL NAME -->
-
-                    <div class="form-group">
-
-                        <label for="full_name">
-                            Full Name *
-                        </label>
-
-                        <input type="text"
-                               id="full_name"
-                               th:field="*{full_name}"
-                               maxlength="100"
-                               required
-                               placeholder="Enter full name">
-
+        </header>
+
+        <div class="content">
+            <!-- Success Alert -->
+            <div th:if="${success}" style="padding: 12px 16px; background: rgba(54,201,149,0.15); color: var(--green); border: 1px solid rgba(54,201,149,0.3); border-radius: 9px; margin-bottom: 20px; font-size: 13px;" th:text="${success}">Success message</div>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 style="font-size: 16px; font-weight: 700;">All Users</h2>
+                        <p style="color: var(--muted); font-size: 13px; margin-top: 2px;">View and manage system accounts.</p>
                     </div>
-
-
-                    <!-- EMAIL -->
-
-                    <div class="form-group">
-
-                        <label for="email">
-                            Email *
-                        </label>
-
-                        <input type="email"
-                               id="email"
-                               th:field="*{email}"
-                               maxlength="255"
-                               required
-                               placeholder="Enter email">
-
-                    </div>
-
-
-                    <!-- PHONE -->
-
-                    <div class="form-group">
-
-                        <label for="phone">
-                            Phone
-                        </label>
-
-                        <input type="tel"
-                               id="phone"
-                               th:field="*{phone}"
-                               maxlength="20"
-                               placeholder="Enter phone number">
-
-                    </div>
-
-
-                    <!-- PASSWORD -->
-
-                    <div class="form-group">
-
-                        <label for="password_hash">
-                            Password *
-                        </label>
-
-                        <input type="password"
-                               id="password_hash"
-                               th:field="*{password_hash}"
-                               minlength="8"
-                               maxlength="255"
-                               required
-                               placeholder="Enter password">
-
-                        <small class="form-note">
-                            Use at least 8 characters.
-                        </small>
-
-                    </div>
-
-
-                 
-
-                   <!-- Role -->
-<div class="form-group">
-    <label for="role_id">Role <span style="color:red">*</span></label>
-
-    <select id="role_id"
-            name="role_id"
-            class="form-control"
-            required>
-
-        <option value="">-- Select Role --</option>
-
-        <option th:each="r : ${roles}"
-                th:value="${r.role_id}"
-                th:text="${r.role_name}">
-        </option>
-
-    </select>
-</div>
-
-
-                    <!-- STATUS -->
-
-                    <div class="form-group">
-
-                        <label for="status">
-                            Account Status
-                        </label>
-
-                        <select id="status"
-                                th:field="*{status}">
-
-                            <option value="ACTIVE">
-                                Active
-                            </option>
-
-                            <option value="INACTIVE">
-                                Inactive
-                            </option>
-
-                            <option value="SUSPENDED">
-                                Suspended
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <!-- DATE OF BIRTH -->
-
-                    <div class="form-group">
-
-                        <label for="dob">
-                            Date of Birth
-                        </label>
-
-                        <input type="date"
-                               id="dob"
-                               th:field="*{dob}">
-
-                    </div>
-
-
-                    <!-- GENDER -->
-
-                    <div class="form-group">
-
-                        <label for="gender">
-                            Gender
-                        </label>
-
-                        <select id="gender"
-                                th:field="*{gender}">
-
-                            <option value="">
-                                Select Gender
-                            </option>
-
-                            <option value="MALE">
-                                Male
-                            </option>
-
-                            <option value="FEMALE">
-                                Female
-                            </option>
-
-                            <option value="OTHER">
-                                Other
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <!-- ADDRESS -->
-
-                    <div class="form-group full">
-
-                        <label for="address">
-                            Address
-                        </label>
-
-                        <textarea id="address"
-                                  th:field="*{address}"
-                                  rows="3"
-                                  maxlength="255"
-                                  placeholder="Enter address"></textarea>
-
-                    </div>
-
+                    <button type="button" class="primary-btn" onclick="openUserModal()"><i class="fa-solid fa-plus" style="margin-right: 5px;"></i> Add User</button>
                 </div>
 
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>NAME</th>
+                            <th>EMAIL</th>
+                            <th>ROLE</th>
+                            <th>STATUS</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="u : ${users}">
+                            <td th:text="${u.user_id}">1</td>
+                            <td th:text="${u.full_name}">Name</td>
+                            <td th:text="${u.email}">Email</td>
+                            <td th:text="${u.role_name}">Role</td>
+                            <td th:text="${u.status}" th:style="${u.status == 'ACTIVE' ? 'color: var(--green); font-weight: 600;' : 'color: var(--red); font-weight: 600;'}">ACTIVE</td>
+                            <td>
+                                <form th:action="@{/admin/users/status}" method="post" class="inline-form">
+                                    <input type="hidden" name="userId" th:value="${u.user_id}">
+                                    <select name="status">
+                                        <option value="ACTIVE" th:selected="${u.status == 'ACTIVE'}">ACTIVE</option>
+                                        <option value="SUSPENDED" th:selected="${u.status == 'SUSPENDED'}">SUSPENDED</option>
+                                    </select>
+                                    <button type="submit" class="mini-btn">Save</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </main>
 
-                <div class="modal-footer">
+    <!-- ADD USER MODAL -->
+    <div id="userModal" class="modal-overlay">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="font-size: 16px; font-weight: 700;">Add New User</h3>
+                <button type="button" onclick="closeUserModal()" style="background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
 
-                    <button type="button"
-                            class="cancel-btn"
-                            onclick="closeAddModal()">
-
-                        Cancel
-
-                    </button>
-
-                    <button type="submit"
-                            class="primary-btn">
-
-                        <i class="fa-solid fa-user-plus"></i>
-                        Create User
-
-                    </button>
-
+            <form th:action="@{/admin/users/create}" method="post" th:object="${user}">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="full_name" class="form-control" required placeholder="Enter full name">
                 </div>
-
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" class="form-control" required placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" class="form-control" required placeholder="Enter password">
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>Role</label>
+                    <select name="role_id" class="form-control" required>
+                        <option value="1">Admin</option>
+                        <option value="2">Teacher</option>
+                        <option value="3">Student</option>
+                    </select>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" onclick="closeUserModal()" style="padding: 10px 16px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px; cursor: pointer; font-size: 13px;">Cancel</button>
+                    <button type="submit" class="primary-btn">Save User</button>
+                </div>
             </form>
-
         </div>
-
     </div>
 
-</div>
-
-
-<script>
-
-    function openAddModal() {
-
-        document.getElementById("addUserModal")
-            .classList.add("show");
-
-        document.body.style.overflow = "hidden";
-    }
-
-    function closeAddModal() {
-
-        document.getElementById("addUserModal")
-            .classList.remove("show");
-
-        document.body.style.overflow = "";
-    }
-
-    function closeModalOnOverlay(event) {
-
-        if (event.target.id === "addUserModal") {
-            closeAddModal();
+    <script>
+        function openUserModal() {
+            document.getElementById('userModal').style.display = 'flex';
         }
-    }
-
-    document.addEventListener("keydown", function(event) {
-
-        if (event.key === "Escape") {
-            closeAddModal();
+        function closeUserModal() {
+            document.getElementById('userModal').style.display = 'none';
         }
-
-    });
-
-</script>
-
+    </script>
 </body>
 </html>
