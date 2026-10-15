@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.Learning_Managnment_System.JWD_70_lms.Repository.ScholarshipRepository;
@@ -49,5 +50,19 @@ public class ScholarshipController {
         }
 
         return "scholarship"; 
+    }
+ 
+    @GetMapping("/details/{id}")
+    public String viewScholarshipDetail(@PathVariable("id") int applicationId, HttpSession session, Model model) {
+        String email = (String) session.getAttribute("email");
+        if (email == null) {
+            return "redirect:/login";
+        }
+
+        Map<String, Object> detail = scholarshipRepository.getApplicationDetailById(applicationId);
+        model.addAttribute("detail", detail);
+        model.addAttribute("userEmail", email);
+
+        return "scholarship-detail"; 
     }
 }
