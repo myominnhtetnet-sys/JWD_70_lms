@@ -1,248 +1,101 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Edit User | LMS</title>
-
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
+    <title>User Form | LearnHub LMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        * {
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0f1118; --sidebar: #181d28; --card: #181d28; --border: #293142;
+            --primary: #6c4ce5; --text: #f1f3f9; --muted: #929bb0; --input: #202634;
         }
-
-        body {
-            margin: 0;
-            padding: 35px 15px;
-            background: #f5f6fa;
-            color: #24243a;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .container {
-            max-width: 750px;
-            margin: auto;
-            padding: 30px;
-            background: white;
-            border-radius: 15px;
-            border: 1px solid #e9eaf2;
-        }
-
-        h1 {
-            margin-top: 0;
-        }
-
-        .subtitle {
-            color: #85859b;
-            margin-bottom: 28px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 18px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .full {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e2e2ed;
-            border-radius: 8px;
-            font: inherit;
-        }
-
-        .buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 25px;
-        }
-
-        .btn {
-            padding: 12px 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 13px;
-        }
-
-        .save {
-            color: white;
-            background: #7565f5;
-        }
-
-        .cancel {
-            color: #555;
-            background: #f0f0f6;
-        }
-
-        @media (max-width: 500px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .full {
-                grid-column: auto;
-            }
-        }
+        body { font-family: Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        .sidebar { width: 260px; position: fixed; inset: 0 auto 0 0; background: var(--sidebar); border-right: 1px solid var(--border); padding: 25px 18px; z-index: 100; }
+        .main { margin-left: 260px; min-height: 100vh; }
+        .content { padding: 28px 30px; max-width: 800px; }
+        .panel { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 30px; }
+        .field { margin-bottom: 18px; }
+        .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+        .field input, .field select, .field textarea { width: 100%; padding: 12px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px; outline: none; }
+        .primary-btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 9px; cursor: pointer; font-weight: 700; }
+        .secondary-btn { background: var(--input); color: var(--text); border: 1px solid var(--border); padding: 12px 20px; border-radius: 9px; text-decoration: none; display: inline-block; }
     </style>
 </head>
-
 <body>
 
-<div class="container">
+    <div th:replace="~{fragments/admin-layout :: sidebar(activePage='users')}"></div>
 
-    <h1>
-        <i class="fa-solid fa-user-pen"></i>
-        Edit User
-    </h1>
+    <main class="main">
+        <div th:replace="~{fragments/admin-layout :: topbar('User Management', 'Create or update user account details.')}"></div>
 
-    <p class="subtitle">
-        Update user information and account status.
-    </p>
+        <div class="content">
+            <section class="panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2 th:text="${user.user_id == 0 ? 'Add New User' : 'Edit User'}">Add User</h2>
+                    <a th:href="@{/admin/users}" style="color: var(--muted); text-decoration: none; font-size: 13px;"><i class="fa-solid fa-arrow-left"></i> Back to List</a>
+                </div>
 
-    <form th:action="@{/admin/users/update}"
-          th:object="${user}"
-          method="post">
+                <form th:action="${user.user_id == 0 ? @{/admin/users/create} : @{/admin/users/update}}" method="post" th:object="${user}">
+                    <input type="hidden" th:field="*{user_id}" />
 
-        <input type="hidden"
-               th:field="*{user_id}">
+                    <div class="field">
+                        <label>Full Name *</label>
+                        <input type="text" th:field="*{full_name}" required placeholder="Enter full name">
+                    </div>
 
-        <div class="form-grid">
+                    <div class="field">
+                        <label>Email *</label>
+                        <input type="email" th:field="*{email}" required placeholder="Enter email address">
+                    </div>
 
-            <div class="form-group">
-                <label for="full_name">Full Name *</label>
+                    <div class="field" th:if="${user.user_id == 0}">
+                        <label>Password * (At least 8 characters)</label>
+                        <input type="password" th:field="*{password_hash}" required minlength="8" placeholder="Enter secure password">
+                    </div>
 
-                <input type="text"
-                       id="full_name"
-                       th:field="*{full_name}"
-                       maxlength="100"
-                       required>
-            </div>
+                    <div class="field">
+                        <label>Phone</label>
+                        <input type="text" th:field="*{phone}" placeholder="09xxxxxxxxx">
+                    </div>
 
-            <div class="form-group">
-                <label for="email">Email *</label>
+                    <div class="field">
+                        <label>Role *</label>
+                        <select th:field="*{role_id}" required>
+                            <option value="">-- Select Role --</option>
+                            <option value="1">Admin</option>
+                            <option value="2">Teacher</option>
+                            <option value="3">Student</option>
+                        </select>
+                    </div>
 
-                <input type="email"
-                       id="email"
-                       th:field="*{email}"
-                       maxlength="255"
-                       required>
-            </div>
+                    <div class="field">
+                        <label>Date of Birth</label>
+                        <input type="date" th:field="*{dob}">
+                    </div>
 
-            <div class="form-group">
-                <label for="phone">Phone</label>
+                    <div class="field">
+                        <label>Gender</label>
+                        <select th:field="*{gender}">
+                            <option value="">-- Select Gender --</option>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
 
-                <input type="tel"
-                       id="phone"
-                       th:field="*{phone}"
-                       maxlength="20">
-            </div>
+                    <div class="field" style="margin-bottom: 25px;">
+                        <label>Address</label>
+                        <textarea th:field="*{address}" rows="3" placeholder="Enter residential address"></textarea>
+                    </div>
 
-            <div class="form-group">
-                <label for="role_id">Role *</label>
-
-                <select id="role_id"
-                        th:field="*{role_id}"
-                        required>
-
-                    <option th:each="r : ${roles}"
-                            th:value="${r.role_id}"
-                            th:text="${r.role_name}">
-                        Role
-                    </option>
-
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="status">Status *</label>
-
-                <select id="status"
-                        th:field="*{status}"
-                        required>
-
-                    <option value="ACTIVE">Active</option>
-                    <option value="INACTIVE">Inactive</option>
-                    <option value="SUSPENDED">Suspended</option>
-
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="dob">Date of Birth</label>
-
-                <input type="date"
-                       id="dob"
-                       th:field="*{dob}">
-            </div>
-
-            <div class="form-group">
-                <label for="gender">Gender</label>
-
-                <select id="gender"
-                        th:field="*{gender}">
-
-                    <option value="">Select Gender</option>
-                    <option value="MALE">Male</option>
-                    <option value="FEMALE">Female</option>
-                    <option value="OTHER">Other</option>
-
-                </select>
-            </div>
-
-            <div class="form-group full">
-                <label for="address">Address</label>
-
-                <textarea id="address"
-                          th:field="*{address}"
-                          rows="3"
-                          maxlength="255"></textarea>
-            </div>
-
+                    <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                        <a th:href="@{/admin/users}" class="secondary-btn">Cancel</a>
+                        <button type="submit" class="primary-btn" th:text="${user.user_id == 0 ? 'Create User' : 'Update User'}">Save</button>
+                    </div>
+                </form>
+            </section>
         </div>
-
-        <div class="buttons">
-
-            <a th:href="@{/admin/users}"
-               class="btn cancel">
-                Cancel
-            </a>
-
-            <button type="submit"
-                    class="btn save">
-                <i class="fa-solid fa-floppy-disk"></i>
-                Save Changes
-            </button>
-
-        </div>
-
-    </form>
-
-</div>
-
+    </main>
 </body>
 </html>
