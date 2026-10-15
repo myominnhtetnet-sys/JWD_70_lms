@@ -1,6 +1,7 @@
 package com.Learning_Managnment_System.JWD_70_lms.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -193,13 +194,17 @@ public class TeacherExamResultService {
                     "The grading form does not match this exam.");
         }
 
-        if (questionTotal.compareTo(totalMark) != 0) {
-            throw new IllegalArgumentException(
-                    "Question marks total (" + questionTotal
-                    + ") must match exam total mark (" + totalMark
-                    + "). Please fix the exam marks first.");
-        }
+//        if (questionTotal.compareTo(totalMark) != 0) {
+//            throw new IllegalArgumentException(
+//                    "Question marks total (" + questionTotal
+//                    + ") must match exam total mark (" + totalMark
+//                    + "). Please fix the exam marks first.");
+//        }
 
+        if (questionTotal.signum() <= 0) {
+            throw new IllegalArgumentException(
+                    "Question marks total must be greater than 0.");
+        }
         BigDecimal score = BigDecimal.ZERO;
 
         for (Map<String, Object> answer : answers) {
@@ -233,10 +238,18 @@ public class TeacherExamResultService {
             score = score.add(awarded);
         }
 
+//        String result = score.compareTo(passMark) >= 0
+//                ? "PASSED"
+//                : "FAILED";
+
+     // မေးခွန်းအမှတ်ပေါင်းမှ Exam Total Mark အတိုင်း အချိုးကျပြောင်းမယ်
+        score = score.multiply(totalMark)
+                .divide(questionTotal, 2, RoundingMode.HALF_UP);
+
+        // ပြောင်းပြီးသားအမှတ်ကို Exam Pass Mark နဲ့နှိုင်းယှဉ်မယ်
         String result = score.compareTo(passMark) >= 0
                 ? "PASSED"
                 : "FAILED";
-
         String remark = form.getRemark() == null
                 ? ""
                 : form.getRemark().trim();
@@ -274,3 +287,4 @@ public class TeacherExamResultService {
                 && number.intValue() != 0;
     }
 }
+

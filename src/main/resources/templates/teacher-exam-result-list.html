@@ -431,12 +431,17 @@
                     <td th:text="${item.examTitle}"></td>
                     <td th:text="${item.attemptNo}"></td>
 
-                    <td th:text="${item.submittedAt != null
+                    <!-- <td th:text="${item.submittedAt != null
                         ? #dates.format(item.submittedAt,
                             'dd MMM yyyy, HH:mm')
-                        : '-'}"></td>
+                        : '-'}"></td> -->
+							<td
+								th:text="${item.submittedAt != null
+						    ? #temporals.format(item.submittedAt, 'dd MMM yyyy, HH:mm')
+						    : '-'}">
+							</td>
 
-                    <td>
+							<td>
                         <span class="badge"
                               th:classappend="${item.status == 'GRADED'
                                   ? 'green' : 'yellow'}"
