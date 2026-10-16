@@ -1,22 +1,17 @@
 package com.Learning_Managnment_System.JWD_70_lms.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Service;
 
 import com.Learning_Managnment_System.JWD_70_lms.Mapper.CourseMapper;
 import com.Learning_Managnment_System.JWD_70_lms.Mapper.BatchRowMapper;
+import java.util.List;
+import org.springframework.stereotype.Service;
+import com.Learning_Managnment_System.JWD_70_lms.Repository.CourseRepository;
 import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
-import com.Learning_Managnment_System.JWD_70_lms.model.BatchBean;
 
 @Service
 public class CourseService {
 
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+	private final CourseRepository courseRepository;
 
     // Shared SQL definition constant
     private static final String BASE_BATCH_SQL = "SELECT * FROM lms_db.batches WHERE course_id = ? ORDER BY start_date ASC";
@@ -123,5 +118,18 @@ public class CourseService {
             sql.append(" AND EXISTS (SELECT 1 FROM lms_db.batches b WHERE b.course_id = c.course_id AND b.status = ?)");
             params.add(batchStatus.trim());
         }
+    public CourseService(CourseRepository courseRepository) {
+        this.courseRepository = courseRepository;
+    }
+
+    public List<CourseBean> getAllCourses() {
+        return courseRepository.findAll();
+    }
+
+    public CourseBean getCourseById(Integer id) {
+        return courseRepository.findById(id);
+    }
+    public void updateCourse(CourseBean course) {
+        courseRepository.update(course);
     }
 }

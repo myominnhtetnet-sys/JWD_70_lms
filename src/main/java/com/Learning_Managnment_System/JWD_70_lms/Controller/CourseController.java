@@ -11,33 +11,29 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.Learning_Managnment_System.JWD_70_lms.Service.CourseService;
 import com.Learning_Managnment_System.JWD_70_lms.Service.ReviewService;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.CourseRepository;
+import com.Learning_Managnment_System.JWD_70_lms.Service.CategoryService;
+import com.Learning_Managnment_System.JWD_70_lms.Service.CourseFileUploadService;
+import com.Learning_Managnment_System.JWD_70_lms.model.CategoryBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.Review;
 import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
-
-import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/courses")
+@RequestMapping("/admin/courses")
 public class CourseController {
 
-    @Autowired
-    private CourseService courseService;
+    private final CourseRepository courseRepository;
+    private final CategoryService categoryService;
+    private final CourseFileUploadService fileUploadService;
 
-    @Autowired
-    private ReviewService reviewService;
-
-    @Autowired
-    private CourseRepository courseRepository; 
-
-    @InitBinder
-    public void initBinder(WebDataBinder dataBinder) {
-        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
-        dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+    public CourseController(CourseRepository courseRepository, CategoryService categoryService, CourseFileUploadService fileUploadService) {
+        this.courseRepository = courseRepository;
+        this.categoryService = categoryService;
+        this.fileUploadService = fileUploadService;
     }
 
     @GetMapping("/show")

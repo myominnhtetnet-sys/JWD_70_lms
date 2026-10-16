@@ -27,10 +27,6 @@ public class Admin_Controller {
         return "dashboard";        
     }
 
-    // =========================================================
-    // ADMIN DASHBOARD
-    // =========================================================
-
     @GetMapping("/dashboard")
     public String adminDashboard(Model model) {
 
@@ -39,10 +35,6 @@ public class Admin_Controller {
 
         return "dashboard";
     }
-
-    // =========================================================
-    // SEARCH USER
-    // =========================================================
 
     @GetMapping("/users/search")
     public String searchUsers(
@@ -63,20 +55,12 @@ public class Admin_Controller {
         return "dashboard";
     }
 
-    // =========================================================
-    // SHOW ADD USER FORM
-    // =========================================================
-
     @GetMapping("/users/add")
     public String showAddUserForm(Model model) {
 
         model.addAttribute("user", new AdminUserBean());
         return "admin/user_form";
     }
-
-    // =========================================================
-    // ADD USER
-    // =========================================================
 
     @PostMapping("/users/add")
     public String addUser(
@@ -118,10 +102,6 @@ public class Admin_Controller {
         return "redirect:/admin/";
     }
 
-    // =========================================================
-    // VIEW USER
-    // =========================================================
-
     @GetMapping("/users/view/{id}")
     public String viewUser(
             @PathVariable("id") int id,
@@ -139,10 +119,6 @@ public class Admin_Controller {
         return "admin/user_view";
     }
 
-    // =========================================================
-    // SHOW EDIT USER FORM
-    // =========================================================
-
     @GetMapping("/users/edit/{id}")
     public String showEditUserForm(
             @PathVariable("id") int id,
@@ -159,10 +135,6 @@ public class Admin_Controller {
         model.addAttribute("user", user);
         return "admin/user_form";
     }
-
-    // =========================================================
-    // UPDATE USER
-    // =========================================================
 
     @PostMapping("/users/update")
     public String updateUser(
@@ -195,10 +167,6 @@ public class Admin_Controller {
         return "redirect:/admin/";
     }
 
-    // =========================================================
-    // SUSPEND USER
-    // =========================================================
-
     @PostMapping("/users/suspend")
     public String suspendUser(
             @RequestParam("userId") int userId,
@@ -215,10 +183,6 @@ public class Admin_Controller {
         return "redirect:/admin/";
     }
 
-    // =========================================================
-    // ACTIVATE USER
-    // =========================================================
-
     @PostMapping("/users/activate")
     public String activateUser(
             @RequestParam("userId") int userId,
@@ -234,10 +198,6 @@ public class Admin_Controller {
 
         return "redirect:/admin/";
     }
-
-    // =========================================================
-    // DELETE USER - SOFT DELETE
-    // =========================================================
 
     @PostMapping("/users/delete")
     public String deleteUser(

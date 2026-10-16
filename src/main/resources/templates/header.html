@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
+<!-- Toast Container (Dynamic မပေါ်ပါက ဤနေရာမှ တိုက်ရိုက် ရယူပါမည်) -->
+<div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+<!-- JS File ချိတ်ဆက်ခြင်း -->
+
+
 <body>
 <div th:fragment="header">
 
@@ -31,6 +37,8 @@
                 <!-- Center: Prominent Role Switcher -->
                 <div class="bg-slate-100 dark:bg-slate-700/80 p-1 rounded-xl border border-slate-200 dark:border-slate-600 flex items-center gap-1 shadow-inner">
                    <!--  <button onclick="switchRole('admin')" id="role-btn-admin" class="role-btn text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all">
+               <!--  <div class="bg-slate-100 dark:bg-slate-700/80 p-1 rounded-xl border border-slate-200 dark:border-slate-600 flex items-center gap-1 shadow-inner">
+                    <button onclick="switchRole('admin')" id="role-btn-admin" class="role-btn text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all">
                         <i class="fa-solid fa-user-shield"></i>
                         <span class="hidden sm:inline">Admin</span>
                     </button> -->
@@ -43,7 +51,7 @@
                         <span class="hidden sm:inline">Student</span>
                     </button> -->
                 </div>
-
+ -->
                 <!-- Right: Utilities & User Profile -->
                 <div class="flex items-center gap-3">
                     <!-- Dark Mode Toggle -->
@@ -93,6 +101,202 @@
 
 
 </div>
+<script th:src="@{/js/noti.js}"></script>
+
+<script>
+
+function toggleNotifications() {
+    const dropdown = document.getElementById('notif-dropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('hidden');
+    }
+}
+
+// Database မှ နောက်ဆုံး Announcement 2 ခုကို ဆွဲယူပြီး Dropdown ထဲတွင် ပြသပေးသည့် Function
+async function loadLatestNotifications() {
+    const notifContainer = document.getElementById('notif-list');
+    if (!notifContainer) return;
+
+    try {
+        const response = await fetch('/api/announcements/latest');
+        if (!response.ok) throw new Error('Failed to fetch notifications');
+
+        const announcements = await response.json();
+
+        if (announcements.length === 0) {
+            notifContainer.innerHTML = '<div class="p-3 text-xs text-slate-400 text-center">No new notifications</div>';
+            return;
+        }
+
+        // Database မှ ရရှိလာသော နောက်ဆုံး Data 2 ခုကို ရေးဆွဲခြင်း
+        notifContainer.innerHTML = announcements.map(item => `
+            <div class="p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition cursor-pointer">
+                <div class="flex justify-between items-start">
+                    <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">${escapeHtml(item.title)}</p>
+                    <span class="bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-300 px-1.5 py-0.5 rounded text-[9px] font-medium ml-2 shrink-0">
+                        ${escapeHtml(item.batchTitle || 'General')}
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">${escapeHtml(item.body)}</p>
+                <span class="text-[10px] text-slate-400 mt-1 block">${formatDate(item.createdAt)}</span>
+            </div>
+        `).join('');
+
+    } catch (error) {
+        console.error('Error loading notifications:', error);
+        notifContainer.innerHTML = '<div class="p-3 text-xs text-red-400 text-center">Failed to load notifications</div>';
+    }
+}
+
+// Page Load စဖြစ်သည်နှင့် Notifications ခေါ်ယူမည်
+document.addEventListener("DOMContentLoaded", () => {
+    loadAnnouncementsTable();
+    loadBatchesDropdown();
+    loadLatestNotifications(); // Notifications ခေါ်ယူသည့် Function
+});
+document.addEventListener("DOMContentLoaded", loadCoursesFromDB);
+
+// Database မှ Course List များကို Fetch API ဖြင့် ဆွဲယူခြင်း
+function loadCoursesFromDB() {
+    fetch('/admin/courses/api/list')
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to load courses');
+            return response.json();
+        })
+        .then(courses => {
+            renderCoursesTable(courses);
+        })
+        .catch(error => {
+            console.error('Error fetching courses:', error);
+            showCourseAlert("Course အချက်အလက်များ ဆွဲယူ၍ မရပါ။", "danger");
+        });
+}
+
+// Table ထဲသို့ Data များ Dynamic ရေးဆွဲပေးသည့် Function
+function renderCoursesTable(courses) {
+    const tbody = document.getElementById("courseTableBody");
+    const totalBadge = document.getElementById("totalCoursesBadge");
+
+    if (!tbody) return;
+    if (totalBadge) totalBadge.textContent = courses.length;
+
+    if (courses.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="py-8 text-center text-slate-400">
+                    <i class="fa-solid fa-folder-open fa-2x mb-2 text-slate-500 block"></i>
+                    <p class="mb-0 text-xs">No courses found in database.</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = courses.map((course, index) => {
+        const isPublished = course.status === 'PUBLISHED';
+        const priceText = course.price > 0 ? course.price.toLocaleString() + ' MMK' : 'Free';
+        const levelBadgeClass = getLevelBadgeClass(course.level);
+
+        return `
+            <tr class="hover:bg-slate-700/30 transition">
+                <td class="py-3.5 px-3 text-center text-slate-400 font-mono">${index + 1}</td>
+                <td class="py-3.5 px-3">
+                    <div class="font-semibold text-slate-200">${escapeHtml(course.title)}</div>
+                    <div class="text-[11px] text-slate-400 truncate max-w-xs">${escapeHtml(course.short_description || '-')}</div>
+                </td>
+                <td class="py-3.5 px-3 text-slate-400">${escapeHtml(course.category_name || '-')}</td>
+                <td class="py-3.5 px-3">
+                    <span class="px-2 py-0.5 text-[10px] rounded-md font-medium border ${levelBadgeClass}">
+                        ${escapeHtml(course.level || 'ALL')}
+                    </span>
+                </td>
+                <td class="py-3.5 px-3 text-slate-300">
+                    ${course.duration_weeks ? course.duration_weeks + ' Weeks' : '-'}
+                </td>
+                <td class="py-3.5 px-3 font-medium ${course.price > 0 ? 'text-emerald-400' : 'text-indigo-400'}">
+                    ${priceText}
+                </td>
+                <td class="py-3.5 px-3 text-center">
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium ${
+                        isPublished 
+                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                            : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                    }">
+                        ${course.status || 'DRAFT'}
+                    </span>
+                </td>
+                <td class="py-3.5 px-3 text-center">
+                    <div class="flex items-center justify-center gap-1.5">
+                        <button onclick="viewCourseDetail(${course.course_id})" class="p-1.5 text-slate-400 hover:text-indigo-400 transition rounded-lg hover:bg-indigo-500/10" title="View Detail">
+                            <i class="fa-regular fa-eye text-sm"></i>
+                        </button>
+                        <button onclick="editCourse(${course.course_id})" class="p-1.5 text-slate-400 hover:text-emerald-400 transition rounded-lg hover:bg-emerald-500/10" title="Edit Course">
+                            <i class="fa-regular fa-pen-to-square text-sm"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Level အလိုက် Badge Color ခွဲပေးသည့် Helper
+function getLevelBadgeClass(level) {
+    switch (level ? level.toUpperCase() : '') {
+        case 'BEGINNER':
+            return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+        case 'INTERMEDIATE':
+            return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+        case 'ADVANCED':
+            return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+        default:
+            return 'bg-slate-700/50 text-slate-400 border-slate-600/50';
+    }
+}
+//////////////////////////////////////
+// Notification Alert ပြသပေးမည့် Function
+function showCourseAlert(message, type) {
+    const container = document.getElementById("courseAlertContainer");
+    if (!container) return;
+
+    const isSuccess = type === 'success';
+    const bgColor = isSuccess 
+        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
+        : 'bg-red-500/10 border-red-500/30 text-red-400';
+
+    container.innerHTML = `
+        <div class="flex items-center justify-between p-3 mb-3 border rounded-lg text-xs ${bgColor}">
+            <span>${message}</span>
+            <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-200">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    `;
+    setTimeout(() => { container.innerHTML = ""; }, 4000);
+}
+
+// XSS Safe Character Escaping
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function viewCourseDetail(courseId) {
+    console.log("Viewing course:", courseId);
+}
+
+function editCourse(courseId) {
+    console.log("Editing course:", courseId);
+}
+
+
+
+</script>
 
 </body>
 </html>

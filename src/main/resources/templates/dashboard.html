@@ -112,6 +112,207 @@
 
     </main>
 </div>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-full bg-slate-50">
+<div th:replace="~{head :: head}"></div>
+
+<body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
+
+    <div id="app" class="min-h-screen flex flex-col">
+        
+        <!-- TOP HEADER BAR -->
+        <div th:replace="~{header :: header}"></div>
+
+        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- DYNAMIC SIDEBAR -->
+            <div th:replace="~{nav :: nav}"></div>
+            <!-- MAIN DYNAMIC CONTENT CONTAINER -->
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-slate-900">
+                
+                <div id="view-admin" class="role-view space-y-6">
+    <!-- Title & Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Admin Dashboard</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Overview of platform metrics, global users, and institution performance.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="openModal('user-modal')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-user-plus"></i>
+                Add New User
+            </button>
+        </div>
+    </div>
+</div>
+
+                    <!-- Admin Stat Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Users</span>
+                                <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-users text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <span class="text-2xl font-bold text-slate-900 dark:text-white">1,248</span>
+                                <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                    <i class="fa-solid fa-arrow-trend-up"></i> +12%
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">1,050 Students • 198 Teachers</p>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active Courses</span>
+                                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-book-open text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <span class="text-2xl font-bold text-slate-900 dark:text-white">64</span>
+                                <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                    <i class="fa-solid fa-plus"></i> 4 new
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">across 12 departments</p>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Monthly Revenue</span>
+                                <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-dollar-sign text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <span class="text-2xl font-bold text-slate-900 dark:text-white">$42,850</span>
+                                <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                    <i class="fa-solid fa-arrow-trend-up"></i> +8.4%
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">98.2% invoice collection rate</p>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">System Health</span>
+                                <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-server text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <span class="text-2xl font-bold text-slate-900 dark:text-white">99.98%</span>
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Normal</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">Server load: 24%</p>
+                        </div>
+                    </div>
+
+                    <!-- Visual Analytics Charts Row -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="font-bold text-base text-slate-900 dark:text-white">Enrollment Growth</h3>
+                                    <p class="text-xs text-slate-500">New student registrations over the last 6 months</p>
+                                </div>
+                                <select class="text-xs bg-slate-100 dark:bg-slate-700 border-none rounded-lg px-3 py-1.5 font-medium">
+                                    <option>2026 Academic Year</option>
+                                    <option>2025 Academic Year</option>
+                                </select>
+                            </div>
+                            <div class="h-64 relative">
+                                <canvas id="adminEnrollmentChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-bold text-base text-slate-900 dark:text-white mb-1">System Resource Usage</h3>
+                                <p class="text-xs text-slate-500 mb-6">Realtime server & cloud storage distribution</p>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="flex justify-between text-xs font-semibold mb-1">
+                                            <span>Cloud Storage (AWS S3)</span>
+                                            <span>1.4 TB / 2.0 TB</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-indigo-600 rounded-full" style="width: 70%"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between text-xs font-semibold mb-1">
+                                            <span>Database Capacity</span>
+                                            <span>42%</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-emerald-500 rounded-full" style="width: 42%"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between text-xs font-semibold mb-1">
+                                            <span>Active Bandwidth</span>
+                                            <span>810 Mbps</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-amber-500 rounded-full" style="width: 85%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
+                                <button onclick="showToast('Initiating server diagnostic backup...')" class="w-full py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 transition">
+                                    Run System Diagnostic
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Management Table -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="font-bold text-base text-slate-900 dark:text-white">User Management</h3>
+                                <p class="text-xs text-slate-500">Filter, edit, and manage accounts and permissions</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <input type="text" id="userTableSearch" onkeyup="filterUserTable()" placeholder="Filter users..." class="text-xs px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-transparent rounded-lg focus:outline-none focus:bg-white dark:focus:bg-slate-800 border-slate-200 dark:border-slate-600">
+                                <select id="roleFilter" onchange="filterUserTable()" class="text-xs px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg font-medium">
+                                    <option value="all">All Roles</option>
+                                    <option value="Student">Students</option>
+                                    <option value="Teacher">Teachers</option>
+                                    <option value="Admin">Admins</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                                <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-700">
+                                    <tr>
+                                        <th class="px-6 py-3.5">User</th>
+                                        <th class="px-6 py-3.5">Role</th>
+                                        <th class="px-6 py-3.5">Status</th>
+                                        <th class="px-6 py-3.5">Joined Date</th>
+                                        <th class="px-6 py-3.5 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userTableBody" class="divide-y divide-slate-100 dark:divide-slate-700/60 font-medium">
+                                    <!-- Dynamic rows via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
                 <!-- ================= TEACHER VIEW ================= -->
                 <div id="view-teacher" class="role-view space-y-6 hidden">
                     <!-- Title & Header -->
@@ -509,49 +710,64 @@
         <i class="fa-solid fa-circle-check text-emerald-400 text-base" id="toast-icon"></i>
         <span id="toast-message" class="text-xs font-semibold">Notification message</span>
     </div>
+    
+    <!-- Create Announcement Modal -->
+<div id="announcement-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
+        
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3 mb-4">
+            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100">Create New Announcement</h3>
+            <button onclick="closeAnnouncementModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
+        </div>
+
+        <!-- Form -->
+        <form id="create-announcement-form" onsubmit="submitAnnouncement(event)" class="space-y-4">
+            
+            <!-- Select Batch -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Target Batch</label>
+                <select id="modal-batch-id" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="1">Batch 1 - Web Dev</option>
+                    <!-- JavaScript/Backend မှ Dynamic Render လုပ်နိုင်သည် -->
+                </select>
+            </div>
+
+            <!-- Title Input -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Title</label>
+                <input type="text" id="modal-title" placeholder="Enter announcement title..." required 
+                    class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <!-- Body Input -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Message Body</label>
+                <textarea id="modal-body" rows="4" placeholder="Write message details..." required 
+                    class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+            </div>
+
+            <!-- Modal Actions/Buttons -->
+            <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+                <button type="button" onclick="closeAnnouncementModal()" 
+                    class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition">
+                    Cancel
+                </button>
+                <button type="submit" id="submit-btn" 
+                    class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition shadow-md shadow-indigo-500/20 flex items-center gap-2">
+                    <span>Publish</span>
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
         // State Management
         let currentRole = 'admin';
-        
-        // Mock Data
-        let usersData = [
-            { id: 1, name: 'Sarah Jenkins', email: 'sarah.j@edupulse.edu', role: 'Admin', status: 'Active', joined: 'Jan 12, 2024', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120' },
-            { id: 2, name: 'Dr. David Vance', email: 'david.vance@edupulse.edu', role: 'Teacher', status: 'Active', joined: 'Mar 04, 2023', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120' },
-            { id: 3, name: 'Alex Morgan', email: 'alex.m@student.edu', role: 'Student', status: 'Active', joined: 'Sep 01, 2025', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120' },
-            { id: 4, name: 'Prof. Marcus Brody', email: 'm.brody@edupulse.edu', role: 'Teacher', status: 'Active', joined: 'Nov 18, 2022', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=120' },
-            { id: 5, name: 'Chloe Zhao', email: 'chloe.z@student.edu', role: 'Student', status: 'Suspended', joined: 'Oct 14, 2025', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=120' }
-        ];
-
-        const teacherGradingQueue = [
-            { id: 101, student: 'Alex Morgan', course: 'CS-301', title: 'B-Tree Indexing Project', submitted: '2 hours ago' },
-            { id: 102, student: 'Liam Neeson', course: 'AI-402', title: 'Gradient Descent Analysis', submitted: '5 hours ago' },
-            { id: 103, student: 'Emma Watson', course: 'CS-301', title: 'Hash Collisions Lab', submitted: 'Yesterday' }
-        ];
-
-        const studentCourses = [
-            { id: 'CS-301', title: 'Advanced Data Structures', instructor: 'Prof. David Vance', progress: 78, nextLesson: 'B-Trees & Indexing' },
-            { id: 'AI-402', title: 'Machine Learning Fundamentals', instructor: 'Prof. Marcus Brody', progress: 45, nextLesson: 'Neural Networks Basics' },
-            { id: 'ENG-201', title: 'Technical Writing for Engineers', instructor: 'Dr. Linda Carter', progress: 90, nextLesson: 'Final Research Paper' }
-        ];
-
-        const studentDeadlines = [
-            { course: 'CS-301', title: 'B-Trees Implementation Lab', due: 'Today, 11:59 PM', badgeBg: 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300' },
-            { course: 'AI-402', title: 'Linear Regression Notebook', due: 'Oct 2, 2026', badgeBg: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' }
-        ];
-
-        // Sidebar Navigation Definitions
-        const navMenus = {
-            admin: [
-                { icon: 'fa-chart-pie', label: 'Dashboard', active: true },
-                { icon: 'fa-users', label: 'Users & Roles' },
-                { icon: 'fa-book-open', label: 'Global Courses' },
-                { icon: 'fa-chart-line', label: 'Analytics' },
-                { icon: 'fa-file-invoice-dollar', label: 'Financials' },
-                { icon: 'fa-gear', label: 'System Settings' }
-            ],
-            teacher: [
+           /*  teacher: [
                 { icon: 'fa-house', label: 'Overview', active: true },
                 { icon: 'fa-chalkboard', label: 'My Classes' },
                 { icon: 'fa-list-check', label: 'Grading Queue' },
@@ -567,14 +783,7 @@
                 { icon: 'fa-box-archive', label: 'Availiable Courses', path: '/courses/show', active: true  },
                 { icon: 'fa-calendar', label: 'Schedule' }
             ]
-        };
-
-        // User Profiles Mapping
-        const profiles = {
-            admin: { name: 'Sarah Jenkins', role: 'Administrator', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120' },
-            teacher: { name: 'Prof. David Vance', role: 'Senior Lecturer', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120' },
-            student: { name: 'Alex Morgan', role: 'Computer Science Major', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120' }
-        };
+        ; */
 
         // Initialize App
         window.onload = function() {
@@ -902,6 +1111,77 @@
                 }
             });
         }
+     // Generic Open Modal Function
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+        }
+
+        // Generic Close Modal Function
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('hidden');
+                // Form ပါဝင်ပါက Clear ပြန်လုပ်မည်
+                const form = modal.querySelector('form');
+                if (form) form.reset();
+            }
+        }
+
+        // Spring Boot Backend သို့ Post Call ပို့ခြင်း
+        async function submitAnnouncement(event) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById('submit-btn');
+            const batchId = document.getElementById('modal-batch-id').value;
+            const title = document.getElementById('modal-title').value.trim();
+            const body = document.getElementById('modal-body').value.trim();
+
+            const payload = {
+                batchId: parseInt(batchId),
+                title: title,
+                body: body,
+                postedBy: 1 // Admin User ID
+            };
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<span>Publishing...</span>`;
+
+                const response = await fetch('/api/announcements', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    alert('Announcement published successfully!');
+                    closeModal('announcement-modal');
+                    
+                    // Notification Dropdown ထဲက List ကို Refresh လုပ်ပေးရန်
+                    if (typeof loadAnnouncements === 'function') {
+                        loadAnnouncements();
+                    }
+                } else {
+                    const errorText = await response.text();
+                    alert('Failed to publish: ' + errorText);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Server error occurred.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Publish</span>`;
+            }
+        }
+
+////
+
     </script>
 </body>
 </html>

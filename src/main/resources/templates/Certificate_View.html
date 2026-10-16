@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificate Preview & Download</title>
+    <!-- Tailwind CSS -->
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Great+Vibes&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- HTML2Canvas & jsPDF Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .font-cursive { font-family: 'Great Vibes', cursive; }
+        .font-sans-custom { font-family: 'Montserrat', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 font-sans-custom text-slate-800 min-h-screen py-8 px-4 flex flex-col items-center">
+
+    <!-- Action Toolbar -->
+    <div class="w-full max-w-[1000px] mb-6 flex flex-wrap items-center justify-between bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-2xl gap-4">
+        <div class="flex items-center gap-3 text-slate-200">
+            <div class="w-9 h-9 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-center text-amber-400">
+                <i class="fa-solid fa-award text-lg"></i>
+            </div>
+            <div>
+                <h4 class="text-xs font-bold text-white uppercase tracking-wider">Certificate Export</h4>
+                <p class="text-[11px] text-slate-400">High-Resolution Official Document</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button onclick="downloadImage()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold tracking-wide flex items-center gap-2 shadow-lg shadow-emerald-600/20 transition cursor-pointer active:scale-95">
+                <i class="fa-solid fa-file-image text-sm"></i> DOWNLOAD PNG
+            </button>
+            <button onclick="downloadPDF()" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold tracking-wide flex items-center gap-2 shadow-lg shadow-rose-600/20 transition cursor-pointer active:scale-95">
+                <i class="fa-solid fa-file-pdf text-sm"></i> DOWNLOAD PDF
+            </button>
+            <button onclick="window.print()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold tracking-wide flex items-center gap-2 border border-slate-700 transition cursor-pointer active:scale-95">
+                <i class="fa-solid fa-print text-sm"></i> PRINT
+            </button>
+        </div>
+    </div>
+
+    <!-- CERTIFICATE TEMPLATE CONTAINER (Exact A4 Landscape Precision Ratio: 1000px x 707px) -->
+    <div id="certificate-template" class="w-[1000px] h-[707px] bg-[#FAF8F5] text-slate-900 p-12 relative shadow-2xl flex flex-col justify-between overflow-hidden box-border select-none">
+        
+        <!-- Outer Gold Border -->
+        <div class="absolute inset-5 border-[3px] border-[#D4AF37] pointer-events-none"></div>
+        <!-- Inner Thin Gold Border -->
+        <div class="absolute inset-7 border border-[#D4AF37]/60 pointer-events-none"></div>
+        
+        <!-- Corner Accents -->
+        <div class="absolute top-8 left-8 w-8 h-8 border-t-2 border-l-2 border-[#B8860B] pointer-events-none"></div>
+        <div class="absolute top-8 right-8 w-8 h-8 border-t-2 border-r-2 border-[#B8860B] pointer-events-none"></div>
+        <div class="absolute bottom-8 left-8 w-8 h-8 border-b-2 border-l-2 border-[#B8860B] pointer-events-none"></div>
+        <div class="absolute bottom-8 right-8 w-8 h-8 border-b-2 border-r-2 border-[#B8860B] pointer-events-none"></div>
+
+        <!-- 1. Header Section -->
+        <div class="text-center mt-3 z-10 flex flex-col items-center">
+            <div class="flex justify-center items-center gap-2 text-[#B8860B] mb-2">
+                <i class="fa-solid fa-graduation-cap text-2xl"></i>
+                <span class="text-[11px] font-bold tracking-[0.35em] uppercase font-cinzel text-slate-700">LMS Learning Academy</span>
+            </div>
+            
+            <!-- Standard Border-Bottom (html2canvas မှ မျဉ်းလွဲမသွားအောင် ပြုလုပ်ထားပါသည်) -->
+            <div class="border-b-2 border-[#D4AF37] pb-2 mb-2 px-6">
+                <h1 class="text-4xl font-extrabold font-cinzel text-[#1A202C] tracking-widest uppercase leading-none">
+                    Certificate of Completion
+                </h1>
+            </div>
+            
+            <p class="text-[11px] font-medium text-slate-500 italic pt-1">This official document is proudly presented to</p>
+        </div>
+
+        <!-- 2. Student Details Section -->
+        <div class="text-center z-10 my-auto flex flex-col items-center">
+            <!-- Student Name with Native CSS Border-Bottom -->
+            <div class="border-b-2 border-[#D4AF37] pb-1 mb-4 px-10 inline-block">
+                <h2 class="text-4xl font-extrabold font-cinzel text-[#B8860B] tracking-wide block leading-tight" 
+                    th:text="${cert.studentName}">AUNG AUNG</h2>
+            </div>
+            
+            <p class="text-xs text-slate-600 max-w-xl mx-auto leading-relaxed mb-4">
+                for successfully completing all academic requirements, practical assessments, and coursework for the professional training course
+            </p>
+
+            <!-- Course Title & Batch Code -->
+            <div class="space-y-1">
+                <h3 class="text-2xl font-bold font-cinzel text-slate-900 tracking-wide leading-tight" 
+                    th:text="${cert.courseTitle}">ADVANCED PHP & LARAVEL</h3>
+                <p class="text-[11px] font-semibold font-sans-custom text-[#B8860B] tracking-wider uppercase pt-1" 
+                   th:text="${'Batch: ' + cert.batchCode}">BATCH: BATCH-001</p>
+            </div>
+        </div>
+
+        <!-- 3. Footer Section (3-Column Layout) -->
+        <div class="mb-2 px-6 z-10 grid grid-cols-3 items-end">
+            
+            <!-- Left: Certificate Verification Info -->
+            <div class="text-left space-y-1">
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Certificate Code</p>
+                <p class="text-xs font-mono font-bold text-slate-800" 
+                   th:text="${cert.certificateCode}">CERT-2026-001</p>
+                <p class="text-[10px] font-medium text-slate-500" 
+                   th:text="${'Issue Date: ' + (cert.issuedAt != null ? #temporals.format(cert.issuedAt, 'yyyy-MM-dd') : '-')}">Issue Date: 2026-09-29</p>
+            </div>
+
+            <!-- Center: Vector Gold Badge -->
+            <div class="flex justify-center items-center">
+                <svg width="64" height="64" viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="34" cy="34" r="32" fill="#FAF8F5" stroke="#D4AF37" stroke-width="2.5"/>
+                    <circle cx="34" cy="34" r="27" stroke="#B8860B" stroke-width="1.2" stroke-dasharray="3 3" fill="none"/>
+                    <circle cx="34" cy="34" r="20" fill="#D4AF37"/>
+                    <path d="M34 22L36.7 27.5L42.8 28.4L38.4 32.7L39.4 38.8L34 35.9L28.6 38.8L29.6 32.7L25.2 28.4L31.3 27.5L34 22Z" fill="#FAF8F5"/>
+                </svg>
+            </div>
+
+            <!-- Right: Authorized Signature (Clean Top-Border Line) -->
+            <div class="text-right flex flex-col items-end">
+                <div class="font-cursive text-3xl text-slate-800 leading-none mb-2 px-4" 
+                     th:text="${cert.issuerName != null ? cert.issuerName : 'Aung Aung'}">Aung Aung</div>
+                <div class="w-40 border-t border-slate-400 pt-1 text-center">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Authorized Signature</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Download Scripts -->
+    <script th:inline="javascript">
+        const certCode = /*[[${cert.certificateCode}]]*/ 'Certificate';
+
+        // 1. High-Resolution PNG Download
+        function downloadImage() {
+            const certElement = document.getElementById('certificate-template');
+            
+            html2canvas(certElement, { 
+                scale: 3, 
+                useCORS: true,
+                logging: false,
+                backgroundColor: "#FAF8F5"
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Certificate_' + certCode + '.png';
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+            });
+        }
+
+        // 2. High-Resolution PDF Download
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const certElement = document.getElementById('certificate-template');
+
+            html2canvas(certElement, { 
+                scale: 3, 
+                useCORS: true,
+                logging: false,
+                backgroundColor: "#FAF8F5"
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                const pdf = new jsPDF('landscape', 'mm', 'a4');
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, 297, 210, undefined, 'FAST');
+                pdf.save('Certificate_' + certCode + '.pdf');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<div th:replace="~{head :: head}"></div>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+
+<div th:replace="~{header :: header}"></div>
+
+<div class="flex-1 flex overflow-hidden">
+
+<div th:replace="~{nav :: nav}"></div>
+
+<!-- ========================================== -->
+<!-- COURSE REVIEW MODERATION SECTION           -->
+<!-- ========================================== -->
+<div class="flex-1 p-6 overflow-y-auto">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-6 shadow-sm">
+        
+        <!-- Header Section -->
+        <div class="flex items-center justify-between pb-5 mb-5 border-b border-slate-100 dark:border-slate-700">
+            <div>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-comments text-amber-500"></i> Course Review Moderation
+                </h3>
+                <p class="text-xs text-slate-400 dark:text-slate-400 mt-1">Manage, review, and moderate student feedback</p>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <span class="px-3 py-1.5 text-xs font-medium bg-slate-50 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 rounded-xl shadow-xs">
+                    Total Reviews: <span class="text-indigo-600 dark:text-indigo-400 font-bold ml-1" id="totalReviewsBadge">0</span>
+                </span>
+                
+                <button onclick="loadReviewsFromDB()" 
+                    class="p-2 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl transition" title="Refresh Reviews">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Alert Notification Section -->
+        <div id="alertContainer"></div>
+
+        <!-- Table Responsive Wrapper -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-slate-50/70 dark:bg-slate-700/40 uppercase text-[10px] text-slate-400 font-semibold tracking-wider">
+                    <tr>
+                        <th class="py-3 px-3 w-12 text-center rounded-l-lg">#</th>
+                        <th class="py-3 px-3">Course</th>
+                        <th class="py-3 px-3">Student</th>
+                        <th class="py-3 px-3">Rating</th>
+                        <th class="py-3 px-3">Comment</th>
+                        <th class="py-3 px-3 text-center">Status</th>
+                        <th class="py-3 px-3 text-center rounded-r-lg">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="reviewTableBody" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-slate-600 dark:text-slate-300">
+                    <tr>
+                        <td colspan="7" class="py-8 text-center text-slate-400">Loading reviews...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+</div>
+
+<script>
+
+// 1. Page စတက်တာနဲ့ Database ထဲက Review များကို API ခေါ်ယူမည်
+document.addEventListener("DOMContentLoaded", loadReviewsFromDB);
+
+// Database မှ Reviews များ ခေါ်ယူသည့် Function
+function loadReviewsFromDB() {
+    fetch('/admin/reviews/api/list')
+        .then(response => {
+            if (!response.ok) throw new Error('Network status: ' + response.status);
+            return response.json();
+        })
+        .then(reviews => {
+            if (!Array.isArray(reviews)) {
+                reviews = [];
+            }
+            renderReviews(reviews);
+        })
+        .catch(error => {
+            console.error('Error fetching reviews:', error);
+            showAlert("Database မှ Data များ ဆွဲယူ၍ မရပါ!", "danger");
+        });
+}
+
+// Table ထဲသို့ Data Render ပြုလုပ်သည့် Function
+function renderReviews(reviews) {
+    const tbody = document.getElementById("reviewTableBody");
+    const totalBadge = document.getElementById("totalReviewsBadge");
+
+    if (!tbody) return;
+
+    if (totalBadge) {
+        totalBadge.textContent = reviews.length;
+    }
+
+    if (reviews.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="py-10 text-center text-slate-400">
+                    <i class="fa-solid fa-inbox fa-2x mb-2 text-slate-300 dark:text-slate-600 block"></i>
+                    <p class="mb-0 text-xs">No course reviews found.</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = reviews.map((review, index) => {
+        let stars = "";
+        for (let i = 1; i <= 5; i++) {
+            if (i <= review.rating) {
+                stars += '<i class="fa-solid fa-star text-[11px] text-amber-400"></i>';
+            } else {
+                stars += '<i class="fa-solid fa-star text-[11px] text-slate-200 dark:text-slate-700"></i>';
+            }
+        }
+
+        return `
+            <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-700/30 transition-colors duration-150 border-b border-slate-100 dark:border-slate-700/40">
+                <td class="py-3.5 px-3 text-center text-slate-400 font-mono">${index + 1}</td>
+                <td class="py-3.5 px-3 font-medium text-slate-700 dark:text-slate-200">${escapeHtml(review.courseTitle)}</td>
+                <td class="py-3.5 px-3">
+                    <div class="font-medium text-slate-800 dark:text-slate-200">${escapeHtml(review.studentName)}</div>
+                    <div class="text-[11px] text-slate-400 font-mono">${escapeHtml(review.studentEmail)}</div>
+                </td>
+                <td class="py-3.5 px-3">
+                    <div class="flex items-center gap-1">
+                        ${stars}
+                        <span class="text-[11px] text-slate-400 font-mono ml-1">(${review.rating}/5)</span>
+                    </div>
+                </td>
+                <td class="py-3.5 px-3 text-slate-500 dark:text-slate-400 max-w-xs truncate" title="${escapeHtml(review.comment)}">${escapeHtml(review.comment)}</td>
+                <td class="py-3.5 px-3 text-center">
+                    <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                        <input type="checkbox" 
+                               ${review.isVisible ? "checked" : ""} 
+                               onchange="toggleStatusInDB(${review.reviewId}, ${!review.isVisible})"
+                               class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-0 focus:ring-offset-0 bg-slate-50 cursor-pointer">
+                        <span class="text-xs px-2 py-0.5 rounded-md font-medium ${review.isVisible ? 'bg-emerald-500/15 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-slate-100 text-slate-400 dark:bg-slate-700 dark:text-slate-400'}">
+                            ${review.isVisible ? 'Visible' : 'Hidden'}
+                        </span>
+                    </label>
+                </td>
+                <td class="py-3.5 px-3 text-center">
+                    <button class="p-1.5 text-slate-400 hover:text-rose-500 transition-colors rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/10" 
+                            onclick="deleteReviewInDB(${review.reviewId})" 
+                            title="Delete Review">
+                        <i class="fa-regular fa-trash-can text-xs"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// 2. Status Toggle ပြုလုပ်ပြီး Database တွင် သွားပြင်သည့် Function
+function toggleStatusInDB(reviewId, newStatus) {
+    const formData = new URLSearchParams();
+    formData.append('reviewId', reviewId);
+    formData.append('isVisible', newStatus);
+
+    fetch('/admin/reviews/toggle-visibility', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            showAlert("Review status updated in Database!", "success");
+            loadReviewsFromDB();
+        } else {
+            showAlert("Failed to update status!", "danger");
+        }
+    })
+    .catch(error => {
+        console.error('Error updating status:', error);
+        showAlert("Server error occurred!", "danger");
+    });
+}
+
+// 3. Review ကို Database ထဲမှ အပြီးဖျက်သည့် Function
+function deleteReviewInDB(reviewId) {
+    if (!confirm("Are you sure you want to delete this review?")) return;
+
+    const formData = new URLSearchParams();
+    formData.append('reviewId', reviewId);
+
+    fetch('/admin/reviews/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            showAlert("Review deleted successfully from Database!", "success");
+            loadReviewsFromDB();
+        } else {
+            showAlert("Failed to delete review!", "danger");
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting review:', error);
+        showAlert("Server error occurred!", "danger");
+    });
+}
+
+// Alert Message ပြသသည့် Function
+function showAlert(message, type) {
+    const container = document.getElementById("alertContainer");
+    if (!container) return;
+
+    const isSuccess = type === 'success';
+    const bgColor = isSuccess ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400';
+    const icon = isSuccess ? 'fa-circle-check' : 'fa-triangle-exclamation';
+
+    container.innerHTML = `
+        <div class="flex items-center justify-between p-3 mb-4 border rounded-xl text-xs ${bgColor} fade-in">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid ${icon}"></i>
+                <span>${message}</span>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    `;
+    setTimeout(() => { container.innerHTML = ""; }, 3000);
+}
+
+// Helper Function: HTML Escaping
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+</script>
+
+</body>
+</html>
