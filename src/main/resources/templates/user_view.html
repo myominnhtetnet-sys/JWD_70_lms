@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>User Details | LMS</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 35px 15px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f6fa;
+            color: #24243a;
+        }
+
+        .card {
+            max-width: 650px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #e9eaf2;
+            border-radius: 15px;
+            background: white;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .row {
+            padding: 15px 0;
+            border-bottom: 1px solid #eeeef5;
+        }
+
+        .label {
+            display: block;
+            margin-bottom: 7px;
+            color: #85859b;
+            font-size: 12px;
+        }
+
+        .value {
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 18px;
+            border-radius: 8px;
+            background: #7565f5;
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h1>User Details</h1>
+
+    <div class="row">
+        <span class="label">User ID</span>
+        <span class="value" th:text="${user.user_id}">1</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Full Name</span>
+        <span class="value" th:text="${user.full_name}">User</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Email</span>
+        <span class="value" th:text="${user.email}">user@example.com</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Phone</span>
+        <span class="value"
+              th:text="${user.phone != null ? user.phone : '-'}">-</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Role</span>
+        <span class="value" th:text="${user.role_name}">Student</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Status</span>
+        <span class="value" th:text="${user.status}">ACTIVE</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Date of Birth</span>
+        <span class="value"
+              th:text="${user.dob != null ? user.dob : '-'}">-</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Gender</span>
+        <span class="value"
+              th:text="${user.gender != null ? user.gender : '-'}">-</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Address</span>
+        <span class="value"
+              th:text="${user.address != null ? user.address : '-'}">-</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Created At</span>
+
+        <span class="value"
+              th:if="${user.created_at != null}"
+              th:text="${#temporals.format(user.created_at, 'yyyy-MM-dd HH:mm')}">
+        </span>
+
+        <span class="value"
+              th:if="${user.created_at == null}">-</span>
+    </div>
+
+    <a th:href="@{/admin/users}" class="back">
+        Back to User Management
+    </a>
+
+</div>
+
+</body>
+</html>

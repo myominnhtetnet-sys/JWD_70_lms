@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Form | LearnHub LMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0f1118; --sidebar: #181d28; --card: #181d28; --border: #293142;
+            --primary: #6c4ce5; --text: #f1f3f9; --muted: #929bb0; --input: #202634;
+        }
+        body { font-family: Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        .sidebar { width: 260px; position: fixed; inset: 0 auto 0 0; background: var(--sidebar); border-right: 1px solid var(--border); padding: 25px 18px; z-index: 100; }
+        .main { margin-left: 260px; min-height: 100vh; }
+        .content { padding: 28px 30px; max-width: 800px; }
+        .panel { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 30px; }
+        .field { margin-bottom: 18px; }
+        .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+        .field input, .field select, .field textarea { width: 100%; padding: 12px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px; outline: none; }
+        .primary-btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 9px; cursor: pointer; font-weight: 700; }
+        .secondary-btn { background: var(--input); color: var(--text); border: 1px solid var(--border); padding: 12px 20px; border-radius: 9px; text-decoration: none; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <div th:replace="~{fragments/admin-layout :: sidebar(activePage='users')}"></div>
+
+    <main class="main">
+        <div th:replace="~{fragments/admin-layout :: topbar('User Management', 'Create or update user account details.')}"></div>
+
+        <div class="content">
+            <section class="panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2 th:text="${user.user_id == 0 ? 'Add New User' : 'Edit User'}">Add User</h2>
+                    <a th:href="@{/admin/users}" style="color: var(--muted); text-decoration: none; font-size: 13px;"><i class="fa-solid fa-arrow-left"></i> Back to List</a>
+                </div>
+
+                <form th:action="${user.user_id == 0 ? @{/admin/users/create} : @{/admin/users/update}}" method="post" th:object="${user}">
+                    <input type="hidden" th:field="*{user_id}" />
+
+                    <div class="field">
+                        <label>Full Name *</label>
+                        <input type="text" th:field="*{full_name}" required placeholder="Enter full name">
+                    </div>
+
+                    <div class="field">
+                        <label>Email *</label>
+                        <input type="email" th:field="*{email}" required placeholder="Enter email address">
+                    </div>
+
+                    <div class="field" th:if="${user.user_id == 0}">
+                        <label>Password * (At least 8 characters)</label>
+                        <input type="password" th:field="*{password_hash}" required minlength="8" placeholder="Enter secure password">
+                    </div>
+
+                    <div class="field">
+                        <label>Phone</label>
+                        <input type="text" th:field="*{phone}" placeholder="09xxxxxxxxx">
+                    </div>
+
+                    <div class="field">
+                        <label>Role *</label>
+                        <select th:field="*{role_id}" required>
+                            <option value="">-- Select Role --</option>
+                            <option value="1">Admin</option>
+                            <option value="2">Teacher</option>
+                            <option value="3">Student</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Date of Birth</label>
+                        <input type="date" th:field="*{dob}">
+                    </div>
+
+                    <div class="field">
+                        <label>Gender</label>
+                        <select th:field="*{gender}">
+                            <option value="">-- Select Gender --</option>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="field" style="margin-bottom: 25px;">
+                        <label>Address</label>
+                        <textarea th:field="*{address}" rows="3" placeholder="Enter residential address"></textarea>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                        <a th:href="@{/admin/users}" class="secondary-btn">Cancel</a>
+                        <button type="submit" class="primary-btn" th:text="${user.user_id == 0 ? 'Create User' : 'Update User'}">Save</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

@@ -28,7 +28,7 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- 2. Spring JDBC (for Admin_Repository & Admin_Mapper using RowMapper / JdbcTemplate) -->
+        <!-- 2. Spring JDBC (for Repository & JdbcTemplate) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
@@ -41,20 +41,20 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- 4. Thymeleaf (for admin.html and dashboard.html rendering) -->
+        <!-- 4. Thymeleaf (for HTML rendering) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
-        <!-- 5. Project Lombok (for AdminBean_category, AdminBean, etc. getters/setters) -->
+        <!-- 5. Project Lombok (for getters/setters) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!-- 6. Spring Boot DevTools (for automatic restarts during development) -->
+        <!-- 6. Spring Boot DevTools (for automatic restarts) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -93,7 +93,6 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

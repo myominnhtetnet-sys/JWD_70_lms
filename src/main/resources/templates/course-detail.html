@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <title th:text="${course.title}">Course Details</title>
+    <style>
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 40px; background-color: #f8fafc; color: #1e293b; }
+        .detail-container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; color: #64748b; text-decoration: none; font-weight: 600; font-size: 14px; margin-bottom: 24px; transition: color 0.2s; }
+        .back-btn:hover { color: #0f172a; }
+        h1 { font-size: 32px; color: #0f172a; margin: 0 0 8px 0; }
+        .slug { font-family: monospace; color: #64748b; margin-bottom: 24px; }
+        .meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 30px 0; padding: 20px 0; border-top: 1px solid #edf2f7; border-bottom: 1px solid #edf2f7; }
+        .meta-item { display: flex; flex-direction: column; }
+        .meta-label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+        .meta-value { font-size: 16px; font-weight: 600; color: #334155; margin-top: 4px; }
+        .description-box { font-size: 16px; line-height: 1.7; color: #334155; }
+        .price-tag { font-size: 28px; font-weight: 700; color: #0f172a; margin-top: 30px; }
+    </style>
+</head>
+<body>
+
+    <div class="detail-container">
+        <!-- Back Arrow Action Control Button -->
+        <a th:href="@{/courses/show}" class="back-btn">
+            <svg style="width:16px; height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7 7-7m8 14l-7-7 7-7"/></svg>
+            Back to Catalog
+        </a>
+        
+        <h1 th:text="${course.title}">Advanced Java Architecture</h1>
+        <div class="slug" th:text="${'URL Slug: /' + course.slug}">/advanced-java</div>
+        
+        <!-- Grid Metadata Array Blocks -->
+        <div class="meta-grid">
+            <div class="meta-item"><span class="meta-label">Difficulty level</span><span class="meta-value" th:text="${course.level}">Intermediate</span></div>
+            <div class="meta-item"><span class="meta-label">Instruction Language</span><span class="meta-value" th:text="${course.language}">English</span></div>
+            <div class="meta-item"><span class="meta-label">Program Duration</span><span class="meta-value" th:text="${course.duration_weeks + ' Weeks'}">12 Weeks</span></div>
+        </div>
+
+        <h3>Course Overview</h3>
+        <div class="description-box">
+            <!-- Evaluates full length course description data -->
+            <p th:text="${course.short_description}">Detailed layout content paragraph loaded right here.</p>
+        </div>
+
+        <div class="price-tag" th:text="${'Total Tuition: $' + #numbers.formatDecimal(course.price, 1, 2)}">$0.00</div>
+    </div>
+
+</body>
+</html>
