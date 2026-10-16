@@ -27,10 +27,10 @@ public class ExamRepository {
 
     public List<ExamBean> findAvailableExams(String email) {
         String sql = """
-                SELECT e.* FROM lms_db.exams e 
-                JOIN lms_db.batches b ON e.course_id = b.course_id 
-                JOIN lms_db.enrollments en ON en.batch_id = b.batch_id 
-                JOIN lms_db.users u ON en.user_id = u.user_id 
+                SELECT e.* FROM learning_db.exams e 
+                JOIN learning_db.batches b ON e.course_id = b.course_id 
+                JOIN learning_db.enrollments en ON en.batch_id = b.batch_id 
+                JOIN learning_db.users u ON en.user_id = u.user_id 
                 WHERE u.email = ? AND en.status = 'ACTIVE' AND e.status = 'PUBLISHED'
                 """;
         return jdbcTemplate.query(sql, new ExamRowMapper(), email);
@@ -39,17 +39,17 @@ public class ExamRepository {
     public List<ExamAttemptBean> findExamResultsHistory(String email) {
         String sql = """
                 SELECT e.title AS exam_title, ea.* 
-                FROM lms_db.exam_attempts ea 
-                JOIN lms_db.exams e ON ea.exam_id = e.exam_id 
-                JOIN lms_db.enrollments en ON ea.enrollment_id = en.enrollment_id 
-                JOIN lms_db.users u ON en.user_id = u.user_id 
+                FROM learning_db.exam_attempts ea 
+                JOIN learning_db.exams e ON ea.exam_id = e.exam_id 
+                JOIN learning_db.enrollments en ON ea.enrollment_id = en.enrollment_id 
+                JOIN learning_db.users u ON en.user_id = u.user_id 
                 WHERE u.email = ? ORDER BY ea.submitted_at DESC
                 """;
         return jdbcTemplate.query(sql, new ExamAttemptRowMapper(), email);
     }
 
     public Integer findEnrollmentIdByEmail(String email) {
-        String sql = "SELECT enrollment_id FROM lms_db.enrollments en JOIN lms_db.users u ON en.user_id = u.user_id WHERE u.email = ? AND en.status = 'ACTIVE' LIMIT 1";
+        String sql = "SELECT enrollment_id FROM learning_db.enrollments en JOIN learning_db.users u ON en.user_id = u.user_id WHERE u.email = ? AND en.status = 'ACTIVE' LIMIT 1";
         try {
             return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getInt(1), email);
         } catch (EmptyResultDataAccessException e) {
@@ -58,35 +58,35 @@ public class ExamRepository {
     }
 
     public ExamBean findExamMetadata(int examId) {
-        String sql = "SELECT * FROM lms_db.exams WHERE exam_id = ? LIMIT 1";
+        String sql = "SELECT * FROM learning_db.exams WHERE exam_id = ? LIMIT 1";
         return jdbcTemplate.queryForObject(sql, new ExamRowMapper(), examId);
     }
 
     public List<ExamAttemptBean> findActiveAttempts(int examId, int enrollmentId) {
-        String sql = "SELECT * FROM lms_db.exam_attempts WHERE exam_id = ? AND enrollment_id = ? AND status = 'IN_PROGRESS'";
+        String sql = "SELECT * FROM learning_db.exam_attempts WHERE exam_id = ? AND enrollment_id = ? AND status = 'IN_PROGRESS'";
         return jdbcTemplate.query(sql, new ExamAttemptRowMapper(), examId, enrollmentId);
     }
 
     @Transactional
     public void updateAttemptToTerminated(int attemptId) {
-        String sql = "UPDATE lms_db.exam_attempts SET status = 'EXPIRED', result = 'FAILED', submitted_at = NOW() WHERE attempt_id = ?";
+        String sql = "UPDATE learning_db.exam_attempts SET status = 'EXPIRED', result = 'FAILED', submitted_at = NOW() WHERE attempt_id = ?";
         jdbcTemplate.update(sql, attemptId);
     }
 
     @Transactional(readOnly = true)
     public Integer countPastAttempts(int examId, int enrollmentId) {
-        String sql = "SELECT COUNT(*) FROM lms_db.exam_attempts WHERE exam_id = ? AND enrollment_id = ? AND status IN ('SUBMITTED', 'GRADED', 'EXPIRED')";
+        String sql = "SELECT COUNT(*) FROM learning_db.exam_attempts WHERE exam_id = ? AND enrollment_id = ? AND status IN ('SUBMITTED', 'GRADED', 'EXPIRED')";
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getInt(1), examId, enrollmentId);
     }
 
     public List<Integer> findQuestionSequence(int examId) {
-        String sql = "SELECT question_id FROM lms_db.exam_questions WHERE exam_id = ? ORDER BY sort_order ASC";
+        String sql = "SELECT question_id FROM learning_db.exam_questions WHERE exam_id = ? ORDER BY sort_order ASC";
         return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("question_id"), examId);
     }
 
     @Transactional
     public int insertNewAttemptSession(int examId, int enrollmentId, int attemptNo) {
-        String sql = "INSERT INTO lms_db.exam_attempts (exam_id, enrollment_id, attempt_no, status, result, started_at) VALUES (?, ?, ?, 'IN_PROGRESS', 'PENDING', NOW())";
+        String sql = "INSERT INTO learning_db.exam_attempts (exam_id, enrollment_id, attempt_no, status, result, started_at) VALUES (?, ?, ?, 'IN_PROGRESS', 'PENDING', NOW())";
         jdbcTemplate.update(sql, examId, enrollmentId, attemptNo);
         return jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", (rs, rowNum) -> rs.getInt(1));
     }
@@ -100,8 +100,8 @@ public class ExamRepository {
                     q.question_text, 
                     q.question_type, 
                     eq.mark 
-                FROM lms_db.exam_questions eq
-                JOIN lms_db.questions q ON eq.question_id = q.question_id
+                FROM learning_db.exam_questions eq
+                JOIN learning_db.questions q ON eq.question_id = q.question_id
                 WHERE eq.question_id IN (""" + queryIds + ") ORDER BY eq.sort_order ASC";
         
         List<ExamQuestionBean> questions = jdbcTemplate.query(sql, new ExamQuestionRowMapper());
@@ -110,7 +110,7 @@ public class ExamRepository {
             List<QuestionOptionBean> options = new ArrayList<>();
             
             try {
-                String optionsSql = "SELECT option_id, question_id, option_label, option_text FROM lms_db.question_options WHERE question_id = ?";
+                String optionsSql = "SELECT option_id, question_id, option_label, option_text FROM learning_db.question_options WHERE question_id = ?";
                 options = jdbcTemplate.query(optionsSql, (rs, rowNum) -> {
                     QuestionOptionBean opt = new QuestionOptionBean();
                     opt.setOptionId(rs.getInt("option_id"));
@@ -145,15 +145,15 @@ public class ExamRepository {
 
     @Transactional
     public void saveSubmissionResponse(int examId, int attemptId, String answerText) {
-        String sql = "UPDATE lms_db.exam_attempts SET remark = ?, status = 'SUBMITTED', submitted_at = NOW() WHERE attempt_id = ?";
+        String sql = "UPDATE learning_db.exam_attempts SET remark = ?, status = 'SUBMITTED', submitted_at = NOW() WHERE attempt_id = ?";
         jdbcTemplate.update(sql, answerText, attemptId);
     }
 
     public ExamAttemptBean findAttemptResultSummary(int attemptId) {
         String sql = """
                 SELECT e.title AS exam_title, e.total_mark, e.pass_mark, ea.* 
-                FROM lms_db.exam_attempts ea 
-                JOIN lms_db.exams e ON ea.exam_id = e.exam_id 
+                FROM learning_db.exam_attempts ea 
+                JOIN learning_db.exams e ON ea.exam_id = e.exam_id 
                 WHERE ea.attempt_id = ? LIMIT 1
                 """;
         try {

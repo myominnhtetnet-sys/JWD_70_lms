@@ -20,7 +20,7 @@ public class CourseRepository {
      * Finds a unique course matching a unique text URL slug string.
      */
     public Optional<CourseBean> findBySlug(String slug) {
-        String sql = "SELECT * FROM lms_db.courses WHERE slug = ? LIMIT 1";
+        String sql = "SELECT * FROM learning_db.courses WHERE slug = ? LIMIT 1";
         try {
             CourseBean course = jdbcTemplate.queryForObject(sql, new CourseRowMapper(), slug);
             return Optional.ofNullable(course);
@@ -33,7 +33,7 @@ public class CourseRepository {
      * Finds a single course matching its exact integer ID identifier.
      */
     public CourseBean findById(int courseId) {
-        String sql = "SELECT * FROM lms_db.courses WHERE course_id = ? LIMIT 1";
+        String sql = "SELECT * FROM learning_db.courses WHERE course_id = ? LIMIT 1";
         try {
             return jdbcTemplate.queryForObject(sql, new CourseRowMapper(), courseId);
         } catch (Exception e) {
@@ -45,8 +45,8 @@ public class CourseRepository {
      * Fetches a paginated, conditionally filtered collection of active courses.
      */
     public List<CourseBean> findFilteredCourses(CourseBean filters, String batchStatus, int page, int pageSize) {
-        StringBuilder sql = new StringBuilder("SELECT DISTINCT c.* FROM lms_db.courses c ");
-        sql.append("JOIN lms_db.batches b ON c.course_id = b.course_id WHERE c.status = 'PUBLISHED' ");
+        StringBuilder sql = new StringBuilder("SELECT DISTINCT c.* FROM learning_db.courses c ");
+        sql.append("JOIN learning_db.batches b ON c.course_id = b.course_id WHERE c.status = 'PUBLISHED' ");
         List<Object> params = new ArrayList<>();
 
         if (filters.getCategory_id() != null) {
@@ -69,8 +69,8 @@ public class CourseRepository {
      * Counts the total items that match a specific combination of filter parameters.
      */
     public int countFilteredCourses(CourseBean filters, String batchStatus) {
-        StringBuilder sql = new StringBuilder("SELECT COUNT(DISTINCT c.course_id) FROM lms_db.courses c ");
-        sql.append("JOIN lms_db.batches b ON c.course_id = b.course_id WHERE c.status = 'PUBLISHED' ");
+        StringBuilder sql = new StringBuilder("SELECT COUNT(DISTINCT c.course_id) FROM learning_db.courses c ");
+        sql.append("JOIN learning_db.batches b ON c.course_id = b.course_id WHERE c.status = 'PUBLISHED' ");
         List<Object> params = new ArrayList<>();
 
         if (filters.getCategory_id() != null) {
