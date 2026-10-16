@@ -124,32 +124,44 @@
             </div>
         </div>
 
-        <!-- Individual Lesson Completion & Regression Self-Check Footer Module -->
-        <div class="sidebar-footer">
+       <!-- ========================================================= -->
+<!-- INDIVIDUAL LESSON COMPLETION FOOTER MODULE PANEL           -->
+<!-- ========================================================= -->
+<div class="sidebar-footer">
+    
+    <!-- 🟢 CASE A: Display UI Badge if Already Marked Completed -->
+    <div th:if="${lesson.done}" style="text-align: center; padding: 4px 0;">
+        <span style="display: inline-flex; align-items: center; gap: 6px; color: #166534; font-size: 13px; font-weight: 700; background: #dcfce7; padding: 10px 14px; border-radius: 8px; width: 100%; justify-content: center; margin-bottom: 8px;">
+            <i class="fa-solid fa-circle-check"></i> Lesson Completed
+        </span>
+        
+        <form th:action="@{/student/course/lesson/regress}" method="post" style="margin: 0; padding: 0;">
+            <input type="hidden" name="lessonId" th:value="${lesson.lessonId}">
+            <input type="hidden" name="courseId" th:value="${course.courseId}">
+            <button type="submit" style="background: none; border: none; color: #dc2626; font-size: 11px; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 2px 4px;">
+                🔄 Mark as incomplete
+            </button>
+        </form>
+    </div>
+    
+    <!-- 🟢 CASE B: Display Premium Action Button Form if Progress is Pending -->
+    <div th:unless="${lesson.done}">
+        <div style="margin-bottom: 12px;">
+            <h4 style="margin: 0; font-size: 13px; font-weight: 700; color: #0f172a;">Finished this chapter?</h4>
+            <p style="margin: 2px 0 0 0; color: #64748b; font-size: 11px; line-height: 1.4;">Mark it complete to save your isolated progress metrics.</p>
+        </div>
+        
+        <form th:action="@{/student/course/lesson/complete}" method="post" style="margin: 0; padding: 0;">
+            <input type="hidden" name="lessonId" th:value="${lesson.lessonId}">
+            <input type="hidden" name="courseId" th:value="${course.courseId}">
             
-            <!-- A. Display if already marked completed -->
-            <div th:if="${lesson.done}" style="text-align: center; padding: 4px 0;">
-                <span style="display: inline-flex; align-items: center; gap: 6px; color: #166534; font-size: 13px; font-weight: 700; background: #dcfce7; padding: 10px 14px; border-radius: 8px; width: 100%; justify-content: center; margin-bottom: 8px;">
-                    <i class="fa-solid fa-circle-check"></i> Lesson Completed
-                </span>
-                
-                <form th:action="@{/student/course/lesson/regress}" method="post" style="margin: 0; padding: 0;">
-                    <input type="hidden" name="lessonId" th:value="${lesson.lessonId}">
-                    <input type="hidden" name="courseId" th:value="${course.courseId}">
-                    <button type="submit" style="background: none; border: none; color: #dc2626; font-size: 11px; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 2px 4px;">
-                        🔄 Mark as incomplete
-                    </button>
-                </form>
-            </div>
-            
-            <!-- B. Display action button if pending -->
-            <div th:unless="${lesson.done}">
-                <div style="margin-bottom: 10px;">
-                    <h4 style="margin: 0; font-size: 13px; font-weight: 700; color: #0f172a;">Finished this chapter?</h4>
-                    <p style="margin: 2px 0 0 0; color: #64748b; font-size: 11px; line-height: 1.4;">Mark it complete to save your isolated progress metrics.</p>
-                </div>
-                
-                <form th:action="@{/student/course/lesson/complete}" method="post" style="margin: 0; padding: 0;">
-                    <input type="hidden" name="lessonId" th:value="${lesson.lessonId}">
-                    <input type="hidden" name="courseId" th:value="${course.courseId}">
-                    
+            <!-- 🟢 FIXED: Re-added missing complete submission button & closed structural wrapper tags -->
+            <button type="submit" class="premium-btn" style="width: 100%; justify-content: center; cursor: pointer; background: #2563eb; border-color: #2563eb;">
+                <i class="fa-solid fa-check" style="font-size: 12px;"></i>
+                <span>Mark as Completed</span>
+            </button>
+        </form>
+    </div>
+
+</div>
+

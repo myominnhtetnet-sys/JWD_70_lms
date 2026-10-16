@@ -1,4 +1,3 @@
-// 🟢 REPLACE YOUR StudentAssignmentController.java METHODS WITH THIS UPDATED BLOCK
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.io.IOException;
@@ -18,7 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.Learning_Managnment_System.JWD_70_lms.Service.StudentAssignmentService;
 import com.Learning_Managnment_System.JWD_70_lms.model.SubmissionBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.AssignmentBean;
-import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -31,50 +29,51 @@ public class StudentAssignmentController {
         this.studentAssignmentService = service;
     }
 
+    /**
+     * 🟢 1. SHOW PAGINATED & FILTERED STUDENT ASSIGNMENTS LIST
+     * ⚡ ALIGNED KEY FIX: Checks for 'email' to match your MyCourseController authentication state.
+     */
     @GetMapping("/assignments")
     public String showAssignments(
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "title", required = false) String title,   // 🟢 Capture search keywords
-            @RequestParam(value = "status", required = false) String status, // 🟢 Capture submission states
+            @RequestParam(value = "title", required = false) String title,   
+            @RequestParam(value = "status", required = false) String status, 
             Model model, 
             HttpSession session) {
             
-        LoginBean currentLogin = (LoginBean) session.getAttribute("currentUser");
-        if (currentLogin == null) {
+        // 🟢 FIXED: Changed session key lookup from "currentUser" to plain "email" string
+        String studentEmail = (String) session.getAttribute("email");
+        if (studentEmail == null) {
             return "redirect:/login"; 
         }
 
-        int activeUserId = currentLogin.getUser_id();
+        // Fetch user ID dynamically via service using the active email token string
+        int activeUserId = studentAssignmentService.getUserIdByEmail(studentEmail);
         int pageSize = 6; 
 
-        // 1. Compute items dynamically through the parameterized service query tiers
+        // Compute items dynamically through service queries
         int totalItems = studentAssignmentService.getTotalAssignmentsCount(activeUserId, title, status);
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
         if (totalPages == 0) {
             totalPages = 1;
         }
 
-        // 2. Fetch the paginated and filtered assignment row results
         List<AssignmentBean> paginatedAssignments = studentAssignmentService.getPaginatedStudentAssignments(activeUserId, title, status, page, pageSize);
 
-        // 3. Map tracking attributes straight down to the Thymeleaf model container context
         model.addAttribute("assignments", paginatedAssignments);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
         
-        // Retain original metrics counters
         model.addAttribute("submittedAssignments", studentAssignmentService.getSubmittedAssignments(activeUserId));
         model.addAttribute("lateAssignments", studentAssignmentService.getLateAssignments(activeUserId));
         
         return "student-assignment-list";
     }
 
-
-
     @GetMapping("/assignments/submit/{id}")
     public String showSubmitForm(@PathVariable Integer id, Model model, HttpSession session) {
-        LoginBean currentLogin = (LoginBean) session.getAttribute("currentUser");
-        if (currentLogin == null) return "redirect:/login";
+        String studentEmail = (String) session.getAttribute("email");
+        if (studentEmail == null) return "redirect:/login";
 
         SubmissionBean submission = new SubmissionBean();
         submission.setAssignmentId(id);
@@ -89,11 +88,13 @@ public class StudentAssignmentController {
             HttpSession session, 
             RedirectAttributes redirectAttributes) throws IOException {
 
-        LoginBean currentLogin = (LoginBean) session.getAttribute("currentUser");
-        if (currentLogin == null) {
+        String studentEmail = (String) session.getAttribute("email");
+        if (studentEmail == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Session expired. Please log in again.");
             return "redirect:/login";
         }
+
+        int activeUserId = studentAssignmentService.getUserIdByEmail(studentEmail);
 
         if (file != null && !file.isEmpty()) {
             String originalName = file.getOriginalFilename();
@@ -122,8 +123,7 @@ public class StudentAssignmentController {
         }
 
         try {
-            // 🟢 FIXED: Swapped 'service' with 'studentAssignmentService' to clear compile crashes
-            studentAssignmentService.submitAssignment(submission, currentLogin.getUser_id());
+            studentAssignmentService.submitAssignment(submission, activeUserId);
             redirectAttributes.addFlashAttribute("successMessage", "Assignment submitted successfully!");
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
@@ -133,18 +133,17 @@ public class StudentAssignmentController {
     
     @GetMapping("/assignments/submission/{id}")
     public String showMySubmission(@PathVariable Integer id, Model model, HttpSession session) {
-        LoginBean currentLogin = (LoginBean) session.getAttribute("currentUser");
-        if (currentLogin == null) return "redirect:/login";
+        String studentEmail = (String) session.getAttribute("email");
+        if (studentEmail == null) return "redirect:/login";
 
-        // 🟢 FIXED: Swapped 'service' with 'studentAssignmentService' to clear compile crashes
-        Optional<SubmissionBean> submission = studentAssignmentService.getMySubmission(id, currentLogin.getUser_id());
+        int activeUserId = studentAssignmentService.getUserIdByEmail(studentEmail);
+        Optional<SubmissionBean> submission = studentAssignmentService.getMySubmission(id, activeUserId);
         if (submission.isEmpty()) {
             return "redirect:/student/assignments";
         }
         model.addAttribute("submission", submission.get());
         return "student-submission-detail";
     }
-    
     
     @PostMapping("/assignments/submission/update")
     public String updateSubmission(
@@ -155,20 +154,18 @@ public class StudentAssignmentController {
             RedirectAttributes redirectAttributes,
             HttpSession session) {
         
-        LoginBean currentLogin = (LoginBean) session.getAttribute("currentUser");
-        if (currentLogin == null) {
+        String studentEmail = (String) session.getAttribute("email");
+        if (studentEmail == null) {
             return "redirect:/login";
         }
 
         try {
-            // Safe instance call processes text saves or file replacements securely
             studentAssignmentService.updateStudentSubmission(submissionId, answerText, file);
             redirectAttributes.addFlashAttribute("successMessage", "Your assignment submission has been updated successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to save modifications: " + e.getMessage());
         }
 
-        // Returns user straight back to their detailed view sheet cleanly
         return "redirect:/student/assignments/submission/" + assignmentId;
     }
 }
