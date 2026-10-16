@@ -1,828 +1,117 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-full bg-slate-50">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduPulse LMS - Enterprise Learning Platform</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#eef2ff',
-                            100: '#e0e7ff',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
-                            800: '#3730a3',
-                            900: '#312e81',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    
+    <title>Admin Dashboard | LMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0f1118; --sidebar: #181d28; --card: #181d28; --border: #293142;
+            --primary: #6c4ce5; --primary-light: #8068f0; --text: #f1f3f9; --muted: #929bb0;
+            --green: #36c995; --yellow: #f4bd50; --red: #ff7373; --input: #202634;
         }
-        ::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.05);
+        body.light-mode {
+            --bg: #f4f6fb; --sidebar: #ffffff; --card: #ffffff; --border: #e2e6ef;
+            --text: #242938; --muted: #727c91; --input: #f5f6fa;
         }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(0,0,0,0.2);
-            border-radius: 3px;
-        }
-        .fade-in {
-            animation: fadeIn 0.25s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        body { font-family: Arial, Helvetica, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        a { color: inherit; text-decoration: none; }
+        button, input, select { font: inherit; cursor: pointer; }
+        .app { min-height: 100vh; }
         
-        
-        
-        
-        
-        .user-management {
-    background: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    margin-top: 25px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.06);
-}
+        /* Layout CSS */
+        .sidebar { width: 260px; position: fixed; inset: 0 auto 0 0; background: var(--sidebar); border-right: 1px solid var(--border); padding: 25px 18px; overflow-y: auto; z-index: 100; }
+        .brand { display: flex; align-items: center; gap: 13px; padding: 5px 10px 32px; }
+        .brand-icon { width: 45px; height: 45px; background: #7895ff; color: white; border-radius: 13px; display: grid; place-items: center; font-size: 21px; }
+        .brand-name { font-size: 20px; font-weight: 700; }
+        .brand-subtitle { color: var(--muted); font-size: 13px; margin-top: 5px; }
+        .menu-heading { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); padding: 17px 12px 12px; }
+        .nav-link { display: flex; align-items: center; gap: 14px; padding: 13px 14px; margin-bottom: 5px; border-radius: 10px; color: var(--muted); font-size: 14px; }
+        .nav-link i { width: 20px; text-align: center; }
+        .nav-link:hover, .nav-link.active { background: rgba(108, 76, 229, .19); color: #9b8aff; font-weight: 700; }
+        .sidebar-bottom { margin-top: 30px; border-top: 1px solid var(--border); padding-top: 15px; }
+        .logout-link:hover { color: var(--red); }
 
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
+        .main { margin-left: 260px; min-height: 100vh; }
+        .topbar { min-height: 88px; padding: 18px 30px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 50; }
+        .page-heading h1 { font-size: 23px; margin-bottom: 7px; }
+        .page-heading p { color: var(--muted); font-size: 13px; }
+        .topbar-right { display: flex; align-items: center; gap: 13px; }
+        .icon-btn { width: 44px; height: 44px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); color: var(--muted); display: grid; place-items: center; }
+        .profile { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--primary); color: white; font-weight: 700; }
+        .profile-name { font-weight: 700; font-size: 14px; }
+        .profile-role { font-size: 12px; color: var(--muted); margin-top: 5px; }
 
-.section-header h2 {
-    color: #4b176b;
-    margin: 0;
-}
-
-.section-header p {
-    color: #777;
-}
-
-.add-user-btn {
-    background: #8e44ad;
-    color: white;
-    padding: 10px 18px;
-    border-radius: 7px;
-    text-decoration: none;
-}
-
-.search-form {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.search-form input {
-    flex: 1;
-    padding: 11px;
-    border: 1px solid #ccc;
-    border-radius: 7px;
-}
-
-.search-form button {
-    background: #8e44ad;
-    color: white;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 7px;
-    cursor: pointer;
-}
-
-.search-form a {
-    padding: 10px 18px;
-    background: #eee;
-    border-radius: 7px;
-    text-decoration: none;
-    color: #333;
-}
-
-.table-container {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-table th,
-table td {
-    padding: 13px;
-    border-bottom: 1px solid #eee;
-    text-align: left;
-}
-
-table th {
-    background: #f8f0fc;
-    color: #4b176b;
-}
-
-.status {
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.status.active {
-    background: #dff5e5;
-    color: #198754;
-}
-
-.status.inactive {
-    background: #eee;
-    color: #666;
-}
-
-.status.suspended {
-    background: #ffe0e0;
-    color: #c0392b;
-}
-
-.actions {
-    white-space: nowrap;
-}
-
-.actions a,
-.actions button {
-    border: none;
-    margin-right: 5px;
-    padding: 7px 9px;
-    border-radius: 5px;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.view-btn {
-    background: #eee;
-    color: #333;
-}
-
-.edit-btn {
-    background: #f4e9ff;
-    color: #8e44ad;
-}
-
-.suspend-btn {
-    background: #fff0d5;
-    color: #d68910;
-}
-
-.activate-btn {
-    background: #dff5e5;
-    color: #198754;
-}
-
-.delete-btn {
-    background: #ffe0e0;
-    color: #c0392b;
-}
-
-.alert {
-    padding: 12px;
-    border-radius: 7px;
-    margin-bottom: 15px;
-}
-
-.alert.success {
-    background: #dff5e5;
-    color: #198754;
-}
-
-.alert.error {
-    background: #ffe0e0;
-    color: #c0392b;
-}
-        
-        
-        
-        
-        
-        
-        
+        .content { padding: 28px 30px 40px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; margin-bottom: 23px; }
+        .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 22px; display: flex; gap: 15px; }
+        .stat-icon { width: 49px; height: 49px; border-radius: 13px; display: grid; place-items: center; font-size: 20px; }
+        .purple { background: rgba(108,76,229,.2); color: #a697ff; }
+        .green { background: rgba(54,201,149,.15); color: var(--green); }
+        .yellow { background: rgba(244,189,80,.15); color: var(--yellow); }
+        .red { background: rgba(255,115,115,.14); color: var(--red); }
+        .stat-label { color: var(--muted); font-size: 13px; margin-bottom: 9px; }
+        .stat-value { font-size: 29px; font-weight: 700; }
+        .panel { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 23px; margin-bottom: 20px; }
     </style>
 </head>
-<body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
 
-    <div id="app" class="min-h-screen flex flex-col">
-        
-        <!-- TOP HEADER BAR -->
-        <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 shadow-sm transition-colors duration-200">
-            <div class="px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
-                
-                <!-- Left: Branding & Search -->
-                <div class="flex items-center gap-6 flex-1 max-w-xl">
-                    <div class="flex items-center gap-3 cursor-pointer" onclick="switchRole('admin')">
-                        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-200 dark:shadow-none">
-                            <i class="fa-solid font-bold text-lg">E</i>
-                        </div>
-                        <div>
-                            <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-indigo-600 to-indigo-800 dark:from-indigo-400 dark:to-indigo-200 bg-clip-text text-transparent">EduPulse</span>
-                            <span class="text-xs px-2 py-0.5 ml-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold border border-indigo-200 dark:border-indigo-800/50">LMS</span>
-                        </div>
+<body>
+<div class="app">
+
+    <!-- SIDEBAR FRAGMENT -->
+    <div th:replace="~{fragments/admin-layout :: sidebar(activePage='dashboard')}"></div>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- TOPBAR FRAGMENT -->
+        <div th:replace="~{fragments/admin-layout :: topbar('Dashboard', 'Learning Management System')}"></div>
+
+        <!-- PAGE CONTENT -->
+        <div class="content">
+            <div th:if="${success}" class="flash-message flash-success" th:text="${success}">Success</div>
+            <div th:if="${error}" class="flash-message flash-error" th:text="${error}">Error</div>
+
+            <!-- STATISTICS -->
+            <section class="stats-grid">
+                <article class="stat-card">
+                    <div class="stat-icon purple"><i class="fa-solid fa-users"></i></div>
+                    <div>
+                        <div class="stat-label">Total Users</div>
+                        <div class="stat-value" th:text="${totalUsers}">0</div>
                     </div>
-
-                    <!-- Global Search -->
-                    <div class="relative flex-1 hidden md:block">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                        <input id="globalSearch" type="text" placeholder="Search courses, users, materials..." 
-                            class="w-full pl-10 pr-4 py-2 text-sm bg-slate-100 dark:bg-slate-700/60 border border-transparent dark:border-slate-600 rounded-lg focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-indigo-500 transition-all text-slate-800 dark:text-slate-100 placeholder-slate-400">
+                </article>
+                <article class="stat-card">
+                    <div class="stat-icon green"><i class="fa-solid fa-user-check"></i></div>
+                    <div>
+                        <div class="stat-label">Active Users</div>
+                        <div class="stat-value" th:text="${activeUsers}">0</div>
                     </div>
-                </div>
-
-                <!-- Center: Prominent Role Switcher -->
-                <div class="bg-slate-100 dark:bg-slate-700/80 p-1 rounded-xl border border-slate-200 dark:border-slate-600 flex items-center gap-1 shadow-inner">
-                    <button onclick="switchRole('admin')" id="role-btn-admin" class="role-btn text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all">
-                        <i class="fa-solid fa-user-shield"></i>
-                        <span class="hidden sm:inline">Admin</span>
-                    </button>
-                    <button onclick="switchRole('teacher')" id="role-btn-teacher" class="role-btn text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all">
-                        <i class="fa-solid fa-chalkboard-user"></i>
-                        <span class="hidden sm:inline">Teacher</span>
-                    </button>
-                    <button onclick="switchRole('student')" id="role-btn-student" class="role-btn text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all">
-                        <i class="fa-solid fa-user-graduate"></i>
-                        <span class="hidden sm:inline">Student</span>
-                    </button>
-                </div>
-
-                <!-- Right: Utilities & User Profile -->
-                <div class="flex items-center gap-3">
-                    <!-- Dark Mode Toggle -->
-                    <button onclick="toggleDarkMode()" class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition">
-                        <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
-                    </button>
-
-                    <!-- Notifications Button -->
-                    <div class="relative">
-                        <button onclick="toggleNotifications()" class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition relative">
-                            <i class="fa-regular fa-bell text-lg"></i>
-                            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-600 rounded-full ring-2 ring-white dark:ring-slate-800"></span>
-                        </button>
-                        <!-- Notifications Dropdown -->
-                        <div id="notif-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 fade-in">
-                            <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                                <span class="font-bold text-sm">Notifications</span>
-                                <span class="text-xs text-indigo-600 dark:text-indigo-400 cursor-pointer hover:underline" onclick="showToast('All marked as read')">Mark read</span>
-                            </div>
-                            <div class="divide-y divide-slate-100 dark:divide-slate-700 max-h-64 overflow-y-auto">
-                                <div class="p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition cursor-pointer">
-                                    <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">Assignment Submitted</p>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Alex Morgan submitted "Physics Lab 3"</p>
-                                    <span class="text-[10px] text-slate-400 mt-1 block">10 mins ago</span>
-                                </div>
-                                <div class="p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition cursor-pointer">
-                                    <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">System Maintenance</p>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Scheduled downtime tonight at 02:00 AM</p>
-                                    <span class="text-[10px] text-slate-400 mt-1 block">1 hour ago</span>
-                                </div>
-                            </div>
-                        </div>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-icon yellow"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div>
+                        <div class="stat-label">Total Roles</div>
+                        <div class="stat-value" th:text="${totalRoles}">0</div>
                     </div>
-
-                    <!-- User Profile Dropdown -->
-                    <div class="flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-slate-700">
-                        <img id="user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120" alt="Avatar" class="w-9 h-9 rounded-full object-cover ring-2 ring-indigo-500/30">
-                        <div class="hidden lg:block text-left">
-                            <div id="user-name" class="text-xs font-bold leading-tight">Sarah Jenkins</div>
-                            <div id="user-role-label" class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Administrator</div>
-                        </div>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-icon red"><i class="fa-solid fa-user-slash"></i></div>
+                    <div>
+                        <div class="stat-label">Inactive Users</div>
+                        <div class="stat-value" th:text="${inactiveUsers}">0</div>
                     </div>
-
-                </div>
-            </div>
-        </header>
-
-        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
-        <div class="flex-1 flex overflow-hidden">
-            
-            <!-- DYNAMIC SIDEBAR -->
-            <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex-shrink-0 border-r border-slate-800 flex flex-col justify-between transition-all duration-300">
-                <div class="p-4">
-                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-3" id="sidebar-category">Admin Portal</div>
-                    <nav id="sidebar-menu" class="space-y-1">
-                        <!-- Populated by JavaScript based on active role -->
-                    </nav>
-                </div>
-                
-                <div class="p-4 border-t border-slate-800">
-                    <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                        <div class="flex items-center gap-3">
-                            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                            <span class="text-xs font-medium text-slate-300">EduPulse v2.4 Active</span>
-                        </div>
-                        <p class="text-[11px] text-slate-500 mt-1">All systems operational</p>
-                    </div>
-                </div>
-            </aside>
-
-            <!-- MAIN DYNAMIC CONTENT CONTAINER -->
-            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-slate-900">
-                
-                <!-- ================= ADMIN VIEW ================= -->
-                <div id="view-admin" class="role-view space-y-6 hidden">
-                    <!-- Title & Header -->
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Admin Dashboard</h1>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Overview of platform metrics, global users, and institution performance.</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <button onclick="openModal('announcement-modal')" class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center gap-2">
-                                <i class="fa-solid fa-bullhorn text-indigo-500"></i>
-                                New Announcement
-                            </button>
-                            <button onclick="openModal('user-modal')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-2">
-                                <i class="fa-solid fa-user-plus"></i>
-                                Add New User
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Admin Stat Cards -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Users</span>
-                                <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-users text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">1,248</span>
-                                <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                                    <i class="fa-solid fa-arrow-trend-up"></i> +12%
-                                </span>
-                            </div>
-                            <p class="text-xs text-slate-400 mt-1">1,050 Students • 198 Teachers</p>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active Courses</span>
-                                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-book-open text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">64</span>
-                                <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                                    <i class="fa-solid fa-plus"></i> 4 new
-                                </span>
-                            </div>
-                            <p class="text-xs text-slate-400 mt-1">across 12 departments</p>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Monthly Revenue</span>
-                                <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-dollar-sign text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">$42,850</span>
-                                <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                                    <i class="fa-solid fa-arrow-trend-up"></i> +8.4%
-                                </span>
-                            </div>
-                            <p class="text-xs text-slate-400 mt-1">98.2% invoice collection rate</p>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">System Health</span>
-                                <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-server text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">99.98%</span>
-                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Normal</span>
-                            </div>
-                            <p class="text-xs text-slate-400 mt-1">Server load: 24%</p>
-                        </div>
-                    </div>
-
-                    <!-- Visual Analytics Charts Row -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between mb-4">
-                                <div>
-                                    <h3 class="font-bold text-base text-slate-900 dark:text-white">Enrollment Growth</h3>
-                                    <p class="text-xs text-slate-500">New student registrations over the last 6 months</p>
-                                </div>
-                                <select class="text-xs bg-slate-100 dark:bg-slate-700 border-none rounded-lg px-3 py-1.5 font-medium">
-                                    <option>2026 Academic Year</option>
-                                    <option>2025 Academic Year</option>
-                                </select>
-                            </div>
-                            <div class="h-64 relative">
-                                <canvas id="adminEnrollmentChart"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
-                            <div>
-                                <h3 class="font-bold text-base text-slate-900 dark:text-white mb-1">System Resource Usage</h3>
-                                <p class="text-xs text-slate-500 mb-6">Realtime server & cloud storage distribution</p>
-                                
-                                <div class="space-y-4">
-                                    <div>
-                                        <div class="flex justify-between text-xs font-semibold mb-1">
-                                            <span>Cloud Storage (AWS S3)</span>
-                                            <span>1.4 TB / 2.0 TB</span>
-                                        </div>
-                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                                            <div class="h-full bg-indigo-600 rounded-full" style="width: 70%"></div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div class="flex justify-between text-xs font-semibold mb-1">
-                                            <span>Database Capacity</span>
-                                            <span>42%</span>
-                                        </div>
-                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                                            <div class="h-full bg-emerald-500 rounded-full" style="width: 42%"></div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div class="flex justify-between text-xs font-semibold mb-1">
-                                            <span>Active Bandwidth</span>
-                                            <span>810 Mbps</span>
-                                        </div>
-                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                                            <div class="h-full bg-amber-500 rounded-full" style="width: 85%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
-                                <button onclick="showToast('Initiating server diagnostic backup...')" class="w-full py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 transition">
-                                    Run System Diagnostic
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- User Management Table -->
-                   <!--  <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm overflow-hidden">
-                        <div class="p-6 border-b border-slate-100 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                                <h3 class="font-bold text-base text-slate-900 dark:text-white">User Management</h3>
-                                <p class="text-xs text-slate-500">Filter, edit, and manage accounts and permissions</p>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <input type="text" id="userTableSearch" onkeyup="filterUserTable()" placeholder="Filter users..." class="text-xs px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-transparent rounded-lg focus:outline-none focus:bg-white dark:focus:bg-slate-800 border-slate-200 dark:border-slate-600">
-                                <select id="roleFilter" onchange="filterUserTable()" class="text-xs px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg font-medium">
-                                    <option value="all">All Roles</option>
-                                    <option value="Student">Students</option>
-                                    <option value="Teacher">Teachers</option>
-                                    <option value="Admin">Admins</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
-                                <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-700">
-                                    <tr>
-                                        <th class="px-6 py-3.5">User</th>
-                                        <th class="px-6 py-3.5">Role</th>
-                                        <th class="px-6 py-3.5">Status</th>
-                                        <th class="px-6 py-3.5">Joined Date</th>
-                                        <th class="px-6 py-3.5 text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="userTableBody" class="divide-y divide-slate-100 dark:divide-slate-700/60 font-medium">
-                                    Dynamic rows via JavaScript
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div> -->
-
-
-
-<!-- =====================================================
-     USER MANAGEMENT
-===================================================== -->
-
-<div class="user-management">
-
-    <div class="section-header">
-
-        <div>
-
-            <h2>
-                <i class="fa-solid fa-users"></i>
-                User Management
-            </h2>
-
-            <p>
-                Manage LMS users
-            </p>
-
+                </article>
+            </section>
         </div>
 
-        <a
-            th:href="@{/admin/users/add}"
-            class="add-user-btn">
-
-            <i class="fa-solid fa-user-plus"></i>
-            Add User
-
-        </a>
-
-    </div>
-
-
-    <!-- SUCCESS MESSAGE -->
-
-    <div
-        th:if="${success}"
-        class="alert success"
-        th:text="${success}">
-    </div>
-
-
-    <!-- ERROR MESSAGE -->
-
-    <div
-        th:if="${error}"
-        class="alert error"
-        th:text="${error}">
-    </div>
-
-
-    <!-- SEARCH -->
-
-    <form
-        th:action="@{/admin/users/search}"
-        method="get"
-        class="search-form">
-
-        <input
-            type="text"
-            name="keyword"
-            th:value="${keyword}"
-            placeholder="Search name, email, phone, role or status...">
-
-        <button type="submit">
-
-            <i class="fa-solid fa-search"></i>
-            Search
-
-        </button>
-
-        <a
-            th:href="@{/admin}">
-
-            Reset
-
-        </a>
-
-    </form>
-
-
-    <!-- USER TABLE -->
-
-    <div class="table-container">
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>ID</th>
-
-                    <th>Full Name</th>
-
-                    <th>Email</th>
-
-                    <th>Role</th>
-
-                    <th>Status</th>
-
-                    <th>Created At</th>
-
-                    <th>Action</th>
-
-                </tr>
-
-            </thead>
-
-
-            <tbody>
-
-                <tr th:each="user : ${users}">
-
-                    <td
-                        th:text="${user.userId}">
-                        1
-                    </td>
-
-
-                    <td
-                        th:text="${user.fullName}">
-                        
-                    </td>
-
-
-                    <td
-                        th:text="${user.email}">
-                   
-                    </td>
-
-
-                    <td
-                        th:text="${user.roleName}">
-                 
-                    </td>
-
-
-                    <td>
-
-                        <span
-                            th:text="${user.status}"
-                            th:class="'status ' + ${#strings.toLowerCase(user.status)}">
-                            ACTIVE
-                        </span>
-
-                    </td>
-
-
-                    <td
-                        th:text="${user.createdAt}">
-                        2026-10-01
-                    </td>
-
-
-                    <td class="actions">
-
-                        <!-- VIEW -->
-
-                        <a
-                            th:href="@{/admin/users/view/{id}(id=${user.userId})}"
-                            class="view-btn"
-                            title="View">
-
-                            <i class="fa-solid fa-eye"></i>
-
-                        </a>
-
-
-                        <!-- EDIT -->
-
-                        <a
-                            th:href="@{/admin/users/edit/{id}(id=${user.userId})}"
-                            class="edit-btn"
-                            title="Edit">
-
-                            <i class="fa-solid fa-pen"></i>
-
-                        </a>
-
-
-                        <!-- SUSPEND -->
-
-                        <form
-                            th:if="${user.status == 'ACTIVE'}"
-                            th:action="@{/admin/users/suspend}"
-                            method="post"
-                            style="display:inline;">
-
-                            <input
-                                type="hidden"
-                                name="userId"
-                                th:value="${user.userId}">
-
-                            <button
-                                type="submit"
-                                class="suspend-btn"
-                                title="Suspend"
-                                onclick="return confirm('Are you sure you want to suspend this user?');">
-
-                                <i class="fa-solid fa-ban"></i>
-
-                            </button>
-
-                        </form>
-
-
-                        <!-- ACTIVATE -->
-
-                        <form
-                            th:if="${user.status != 'ACTIVE'}"
-                            th:action="@{/admin/users/activate}"
-                            method="post"
-                            style="display:inline;">
-
-                            <input
-                                type="hidden"
-                                name="userId"
-                                th:value="${user.userId}">
-
-                            <button
-                                type="submit"
-                                class="activate-btn"
-                                title="Activate">
-
-                                <i class="fa-solid fa-check"></i>
-
-                            </button>
-
-                        </form>
-
-
-                        <!-- DELETE -->
-
-                        <form
-                            th:action="@{/admin/users/delete}"
-                            method="post"
-                            style="display:inline;">
-
-                            <input
-                                type="hidden"
-                                name="userId"
-                                th:value="${user.userId}">
-
-                            <button
-                                type="submit"
-                                class="delete-btn"
-                                title="Delete"
-                                onclick="return confirm('Are you sure you want to delete this user?');">
-
-                                <i class="fa-solid fa-trash"></i>
-
-                            </button>
-
-                        </form>
-
-                    </td>
-
-                </tr>
-
-
-                <!-- NO DATA -->
-
-                <tr th:if="${#lists.isEmpty(users)}">
-
-                    <td
-                        colspan="7"
-                        style="text-align:center;">
-
-                        No users found.
-
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
+    </main>
 </div>
-
-
-
-
-
-
                 <!-- ================= TEACHER VIEW ================= -->
                 <div id="view-teacher" class="role-view space-y-6 hidden">
                     <!-- Title & Header -->

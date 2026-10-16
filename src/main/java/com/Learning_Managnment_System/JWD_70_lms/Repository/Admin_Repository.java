@@ -1,13 +1,16 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.Learning_Managnment_System.JWD_70_lms.model.AdminUserBean;
+
 
 @Repository
 public class Admin_Repository {
@@ -104,7 +107,6 @@ public class Admin_Repository {
             SET role_id = ?, full_name = ?, email = ?, phone = ?, dob = ?, gender = ?, address = ?, status = ?, updated_at = NOW()
             WHERE user_id = ? AND deleted_at IS NULL
             """;
-
         return jdbcTemplate.update(
             sql,
             user.getRoleId(), user.getFullName(), user.getEmail(), user.getPhone(),

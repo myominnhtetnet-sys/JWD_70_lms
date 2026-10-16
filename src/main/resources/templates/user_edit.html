@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Edit User - LMS</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4e9ff;
+        }
+
+        .page {
+            min-height: 100vh;
+            padding: 40px;
+        }
+
+        .form-container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #4b176b;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #8e44ad;
+        }
+
+        .error {
+            background: #ffe6e6;
+            color: #b30000;
+            padding: 12px;
+            border-radius: 7px;
+            margin-bottom: 20px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button,
+        .back-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        button {
+            background: #8e44ad;
+            color: white;
+        }
+
+        .back-btn {
+            background: #ddd;
+            color: #333;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="form-container">
+
+        <h1>Edit User</h1>
+
+        <div class="error"
+             th:if="${error}"
+             th:text="${error}">
+        </div>
+
+        <form th:action="@{/admin/users/update}"
+              th:object="${user}"
+              method="post">
+
+            <input type="hidden"
+                   th:field="*{userId}">
+
+
+            <div class="form-group">
+
+                <label>Full Name</label>
+
+                <input type="text"
+                       th:field="*{full_name}">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Email</label>
+
+                <input type="email"
+                       th:field="*{email}">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Phone</label>
+
+                <input type="text"
+                       th:field="*{phone}">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Role</label>
+
+                <select th:field="*{role_id}">
+
+                    <option value="0">
+                        -- Select Role --
+                    
+
+                    <option th:each="role : ${roles}"
+                            th:value="${role.role_id}"
+                            th:text="${role.role_name}">
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="buttons">
+
+                <button type="submit">
+                    Update User
+                </button>
+
+                <a th:href="@{/admin}"
+                   class="back-btn">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

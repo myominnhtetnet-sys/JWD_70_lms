@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org"> <body>
+
+<aside th:fragment="sidebar" class="sidebar">
+
+<div class="sidebar-title">
+    Admin Portal
+</div>
+
+<a th:href="@{/admin/dashboard}"
+   class="sidebar-link"
+   th:classappend="${currentPage == 'dashboard'} ? ' active' : ''">
+
+    <i class="fa-solid fa-gauge-high"></i>
+    <span>Dashboard</span>
+
+</a>
+
+<a th:href="@{/admin/users}"
+   class="sidebar-link"
+   th:classappend="${currentPage == 'users'} ? ' active' : ''">
+
+    <i class="fa-solid fa-users"></i>
+    <span>User &amp; Role</span>
+
+</a>
+
+<a th:href="@{/admin/enrollment}"
+   class="sidebar-link"
+   th:classappend="${currentPage == 'enrollment'} ? ' active' : ''">
+
+    <i class="fa-solid fa-user-check"></i>
+    <span>Enrollment</span>
+
+</a>
+
+<a th:href="@{/admin/notification}"
+   class="sidebar-link"
+   th:classappend="${currentPage == 'notification'} ? ' active' : ''">
+
+    <i class="fa-regular fa-bell"></i>
+    <span>Notifications</span>
+
+</a>
+
+<a th:href="@{/admin/profile}"
+   class="sidebar-link"
+   th:classappend="${currentPage == 'profile'} ? ' active' : ''">
+
+    <i class="fa-regular fa-user"></i>
+    <span>My Profile</span>
+
+</a>
+
+<div class="sidebar-bottom">
+
+    <a th:href="@{/admin/logout}"
+       class="sidebar-link logout-link">
+
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Logout</span>
+
+    </a>
+
+</div>
+
+</aside>
+
+</body> </html>
