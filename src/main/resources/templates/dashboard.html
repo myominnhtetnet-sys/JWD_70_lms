@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduPulse LMS - Enterprise Learning Platform</title>
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js -->
@@ -259,7 +259,7 @@ table th {
                 </div>
 
                 <!-- Center: Prominent Role Switcher -->
-                <div class="bg-slate-100 dark:bg-slate-700/80 p-1 rounded-xl border border-slate-200 dark:border-slate-600 flex items-center gap-1 shadow-inner">
+                <!--<div class="bg-slate-100 dark:bg-slate-700/80 p-1 rounded-xl border border-slate-200 dark:border-slate-600 flex items-center gap-1 shadow-inner">
                     <button onclick="switchRole('admin')" id="role-btn-admin" class="role-btn text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all">
                         <i class="fa-solid fa-user-shield"></i>
                         <span class="hidden sm:inline">Admin</span>
@@ -272,7 +272,7 @@ table th {
                         <i class="fa-solid fa-user-graduate"></i>
                         <span class="hidden sm:inline">Student</span>
                     </button>
-                </div>
+                </div> -->
 
                 <!-- Right: Utilities & User Profile -->
                 <div class="flex items-center gap-3">
@@ -819,70 +819,67 @@ table th {
 </div>
 
 
+<!-- ================= TEACHER VIEW ================= -->
+<div id="view-teacher" class="role-view space-y-6 hidden">
+    <!-- Title & Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Teacher Dashboard</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400" th:text="'Welcome back, ' + ${fullName} + '. Here is your teaching schedule.'">Welcome back, Teacher.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="/teacher/courses" class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center gap-2 text-slate-700 dark:text-slate-200">
+                <i class="fa-solid fa-book-open text-indigo-500"></i>
+                My Courses
+            </a>
+            <a href="/teacher/batches" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-users"></i>
+                My Batches
+            </a>
+        </div>
+    </div>
 
+    <!-- Teacher Stats -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Assigned Batches</span>
+                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                    <i class="fa-solid fa-users text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between">
+                <span class="text-2xl font-bold text-slate-900 dark:text-white" th:text="${batches != null ? batches.size() : 0}">0</span>
+                <span class="text-xs text-slate-400">Active Batches</span>
+            </div>
+        </div>
 
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Assigned Courses</span>
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <i class="fa-solid fa-book-open text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between">
+                <span class="text-2xl font-bold text-slate-900 dark:text-white" th:text="${courses != null ? courses.size() : 0}">0</span>
+                <span class="text-xs text-slate-400">Published</span>
+            </div>
+        </div>
 
-
-                <!-- ================= TEACHER VIEW ================= -->
-                <div id="view-teacher" class="role-view space-y-6 hidden">
-                    <!-- Title & Header -->
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Teacher Dashboard</h1>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Welcome back, Professor David Vance. Here is your teaching schedule and grading queue.</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <button onclick="openModal('create-course-modal')" class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center gap-2">
-                                <i class="fa-solid fa-plus text-indigo-500"></i>
-                                New Class Module
-                            </button>
-                            <button onclick="openModal('assignment-modal')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-2">
-                                <i class="fa-solid fa-file-circle-plus"></i>
-                                Create Assignment
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Teacher Stats -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Enrolled Students</span>
-                                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-graduation-cap text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">284</span>
-                                <span class="text-xs text-slate-400">Across 4 courses</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pending Grading</span>
-                                <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-amber-600 dark:text-amber-400">12</span>
-                                <span class="text-xs font-semibold text-amber-600 bg-amber-50 dark:bg-amber-950/50 px-2 py-0.5 rounded-full">Requires Action</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Avg Class GPA</span>
-                                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-chart-line text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-baseline justify-between">
-                                <span class="text-2xl font-bold text-slate-900 dark:text-white">3.68</span>
-                                <span class="text-xs font-semibold text-emerald-600">+0.2 vs last term</span>
-                            </div>
-                        </div>
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Attendance Module</span>
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                    <i class="fa-solid fa-calendar-check text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between">
+                <a href="/teacher/attendance" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Take Attendance →</a>
+            </div>
+        </div>
+    </div>
+</div>
 
                         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
                             <div class="flex items-center justify-between">
@@ -1288,13 +1285,15 @@ table th {
         };
 
         // Initialize App
-        window.onload = function() {
-            switchRole('admin');
-            renderUserTable();
-            renderTeacherGradingQueue();
-            renderStudentViews();
-            initCharts();
-        };
+       window.onload = function() {
+    // Read the role from session attribute passed by Spring Boot
+    	let userRole = "[[${session.roleId == 2 ? 'teacher' : (session.roleId == 3 ? 'student' : 'admin')}]]";
+    	switchRole(userRole);  
+    	renderUserTable();
+    	renderTeacherGradingQueue();
+    	renderStudentViews();
+    	initCharts();
+		};
 
         // Role Switching Logic
         function switchRole(role) {
