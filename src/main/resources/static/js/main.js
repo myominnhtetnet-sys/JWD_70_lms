@@ -80,11 +80,13 @@ const profiles = {
 
 // Initialize App
 window.onload = function() {
-	switchRole('admin');
-	renderUserTable();
-	renderTeacherGradingQueue();
-	renderStudentViews();
-	initCharts();
+    // Read the role from session attribute passed by Spring Boot
+    let userRole = "[[${session.roleId == 2 ? 'teacher' : (session.roleId == 3 ? 'student' : 'admin')}]]";
+    switchRole(userRole);  
+    renderUserTable();
+    renderTeacherGradingQueue();
+    renderStudentViews();
+    initCharts();
 };
 
 // Role Switching Logic
