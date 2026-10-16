@@ -19,8 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
 //        // straight to your physical local directory file resource context locations!
 //        registry.addResourceHandler("/uploads/**")
 //                .addResourceLocations("file:/" + uploadPath + "/");
-    public void addResourceHandlers(
-            ResourceHandlerRegistry registry) {
+ 
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         // Uploaded files: assignment attachments and submissions

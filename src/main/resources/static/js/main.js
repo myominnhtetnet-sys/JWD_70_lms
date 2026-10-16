@@ -39,21 +39,18 @@ const navMenus = {
 		{ icon: 'fa-file-invoice-dollar', label: 'Financials' },
 		{ icon: 'fa-gear', label: 'System Settings' }
 	],
-	/*teacher: [
-		{ icon: 'fa-house', label: 'Overview', active: true },
-		{ icon: 'fa-chalkboard', label: 'My Classes' },
-		{ icon: 'fa-list-check', label: 'Grading Queue' },
-		{ icon: 'fa-graduation-cap', label: 'Student Performance' },
-		{ icon: 'fa-folder-tree', label: 'Curriculum Builder' },
-		{ icon: 'fa-database', label: 'Question Bank' },
-		{ icon: 'fa-clipboard-list', label: 'Assignments' },
-		{ icon: 'fa-comments', label: 'Messages' }
-	],*/
+
+	
 	teacher: [
 	    { icon: 'fa-house', label: 'Dashboard', path: '/teacher/dashboard' },
 	    { icon: 'fa-book-open', label: 'My Courses', path: '/teacher/courses' },
 	    { icon: 'fa-users', label: 'My Batches', path: '/teacher/batches' },
-	    { icon: 'fa-calendar-check', label: 'Take Attendance', path: '/teacher/attendance' }
+	    { icon: 'fa-calendar-check', label: 'Take Attendance', path: '/teacher/attendance' },
+		{ icon: 'fa-file-pen', label: 'Assignments', path: '/teacher/assignments' },
+		{ icon: 'fa-file-circle-check', label: 'Grade Submissions', path: '/teacher/submissions' },
+		{ icon: 'fa-database', label: 'Question Bank' , path: '/teacher/question-list'},
+		{ icon: 'fa-clipboard-list', label: 'Exams', path: '/teacher/exams' }
+		
 	],
 	student: [
 		{ icon: 'fa-compass', label: 'Dashboard', active: true },
@@ -166,7 +163,7 @@ function renderSidebar(role) {
 				           return;
 				   }
 				   
-				//
+				// Submissions
 				if(item.label == "Grade Submissions"){
 					window.location.href = '/teacher/submissions';
 					return;
