@@ -1,7 +1,7 @@
 
 /*<![CDATA[*/
 // State Management
-let currentRole = 'admin';
+let currentRole = 'teacher';
 
 // Mock Data
 let usersData = [
@@ -81,6 +81,11 @@ window.onload = function() {
     renderTeacherGradingQueue();
     renderStudentViews();
     initCharts();
+	switchRole('teacher');
+	renderUserTable();
+	renderTeacherGradingQueue();
+	renderStudentViews();
+	initCharts();
 };
 
 // Role Switching Logic
@@ -161,6 +166,12 @@ function renderSidebar(role) {
 				           return;
 				   }
 				   
+				//
+				if(item.label == "Grade Submissions"){
+					window.location.href = '/teacher/submissions';
+					return;
+				}
+
 			    setActiveNavItem(navItem);
 			    showToast(`Navigated to ${item.label}`);
 			};
