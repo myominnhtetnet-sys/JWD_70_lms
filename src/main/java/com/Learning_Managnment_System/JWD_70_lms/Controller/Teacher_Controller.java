@@ -48,14 +48,14 @@ public class Teacher_Controller {
         int instructorId = currentUser != null ? currentUser.getUser_id() : 2;
 
         model.addAttribute("courses", teacherRepository.getCoursesByInstructor(instructorId));
-        return "teacher/teacher_courses"; // Updated to match your new template name
+        return "teacher_courses"; // Updated to match your new template name
     }
     
     @GetMapping("/courses/{id}/builder")
     public String courseBuilder(@PathVariable("id") Long id, HttpSession session, Model model) {
         if (isNotTeacher(session)) return "redirect:/login";
         model.addAttribute("courseId", id);
-        return "teacher/course_builder";
+        return "course_builder";
     }
 
     // 3. My Batches Page & Batch Detail
@@ -66,20 +66,21 @@ public class Teacher_Controller {
         int instructorId = currentUser != null ? currentUser.getUser_id() : 2;
 
         model.addAttribute("batches", teacherRepository.getBatchesByInstructor(instructorId));
-        return "teacher/batches";
+        return "batches";
     }
 
     @GetMapping("/batches/{id}")
     public String batchDetail(@PathVariable("id") Long id, HttpSession session, Model model) {
         if (isNotTeacher(session)) return "redirect:/login";
         model.addAttribute("batchId", id);
-        return "teacher/batch_detail";
+        return "batch_detail";
     }
 
     // 4. Take Attendance Page
     @GetMapping("/attendance")
     public String takeAttendance(HttpSession session, Model model) {
-        if (isNotTeacher(session)) return "redirect:/login";
-        return "teacher/attendance";
+        if (isNotTeacher(session)) 
+        return "redirect:/login";
+        return "attendance";
     }
 }
