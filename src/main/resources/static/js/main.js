@@ -74,14 +74,22 @@ const profiles = {
 
 // Initialize App
 window.onload = function() {
-    // Read the role from session attribute passed by Spring Boot
-    let userRole = "[[${session.roleId == 2 ? 'teacher' : (session.roleId == 3 ? 'student' : 'admin')}]]";
-    switchRole(userRole);  
-    renderUserTable();
-    renderTeacherGradingQueue();
-    renderStudentViews();
-    initCharts();
-};
+    // Dynamically set the role view based on the session roleId passed from Spring Boot
+    let roleId = "[[${session.roleId!= null ? session.roleId : 1}]]";
+    if (roleId == "2") {
+        switchRole('teacher');
+    } else if (roleId == "3") {
+        switchRole('student');
+    } else {
+        switchRole('admin');
+    }
+	// Only run if elements exist on the current view
+	    if (document.getElementById('userTableBody')) renderUserTable();
+	    if (document.getElementById('grading-queue-list')) renderTeacherGradingQueue();
+	    if (document.getElementById('student-courses-container')) renderStudentViews();
+	    if (document.getElementById('adminEnrollmentChart')) initCharts();
+	};
+
 
 // Role Switching Logic
 function switchRole(role) {

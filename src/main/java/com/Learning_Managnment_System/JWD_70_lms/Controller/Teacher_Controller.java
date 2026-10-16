@@ -24,19 +24,20 @@ public class Teacher_Controller {
         return roleId == null || (int) roleId != 2;
     }
 
-    // 1. Teacher Dashboard (/teacher or /teacher/dashboard)
+    // Teacher Dashboard route
     @GetMapping({"", "/", "/dashboard"})
     public String teacherDashboard(HttpSession session, Model model) {
-        if (isNotTeacher(session)) return "redirect:/login";
+        if (isNotTeacher(session)) 
+        	return "redirect:/login";
 
         LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
-        int instructorId = currentUser != null ? currentUser.getUser_id() : 2; // fallback demo id
+        int instructorId = currentUser != null ? currentUser.getUser_id() : 2;
 
         model.addAttribute("fullName", session.getAttribute("fullName"));
         model.addAttribute("batches", teacherRepository.getBatchesByInstructor(instructorId));
         model.addAttribute("courses", teacherRepository.getCoursesByInstructor(instructorId));
 
-        return "dashboard"; // Maps to templates/teacher/dashboard.html
+        return "teacher"; // <-- Change this from "teacher/dashboard" to "dashboard"
     }
 
     // 2. My Courses Page & Course Builder
@@ -47,9 +48,9 @@ public class Teacher_Controller {
         int instructorId = currentUser != null ? currentUser.getUser_id() : 2;
 
         model.addAttribute("courses", teacherRepository.getCoursesByInstructor(instructorId));
-        return "teacher/courses";
+        return "teacher/teacher_courses"; // Updated to match your new template name
     }
-
+    
     @GetMapping("/courses/{id}/builder")
     public String courseBuilder(@PathVariable("id") Long id, HttpSession session, Model model) {
         if (isNotTeacher(session)) return "redirect:/login";
