@@ -139,4 +139,9 @@ public class StudentAssignmentService {
             jdbcTemplate.update(sql, answerText, submissionId);
         }
     }
+    public int getUserIdByEmail(String email) {
+        String sql = "SELECT user_id FROM lms_db.users WHERE email = ? LIMIT 1";
+        return jdbcTemplate.queryForObject(sql, Integer.class, email);
+    }
+
 }

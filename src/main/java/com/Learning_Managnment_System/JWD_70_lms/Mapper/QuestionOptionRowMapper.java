@@ -14,8 +14,8 @@ public class QuestionOptionRowMapper implements RowMapper<QuestionOptionBean> {
 
         QuestionOptionBean option = new QuestionOptionBean();
 
-        option.setOptionId(rs.getLong("option_id"));
-        option.setQuestionId(rs.getLong("question_id"));
+        option.setOptionId(rs.getInt("option_id"));
+        option.setQuestionId(rs.getInt("question_id"));
         option.setOptionLabel(rs.getString("option_label"));
         option.setOptionText(rs.getString("option_text"));
         option.setIsCorrect(rs.getBoolean("is_correct"));

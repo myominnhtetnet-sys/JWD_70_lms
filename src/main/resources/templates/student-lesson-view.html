@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
+    <!-- 🟢 THE GLOBAL FIX: Anchors all relative asset requests directly to your domain root to stop path failures -->
+    <base href="/">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lesson Workspace</title>
- <link rel="stylesheet" th:href="@{/css/style.css(v=1.0)}" href="/css/style.css">
+    <title>Lesson Workspace - Learning Platform</title>
+    <link rel="stylesheet" th:href="@{/css/style.css(v=1.0)}" href="/css/style.css">
 
     <!-- Premium Split Workspace Layout System (Zero-Whitespace Configuration) -->
     <style>
         body { margin: 0; background-color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
-        .workspace-grid { display: grid; grid-template-columns: 1fr 300px; height: 100vh; overflow: hidden; }
+        .workspace-grid { display: grid; grid-template-columns: 1fr 320px; height: 100vh; overflow: hidden; }
         .content-pane { padding: 24px; overflow-y: auto; text-align: left; }
-        .sidebar-pane { background: #ffffff; border-left: 1px solid #e2e8f0; overflow-y: auto; padding: 16px; text-align: left; }
+        .sidebar-pane { background: #ffffff; border-left: 1px solid #e2e8f0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .sidebar-scrollable { flex: 1; overflow-y: auto; padding: 16px; text-align: left; }
+        .sidebar-footer { border-top: 1px dashed #e2e8f0; padding: 16px; background: #fafafa; text-align: left; }
         
         .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000; border: 1px solid #e2e8f0; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
@@ -21,17 +26,50 @@
         .sidebar-item.active { border-color: #2563eb !important; background: #eff6ff !important; }
         .premium-btn { display: inline-flex; align-items: center; gap: 8px; background: #0f172a; color: #ffffff; text-decoration: none; padding: 10px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 600; border: 1px solid #0f172a; }
         .premium-btn:hover { background: #1e293b; }
+
+        /* 🟢 NEW PREMIUM EXIT BUTTON STYLING */
+        .exit-classroom-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            background-color: #ffffff !important;
+            color: #64748b !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+            padding: 8px 14px !important;
+            border-radius: 10px !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        .exit-classroom-btn:hover {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+            transform: translateX(-1px) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+        }
+        .exit-classroom-btn:active {
+            transform: translateX(0px) !important;
+        }
     </style>
 </head>
 <body>
 
 <div class="workspace-grid">
 
-    <!-- 🟢 LEFT SIDE: CORE LESSON MEDIA CONTENT WORKSPACE PLAYER -->
+    <!-- ========================================================= -->
+    <!-- LEFT SIDE: CORE LESSON MEDIA CONTENT WORKSPACE PLAYER     -->
+    <!-- ========================================================= -->
     <div class="content-pane">
-        <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
-            <a th:href="@{/student/course/{id}(id=${course.courseId})}" style="color: #64748b; text-decoration: none; font-weight: 600; font-size: 14px;">← Exit Classroom</a>
-            <span style="background: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; text-transform: uppercase;" th:text="${lesson.moduleTitle}">Module</span>
+        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <!-- 🟢 STYLED EXIT BUTTON LINK: Transformed from raw text into a premium outline badge -->
+            <a th:href="@{/student/course/{id}(id=${course.courseId})}" class="exit-classroom-btn">
+                <i class="fa-solid fa-chevron-left" style="font-size: 10px;"></i>
+                <span>Exit Classroom</span>
+            </a>
+            <span style="background: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 8px; text-transform: uppercase;" th:text="${lesson.moduleTitle}">Module</span>
         </div>
 
         <h1 style="color: #0f172a; font-size: 24px; font-weight: 800; margin: 0 0 4px 0;" th:text="${lesson.lessonTitle}">Lesson Title</h1>
@@ -51,39 +89,79 @@
             <div th:text="${lesson.content}" style="white-space: pre-wrap;">Lesson content body text written by teacher goes here...</div>
         </div>
 
-        <!-- C. DOWNLOADABLE LESSON MATERIALS ATTACHMENTS (Glued tightly below layout contents) -->
-        <div th:if="${lesson.filePath != null}" style="margin-top: 20px;">
+        <!-- C. DOWNLOADABLE LESSON MATERIALS ATTACHMENTS -->
+        <div th:if="${lesson.containsKey('file_path') and lesson['file_path'] != null}" style="margin-top: 20px;">
             <h4 style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Resource Material Files</h4>
-            <a th:href="@{/{path}(path=${lesson.filePath})}" target="_blank" class="premium-btn">
+            <a th:href="@{/{path}(path=${lesson['file_path']})}" target="_blank" class="premium-btn">
                 <svg style="width:16px; height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                <span th:text="'Download ' + ${lesson.materialTitle}">Download Attached Attachment File</span>
+                <span th:text="'Download ' + ${lesson.containsKey('material_title') and lesson['material_title'] != null ? lesson['material_title'] : 'Attachment'}">Download Attached File</span>
             </a>
         </div>
     </div>
 
-    <!-- 🟢 RIGHT SIDE: CURRICULUM SYLLABUS INDEX TIMELINE SIDEBAR -->
+    <!-- ========================================================= -->
+    <!-- RIGHT SIDE: CURRICULUM SYLLABUS INDEX TIMELINE SIDEBAR    -->
+    <!-- ========================================================= -->
     <div class="sidebar-pane">
-        <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin: 0 0 14px 0;">Syllabus Modules</h3>
         
-        <div style="display: block;">
-		          <!-- 🟢 FIXED: Native expression mapping for sidebar sibling switching loops -->
-		<a th:each="item : ${sidebarLessons}" 
-		   th:href="@{/student/course/lesson/{id}(id=${item.lessonId}, courseId=${course.courseId})}" 
-		   class="sidebar-item" 
-		   th:classappend="${item.lessonId == lesson.lessonId} ? 'active' : ''">
-		    
-		    <div style="display: flex; flex-direction: column; gap: 1px;">
-		        <span style="font-size: 13px; font-weight: 700; color: #1e293b;" th:text="${item.lessonTitle}">Lesson Sibling Title</span>
-		        <span style="font-size: 11px; color: #64748b;" th:text="${item.contentType} + ' • ' + ${item.durationMin} + 'm'">VIDEO • 20m</span>
-		    </div>
-		    
-		    <span th:if="${item.done}" style="color: #166534; font-size: 13px; font-weight: 700;">✓</span>
-		</a>
-
+        <!-- Scrollable Syllabus Section -->
+        <div class="sidebar-scrollable">
+            <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin: 0 0 14px 0;">Syllabus Modules</h3>
+            
+            <div style="display: block;">
+                <a th:each="item : ${sidebarLessons}" 
+                   th:href="@{/student/course/lesson/{id}(id=${item.lessonId}, courseId=${course.courseId})}" 
+                   class="sidebar-item" 
+                   th:classappend="${item.lessonId == lesson.lessonId} ? 'active' : ''">
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1px;">
+                        <span style="font-size: 13px; font-weight: 700; color: #1e293b;" th:text="${item.lessonTitle}">Lesson Sibling Title</span>
+                        <span style="font-size: 11px; color: #64748b;" th:text="${item.contentType} + ' • ' + ${item.durationMin} + 'm'">VIDEO • 20m</span>
+                    </div>
+                    
+                    <span th:if="${item.done}" style="color: #166534; font-size: 13px; font-weight: 700;"><i class="fa-solid fa-circle-check"></i></span>
+                </a>
+            </div>
         </div>
+
+       <!-- ========================================================= -->
+<!-- INDIVIDUAL LESSON COMPLETION FOOTER MODULE PANEL           -->
+<!-- ========================================================= -->
+<div class="sidebar-footer">
+    
+    <!-- 🟢 CASE A: Display UI Badge if Already Marked Completed -->
+    <div th:if="${lesson.done}" style="text-align: center; padding: 4px 0;">
+        <span style="display: inline-flex; align-items: center; gap: 6px; color: #166534; font-size: 13px; font-weight: 700; background: #dcfce7; padding: 10px 14px; border-radius: 8px; width: 100%; justify-content: center; margin-bottom: 8px;">
+            <i class="fa-solid fa-circle-check"></i> Lesson Completed
+        </span>
+        
+        <form th:action="@{/student/course/lesson/regress}" method="post" style="margin: 0; padding: 0;">
+            <input type="hidden" name="lessonId" th:value="${lesson.lessonId}">
+            <input type="hidden" name="courseId" th:value="${course.courseId}">
+            <button type="submit" style="background: none; border: none; color: #dc2626; font-size: 11px; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 2px 4px;">
+                🔄 Mark as incomplete
+            </button>
+        </form>
+    </div>
+    
+    <!-- 🟢 CASE B: Display Premium Action Button Form if Progress is Pending -->
+    <div th:unless="${lesson.done}">
+        <div style="margin-bottom: 12px;">
+            <h4 style="margin: 0; font-size: 13px; font-weight: 700; color: #0f172a;">Finished this chapter?</h4>
+            <p style="margin: 2px 0 0 0; color: #64748b; font-size: 11px; line-height: 1.4;">Mark it complete to save your isolated progress metrics.</p>
+        </div>
+        
+        <form th:action="@{/student/course/lesson/complete}" method="post" style="margin: 0; padding: 0;">
+            <input type="hidden" name="lessonId" th:value="${lesson.lessonId}">
+            <input type="hidden" name="courseId" th:value="${course.courseId}">
+            
+            <!-- 🟢 FIXED: Re-added missing complete submission button & closed structural wrapper tags -->
+            <button type="submit" class="premium-btn" style="width: 100%; justify-content: center; cursor: pointer; background: #2563eb; border-color: #2563eb;">
+                <i class="fa-solid fa-check" style="font-size: 12px;"></i>
+                <span>Mark as Completed</span>
+            </button>
+        </form>
     </div>
 
 </div>
 
-</body>
-</html>

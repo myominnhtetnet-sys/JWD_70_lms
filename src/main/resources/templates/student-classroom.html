@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Classroom Timeline</title>
-<link rel="stylesheet" th:href="@{/css/style.css(v=1.0)}" href="/css/style.css">
+    <link rel="stylesheet" th:href="@{/css/style.css(v=1.0)}" href="/css/style.css">
 
     <!-- Premium Zero-Whitespace Timeline Styles -->
     <style>
@@ -38,6 +38,21 @@
             border-color: #2563eb !important;
             background-color: #f8fafc !important;
         }
+        
+        /* 🟢 PREMIUM PROGRESS VISUAL INDICATOR DESIGN EXTENSIONS */
+        .lesson-row-item.completed-track {
+            background-color: #f0fdf4 !important; /* Soft green tint signature */
+            border-color: #bbf7d0 !important;
+            border-left: 4px solid #16a34a !important; /* Bold green progress anchor edge */
+        }
+        .lesson-row-item.completed-track:hover {
+            background-color: #dcfee7 !important;
+            border-color: #16a34a !important;
+        }
+        .lesson-row-item.completed-track .lesson-text-meta {
+            opacity: 0.8; /* Subtle distinction for finished milestones */
+        }
+
         .badge-done { background: #dcfce7; color: #15803d; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; }
         .badge-lock { background: #f1f5f9; color: #64748b; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 6px; }
     </style>
@@ -65,11 +80,11 @@
         <!-- Dynamic Lesson Flow List -->
         <div style="display: block; margin: 0; padding: 0;">
             
-            <!-- 🟢 FIXED: Explicitly named variable loop target to 'lesson' to match your attributes -->
-            <div th:each="lesson : ${lessons}" class="lesson-row-item">
+            <!-- 🟢 FIXED: th:classappend conditionally injects 'completed-track' if lesson.done is true -->
+            <div th:each="lesson : ${lessons}" class="lesson-row-item" th:classappend="${lesson.done} ? 'completed-track' : ''">
                 
                 <!-- Left Details Description block -->
-                <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
+                <div style="display: flex; align-items: center; gap: 12px; text-align: left;" class="lesson-text-meta">
                     <div style="display: flex; flex-direction: column; gap: 2px;">
                         <span style="font-size: 11px; font-weight: 700; color: #2563eb; text-transform: uppercase;" th:text="${lesson.moduleTitle}">Module Name</span>
                         <span style="font-size: 14px; font-weight: 700; color: #0f172a;" th:text="${lesson.lessonTitle}">Lesson Title</span>
@@ -84,14 +99,11 @@
                         <span th:unless="${lesson.done}" class="badge-lock">○ Ongoing</span>
                     </div>
                     
-			                   
-			<a th:href="@{/student/course/lesson/{id}(id=${lesson.lessonId}, courseId=${course.courseId})}" 
-			   class="btn btn-sm" 
-			   style="background: #0f172a; color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">
-			    Study →
-			</a>
-
-
+                    <a th:href="@{/student/course/lesson/{id}(id=${lesson.lessonId}, courseId=${course.courseId})}" 
+                       class="btn btn-sm" 
+                       style="background: #0f172a; color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">
+                        Study →
+                    </a>
                 </div>
 
             </div>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Performance Result</title>
+    <link rel="stylesheet" th:href="@{/css/style.css(v=1.0)}" href="/css/style.css">
+    
+    <!-- Premium Flat Block Stacking Framework -->
+    <style>
+        .result-panel-box { 
+            background: #ffffff; 
+            border-radius: 12px; 
+            border: 1px solid #e2e8f0; 
+            padding: 24px !important; 
+            margin-bottom: 16px !important; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02); 
+            display: block !important; 
+            height: auto !important;
+            text-align: left; 
+        }
+        .score-jumbo-node { 
+            font-size: 48px; 
+            font-weight: 800; 
+            color: #0f172a; 
+            margin: 10px 0; 
+            display: flex; 
+            align-items: baseline; 
+            gap: 4px; 
+        }
+        .badge-pass { background: #dcfce7; color: #166534; font-weight: 700; padding: 6px 14px; border-radius: 20px; font-size: 13px; display: inline-block; }
+        .badge-fail { background: #fee2e2; color: #991b1b; font-weight: 700; padding: 6px 14px; border-radius: 20px; font-size: 13px; display: inline-block; }
+        .badge-pending { background: #fef3c7; color: #d97706; font-weight: 700; padding: 6px 14px; border-radius: 20px; font-size: 13px; display: inline-block; }
+    </style>
+</head>
+<body class="student-result-page">
+
+    <div class="result-container" style="max-width: 600px; margin: 40px auto; padding: 16px;">
+        
+        <div class="result-panel-box" style="text-align: center;" th:if="${result != null}">
+            
+            <!-- 🟢 Status Badge Indicators using Safe String Utility Comparisons -->
+            <span th:if="${result.status != null and #strings.equals(result.status, 'SUBMITTED')}" class="badge-pending">⏳ SUBMISSION PENDING REVIEW</span>
+            <span th:if="${result.status != null and #strings.equals(result.status, 'GRADED') and #strings.equals(result.result, 'PASSED')}" class="badge-pass">🎉 EXAMINATION PASSED</span>
+            <span th:if="${result.status != null and #strings.equals(result.status, 'GRADED') and #strings.equals(result.result, 'FAILED')}" class="badge-fail">❌ ASSESSMENT FAILED</span>
+
+            <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-top: 14px;" th:text="${result.title != null ? result.title : 'Examination'}">Java Midterm Examination</h1>
+            <p style="color: #64748b; font-size: 13.5px; margin: 2px 0 20px 0;">Your official computed evaluation score summary profile card.</p>
+
+            <!-- Jumbo Score Summary Block Element Frame -->
+            <div style="display: flex; justify-content: center; width: 100%;">
+                <div class="score-jumbo-node">
+                    <span th:text="${result.score != null ? result.score : '0.00'}">85.00</span>
+                    <span style="font-size: 20px; color: #64748b; font-weight: 500;">/</span>
+                    <span style="font-size: 24px; color: #64748b; font-weight: 600;" th:text="${result.total_mark != null ? result.total_mark : '100.00'}">100.00</span>
+                </div>
+            </div>
+            <p style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; margin: 0 0 24px 0;">Final Earned Mark</p>
+
+            <!-- Metadata Metrics Details List -->
+            <div style="border-top: 1px solid #f1f5f9; padding-top: 16px; text-align: left; display: flex; flex-direction: column; gap: 10px; font-size: 13.5px;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #64748b;">Passing Threshold Requirement:</span>
+                    <strong style="color: #0f172a;" th:text="${result.pass_mark != null ? result.pass_mark + ' Marks' : '50.00 Marks'}">50.00 Marks</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #64748b;">Evaluation Status Matrix:</span>
+                    <strong style="color: #0f172a;" th:text="${result.status != null ? result.status : 'SUBMITTED'}">GRADED</strong>
+                </div>
+            </div>
+
+            <!-- Solid Action Anchor Redirect Button -->
+            <div style="margin-top: 24px;">
+                <a th:href="@{/student/exam-list}" style="display: block; background: #0f172a; color: #ffffff; text-decoration: none; text-align: center; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 700;">
+                    Return to Exams Hub →
+                </a>
+            </div>
+        </div>
+        
+    </div>
+
+</body>
+</html>

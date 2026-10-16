@@ -1,98 +1,131 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
+    <!-- 🟢 GLOBAL ANCHOR: Anchors relative calls directly to your domain root to stop path failures -->
+    <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Enrolled Courses</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-
+    <title>EduPulse LMS - My Active Courses</title>
+    
+    <!-- Server-Relative Hard Link Bypasses Caching Interference -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- Library Whitelists -->
+    <script src="https://tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <link href="https://googleapis.com" rel="stylesheet">
+    
+    <!-- FIXED UI FALLBACK: Guarantees full cards formatting even if CDNs fail -->
     <style>
-        .courses-layout-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 16px;
-            margin-top: 14px;
+        body { background-color: #f8fafc !important; font-family: 'Inter', sans-serif !important; margin: 0; padding: 32px 16px; }
+        .max-w-5xl { max-width: 1024px; margin: 0 auto; }
+        .grid { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important; gap: 24px !important; margin-top: 24px; }
+        .bg-white { background-color: #ffffff !important; border: 1px solid #e2e8f0 !important; padding: 24px !important; border-radius: 16px !important; box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; transition: all 0.2s; }
+        .bg-white:hover { border-color: #cbd5e1 !important; transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05) !important; }
+        .text-indigo-600 { color: #4f46e5 !important; }
+        .bg-indigo-600 { background-color: #4f46e5 !important; color: #ffffff !important; }
+        .bg-indigo-600:hover { background-color: #4338ca !important; }
+        .bg-slate-900 { background-color: #0f172a !important; color: #ffffff !important; width: 100% !important; padding: 11px !important; border-radius: 12px !important; text-align: center !important; text-decoration: none !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; font-size: 13.5px !important; font-weight: 600 !important; transition: background-color 0.2s; }
+        .bg-slate-900:hover { background-color: #1e293b !important; }
+        .w-full-bar { width: 100% !important; background-color: #f1f5f9 !important; h: 8px !important; height: 8px !important; border-radius: 9999px !important; overflow: hidden !important; margin: 6px 0 20px 0 !important; }
+        .inner-progress { background-color: #4f46e5 !important; height: 100% !important; border-radius: 9999px !important; transition: width 0.4s ease; }
+        
+        /* NEW PREMIUM BUTTON STYLING */
+        .home-nav-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            background-color: #ffffff !important;
+            color: #475569 !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+            padding: 10px 18px !important;
+            border-radius: 12px !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
-        .course-dashboard-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 18px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+        .home-nav-btn:hover {
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05) !important;
         }
-        .course-dashboard-card:hover {
-            transform: translateY(-2px);
-            border-color: #2563eb !important;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
-        }
-        .progress-pipeline {
-            height: 8px;
-            background-color: #e2e8f0;
-            border-radius: 9999px;
-            overflow: hidden;
-            width: 100%;
+        .home-nav-btn:active {
+            transform: translateY(0px) !important;
         }
     </style>
 </head>
+<body>
+<div class="max-w-5xl">
 
-<body class="student-result-page">
-<div class="result-container" style="max-width: 1040px; margin: 0 auto; padding: 20px 16px;">
-
-    <!-- Dashboard Title Banner -->
-    <div class="result-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <div>
-            <h1 style="margin: 0; font-size: 22px; font-weight: 700; color: #0f172a;">My Courses</h1>
-            <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">Track your ongoing course curriculum modules and lesson syllabus progress.</p>
+    <!-- Header Grid Panel -->
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 24px;">
+        <div style="text-align: left;">
+            <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0; tracking-tight: -0.025em;">My Enrolled Programs</h1>
+            <p style="font-size: 14px; color: #64748b; margin: 4px 0 0 0;">Track your progress modules and continue your customized learning path.</p>
         </div>
-        <a th:href="@{/student}" class="back-btn" style="background: #ffffff; color: #475569; font-size: 13px; font-weight: 600; text-decoration: none; padding: 6px 14px; border-radius: 6px; border: 1px solid #e2e8f0;">
-            Back to Dashboard
-        </a>
+        
+        <!-- STYLED HOME NAV BUTTON: Premium layout position inline aligned on the right -->
+        <div>
+            <a th:href="@{/student}" class="home-nav-btn">
+                <i class="fa-solid fa-house" style="font-size: 12px; color: #64748b;"></i>
+                <span>Back to Home</span>
+            </a>
+        </div>
     </div>
 
-    <!-- Empty Enrollment State Block -->
-    <div th:if="${#lists.isEmpty(enrolledCourses)}" class="result-card" style="background: #ffffff; padding: 32px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0;">
-        <div style="font-size: 32px; margin-bottom: 12px;">🎓</div>
-        <h3 style="margin: 0 0 6px 0; font-size: 16px; color: #0f172a; font-weight: 700;">No Enrolled Courses Found</h3>
-        <p style="margin: 0; color: #64748b; font-size: 13.5px;">You aren't registered inside any active course batches yet.</p>
+    <!-- Empty Enrollment State Trap boundary -->
+    <div th:if="${#lists.isEmpty(enrolledCourses)}" class="bg-white" style="text-align: center; padding: 48px;">
+        <span style="font-size: 36px;">📚</span>
+        <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 12px 0 0 0;">No Active Classrooms Enrolled</h3>
+        <p style="font-size: 13px; color: #94a3b8; margin: 4px 0 0 0;">You aren't actively registered in any operational course batches at this time.</p>
     </div>
 
-    <!-- Enrolled Courses Grid Display -->
-    <div th:unless="${#lists.isEmpty(enrolledCourses)}" class="courses-layout-grid">
-        <div th:each="item : ${enrolledCourses}" class="course-dashboard-card">
-            <div>
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                    <span style="background: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; text-transform: uppercase;" th:text="${item.batchCode}">JV-01</span>
-                    <span style="font-size: 12px; color: #64748b; font-weight: 500;" th:text="${item.batchStatus}">ACTIVE</span>
+    <!-- Active Progression Ledger Streams Grid -->
+    <div th:unless="${#lists.isEmpty(enrolledCourses)}" class="grid">
+        <div th:each="course : ${enrolledCourses}" class="bg-white">
+            <div style="text-align: left;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <!-- BATCH CODE BADGE ALIGNED TO LEFT -->
+                    <span style="background-color: #f1f5f9; color: #334155; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase;" th:text="${course['batch_code']}">BATCH_CODE</span>
+                    
+                    <!-- 🟢 REPLACEMENT: Dynamic personal status tracking indicators -->
+                    <span th:if="${course['completed_lessons'] == 0}" style="background-color: #f1f5f9; color: #475569; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;">Not Started</span>
+                    <span th:if="${course['completed_lessons'] > 0 and course['completed_lessons'] < course['total_lessons']}" style="background-color: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;">In Progress</span>
+                    <span th:if="${course['completed_lessons'] == course['total_lessons'] and course['total_lessons'] > 0}" style="background-color: #dcfce7; color: #15803d; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;">✓ Finished</span>
                 </div>
-                <h3 style="margin: 6px 0 4px 0; font-size: 16.5px; font-weight: 700; color: #0f172a; line-height: 1.3;" th:text="${item.courseTitle}">Java Web Development</h3>
-                <p style="margin: 0 0 16px 0; color: #64748b; font-size: 13px; font-weight: 500;" th:text="'Teacher: ' + ${item.teacherName}">Instructor Name</p>
+                
+                <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 12px 0 0 0; line-height: 1.4;" th:text="${course['course_title']}">Course Program Title</h2>
+                <p style="font-size: 12.5px; color: #64748b; margin: 6px 0 0 0; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-user-tie"></i>
+                    <span th:text="${course['teacher_name']}">Instructor Name</span>
+                </p>
             </div>
 
-            <!-- Real-time Progress Tracking Pipe Container -->
-            <div style="background: #f8fafc; border: 1px solid #f1f5f9; padding: 12px 14px; border-radius: 8px; margin-bottom: 16px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <span style="font-size: 12px; font-weight: 700; color: #334155;">Course Progress</span>
-                    <span style="font-size: 13px; font-weight: 700; color: #166534;" th:text="${item.progressPercent} + '%'">75%</span>
+            <!-- Injected Map Progression Suffix calculations -->
+            <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #f1f5f9;">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700;">
+                    <span style="color: #64748b;" th:text="${course['completed_lessons']} + ' / ' + ${course['total_lessons']} + ' Chapters Done'">0 / 0 Done</span>
+                    <span class="text-indigo-600" th:text="${course['progress_percent']} + '%'">0%</span>
                 </div>
-                <div class="progress-pipeline">
-                    <div style="height: 100%; border-radius: 9999px; transition: width 0.3s ease;" th:styleappend="'width: ' + ${item.progressPercent} + '%; background-color: #166534;'"></div>
+                
+                <!-- Dynamic Progress Bar Slider frame -->
+                <div class="w-full-bar">
+                    <div class="inner-progress" th:style="'width: ' + ${course['progress_percent']} + '%'"></div>
                 </div>
-                <div style="display: flex; gap: 12px; margin-top: 8px; font-size: 11.5px; color: #64748b; font-weight: 500;">
-                    <span>Completed Sessions: <strong style="color: #0f172a;" th:text="${item.completedLessons} + '/' + ${item.totalLessons}">6/8</strong></span>
-                </div>
-            </div>
 
-            <div style="width: 100%;">
-                <a th:href="@{/student/course/{id}(id=${item.courseId})}" style="display: flex; align-items: center; justify-content: center; background: #0f172a; color: #ffffff; text-decoration: none; font-size: 13px; font-weight: 600; padding: 10px; border-radius: 8px; text-align: center;">
-                    Go to Classroom →
+                <!-- Enter Classroom Portal Hub anchor -->
+                <a th:href="@{/student/course/{id}(id=${course['course_id']})}" class="bg-slate-900">
+                    <span>Enter Classroom</span>
+                    <i class="fa-solid fa-arrow-right" style="font-size: 10px;"></i>
                 </a>
             </div>
         </div>
     </div>
+
 </div>
 </body>
 </html>

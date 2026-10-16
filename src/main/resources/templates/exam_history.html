@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Exam History</title>
+    <link rel="stylesheet" th:href="@{/css/style.css(v=1.0)}" href="/css/style.css">
+    <style>
+        .result-row-card { 
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: space-between !important; 
+            background: #ffffff; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 12px; 
+            padding: 16px 20px !important; 
+            margin-bottom: 12px !important; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02); 
+            text-align: left; 
+        }
+        .badge-pass { background: #dcfce7; color: #166534; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; display: inline-block; }
+        .badge-fail { background: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; display: inline-block; }
+        .badge-pending { background: #fef3c7; color: #d97706; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; display: inline-block; }
+    </style>
+</head>
+<body class="student-result-page">
+<div class="result-container" style="max-width: 800px; margin: 0 auto; padding: 20px 16px;">
+
+    <!-- Dashboard Title Banner Row -->
+    <div class="result-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h1 style="margin: 0; font-size: 22px; font-weight: 700; color: #0f172a;">My Exam History</h1>
+            <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">Track your submitted exam performance history profiles across all modules.</p>
+        </div>
+        <a th:href="@{/student}" class="back-btn" style="background: #ffffff; color: #475569; font-size: 13px; font-weight: 600; text-decoration: none; padding: 6px 14px; border-radius: 6px; border: 1px solid #e2e8f0;">Back to Dashboard</a>
+    </div>
+
+    <!-- Empty History Conditional State Block -->
+    <div th:if="${#lists.isEmpty(results)}" class="result-card" style="background: #ffffff; padding: 32px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0;">
+        <div style="font-size: 32px; margin-bottom: 12px;">📊</div>
+        <h3 style="margin: 0; font-size: 16px; color: #0f172a; font-weight: 700;">No Exam Submissions Found</h3>
+        <p style="margin: 0; color: #64748b; font-size: 13.5px;">You haven't submitted any examination papers yet.</p>
+    </div>
+
+    <!-- Dynamic History Rows Module Grid -->
+    <div th:unless="${#lists.isEmpty(results)}" style="display: block; margin: 0; padding: 0;">
+        <div th:each="res : ${results}" class="result-row-card">
+            <div>
+                <!-- Dynamic Status Badges -->
+                <span th:if="${#strings.equals(res.status, 'SUBMITTED')}" class="badge-pending">⏳ Pending Review</span>
+                <span th:if="${#strings.equals(res.status, 'GRADED') and #strings.equals(res.result, 'PASSED')}" class="badge-pass">✓ Passed</span>
+                <span th:if="${#strings.equals(res.status, 'GRADED') and #strings.equals(res.result, 'FAILED')}" class="badge-fail">✕ Failed</span>
+                
+                <h3 style="margin: 8px 0 4px 0; font-size: 16px; font-weight: 700; color: #0f172a;" th:text="${res.title}">Java Quiz</h3>
+                <span style="font-size: 12.5px; color: #64748b;" th:text="'Attempt #' + ${res.attempt_no} + ' • Submitted: ' + ${res.submitted_at}"></span>
+            </div>
+            
+            <div style="text-align: right; display: flex; align-items: center; gap: 16px;">
+                <!-- Final Earned Marks Display -->
+                <div style="font-size: 20px; font-weight: 800; color: #0f172a;">
+                    <span th:text="${res.score != null ? res.score : '0.00'}">0.00</span><span style="font-size: 14px; color: #64748b; font-weight: 500;"> / </span><span style="font-size: 14px; color: #64748b;" th:text="${res.total_mark}">100</span>
+                </div>
+                <a th:href="@{/student/exam-result/{id}(id=${res.attempt_id})}" style="background: #0f172a; color: #ffffff; text-decoration: none; font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 8px;">Details</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

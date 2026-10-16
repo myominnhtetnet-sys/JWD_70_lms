@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <!-- GLOBAL ANCHOR: Anchors relative assets straight to domain root to prevent breaking nested URLs -->
+    <base href="/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Allotment Lockout</title>
+    
+    <!-- Library CSS/Scripts Whitelists -->
+    <script src="https://tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <link href="https://googleapis.com" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css(v=1.0)}" href="/css/style.css">
+
+    <!-- CSS Fail-Safe Configuration Fallback styling properties -->
+    <style>
+        body { background-color: #f8fafc !important; font-family: 'Inter', sans-serif !important; margin: 0; display: flex !important; align-items: center !important; justify-content: center !important; min-height: 100vh !important; padding: 16px !important; box-sizing: border-box !important; }
+        .lockout-card { background: #ffffff !important; border: 1px solid #e2e8f0 !important; max-width: 500px !important; width: 100% !important; padding: 40px 32px !important; border-radius: 16px !important; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05) !important; text-align: center !important; }
+        .icon-shield { background-color: #fef3c7 !important; color: #d97706 !important; width: 64px !important; height: 64px !important; border-radius: 9999px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; font-size: 28px !important; margin-bottom: 20px !important; }
+        .btn-return { display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; background-color: #0f172a !important; color: #ffffff !important; font-size: 13.5px !important; font-weight: 600 !important; padding: 12px 24px !important; border-radius: 12px !important; text-decoration: none !important; width: 100% !important; box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; transition: background 0.15s ease !important; box-sizing: border-box !important; margin-top: 28px !important; }
+        .btn-return:hover { background-color: #1e293b !important; }
+    </style>
+</head>
+<body>
+
+    <div class="lockout-card">
+        <!-- Warning Shield Vector Symbol -->
+        <div class="icon-shield">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+
+        <h1 style="font-size: 22px; font-weight: 800; color: #0f172a; margin: 0 0 8px 0; letter-spacing: -0.025em;">Maximum Attempts Reached</h1>
+        <p style="font-size: 14px; color: #475569; margin: 0 0 24px 0; line-height: 1.5;" th:text="'You cannot start an entry session for \'' + ${examTitle} + '\' because your test allowance metrics are fully exhausted.'">Exam restriction description string</p>
+
+        <!-- Metric Details Readout panel grid -->
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px; text-align: left;">
+            <div>
+                <span style="color: #64748b; display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">Allowed Allotment</span>
+                <strong style="color: #0f172a; font-weight: 700;" th:text="${maxAttempts} + ' Total Max'">1 Attempt</strong>
+            </div>
+            <div>
+                <span style="color: #64748b; display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">Your History Logs</span>
+                <strong style="color: #dc2626; font-weight: 700;" th:text="${totalPastAttempts} + ' Submitted'">1 Used</strong>
+            </div>
+        </div>
+
+        <!-- Safe Exit Return routing button -->
+        <a th:href="@{/student/exam-list}" class="btn-return">
+            <svg style="width: 15px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.5;" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            <span>Back</span>
+        </a>
+    </div>
+
+</body>
+</html>
