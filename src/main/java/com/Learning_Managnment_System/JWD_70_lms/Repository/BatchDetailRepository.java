@@ -15,7 +15,6 @@ public class BatchDetailRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // *** အသစ်ထည့်လိုက်သည့် Batch အားလုံးဆွဲထုတ်ရန် Method ***
     public List<BatchInfo> findAllBatches() {
         String sql = "SELECT batch_id, batch_code, title FROM batches ORDER BY start_date DESC";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
@@ -27,13 +26,14 @@ public class BatchDetailRepository {
         });
     }
 
-    // 1. Enrolled Students
+    // 1. Enrolled Students (🌟 roles ဇယားနှင့် join ၍ role_name = 'Student' သို့မဟုတ် role_id = 3 ဖြင့် စစ်ထုတ်ခြင်း)
     public List<StudentInfo> findStudentsByBatchId(Long batchId) {
         String sql = """
             SELECT e.enrollment_id, e.user_id, u.full_name, u.email, e.payment_status, e.status, e.enrolled_at
             FROM enrollments e
             JOIN users u ON e.user_id = u.user_id
-            WHERE e.batch_id = ?
+            JOIN roles r ON u.role_id = r.role_id
+            WHERE e.batch_id = ? AND r.role_name = 'Student'
             ORDER BY e.enrolled_at DESC
         """;
         return jdbcTemplate.query(sql, new BatchStudentRowMapper(), batchId);
@@ -66,7 +66,7 @@ public class BatchDetailRepository {
         );
     }
 
-    // 3. Student Progress per Batch
+    // 3. Student Progress per Batch (🌟 roles ဇယားနှင့် join ၍ Student များကိုသာ စစ်ထုတ်ခြင်း)
     public List<StudentProgress> findStudentProgressByBatchId(Long batchId) {
         String sql = """
             SELECT e.enrollment_id, u.full_name,
@@ -75,8 +75,9 @@ public class BatchDetailRepository {
                    COALESCE(AVG(lp.progress_percent), 0.0) as avg_progress
             FROM enrollments e
             JOIN users u ON e.user_id = u.user_id
+            JOIN roles r ON u.role_id = r.role_id
             LEFT JOIN lesson_progress lp ON e.enrollment_id = lp.enrollment_id
-            WHERE e.batch_id = ?
+            WHERE e.batch_id = ? AND r.role_name = 'Student'
             GROUP BY e.enrollment_id, u.full_name
         """;
         return jdbcTemplate.query(sql, new StudentProgressRowMapper(), batchId);
@@ -93,8 +94,7 @@ public class BatchDetailRepository {
         """;
         return jdbcTemplate.query(sql, new BatchAnnouncementRowMapper(), batchId);
     }
-    
- // Lesson Dropdown အတွက် Lessons အားလုံးဆွဲထုတ်ရန်
+	
     public List<LessonInfo> findAllLessons() {
         String sql = "SELECT lesson_id, title FROM lessons ORDER BY lesson_id ASC";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {

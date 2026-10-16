@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<div th:replace="~{head :: head}"></div>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+<div id="app" class="min-h-screen flex flex-col">
+        
+        <!-- TOP HEADER BAR -->
+        <div th:replace="~{header :: header}"></div>
+
+        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- DYNAMIC SIDEBAR -->
+            <div th:replace="~{nav :: nav}"></div>
+
+            <!-- MAIN CONTENT -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="max-w-7xl mx-auto">
+                    
+                    <!-- Header & Action Bar -->
+                    <div class="bg-white rounded-lg shadow-sm p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">ADMIN PORTAL</span>
+                            <h1 class="text-2xl font-bold text-gray-900 mt-1">Course Builder & Management</h1>
+                        </div>
+                        <button onclick="openCreateModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition shadow-sm cursor-pointer">
+                            <i class="fa-solid fa-plus"></i> Create New Course
+                        </button>
+                    </div>
+
+                    <!-- Search & Filter Bar -->
+                    <div class="bg-white rounded-lg shadow-sm p-4 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div class="w-full sm:w-96 relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                            <input type="text" id="searchInput" onkeyup="filterCourses()" placeholder="Search by course title or category..." class="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </div>
+                        <div class="w-full sm:w-auto">
+                            <select id="statusFilter" onchange="filterCourses()" class="w-full sm:w-48 border rounded-lg p-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                                <option value="">All Status</option>
+                                <option value="PUBLISHED">PUBLISHED</option>
+                                <option value="DRAFT">DRAFT</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Courses Table Card -->
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                               <thead>
+                                    <tr class="bg-gray-50 border-b text-xs text-gray-500 uppercase tracking-wider">
+                                        <th class="p-4">Title (Click to Build)</th>
+                                        <th class="p-4">Category</th>
+                                        <th class="p-4">Level</th>
+                                        <th class="p-4">Price (MMK)</th>
+                                        <th class="p-4">Duration</th>
+                                        <th class="p-4">Status</th>
+                                        <th class="p-4 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y text-sm">
+                                    <tr th:each="c : ${courses}" class="course-row hover:bg-gray-50 transition"
+                                        th:data-title="${c.title}"
+                                        th:data-category="${c.categoryName}"
+                                        th:data-status="${c.status}">
+                                        
+                                        <!-- Title များကို နှိပ်လိုက်ပါက Tab ၅ ခုပါဝင်သည့် Builder Detail သို့ သွားမည် -->
+                                        <td class="p-4 font-semibold text-indigo-600">
+                                            <a th:href="@{/admin/course-builder/{id}/builder(id=${c.courseId})}" class="hover:underline flex items-center gap-2">
+                                                <i class="fa-solid fa-screwdriver-wrench text-xs text-indigo-400"></i>
+                                                <span th:text="${c.title}"></span>
+                                            </a>
+                                        </td>
+
+                                        <td class="p-4 text-gray-600" th:text="${c.categoryName ?: 'Unassigned'}"></td>
+                                        <td class="p-4 text-gray-500 text-xs" th:text="${c.level}"></td>
+                                        <td class="p-4 text-gray-800 font-medium" th:text="${c.price}"></td>
+                                        <td class="p-4 text-gray-500 text-xs" th:text="${c.durationWeeks + ' Weeks'}"></td>
+                                        <td class="p-4">
+                                            <span class="px-2.5 py-1 text-xs rounded-full font-semibold"
+                                                  th:classappend="${c.status == 'PUBLISHED'} ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'"
+                                                  th:text="${c.status}"></span>
+                                        </td>
+                                        <td class="p-4 text-center flex justify-center gap-2">
+                                            <!-- Edit Button -->
+                                            <button th:onclick="'openEditModal(' + ${c.courseId} + ')'" title="Edit Course Info" class="p-2 text-blue-600 hover:bg-blue-50 rounded transition cursor-pointer">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </button>
+                                            <!-- Delete Button -->
+                                            <button th:onclick="'deleteCourse(' + ${c.courseId} + ')'" title="Delete Course" class="p-2 text-red-600 hover:bg-red-50 rounded transition cursor-pointer">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(courses)}">
+                                        <td colspan="7" class="text-center p-6 text-gray-400">No courses found in database.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+</div>
+
+    <!-- Create / Edit Course Modal -->
+    <div id="courseModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg w-full max-w-2xl p-6 shadow-lg max-h-[90vh] overflow-y-auto">
+            <h3 id="modalTitle" class="text-lg font-bold text-gray-800 mb-4">Create New Course</h3>
+            <form id="courseForm" onsubmit="submitCourseForm(event)">
+                <input type="hidden" id="courseId">
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Course Title</label>
+                        <input type="text" id="title" required placeholder="e.g. Fullstack Web Dev" class="w-full border rounded p-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Slug</label>
+                        <input type="text" id="slug" required placeholder="e.g. fullstack-web-dev" class="w-full border rounded p-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Category ID</label>
+                        <input type="number" id="categoryId" required placeholder="1" class="w-full border rounded p-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Price (MMK)</label>
+                        <input type="number" step="0.01" id="price" required placeholder="150000" class="w-full border rounded p-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold mb-1">Short Description</label>
+                    <input type="text" id="shortDescription" placeholder="Brief summary of the course" class="w-full border rounded p-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold mb-1">Full Description</label>
+                    <textarea id="description" rows="3" placeholder="Detailed curriculum description..." class="w-full border rounded p-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                </div>
+                <div class="grid grid-cols-3 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Level</label>
+                        <select id="level" class="w-full border rounded p-2 text-sm bg-white">
+                            <option value="BEGINNER">BEGINNER</option>
+                            <option value="INTERMEDIATE">INTERMEDIATE</option>
+                            <option value="ADVANCED">ADVANCED</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Language</label>
+                        <input type="text" id="language" value="Burmese" class="w-full border rounded p-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Duration (Weeks)</label>
+                        <input type="number" id="durationWeeks" value="12" class="w-full border rounded p-2 text-sm">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Status</label>
+                        <select id="status" class="w-full border rounded p-2 text-sm bg-white">
+                            <option value="PUBLISHED">PUBLISHED</option>
+                            <option value="DRAFT">DRAFT</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Thumbnail Filename</label>
+                        <input type="text" id="thumbnail" placeholder="thumb1.jpg" class="w-full border rounded p-2 text-sm">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200 cursor-pointer">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-sm text-white bg-indigo-600 rounded hover:bg-indigo-700 cursor-pointer">Save Course</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Actions -->
+    <script>
+        function openCreateModal() {
+            document.getElementById('modalTitle').innerText = 'Create New Course';
+            document.getElementById('courseForm').reset();
+            document.getElementById('courseId').value = '';
+            document.getElementById('courseModal').classList.remove('hidden');
+        }
+
+        async function openEditModal(courseId) {
+            document.getElementById('modalTitle').innerText = 'Edit Course';
+            document.getElementById('courseForm').reset();
+
+            const res = await fetch(`/admin/course-builder/api`);
+            if (res.ok) {
+                const courses = await res.json();
+                const course = courses.find(c => c.courseId === courseId);
+                if (course) {
+                    document.getElementById('courseId').value = course.courseId;
+                    document.getElementById('title').value = course.title;
+                    document.getElementById('slug').value = course.slug;
+                    document.getElementById('categoryId').value = course.categoryId;
+                    document.getElementById('price').value = course.price;
+                    document.getElementById('shortDescription').value = course.shortDescription || '';
+                    document.getElementById('description').value = course.description || '';
+                    document.getElementById('level').value = course.level;
+                    document.getElementById('language').value = course.language;
+                    document.getElementById('durationWeeks').value = course.durationWeeks;
+                    document.getElementById('status').value = course.status;
+                    document.getElementById('thumbnail').value = course.thumbnail || '';
+
+                    document.getElementById('courseModal').classList.remove('hidden');
+                }
+            } else {
+                alert('Failed to load course details.');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('courseModal').classList.add('hidden');
+        }
+
+        function filterCourses() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const selectedStatus = document.getElementById('statusFilter').value;
+            const rows = document.querySelectorAll('.course-row');
+
+            rows.forEach(row => {
+                const title = row.getAttribute('data-title').toLowerCase();
+                const category = (row.getAttribute('data-category') || '').toLowerCase();
+                const status = row.getAttribute('data-status');
+
+                const matchesSearch = title.includes(searchText) || category.includes(searchText);
+                const matchesStatus = selectedStatus === "" || status === selectedStatus;
+
+                if (matchesSearch && matchesStatus) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        async function submitCourseForm(e) {
+            e.preventDefault();
+            const courseId = document.getElementById('courseId').value;
+            const payload = {
+                title: document.getElementById('title').value,
+                slug: document.getElementById('slug').value,
+                categoryId: Number(document.getElementById('categoryId').value),
+                price: Number(document.getElementById('price').value),
+                shortDescription: document.getElementById('shortDescription').value,
+                description: document.getElementById('description').value,
+                level: document.getElementById('level').value,
+                language: document.getElementById('language').value,
+                durationWeeks: Number(document.getElementById('durationWeeks').value),
+                status: document.getElementById('status').value,
+                thumbnail: document.getElementById('thumbnail').value,
+                allowDiscount: true,
+                allowInstallment: true,
+                allowScholarship: true
+            };
+
+            const url = courseId ? `/admin/course-builder/api/${courseId}` : `/admin/course-builder/api`;
+            const method = courseId ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                location.reload();
+            } else {
+                const errorText = await res.text();
+                alert('Operation failed: ' + errorText);
+            }
+        }
+
+        async function deleteCourse(courseId) {
+            if (confirm('Are you sure you want to delete this course?')) {
+                const res = await fetch(`/admin/course-builder/api/${courseId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    location.reload();
+                } else {
+                    const errorMsg = await res.text();
+                    alert(errorMsg || 'Failed to delete course.');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

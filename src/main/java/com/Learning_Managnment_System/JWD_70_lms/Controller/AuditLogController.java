@@ -3,6 +3,7 @@ package com.Learning_Managnment_System.JWD_70_lms.Controller;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,7 +22,8 @@ public class AuditLogController {
 
     // 1. HTML Page Render ပြုလုပ်ရန် (URL: /admin/audit-logs)
     @GetMapping("/admin/audit-logs")
-    public String showAuditLogPage() {
+    public String showAuditLogPage(Model model) {
+    	model.addAttribute("Audit Logs", "Audit logs");
         return "Audit_Logs"; // audit-logs.html View သို့ သွားမည်
     }
 

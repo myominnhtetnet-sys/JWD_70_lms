@@ -17,7 +17,13 @@ public class BatchService {
     public List<BatchInfo> getAllBatches() {
         return batchRepository.findAllBatches();
     }
-
+    
+	/*
+	 * public List<BatchInfo> getAllActiveBatches() { return
+	 * batchRepository.findAllBatches(); // (သို့) Active ဖြစ်တာတွေပဲ
+	 * သီးသန့်ထုတ်ချင်ရင် repo မှာ query အသစ်ရေးနိုင်ပါတယ်၊ လက်ရှိမှာတော့
+	 * getAllBatches() ကိုပဲ ပြန်ညွှန်းပေးလိုက်ပါတယ်) }
+	 */
     public BatchInfo getBatchById(Long batchId) {
         return batchRepository.findBatchById(batchId);
     }

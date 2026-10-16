@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<div th:replace="~{head :: head}"></div>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+<div id="app" class="min-h-screen flex flex-col">
+        
+        <!-- TOP HEADER BAR -->
+        <div th:replace="~{header :: header}"></div>
+
+        <!-- MAIN APP CONTENT AREA -->
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- DYNAMIC SIDEBAR -->
+            <div th:replace="~{nav :: nav}"></div>
+
+            <!-- MAIN BUILDER CONTENT -->
+            <main class="flex-1 overflow-y-auto p-6 space-y-6">
+                
+                <!-- Header & Back Navigation -->
+                <div class="bg-white rounded-lg shadow-sm p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <a href="/admin/course-builder" class="text-xs font-semibold text-indigo-600 hover:underline flex items-center gap-1 mb-2">
+                            <i class="fa-solid fa-arrow-left"></i> Back to Course List
+                        </a>
+                        <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                            <i class="fa-solid fa-screwdriver-wrench text-indigo-600"></i>
+                            <span th:text="${course.title}">Course Title</span>
+                        </h1>
+                        <p class="text-xs text-gray-500 mt-1">Configure curriculum, modules, lessons, instructors, and downloadable materials.</p>
+                    </div>
+                    <div>
+                        <span class="px-3 py-1 text-xs rounded-full font-semibold bg-emerald-100 text-emerald-700" th:text="${course.status}">PUBLISHED</span>
+                    </div>
+                </div>
+
+                <!-- Tab Navigation Bar -->
+                <div class="bg-white rounded-t-lg shadow-sm border-b border-gray-200 px-6 flex gap-6 overflow-x-auto">
+                    <button onclick="switchTab('info')" id="btn-info" class="tab-btn py-4 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600 flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-circle-info"></i> 1. Course Info
+                    </button>
+                    <button onclick="switchTab('instructors')" id="btn-instructors" class="tab-btn py-4 text-xs font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-chalkboard-user"></i> 2. Instructors
+                    </button>
+                    <button onclick="switchTab('modules')" id="btn-modules" class="tab-btn py-4 text-xs font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-layer-group"></i> 3. Modules
+                    </button>
+                    <button onclick="switchTab('lessons')" id="btn-lessons" class="tab-btn py-4 text-xs font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-book-open-reader"></i> 4. Lessons
+                    </button>
+                    <button onclick="switchTab('materials')" id="btn-materials" class="tab-btn py-4 text-xs font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-file-arrow-down"></i> 5. Materials
+                    </button>
+                </div>
+
+                <!-- Tab Contents Area -->
+                <div class="bg-white rounded-b-lg shadow-sm p-6 min-h-[450px]">
+                    
+                    <!-- Tab 1: Course Info -->
+                    <div id="tab-info" class="tab-content space-y-4">
+                        <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider mb-3">Course Information Overview</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold mb-1 text-gray-600">Title</label>
+                                <input type="text" th:value="${course.title}" class="w-full border rounded p-2 text-xs bg-gray-50" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold mb-1 text-gray-600">Price (MMK)</label>
+                                <input type="text" th:value="${course.price}" class="w-full border rounded p-2 text-xs bg-gray-50" readonly>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1 text-gray-600">Full Description</label>
+                            <textarea rows="4" class="w-full border rounded p-2 text-xs bg-gray-50" readonly th:text="${course.description}"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Instructors -->
+                    <div id="tab-instructors" class="tab-content hidden space-y-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Assigned Instructors</h3>
+                            <button onclick="openModal('instructorModal')" class="bg-indigo-600 text-white px-3 py-1.5 rounded text-xs font-semibold hover:bg-indigo-700 cursor-pointer">+ Assign Instructor</button>
+                        </div>
+                        <div id="instructorEmpty" class="border border-dashed rounded-lg p-8 text-center text-gray-400 text-xs">
+                            No instructors assigned to this course yet.
+                        </div>
+                        <div id="instructorListContainer" class="hidden overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b text-gray-500 uppercase">
+                                        <th class="p-3">Instructor Name</th>
+                                        <th class="p-3">Role</th>
+                                        <th class="p-3 text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="instructorTableBody" class="divide-y"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Modules -->
+                    <div id="tab-modules" class="tab-content hidden space-y-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Course Modules (Curriculum)</h3>
+                            <button onclick="openModal('moduleModal')" class="bg-indigo-600 text-white px-3 py-1.5 rounded text-xs font-semibold hover:bg-indigo-700 cursor-pointer">+ Add Module</button>
+                        </div>
+                        <div id="moduleEmpty" class="border border-dashed rounded-lg p-8 text-center text-gray-400 text-xs">
+                            No curriculum modules created yet. Click "Add Module" to start.
+                        </div>
+                        <div id="moduleListContainer" class="hidden space-y-2">
+                            <div id="moduleTableBody" class="space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: Lessons -->
+                    <div id="tab-lessons" class="tab-content hidden space-y-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Lessons Management</h3>
+                            <button onclick="openModal('lessonModal')" class="bg-indigo-600 text-white px-3 py-1.5 rounded text-xs font-semibold hover:bg-indigo-700 cursor-pointer">+ Add Lesson</button>
+                        </div>
+                        <div id="lessonEmpty" class="border border-dashed rounded-lg p-8 text-center text-gray-400 text-xs">
+                            No lessons added yet. Click "Add Lesson" to start.
+                        </div>
+                        <div id="lessonListContainer" class="hidden overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b text-gray-500 uppercase">
+                                        <th class="p-3">Lesson Title</th>
+                                        <th class="p-3">Video/URL</th>
+                                        <th class="p-3 text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lessonTableBody" class="divide-y"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 5: Materials -->
+                    <div id="tab-materials" class="tab-content hidden space-y-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Course Materials & Downloads</h3>
+                            <button onclick="openModal('materialModal')" class="bg-indigo-600 text-white px-3 py-1.5 rounded text-xs font-semibold hover:bg-indigo-700 cursor-pointer">+ Upload Material</button>
+                        </div>
+                        <div id="materialEmpty" class="border border-dashed rounded-lg p-8 text-center text-gray-400 text-xs">
+                            No PDFs, source code files, or attachments uploaded yet.
+                        </div>
+                        <div id="materialListContainer" class="hidden overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b text-gray-500 uppercase">
+                                        <th class="p-3">Material Title</th>
+                                        <th class="p-3">File Name</th>
+                                        <th class="p-3 text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="materialTableBody" class="divide-y"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+            </main>
+        </div>
+</div>
+
+<!-- ================= MODALS FOR TABS ================= -->
+
+<!-- 1. Instructor Modal -->
+<div id="instructorModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-lg w-full max-w-md p-6 shadow-lg">
+        <h3 class="text-sm font-bold text-gray-800 mb-3">Assign Instructor</h3>
+        <form onsubmit="addInstructor(event)">
+            <div class="mb-3">
+                <label class="block text-xs font-semibold mb-1">Instructor Name</label>
+                <input type="text" id="instructorNameInput" required placeholder="e.g. U Aung Kyaw" class="w-full border rounded p-2 text-xs outline-none">
+            </div>
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeModal('instructorModal')" class="px-3 py-1.5 text-xs text-gray-600 bg-gray-100 rounded hover:bg-gray-200">Cancel</button>
+                <button type="submit" class="px-3 py-1.5 text-xs text-white bg-indigo-600 rounded hover:bg-indigo-700">Assign</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 2. Module Modal -->
+<div id="moduleModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-lg w-full max-w-md p-6 shadow-lg">
+        <h3 class="text-sm font-bold text-gray-800 mb-3">Add New Module</h3>
+        <form onsubmit="addModule(event)">
+            <div class="mb-3">
+                <label class="block text-xs font-semibold mb-1">Module Title</label>
+                <input type="text" id="moduleTitleInput" required placeholder="e.g. Introduction to Spring Boot" class="w-full border rounded p-2 text-xs outline-none">
+            </div>
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeModal('moduleModal')" class="px-3 py-1.5 text-xs text-gray-600 bg-gray-100 rounded hover:bg-gray-200">Cancel</button>
+                <button type="submit" class="px-3 py-1.5 text-xs text-white bg-indigo-600 rounded hover:bg-indigo-700">Save Module</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 3. Lesson Modal -->
+<div id="lessonModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-lg w-full max-w-md p-6 shadow-lg">
+        <h3 class="text-sm font-bold text-gray-800 mb-3">Add New Lesson</h3>
+        <form onsubmit="addLesson(event)">
+            <div class="mb-3">
+                <label class="block text-xs font-semibold mb-1">Lesson Title</label>
+                <input type="text" id="lessonTitleInput" required placeholder="e.g. Dependency Injection" class="w-full border rounded p-2 text-xs outline-none">
+            </div>
+            <div class="mb-3">
+                <label class="block text-xs font-semibold mb-1">Video / Content URL</label>
+                <input type="text" id="lessonUrlInput" placeholder="https://..." class="w-full border rounded p-2 text-xs outline-none">
+            </div>
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeModal('lessonModal')" class="px-3 py-1.5 text-xs text-gray-600 bg-gray-100 rounded hover:bg-gray-200">Cancel</button>
+                <button type="submit" class="px-3 py-1.5 text-xs text-white bg-indigo-600 rounded hover:bg-indigo-700">Save Lesson</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 4. Material Modal -->
+<div id="materialModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-lg w-full max-w-md p-6 shadow-lg">
+        <h3 class="text-sm font-bold text-gray-800 mb-3">Upload Course Material</h3>
+        <form onsubmit="addMaterial(event)">
+            <div class="mb-3">
+                <label class="block text-xs font-semibold mb-1">Material Title</label>
+                <input type="text" id="materialTitleInput" required placeholder="e.g. Lecture Slides PDF" class="w-full border rounded p-2 text-xs outline-none">
+            </div>
+            <div class="mb-3">
+                <label class="block text-xs font-semibold mb-1">File Name / Link</label>
+                <input type="text" id="materialFileInput" required placeholder="slides.pdf" class="w-full border rounded p-2 text-xs outline-none">
+            </div>
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeModal('materialModal')" class="px-3 py-1.5 text-xs text-gray-600 bg-gray-100 rounded hover:bg-gray-200">Cancel</button>
+                <button type="submit" class="px-3 py-1.5 text-xs text-white bg-indigo-600 rounded hover:bg-indigo-700">Upload</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Scripts for Tabs, Modals, and Dynamic DOM Rendering -->
+<script>
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('border-indigo-600', 'text-indigo-600');
+            btn.classList.add('border-transparent', 'text-gray-500');
+        });
+
+        document.getElementById('tab-' + tabName).classList.remove('hidden');
+        const activeBtn = document.getElementById('btn-' + tabName);
+        activeBtn.classList.add('border-indigo-600', 'text-indigo-600');
+        activeBtn.classList.remove('border-transparent', 'text-gray-500');
+    }
+
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+        document.getElementById(modalId).classList.add('flex');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+        document.getElementById(modalId).classList.remove('flex');
+    }
+
+    // 1. Add Instructor Logic
+    function addInstructor(e) {
+        e.preventDefault();
+        const name = document.getElementById('instructorNameInput').value;
+        
+        document.getElementById('instructorEmpty').classList.add('hidden');
+        document.getElementById('instructorListContainer').classList.remove('hidden');
+
+        const tbody = document.getElementById('instructorTableBody');
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="p-3 font-medium text-gray-800">${name}</td>
+            <td class="p-3 text-gray-500">Lead Instructor</td>
+            <td class="p-3 text-center"><button onclick="this.closest('tr').remove()" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button></td>
+        `;
+        tbody.appendChild(row);
+        closeModal('instructorModal');
+        e.target.reset();
+    }
+
+    // 2. Add Module Logic
+    function addModule(e) {
+        e.preventDefault();
+        const title = document.getElementById('moduleTitleInput').value;
+        
+        document.getElementById('moduleEmpty').classList.add('hidden');
+        document.getElementById('moduleListContainer').classList.remove('hidden');
+
+        const container = document.getElementById('moduleTableBody');
+        const card = document.createElement('div');
+        card.className = "border rounded p-3 flex justify-between items-center bg-gray-50";
+        card.innerHTML = `
+            <span class="font-semibold text-xs text-indigo-600"><i class="fa-solid fa-layer-group mr-2"></i>${title}</span>
+            <button onclick="this.closest('div').remove()" class="text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i></button>
+        `;
+        container.appendChild(card);
+        closeModal('moduleModal');
+        e.target.reset();
+    }
+
+    // 3. Add Lesson Logic
+    function addLesson(e) {
+        e.preventDefault();
+        const title = document.getElementById('lessonTitleInput').value;
+        const url = document.getElementById('lessonUrlInput').value || '-';
+        
+        document.getElementById('lessonEmpty').classList.add('hidden');
+        document.getElementById('lessonListContainer').classList.remove('hidden');
+
+        const tbody = document.getElementById('lessonTableBody');
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="p-3 font-medium text-gray-800">${title}</td>
+            <td class="p-3 text-blue-600 truncate max-w-xs">${url}</td>
+            <td class="p-3 text-center"><button onclick="this.closest('tr').remove()" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button></td>
+        `;
+        tbody.appendChild(row);
+        closeModal('lessonModal');
+        e.target.reset();
+    }
+
+    // 4. Add Material Logic
+    function addMaterial(e) {
+        e.preventDefault();
+        const title = document.getElementById('materialTitleInput').value;
+        const file = document.getElementById('materialFileInput').value;
+        
+        document.getElementById('materialEmpty').classList.add('hidden');
+        document.getElementById('materialListContainer').classList.remove('hidden');
+
+        const tbody = document.getElementById('materialTableBody');
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="p-3 font-medium text-gray-800">${title}</td>
+            <td class="p-3 text-gray-600">${file}</td>
+            <td class="p-3 text-center"><button onclick="this.closest('tr').remove()" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button></td>
+        `;
+        tbody.appendChild(row);
+        closeModal('materialModal');
+        e.target.reset();
+    }
+</script>
+</body>
+</html>
