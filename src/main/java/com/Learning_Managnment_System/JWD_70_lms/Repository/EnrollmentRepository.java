@@ -8,11 +8,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.Learning_Managnment_System.JWD_70_lms.model.EnrollmentBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.EnrollmentDetailBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.InstallmentBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.PaymentBean;
 
 @Repository
 public class EnrollmentRepository {
@@ -77,6 +81,54 @@ public class EnrollmentRepository {
             return e;
         }
     };
+    
+    public EnrollmentDetailBean getEnrollmentById(int enrollmentId) {
+        String sql = """
+            SELECT e.enrollment_id, u.full_name AS student_name, u.email AS student_email,
+                   c.title AS course_title, b.batch_code, e.original_amount, e.discount_amount, 
+                   e.scholarship_amount, e.final_amount, e.payment_type, e.payment_status, 
+                   e.status AS enrollment_status, e.enrolled_at
+            FROM enrollments e
+            JOIN users u ON e.user_id = u.user_id
+            JOIN batches b ON e.batch_id = b.batch_id
+            JOIN courses c ON b.course_id = c.course_id
+            WHERE e.enrollment_id = ?
+            """;
+        
+        List<EnrollmentDetailBean> list = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            EnrollmentDetailBean dto = new EnrollmentDetailBean();
+            dto.setEnrollmentId(rs.getInt("enrollment_id"));
+            dto.setStudentName(rs.getString("student_name"));
+            dto.setStudentEmail(rs.getString("student_email"));
+            dto.setCourseTitle(rs.getString("course_title"));
+            dto.setBatchCode(rs.getString("batch_code"));
+            dto.setTotalFee(rs.getBigDecimal("original_amount"));
+            dto.setDiscountAmount(rs.getBigDecimal("discount_amount"));
+            dto.setScholarshipAmount(rs.getBigDecimal("scholarship_amount"));
+            dto.setFinalAmount(rs.getBigDecimal("final_amount"));
+            dto.setPaymentType(rs.getString("payment_type"));
+            dto.setPaymentStatus(rs.getString("payment_status"));
+            dto.setEnrollmentStatus(rs.getString("enrollment_status"));
+            if(rs.getTimestamp("enrolled_at") != null) {
+                dto.setCreatedAt(rs.getTimestamp("enrolled_at").toLocalDateTime().toLocalDate());
+            }
+            return dto;
+        }, enrollmentId);
+
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    // 2. Installment Schedules ယူရန်
+    public List<InstallmentBean> getInstallmentsByEnrollmentId(int enrollmentId) {
+        String sql = "SELECT * FROM installment_schedules WHERE enrollment_id = ? ORDER BY installment_number ASC";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(InstallmentBean.class), enrollmentId);
+    }
+
+    // 3. Payment History ယူရန်
+    public List<PaymentBean> getPaymentsByEnrollmentId(int enrollmentId) {
+        String sql = "SELECT * FROM payments WHERE enrollment_id = ? ORDER BY payment_date DESC";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(PaymentBean.class), enrollmentId);
+    }
 
     // =====================================================
     // GET ALL ENROLLMENTS

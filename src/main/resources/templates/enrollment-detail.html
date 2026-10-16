@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enrollment Detail | LearnHub LMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* =====================================================
+           GLOBAL RESET & VARIABLES (Dashboard UI နှင့် အတူတူ)
+           ===================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0f1118;
+            --sidebar: #181d28;
+            --card: #181d28;
+            --border: #293142;
+            --primary: #6c4ce5;
+            --text: #f1f3f9;
+            --muted: #929bb0;
+            --input: #202634;
+            --green: #36c995;
+            --yellow: #f4bd50;
+            --red: #ff7373;
+        }
+
+        body.light-mode {
+            --bg: #f4f6fb;
+            --sidebar: #ffffff;
+            --card: #ffffff;
+            --border: #e2e6ef;
+            --text: #242938;
+            --muted: #727c91;
+            --input: #f5f6fa;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* =====================================================
+           LAYOUT STRUCTURE (Dashboard မျက်နှာပြင်နှင့် တစ်ထပ်တည်းဖြစ်စေရန်)
+           ===================================================== */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Fixed Layout */
+        .sidebar {
+            width: 260px;
+            position: fixed;
+            inset: 0 auto 0 0;
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+            padding: 25px 18px;
+            overflow-y: auto;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar .brand {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 5px 10px 32px;
+        }
+
+        .sidebar .brand-icon {
+            width: 45px;
+            height: 45px;
+            background: #7895ff;
+            color: white;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
+            font-size: 21px;
+        }
+
+        .sidebar .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .sidebar .brand-subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .sidebar .menu-heading {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            padding: 17px 12px 12px;
+        }
+
+        .sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 14px;
+            margin-bottom: 5px;
+            border-radius: 10px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .sidebar .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(108, 76, 229, .19);
+            color: #9b8aff;
+            font-weight: 700;
+        }
+
+        .sidebar .sidebar-bottom {
+            margin-top: 30px;
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+        }
+
+        /* Main Content Container */
+        .main {
+            margin-left: 260px;
+            flex: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+        }
+
+        /* Topbar Layout */
+        .topbar {
+            min-height: 88px;
+            padding: 18px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .page-heading h1 {
+            font-size: 23px;
+            margin-bottom: 7px;
+        }
+
+        .page-heading p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .icon-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+        }
+
+        .profile-name {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .profile-role {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        .content {
+            padding: 28px 30px 40px;
+            flex: 1;
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 23px;
+            margin-bottom: 20px;
+        }
+
+        .mini-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: var(--input);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .mini-btn:hover {
+            background: rgba(108, 76, 229, 0.2);
+            border-color: var(--primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            white-space: nowrap;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+        th {
+            color: var(--muted);
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.02);
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+
+    <!-- SIDEBAR FRAGMENT (Dashboard ဖိုင်တွင် သုံးထားသည့်အတိုင်း အတိအကျခေါ်ရန်) -->
+    <div th:replace="~{fragments/admin-layout :: sidebar(activePage='enrollment_detail')}"></div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="main">
+        <!-- TOPBAR FRAGMENT (Light/Dark Mode နှင့် Profile ပါဝင်သော Topbar) -->
+        <div th:replace="~{fragments/admin-layout :: topbar('Enrollment Detail', 'View fee breakdown, installments and payments.')}"></div>
+
+        <div class="content">
+            <div style="margin-bottom: 20px;">
+                <a th:href="@{/admin/enrollments}" class="mini-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+
+            <!-- Student & Course Info -->
+            <div class="panel">
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px;">Student & Course Information</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; font-size: 13px;">
+                    <div><strong>Student Name:</strong> <span th:text="${detail.studentName}">-</span></div>
+                    <div><strong>Email:</strong> <span th:text="${detail.studentEmail}">-</span></div>
+                    <div><strong>Course:</strong> <span th:text="${detail.courseTitle}">-</span></div>
+                    <div><strong>Batch Code:</strong> <span th:text="${detail.batchCode}">-</span></div>
+                </div>
+            </div>
+
+            <!-- Fee Breakdown Panel -->
+            <div class="panel">
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px;">Fee Breakdown</h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                    <div style="background: var(--input); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
+                        <div style="color: var(--muted); margin-bottom: 5px; font-size: 12px;">Total Fee</div>
+                        <div style="font-size: 18px; font-weight: 700;" th:text="${detail.totalFee}">0.00</div>
+                    </div>
+                    <div style="background: var(--input); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
+                        <div style="color: var(--muted); margin-bottom: 5px; font-size: 12px;">Discount</div>
+                        <div style="font-size: 18px; font-weight: 700; color: var(--yellow);" th:text="${detail.discountAmount}">0.00</div>
+                    </div>
+                    <div style="background: var(--input); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
+                        <div style="color: var(--muted); margin-bottom: 5px; font-size: 12px;">Scholarship</div>
+                        <div style="font-size: 18px; font-weight: 700; color: var(--green);" th:text="${detail.scholarshipAmount}">0.00</div>
+                    </div>
+                    <div style="background: var(--input); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
+                        <div style="color: var(--muted); margin-bottom: 5px; font-size: 12px;">Final Net Amount</div>
+                        <div style="font-size: 18px; font-weight: 700; color: var(--primary);" th:text="${detail.finalAmount}">0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Installment Schedule Table -->
+            <div class="panel">
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px;">Installment Schedule</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Due Date</th>
+                            <th>Amount Due</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${detail.installments != null}" th:each="ins : ${detail.installments}">
+                            <td th:text="${ins.installmentNumber}">1</td>
+                            <td th:text="${ins.dueDate}">2026-11-01</td>
+                            <td th:text="${ins.amountDue}">0.00</td>
+                            <td th:text="${ins.status}" th:style="${ins.status == 'PAID' ? 'color: var(--green);' : 'color: var(--yellow);'}">PENDING</td>
+                        </tr>
+                        <tr th:if="${detail.installments == null or #lists.isEmpty(detail.installments)}">
+                            <td colspan="4" style="text-align: center; color: var(--muted);">No installments found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Payment History Table -->
+            <div class="panel">
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px;">Payment History</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Payment ID</th>
+                            <th>Date</th>
+                            <th>Method</th>
+                            <th>Amount</th>
+                            <th>Reference / Slip</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${detail.payments != null}" th:each="pay : ${detail.payments}">
+                            <td th:text="${pay.paymentId}">1</td>
+                            <td th:text="${pay.paymentDate}">2026-10-15</td>
+                            <td th:text="${pay.paymentMethod}">KBZ Pay</td>
+                            <td th:text="${pay.paidAmount}">0.00</td>
+                            <td th:text="${pay.referenceNo}">123456</td>
+                            <td th:text="${pay.status}" th:style="${pay.status == 'APPROVED' ? 'color: var(--green);' : 'color: var(--red);'}">APPROVED</td>
+                        </tr>
+                        <tr th:if="${detail.payments == null or #lists.isEmpty(detail.payments)}">
+                            <td colspan="6" style="text-align: center; color: var(--muted);">No payment history found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- Theme Toggle Script (Dashboard မျက်နှာပြင်ကဲ့သို့ Light/Dark mode အလုပ်လုပ်စေရန်) -->
+<script>
+    const themeToggle = document.getElementById("themeToggle");
+    function applyTheme(isLight) {
+        document.body.classList.toggle("light-mode", isLight);
+        if (themeToggle) {
+            themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-regular fa-moon"></i>';
+        }
+        localStorage.setItem("lmsTheme", isLight ? "light" : "dark");
+    }
+    applyTheme(localStorage.getItem("lmsTheme") === "light");
+    if(themeToggle) {
+        themeToggle.addEventListener("click", () => applyTheme(!document.body.classList.contains("light-mode")));
+    }
+</script>
+</body>
+</html>

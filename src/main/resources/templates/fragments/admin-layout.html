@@ -223,6 +223,12 @@
             <i class="fa-solid fa-user-check"></i>
             <span>Enrollments</span>
         </a>
+        
+        <!-- Detail Menu Item -->
+<a th:href="@{/admin/enrollments/detail/1}" class="nav-link" th:classappend="${activePage == 'enrollment_detail'} ? ' active' : ''">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Detail</span>
+</a>
 
         <div class="sidebar-bottom">
             <a th:href="@{/admin/notification}" class="nav-link">
