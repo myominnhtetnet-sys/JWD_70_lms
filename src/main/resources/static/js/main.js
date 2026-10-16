@@ -50,16 +50,10 @@ const navMenus = {
 		{ icon: 'fa-comments', label: 'Messages' }
 	],*/
 	teacher: [
-	    { icon: 'fa-house', label: 'Dashboard', active: true },
-	    { icon: 'fa-book-open', label: 'My Courses' },
-	    { icon: 'fa-users', label: 'My Batches' },
-	    { icon: 'fa-calendar-check', label: 'Take Attendance' },
-	    { icon: 'fa-clipboard-list', label: 'Assignments' },
-	    { icon: 'fa-pen-to-square', label: 'Grade Submissions' },
-	    { icon: 'fa-circle-question', label: 'Question Bank' },
-	    { icon: 'fa-file-circle-check', label: 'Exams' },
-	    { icon: 'fa-chart-column', label: 'Exam Results' },
-	    { icon: 'fa-award', label: 'Final Grades' }
+	    { icon: 'fa-house', label: 'Dashboard', path: '/teacher/dashboard' },
+	    { icon: 'fa-book-open', label: 'My Courses', path: '/teacher/courses' },
+	    { icon: 'fa-users', label: 'My Batches', path: '/teacher/batches' },
+	    { icon: 'fa-calendar-check', label: 'Take Attendance', path: '/teacher/attendance' }
 	],
 	student: [
 		{ icon: 'fa-compass', label: 'Dashboard', active: true },
@@ -160,8 +154,13 @@ function renderSidebar(role) {
 				   if (item.label === 'Exams') {
 				       window.location.href = '/teacher/exams';
 				       return;
+				}
+				  
+				   if (item.path) {
+				           window.location.href = item.path;
+				           return;
 				   }
-
+				   
 			    setActiveNavItem(navItem);
 			    showToast(`Navigated to ${item.label}`);
 			};
