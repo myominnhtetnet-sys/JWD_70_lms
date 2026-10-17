@@ -1,4 +1,4 @@
-package com.Learning_Managnment_System.JWD_70_lms;
+	package com.Learning_Managnment_System.JWD_70_lms;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
