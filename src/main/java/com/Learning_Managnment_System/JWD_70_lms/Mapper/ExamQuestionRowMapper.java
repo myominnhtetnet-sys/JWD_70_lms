@@ -1,3 +1,4 @@
+
 package com.Learning_Managnment_System.JWD_70_lms.Mapper;
 
 import java.sql.ResultSet;
@@ -7,44 +8,46 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean;
 
-import com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean;
-import org.springframework.jdbc.core.RowMapper;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 public class ExamQuestionRowMapper implements RowMapper<ExamQuestionBean> {
 
     @Override
-    public ExamQuestionBean mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public ExamQuestionBean mapRow(ResultSet rs, int rowNum)
+            throws SQLException {
 
-        ExamQuestionBean examQuestion = new ExamQuestionBean();
+        ExamQuestionBean question = new ExamQuestionBean();
 
-        examQuestion.setExamId(rs.getLong("exam_id"));
-        examQuestion.setQuestionId(rs.getLong("question_id"));
-        examQuestion.setQuestionText(rs.getString("question_text"));
-        examQuestion.setQuestionType(rs.getString("question_type"));
-        examQuestion.setMark(rs.getBigDecimal("mark"));
-        examQuestion.setSortOrder(rs.getInt("sort_order"));
+        // Question ID
+        question.setQuestionId(rs.getLong("question_id"));
 
-        return examQuestion;
-    }
-}
-        ExamQuestionBean questionNode = new ExamQuestionBean();
-        
-        // 🟢 FIXED: Synchronized precisely with your exact camelCase model setters
-        questionNode.setQuestionId(rs.getInt("question_id"));
-        questionNode.setQuestionText(rs.getString("question_text"));
-        
-        // Trims white spaces and forces uppercase formatting to match Thymeleaf checks perfectly
-        String rawType = rs.getString("question_type");
-        if (rawType != null) {
-            questionNode.setQuestionType(rawType.trim().toUpperCase());
-        } else {
-            questionNode.setQuestionType("MCQ");
+        // Exam ID ရှိတဲ့ query တွေအတွက်သာ map လုပ်မယ်
+        try {
+            question.setExamId(rs.getLong("exam_id"));
+        } catch (SQLException e) {
+            // Student question query မှာ exam_id မပါရင် ချန်ထားမယ်
         }
-        
-        questionNode.setQuestionMark(((Number) rs.getObject("mark")).doubleValue());
-        
-        return questionNode;
+
+        // Question text
+        question.setQuestionText(rs.getString("question_text"));
+
+        // Question type
+        String rawType = rs.getString("question_type");
+
+        if (rawType != null) {
+            question.setQuestionType(rawType.trim().toUpperCase());
+        } else {
+            question.setQuestionType("MCQ");
+        }
+
+        // Mark
+        question.setMark(rs.getBigDecimal("mark"));
+
+        // Sort order - query မှာ column ပါမှ map လုပ်မယ်
+        try {
+            question.setSortOrder(rs.getInt("sort_order"));
+        } catch (SQLException e) {
+            // Student question query မှာ sort_order မပါရင် ချန်ထားမယ်
+        }
+
+        return question;
     }
 }
