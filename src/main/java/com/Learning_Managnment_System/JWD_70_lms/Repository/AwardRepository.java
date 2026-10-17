@@ -22,12 +22,12 @@ public class AwardRepository {
                      "g.assignment_score, g.exam_score, g.attendance_percent, g.total_score, " +
                      "g.grade_letter, g.result, cert.certificate_id, cert.certificate_code, " +
                      "cert.issued_at, cert.status AS cert_status " +
-                     "FROM lms_db.grades g " +
-                     "JOIN lms_db.enrollments e ON g.enrollment_id = e.enrollment_id " +
-                     "JOIN lms_db.batches b ON e.batch_id = b.batch_id " +
-                     "JOIN lms_db.courses c ON b.course_id = c.course_id " +
-                     "JOIN lms_db.users u ON e.user_id = u.user_id " +
-                     "LEFT JOIN lms_db.certificates cert ON cert.enrollment_id = e.enrollment_id " +
+                     "FROM learning_db.grades g " +
+                     "JOIN learning_db.enrollments e ON g.enrollment_id = e.enrollment_id " +
+                     "JOIN learning_db.batches b ON e.batch_id = b.batch_id " +
+                     "JOIN learning_db.courses c ON b.course_id = c.course_id " +
+                     "JOIN learning_db.users u ON e.user_id = u.user_id " +
+                     "LEFT JOIN learning_db.certificates cert ON cert.enrollment_id = e.enrollment_id " +
                      "WHERE u.email = ? AND g.published_at IS NOT NULL " +
                      "ORDER BY g.published_at DESC";
                      
@@ -39,11 +39,11 @@ public class AwardRepository {
      */
     public List<StudentGradeBean> findCertificateDetailsByIdAndEmail(int certificateId, String email) {
         String sql = "SELECT cert.certificate_code, c.title AS course_title, u.full_name, cert.issued_at " +
-                     "FROM lms_db.certificates cert " +
-                     "JOIN lms_db.enrollments e ON cert.enrollment_id = e.enrollment_id " +
-                     "JOIN lms_db.batches b ON e.batch_id = b.batch_id " +
-                     "JOIN lms_db.courses c ON b.course_id = c.course_id " +
-                     "JOIN lms_db.users u ON e.user_id = u.user_id " +
+                     "FROM learning_db.certificates cert " +
+                     "JOIN learning_db.enrollments e ON cert.enrollment_id = e.enrollment_id " +
+                     "JOIN learning_db.batches b ON e.batch_id = b.batch_id " +
+                     "JOIN learning_db.courses c ON b.course_id = c.course_id " +
+                     "JOIN learning_db.users u ON e.user_id = u.user_id " +
                      "WHERE cert.certificate_id = ? AND u.email = ? AND cert.status = 'ISSUED' LIMIT 1";
                      
         return jdbcTemplate.query(sql, AwardRowMappers.DIPLOMA_MAPPER, certificateId, email);
