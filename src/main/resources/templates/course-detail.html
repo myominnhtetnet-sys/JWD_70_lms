@@ -82,7 +82,7 @@
                     <a class="nav-link" th:href="@{/}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" th:href="@{/courses/show}">Courses</a>
+                    <a class="nav-link" th:href="@{/courses/show}">Courses</a>
                 </li>
             </ul>
             
@@ -162,7 +162,7 @@
             <div th:unless="${#lists.isEmpty(courseReviews)}">
                 <div th:each="review : ${courseReviews}" class="review-card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <div style="font-weight: 600; font-size: 13.5px; color: #0f172a;" th:text="${review['fullName'] != null ? review['fullName'] : 'Anonymous Student'}">Student Name</div>
+                        <div style="font-weight: 600; font-size: 13.5px; color: #0f172a;" th:text="${review['full_name'] != null ? review['full_name'] : 'Anonymous Student'}">Student Name</div>
                         <div style="color: #fbbf24; font-size: 11px; letter-spacing: 1px;">
                             <span th:if="${review['rating'] == 5}">⭐⭐⭐⭐⭐</span>
                             <span th:if="${review['rating'] == 4}">⭐⭐⭐⭐</span>
@@ -180,6 +180,54 @@
         </div>
 
     </div>
+
+<!-- ========================================================= -->
+<!-- CALL TO ACTION -->
+<!-- ========================================================= -->
+<section class="py-5 bg-dark text-white text-center" style="background-color: #0f172a !important;">
+
+    <div class="container">
+
+        <h2 class="display-6 fw-bold mb-3" style="color: #ffffff !important;">
+            Ready to Start Learning?
+        </h2>
+
+        <!-- 🟢 FIXED INLINE COLOR: Explicit hex code bypasses bad CSS stylesheets permanently -->
+        <p class="lead mb-4" style="color: #cbd5e1 !important; opacity: 1 !important; font-size: 18px;">
+            Join our learning community and start building your practical skills today.
+        </p>
+
+        <a th:href="@{/register}"
+           class="btn btn-warning btn-lg px-4 fw-bold" 
+           style="background-color: #f59e0b !important; color: #0f172a !important; border: none !important;">
+            Register Now
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================================= -->
+<!-- FOOTER -->
+<!-- ========================================================= -->
+<footer class="bg-dark text-white border-top border-secondary py-4 text-center" style="background-color: #0f172a !important; border-color: #334155 !important;">
+
+    <div class="container">
+
+        <!-- 🟢 FIXED INLINE COLOR: Clean light silver format guarantees high-contrast text visibility -->
+        <p class="mb-0" style="color: #94a3b8 !important; opacity: 1 !important; font-size: 14px;">
+            &copy; 2026 Learning Management System. All rights reserved.
+        </p>
+
+    </div>
+
+</footer>
+
+<!-- Framework Runtime Attachments -->
+<script th:src="@{/js/bootstrap.bundle.min.js}" src="/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}" src="/js/main.js"></script>
+
 
 </body>
 </html>
