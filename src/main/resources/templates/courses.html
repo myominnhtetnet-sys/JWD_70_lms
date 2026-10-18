@@ -1,10 +1,267 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Course Catalog Management</title>
+
+   <!-- 🟢 OFFLINE LOCAL DIRECTORY BOOTSTRAP ASSETS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}" href="/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+    
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 30px; background-color: #f4f6f9; color: #333; }
-        h2 { color: #2c3e50; margin-bottom: 20px; }
+        body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0 0 40px 0; background-color: #f4f6f9; color: #333; }
+        
+        .main-content-container { padding: 32px 24px; max-width: 1300px; margin: 0 auto; box-sizing: border-box; }
+        
+        /* 🟢 SCOPED OVERRIDE: LEFT-ALIGNED ULTRA-MODERN BLACK NAVBAR */
+        nav.navbar {
+            background-color: #000000 !important; 
+            border-bottom: 1px solid #1e293b !important; 
+            padding: 14px 0 !important;
+            z-index: 1030;
+        }
+        nav.navbar .container-fluid {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            flex-wrap: nowrap !important;
+            box-sizing: border-box !important;
+        }
+        nav.navbar .navbar-brand {
+            font-size: 22px !important;
+            font-weight: 800 !important;
+            color: #3b82f6 !important;
+            text-decoration: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            margin-right: 32px !important;
+        }
+        nav.navbar .navbar-collapse {
+            display: flex !important;
+            flex-basis: auto !important;
+            flex-grow: 1 !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+        nav.navbar .navbar-nav {
+            display: flex !important;
+            flex-direction: row !important; 
+            align-items: center !important;
+            gap: 24px !important;
+            margin: 0 auto 0 0 !important; /* Pulls Home and Courses link rows next to the logo */
+            padding: 0 !important;
+            list-style: none !important;
+        }
+        nav.navbar .nav-link {
+            color: #94a3b8 !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+            transition: color 0.1s ease !important;
+        }
+        nav.navbar .nav-link:hover, nav.navbar .nav-link.active {
+            color: #ffffff !important;
+        }
+        nav.navbar .d-flex.gap-2 {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 10px !important;
+            margin-left: auto !important;
+        }
+        nav.navbar .btn {
+            height: 36px !important;
+            padding: 0 16px !important;
+            border-radius: 8px !important;
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            box-sizing: border-box !important;
+            transition: all 0.1s ease !important;
+        }
+        nav.navbar .btn-outline-light { color: #f8fafc !important; border: 1px solid #cbd5e1 !important; background: transparent !important; }
+        nav.navbar .btn-outline-light:hover { background-color: #f8fafc !important; color: #0f172a !important; }
+        nav.navbar .btn-warning { background-color: #f59e0b !important; border: 1px solid #f59e0b !important; color: #0f172a !important; }
+        nav.navbar .btn-warning:hover { background-color: #d97706 !important; border-color: #d97706 !important; }
+
+        /* 🟢 Ultra-Modern SaaS Filter Layout Bar Controls */
+        .filter-container { 
+            background: #ffffff;
+            padding: 24px; 
+            border-radius: 14px; 
+            border: 1px solid #eef2f6;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04);
+            margin-bottom: 35px;
+        }
+        .filter-form { 
+            display: flex;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 16px;
+            width: 100%;
+        }
+        .form-group { 
+            display: flex; 
+            flex-direction: column; 
+            flex: 1 1 180px;
+            position: relative;
+            margin: 0;
+        }
+        .form-group.search-main { flex: 2 1 260px; }
+        .form-group label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+        .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
+        .input-icon { position: absolute; left: 14px; color: #94a3b8; pointer-events: none; width: 15px; height: 15px; z-index: 10; }
+        
+        .filter-form input[type="text"], .filter-form input[type="number"], .filter-form select { 
+            width: 100%; padding: 11px 12px 11px 38px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13.5px; 
+            outline: none; background-color: #f8fafc; transition: border-color 0.15s; box-sizing: border-box; height: 44px; color: #1e293b;
+        }
+        .filter-form select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://w3.org' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 14px center; background-size: 14px; padding-right: 36px;
+        }
+        .filter-form input:focus, .filter-form select:focus { border-color: #0f172a; background-color: #fff; box-shadow: 0 0 0 1px #0f172a; }
+
+        .button-group { display: flex; align-items: center; gap: 8px; flex: 1 1 200px; margin: 0; }
+        .btn-submit { 
+            background-color: #0f172a; color: #ffffff; border: none; height: 44px; padding: 0 24px; 
+            border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13.5px; display: inline-flex;
+            align-items: center; justify-content: center; gap: 6px; width: 100%; box-sizing: border-box; text-decoration: none;
+        }
+        .btn-submit:hover { background-color: #1e293b; }
+        .btn-reset { 
+            background-color: #f1f5f9; color: #475569; text-decoration: none; display: inline-flex;
+            align-items: center; justify-content: center; height: 44px; padding: 0 18px; border-radius: 10px; 
+            font-size: 13.5px; font-weight: 600; border: 1px solid #e2e8f0; box-sizing: border-box;
+        }
+        .btn-reset:hover { background-color: #e2e8f0; color: #0f172a; }
+
+        /* Grid Framework Layout */
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+        .course-card { background: #ffffff; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; height: 100%; }
+        .course-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+        .course-card-link { text-decoration: none; color: inherit; display: block; }
+        .card-body { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .course-title { font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 8px 0; }
+        .course-desc { font-size: 13.5px; color: #4a5568; line-height: 1.5; margin-bottom: 20px; flex-grow: 1; }
+        .course-attributes { display: flex; justify-content: space-between; border-top: 1px dashed #e2e8f0; border-bottom: 1px dashed #e2e8f0; padding: 12px 0; margin-bottom: 20px; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block; line-height: 1; }
+        .badge-yes { background-color: #c6f6d5; color: #22543d; border: 1px solid #bbf7d0; }
+        .badge-no { background-color: #fed7d7; color: #742a2a; border: 1px solid #fca5a5; }
+        .no-data { text-align: center; color: #718096; padding: 40px 20px; font-style: italic; background: white; border: 1px solid #e2e8f0; border-radius: 12px; }
+    
+        /* ========================================================= */
+/* SCOPED REPAIR: LEFT-ALIGNED ULTRA-MODERN BLACK NAVBAR      */
+/* ========================================================= */
+
+/* 🟢 BACKGROUND CHANGE: Locked to high-end pitch black layout */
+nav.navbar {
+    background-color: #000000 !important; 
+    border-bottom: 1px solid #1e293b !important; 
+    padding: 14px 0 !important;
+    z-index: 1030;
+}
+
+nav.navbar .container-fluid {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+    box-sizing: border-box !important;
+}
+
+/* Formats the brand logo cleanly */
+nav.navbar .navbar-brand {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: #3b82f6 !important; /* Balanced Corporate Active Blue */
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    margin-right: 32px !important; /* Creates clean spacing before links start */
+}
+
+/* Collapse navigation grid spacer configuration overrides */
+nav.navbar .navbar-collapse {
+    display: flex !important;
+    flex-basis: auto !important;
+    flex-grow: 1 !important;
+    align-items: center !important;
+    justify-content: space-between !important; /* Splits link block to left and buttons to right */
+}
+
+/* 🟢 LEFT ALIGNMENT FIX: Snaps directory link items side-by-side to the far left side */
+nav.navbar .navbar-nav {
+    display: flex !important;
+    flex-direction: row !important; 
+    align-items: center !important;
+    gap: 24px !important;
+    margin: 0 auto 0 0 !important; /* 👈 CRITICAL: 'margin-right: auto' pulls links over next to the logo */
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+nav.navbar .nav-link {
+    color: #94a3b8 !important; /* High-end mercury silver link text */
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    transition: color 0.1s ease !important;
+}
+
+nav.navbar .nav-link:hover, 
+nav.navbar .nav-link.active {
+    color: #ffffff !important; /* Light-up text triggers */
+}
+
+/* Aligns guest actions block to the far right axis baseline */
+nav.navbar .d-flex.gap-2 {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 10px !important;
+    margin-left: auto !important; /* Locks button group tightly to the right margin wall */
+}
+
+nav.navbar .btn {
+    height: 36px !important;
+    padding: 0 16px !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-decoration: none !important;
+    box-sizing: border-box !important;
+    transition: all 0.1s ease !important;
+}
+
+nav.navbar .btn-outline-light {
+    color: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    background: transparent !important;
+}
+
+nav.navbar .btn-outline-light:hover {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+nav.navbar .btn-warning {
+    background-color: #f59e0b !important; 
+    border: 1px solid #f59e0b !important;
+    color: #0f172a !important;
+}
+
+nav.navbar .btn-warning:hover {
+    background-color: #d97706 !important;
+    border-color: #d97706 !important;
+}
+        
+        
      /* Ultra-Modern Minimalist Filter Bar */
 .filter-container { 
     background: #ffffff;
@@ -619,6 +876,35 @@
     </style>
 </head>
 <body>
+
+    <!-- ========================================================= -->
+    <!-- NAVIGATION BAR (LOCKED IN GUEST MODE & PITCH BLACK)        -->
+    <!-- ========================================================= -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow-sm">
+        <div class="container-fluid px-lg-5">
+            <a class="navbar-brand fw-bold text-primary fs-4" th:href="@{/}">
+                <i class="fa-solid fa-graduation-cap me-2 text-warning"></i>LMS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/courses/show}">Courses</a></li>
+                </ul>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/login}" class="btn btn-outline-light fw-bold px-3">
+                    <i class="fa-solid fa-right-to-bracket me-1"></i> Login</a>
+                   
+                <a th:href="@{/student/register}" class="btn btn-warning fw-bold px-3">
+                    Register
+                </a>
+            </div>
+            
+        </div>
+    </div>
+</nav>
 
    <h2>Course Catalog</h2>
 
