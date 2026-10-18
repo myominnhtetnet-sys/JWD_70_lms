@@ -29,293 +29,217 @@
     
     
     <style>
-
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 30px; background-color: #f4f6f9; color: #333; }
-        h2 { color: #2c3e50; margin-bottom: 20px; }
-     /* Ultra-Modern Minimalist Filter Bar */
-.filter-container { 
-    background: #ffffff;
-    padding: 16px 24px; 
-    border-radius: 14px; 
-    border: 1px solid #eef2f6;
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04);
-    margin-bottom: 35px;
-}
-
-/* Linear Layout System */
-.filter-form { 
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    width: 100%;
-}
-
-/* Form Groups as Frameless Interactive Elements */
-.form-group { 
-    display: flex; 
-    flex-direction: column; 
-    flex: 1 1 170px;
-    position: relative;
-}
-
-/* Dedicated scaling for Search Input text box */
-.form-group.search-main {
-    flex: 2 1 260px;
-}
-
-.form-group label { 
-    font-size: 11px; 
-    font-weight: 600; 
-    margin-bottom: 6px; 
-    color: #94a3b8; 
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-/* Frameless Inputs Wrapper */
-.input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-    width: 100%;
-}
-
-.input-icon {
-    position: absolute;
-    left: 14px;
-    color: #94a3b8;
-    pointer-events: none;
-    width: 15px;
-    height: 15px;
-    transition: color 0.2s ease;
-}
-
-/* Sleek Inputs with Soft Backgrounds */
-.form-group input, .form-group select { 
-    width: 100%;
-    padding: 11px 14px 11px 38px; 
-    border: 1px solid #e2e8f0; 
-    border-radius: 10px; 
-    font-size: 13.5px; 
-    font-weight: 500;
-    background-color: #f8fafc; 
-    color: #1e293b;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-sizing: border-box;
-    appearance: none;
-}
-
-/* Refined custom arrow for select fields */
-.form-group select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://w3.org' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-    background-size: 14px;
-    padding-right: 36px;
-}
-
-/* Seamless Focus States */
-.form-group input:focus, .form-group select:focus { 
-    outline: none; 
-    border-color: #0f172a; 
-    background-color: #ffffff;
-    box-shadow: 0 0 0 1px #0f172a;
-}
-
-/* Light up icon on parent element focus */
-.form-group:focus-within .input-icon {
-    color: #0f172a;
-}
-
-/* Inline Dynamic Action Control Block */
-.button-group { 
-    display: flex; 
-    align-items: center;
-    gap: 8px; 
-    flex: 0 0 auto;
-    margin-top: 17px; /* Matches label height displacement */
-}
-
-.btn-submit { 
-    background-color: #0f172a; 
-    color: #ffffff; 
-    border: none; 
-    padding: 11px 22px; 
-    border-radius: 10px; 
-    cursor: pointer; 
-    font-weight: 600; 
-    font-size: 13.5px; 
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.15s ease;
-}
-
-.btn-submit:hover { 
-    background-color: #1e293b;
-    transform: translateY(-1px);
-}
-
-.btn-reset { 
-    background-color: #f1f5f9; /* Soft modern slate-gray background */
-    color: #475569; /* Balanced slate text */
-    text-decoration: none; 
-    text-align: center; 
-    padding: 11px 18px; 
-    border-radius: 10px; 
-    font-size: 13.5px; 
-    font-weight: 600; 
-    border: 1px solid #e2e8f0; /* Subtle matching border definition */
-    transition: all 0.15s ease; 
-}
-
-.btn-reset:hover { 
-    background-color: #e2e8f0; /* Clear, reactive hover darken step */
-    color: #0f172a; /* Deep contrast dark text shift */
-    border-color: #cbd5e0;
-}
-
-
-@media (max-width: 1024px) {
-    .button-group {
-        margin-top: 0;
-        width: 100%;
-        justify-content: flex-end;
-        border-top: 1px dashed #e2e8f0;
-        padding-top: 14px;
-    }
-}
-
-
+        body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0 0 40px 0; background-color: #f4f6f9; color: #333; }
         
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block; }
-        .badge-yes { background-color: #c6f6d5; color: #22543d; }
-        .badge-no { background-color: #fed7d7; color: #742a2a; }
-        .no-data { text-align: center; color: #718096; padding: 30px; font-style: italic; }
+        .main-content-container { padding: 32px 24px; max-width: 1300px; margin: 0 auto; box-sizing: border-box; }
+        .page-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+        h2 { color: #2c3e50; margin: 0; font-weight: 700; }
+        
+        /* Ultra-Modern Minimalist Filter Bar */
+        .filter-container { 
+            background: #ffffff;
+            padding: 20px 24px; 
+            border-radius: 14px; 
+            border: 1px solid #eef2f6;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04);
+            margin-bottom: 35px;
+        }
+
+        /* Linear Layout System */
+        .filter-form { 
+            display: flex;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 16px;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Form Groups as Frameless Interactive Elements */
+        .form-group { 
+            display: flex; 
+            flex-direction: column; 
+            flex: 1 1 170px;
+            position: relative;
+            margin: 0;
+        }
+
+        /* Dedicated scaling for Search Input text box */
+        .form-group.search-main {
+            flex: 2 1 260px;
+        }
+
+        .form-group label { 
+            font-size: 11px; 
+            font-weight: 700; 
+            margin-bottom: 8px; 
+            color: #94a3b8; 
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Frameless Inputs Wrapper */
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            color: #94a3b8;
+            pointer-events: none;
+            width: 15px;
+            height: 15px;
+            transition: color 0.2s ease;
+            z-index: 10;
+        }
+
+        /* Sleek Inputs with Soft Backgrounds */
+        .form-group input, .form-group select { 
+            width: 100%;
+            height: 44px;
+            padding: 11px 14px 11px 38px; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 10px; 
+            font-size: 13.5px; 
+            font-weight: 500;
+            background-color: #f8fafc; 
+            color: #1e293b;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-sizing: border-box;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        /* Refined custom arrow for select fields */
+        .form-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://w3.org' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 14px;
+            padding-right: 36px;
+        }
+
+        /* Seamless Focus States */
+        .form-group input:focus, .form-group select:focus { 
+            outline: none; 
+            border-color: #0f172a; 
+            background-color: #ffffff;
+            box-shadow: 0 0 0 1px #0f172a;
+        }
+
+        /* Light up icon on parent element focus */
+        .form-group:focus-within .input-icon {
+            color: #0f172a;
+        }
+
+        /* Inline Dynamic Action Control Block */
+        .button-group { 
+            display: flex; 
+            align-items: center;
+            gap: 8px; 
+            flex: 0 0 auto;
+            margin: 0;
+        }
+
+        .btn-submit { 
+            background-color: #0f172a; 
+            color: #ffffff; 
+            border: none; 
+            height: 44px;
+            padding: 0 22px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 13.5px; 
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+
+        .btn-submit:hover { 
+            background-color: #1e293b;
+            transform: translateY(-1px);
+            color: #ffffff;
+        }
+
+        .btn-reset { 
+            background-color: #f1f5f9; 
+            color: #475569; 
+            text-decoration: none; 
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 44px;
+            padding: 0 18px; 
+            border-radius: 10px; 
+            font-size: 13.5px; 
+            font-weight: 600; 
+            border: 1px solid #e2e8f0; 
+            transition: all 0.15s ease; 
+            box-sizing: border-box;
+        }
+
+        .btn-reset:hover { 
+            background-color: #e2e8f0; 
+            color: #0f172a; 
+            border-color: #cbd5e0;
+        }
+
+        @media (max-width: 1024px) {
+            .button-group {
+                width: 100%;
+                justify-content: flex-end;
+                border-top: 1px dashed #e2e8f0;
+                padding-top: 14px;
+                margin-top: 4px;
+            }
+        }
+        
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block; line-height: 1; }
+        .badge-yes { background-color: #c6f6d5; color: #22543d; border: 1px solid #bbf7d0; }
+        .badge-no { background-color: #fed7d7; color: #742a2a; border: 1px solid #fca5a5; }
+        .no-data { text-align: center; color: #718096; padding: 40px 20px; font-style: italic; background: white; border: 1px solid #e2e8f0; border-radius: 12px; }
         
         /* Responsive Grid Configuration */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-            padding: 5px;
-        }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; padding: 5px 0; }
 
         /* Individual Course Card Design */
-        .course-card {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-            border: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .course-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-        }
+        .course-card { background: #ffffff; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; height: 100%; }
+        .course-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+        .course-card-link { text-decoration: none; color: inherit; display: block; }
 
         /* Card Header Section */
-        .card-header {
-            background-color: #f7fafc;
-            padding: 15px 20px;
-            border-bottom: 1px solid #edf2f7;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .course-number {
-            font-size: 12px;
-            font-weight: 700;
-            color: #a0aec0;
-            text-transform: uppercase;
-        }
-
-        .course-meta-top {
-            font-size: 11px;
-            background-color: #e2e8f0;
-            color: #4a5568;
-            padding: 3px 8px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
+        .card-header { background-color: #f7fafc; padding: 15px 20px; border-bottom: 1px solid #edf2f7; display: flex; justify-content: space-between; align-items: center; }
+        .course-number { font-size: 12px; font-weight: 700; color: #a0aec0; text-transform: uppercase; }
+        .course-meta-top { font-size: 11px; background-color: #e2e8f0; color: #4a5568; padding: 3px 8px; border-radius: 20px; font-weight: 600; }
 
         /* Card Body Section */
-        .card-body {
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .course-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #2b6cb0;
-            margin: 0 0 8px 0;
-            line-height: 1.4;
-        }
-
-        .course-slug {
-            font-size: 12px;
-            color: #718096;
-            font-family: monospace;
-            margin-bottom: 12px;
-            word-break: break-all;
-        }
-
-        .course-desc {
-            font-size: 14px;
-            color: #4a5568;
-            line-height: 1.5;
-            margin-bottom: 20px;
-            flex-grow: 1;
-        }
+        .card-body { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .course-title { font-size: 18px; font-weight: 700; color: #1e3a8a; margin: 0 0 8px 0; line-height: 1.4; }
+        .course-desc { font-size: 13.5px; color: #4a5568; line-height: 1.5; margin-bottom: 20px; flex-grow: 1; }
 
         /* Attributes Row (Level, Language, Duration) */
-        .course-attributes {
-            display: flex;
-            justify-content: space-between;
-            border-top: 1px dashed #e2e8f0;
-            border-bottom: 1px dashed #e2e8f0;
-            padding: 12px 0;
-            margin-bottom: 20px;
-        }
-
-        .attr-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .attr-label {
-            font-size: 10px;
-            text-transform: uppercase;
-            color: #a0aec0;
-            font-weight: 700;
-            margin-bottom: 2px;
-        }
-
-        .attr-value {
-            font-size: 13px;
-            font-weight: 600;
-            color: #2d3748;
-        }
+        .course-attributes { display: flex; justify-content: space-between; border-top: 1px dashed #e2e8f0; border-bottom: 1px dashed #e2e8f0; padding: 12px 0; margin-bottom: 20px; }
+        .attr-item { display: flex; flex-direction: column; }
+        .attr-label { font-size: 10px; text-transform: uppercase; color: #a0aec0; font-weight: 700; margin-bottom: 2px; }
+        .attr-value { font-size: 13px; font-weight: 600; color: #2d3748; }
 
         /* Card Footer Section */
-        .card-footer {
-            padding: 0 20px 20px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+        .card-footer { padding: 0 20px 20px 20px; display: flex; align-items: center; justify-content: space-between; background: transparent; border-top: none; }
+        .course-price { font-size: 17px; font-weight: 700; color: #166534; }
+        .badges-container { display: flex; gap: 6px; }
 
         .course-price {
             font-size: 22px;
@@ -640,187 +564,144 @@
 .btn-submit-review:hover {
     background-color: #1e293b;
 }
-  /* 🟢 RESTORED NAV TRIGGER HEADER BUTTON CLASS RULES */
-        .nav-button-container { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
-        .btn-nav-action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; border-radius: 8px; font-size: 13.5px; font-weight: 600; text-decoration: none; transition: background 0.15s, border-color 0.15s; cursor: pointer; box-sizing: border-box; }
-        .btn-nav-primary { background-color: #0f172a; color: white; border: 1px solid #0f172a; }
-        .btn-nav-primary:hover { background-color: #1e293b; border-color: #1e293b; }
-        .btn-nav-secondary { background-color: #ffffff; color: #475569; border: 1px solid #cbd5e1; }
-        .btn-nav-secondary:hover { background-color: #f8fafc; border-color: #94a3b8; color: #0f172a; }
-
-        /* Input Form Group Structures Layout Components */
-        .form-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
-        .input-wrapper { position: relative; display: flex; align-items: center; }
-        .input-icon { position: absolute; left: 12px; width: 16px; height: 16px; color: #94a3b8; pointer-events: none; }
-        .filter-form input[type="text"] { width: 100%; padding: 10px 12px 10px 36px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.15s; }
-        .filter-form input[type="text"]:focus { border-color: #0f172a; }
-
+ 
         
     </style>
 </head>
 <body>
-
-<!-- ========================================================= -->
-<!-- NAVIGATION BAR -->
-<!-- ========================================================= -->
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
-
-    <div class="container">
-
-        <!-- Logo -->
-
-        <a class="navbar-brand fw-bold text-primary fs-4"
-           th:href="@{/}">
-
-            <i class="fa-solid fa-graduation-cap me-2 text-warning"></i>
-
-            LMS
-
-        </a>
-
-
-        <!-- Mobile Button -->
-
-        <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav">
-
-            <span class="navbar-toggler-icon"></span>
-
-        </button>
-
-
-        <!-- Menu -->
-
-        <div class="collapse navbar-collapse" id="navbarNav">
-
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-                <li class="nav-item">
-
-                    <a class="nav-link active"
-                       href="#home">
-
-                        Home
-
+ <!-- ========================================================= -->
+    <!-- NAVIGATION BAR (LOCKED IN GUEST MODE)                     -->
+    <!-- ========================================================= -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+        <div class="container-fluid px-lg-5">
+            
+            <!-- Logo -->
+            <a class="navbar-brand fw-bold text-primary fs-4" th:href="@{/}">
+                <i class="fa-solid fa-graduation-cap me-2 text-warning"></i>LMS
+            </a>
+            
+            <!-- Mobile Toggle Button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Menu Items -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/courses/show}">Courses</a>
+                    </li>
+                </ul>
+                
+                <!-- Guest Controls: Locked Permanently Visible -->
+                <div class="d-flex gap-2">
+                    <a th:href="@{/login}" class="btn btn-outline-light fw-bold px-3">
+                        <i class="fa-solid fa-right-to-bracket me-1"></i> Login
                     </a>
-
-                </li>
-
-
-                <li class="nav-item">
-
-                    <a class="nav-link"
-                       href="#categories">
-
-                        Categories
-
+                    <a th:href="@{/student/register}" class="btn btn-warning fw-bold px-3">
+                        Register
                     </a>
-
-                </li>
-
-
-                <li class="nav-item">
-
-                    <a class="nav-link"
-                       href="#courses">
-
-                        Courses
-
-                    </a>
-
-                </li>
-
-
-                <li class="nav-item">
-
-                    <a class="nav-link"
-                       href="#about">
-
-                        Why Choose Us
-
-                    </a>
-
-                </li>
-
-            </ul>
-
-
-            <!-- Login / Register -->
-
-            <div class="d-flex gap-2">
-
-                <a th:href="@{/login}"
-                   class="btn btn-outline-light fw-bold px-3">
-
-                    Login
-
-                </a>
-
-
-                <a th:href="@{/student/register}"
-                   class="btn btn-warning fw-bold px-3">
-
-                    Register
-
-                </a>
-
+                </div>
+                
             </div>
-
         </div>
+    </nav>
 
+    <!-- ========================================================= -->
+    <!-- MAIN INTERACTIVE SURFACE AREA BODY                         -->
+    <!-- ========================================================= -->
+    <div class="main-content-wrapper">
+            
+      <!-- ========================================================= -->
+<!-- STYLED HEADER CONTROLS ROW -->
+<!-- ========================================================= -->
+<div class="row align-items-center mb-4 g-3 border-bottom pb-3">
+    
+   <!-- ========================================================= -->
+<!-- ULTRA-CLEAN MODERN SAAS HEADER SECTION -->
+<!-- ========================================================= -->
+<div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px; margin-bottom: 28px; width: 100%; flex-wrap: wrap; gap: 16px;">
+    
+    <!-- Left Group: Minimalist Typography Stack -->
+    <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <!-- Modern Dot Indicator Badge Component Accent -->
+            <span style="width: 8px; height: 8px; background-color: #3b82f6; border-radius: 50%; display: inline-block;"></span>
+            <h2 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.025em; font-family: 'Inter', sans-serif;">
+                Course Catalog
+            </h2>
+        </div>
+        <p style="font-size: 13.5px; color: #64748b; margin: 0; line-height: 1.4; font-weight: 500;">
+            Explore professional training paths to advance your engineering skills.
+        </p>
     </div>
 
-</nav>
-
-   <h2>Course Catalog</h2>
-
-<div class="filter-container">
-
-<div class="nav-button-container">
-            <a th:href="@{/}" class="btn-nav-action btn-nav-secondary">
-                <i class="fa-solid fa-house"></i> Go to Homepage
-            </a>
+    <!-- Right Group: Clean Floating Context Counters -->
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="background-color: #f1f5f9; padding: 6px 14px; border-radius: 20px; display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-graduation-cap" style="font-size: 12px; color: #475569;"></i>
+            <span style="font-size: 12px; font-weight: 700; color: #475569; letter-spacing: 0.02em; text-transform: uppercase;">
+                Active Catalog Profile
+            </span>
+        </div>
+    </div>
+    
 </div>
-  
-    <form th:action="@{/courses/show}" method="get" class="filter-form">
-        
-        <!-- Search Keyword -->
-        <div class="form-group search-main">
-            <label for="title">Course Title</label>
-            <div class="input-wrapper">
-                <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <input type="text" id="title" name="title" th:value="${param.title}" placeholder="Search key topics...">
-            </div>
-        </div>
 
-        <!-- Level Option -->
-        <div class="form-group">
-            <label for="level">Level</label>
-            <div class="input-wrapper">
-                <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
-                <select id="level" name="level">
-                    <option value="">All Levels</option>
-                    <option value="BEGINNER" th:selected="${#strings.equals(param.level, 'BEGINNER')}">Beginner</option>
-                    <option value="INTERMEDIATE" th:selected="${#strings.equals(param.level, 'INTERMEDIATE')}">Intermediate</option>
-                    <option value="ADVANCED" th:selected="${#strings.equals(param.level, 'ADVANCED')}">Advanced</option>
-                </select>
-            </div>
-        </div>
+    
+</div>
 
-        <!-- Max Price -->
-        <div class="form-group">
-            <label for="price">Max Price</label>
-            <div class="input-wrapper">
-                <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <input type="number" step="0.01" id="price" name="price" th:value="${param.price}" placeholder="Max budget">
-            </div>
-        </div>
 
-        <!-- Discount Option -->
+        <!-- ===================================================== -->
+        <!-- FILTER CONTAINER COMPONENT BLOCK                       -->
+        <!-- ===================================================== -->
+        <div class="filter-container">
+          
+            <!-- Dynamic Filter Form Pipeline -->
+            <form th:action="@{/courses/show}" method="get" class="filter-form" style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; margin: 0; padding: 0;">
+                
+                <!-- 1. Search Keyword -->
+                <div class="form-group search-main" style="flex: 2; min-width: 240px;">
+                    <label for="title" style="font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.05em;">Course Title</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <input type="text" id="title" name="title" th:value="${param.title}" placeholder="Search key topics...">
+                    </div>
+                </div>
+
+                <!-- 2. Level Option Select -->
+                <div class="form-group" style="flex: 1; min-width: 160px;">
+                    <label for="level" style="font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.05em;">Level</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/>
+                        </svg>
+                        <select id="level" name="level">
+                            <option value="">All Levels</option>
+                            <option value="BEGINNER" th:selected="${#strings.equals(param.level, 'BEGINNER')}">Beginner</option>
+                            <option value="INTERMEDIATE" th:selected="${#strings.equals(param.level, 'INTERMEDIATE')}">Intermediate</option>
+                            <option value="ADVANCED" th:selected="${#strings.equals(param.level, 'ADVANCED')}">Advanced</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 3. Max Price Numeric Input -->
+                <div class="form-group" style="flex: 1; min-width: 140px;">
+                    <label for="price" style="font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.05em;">Max Price</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <input type="number" step="0.01" id="price" name="price" th:value="${param.price}" placeholder="Max budget">
+                    </div>
+                </div>
+
+                <!-- 4. Discount Option Selector -->
         <div class="form-group">
             <label for="allow_discount">Discount</label>
             <div class="input-wrapper">
