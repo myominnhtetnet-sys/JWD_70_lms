@@ -1,10 +1,103 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+ <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Catalog Management</title>
+
+    <!-- ========================================================= -->
+    <!-- 🟢 THE SIMPLEST FIX: REMOVED CONFLICTING BOOTSTRAP STYLES  -->
+    <!-- ========================================================= -->
+    
+    <!-- 1. Inter Google Font Setup -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- 2. Font Awesome Icons Pack (Loads icons natively without conflicts) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+
+    <!-- 3. Your Custom Layout CSS Stylesheet -->
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 30px; background-color: #f4f6f9; color: #333; }
-        h2 { color: #2c3e50; margin-bottom: 20px; }
+        /* ========================================================= */
+        /* LOCKED LEFT-ALIGNED MODERN GUEST BLACK NAVBAR CSS BLOCK    */
+        /* ========================================================= */
+        nav.navbar {
+            background-color: #000000 !important;
+            border-bottom: 1px solid #1e293b !important;
+            padding: 14px 24px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 1030 !important;
+            box-sizing: border-box !important;
+        }
+        nav.navbar .container-fluid {
+            display: flex !important;
+            width: 100% !important;
+            max-width: 1250px !important;
+            margin: 0 auto !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+        nav.navbar .navbar-brand {
+            font-size: 22px !important;
+            font-weight: 800 !important;
+            color: #3b82f6 !important;
+            text-decoration: none !important;
+            margin-right: 32px !important;
+        }
+        nav.navbar .collapse {
+            display: flex !important;
+            flex-grow: 1 !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+        nav.navbar .navbar-nav {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 24px !important;
+            margin: 0 auto 0 0 !important; /* Pushes home/courses menu links to the left side */
+            padding: 0 !important;
+            list-style: none !important;
+        }
+        nav.navbar .nav-link {
+            color: #94a3b8 !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+        }
+        nav.navbar .nav-link:hover, nav.navbar .nav-link.active {
+            color: #ffffff !important;
+        }
+        nav.navbar .d-flex.gap-2 {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            margin-left: auto !important; /* Locks login options group to the right wall */
+        }
+        nav.navbar .btn {
+            height: 36px !important;
+            padding: 0 16px !important;
+            border-radius: 8px !important;
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            box-sizing: border-box !important;
+        }
+        nav.navbar .btn-outline-light { color: #f8fafc !important; border: 1px solid #cbd5e1 !important; }
+        nav.navbar .btn-outline-light:hover { background-color: #f8fafc !important; color: #0f172a !important; }
+        nav.navbar .btn-warning { background-color: #f59e0b !important; border: 1px solid #f59e0b !important; color: #0f172a !important; }
+        nav.navbar .btn-warning:hover { background-color: #d97706 !important; }
+        
      /* Ultra-Modern Minimalist Filter Bar */
 .filter-container { 
     background: #ffffff;
@@ -620,6 +713,35 @@
 </head>
 <body>
 
+    <!-- ========================================================= -->
+    <!-- NAVIGATION BAR (LOCKED IN GUEST MODE & PITCH BLACK)        -->
+    <!-- ========================================================= -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow-sm">
+        <div class="container-fluid px-lg-5">
+            <a class="navbar-brand fw-bold text-primary fs-4" th:href="@{/}">
+                <i class="fa-solid fa-graduation-cap me-2 text-warning"></i>LMS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/courses/show}">Courses</a></li>
+                </ul>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/login}" class="btn btn-outline-light fw-bold px-3">
+                    <i class="fa-solid fa-right-to-bracket me-1"></i> Login</a>
+                   
+                <a th:href="@{/student/register}" class="btn btn-warning fw-bold px-3">
+                    Register
+                </a>
+            </div>
+            
+        </div>
+    </div>
+</nav>
+
    <h2>Course Catalog</h2>
 
 <div class="filter-container">
@@ -762,13 +884,13 @@
                     </div>
 
                     <!-- Direct Sub-Page Navigation Action Button -->
-                  <div style="margin-top: 15px;">
-					    <a th:href="@{/courses/detail/{slug}(slug=${course['slug'] != null ? course['slug'] : course['title']})}" 
-					       class="btn-view-details" 
-					       style="display: inline-block; padding: 8px 16px; background-color: #0f172a; color: white; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; text-align: center;">
-					        View Course Details
-					    </a>
-					</div>
+                    <div style="margin-top: 15px;">
+                        <a th:href="@{/courses/detail/{slug}(slug=${course.slug})}" 
+                           class="btn-view-details" 
+                           style="display: inline-block; padding: 8px 16px; background-color: #0f172a; color: white; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; text-align: center;">
+                            View Course Details
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Footer -->
