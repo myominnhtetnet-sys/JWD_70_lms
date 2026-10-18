@@ -2,7 +2,34 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Course Catalog Management</title>
+    
+     <!-- Bootstrap 5 CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Your CSS -->
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+    
+    
     <style>
+
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 30px; background-color: #f4f6f9; color: #333; }
         h2 { color: #2c3e50; margin-bottom: 20px; }
      /* Ultra-Modern Minimalist Filter Bar */
@@ -613,17 +640,151 @@
 .btn-submit-review:hover {
     background-color: #1e293b;
 }
+  /* 🟢 RESTORED NAV TRIGGER HEADER BUTTON CLASS RULES */
+        .nav-button-container { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+        .btn-nav-action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; border-radius: 8px; font-size: 13.5px; font-weight: 600; text-decoration: none; transition: background 0.15s, border-color 0.15s; cursor: pointer; box-sizing: border-box; }
+        .btn-nav-primary { background-color: #0f172a; color: white; border: 1px solid #0f172a; }
+        .btn-nav-primary:hover { background-color: #1e293b; border-color: #1e293b; }
+        .btn-nav-secondary { background-color: #ffffff; color: #475569; border: 1px solid #cbd5e1; }
+        .btn-nav-secondary:hover { background-color: #f8fafc; border-color: #94a3b8; color: #0f172a; }
 
+        /* Input Form Group Structures Layout Components */
+        .form-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-icon { position: absolute; left: 12px; width: 16px; height: 16px; color: #94a3b8; pointer-events: none; }
+        .filter-form input[type="text"] { width: 100%; padding: 10px 12px 10px 36px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.15s; }
+        .filter-form input[type="text"]:focus { border-color: #0f172a; }
 
         
     </style>
 </head>
 <body>
 
+<!-- ========================================================= -->
+<!-- NAVIGATION BAR -->
+<!-- ========================================================= -->
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+
+    <div class="container">
+
+        <!-- Logo -->
+
+        <a class="navbar-brand fw-bold text-primary fs-4"
+           th:href="@{/}">
+
+            <i class="fa-solid fa-graduation-cap me-2 text-warning"></i>
+
+            LMS
+
+        </a>
+
+
+        <!-- Mobile Button -->
+
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+
+        <!-- Menu -->
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item">
+
+                    <a class="nav-link active"
+                       href="#home">
+
+                        Home
+
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="#categories">
+
+                        Categories
+
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="#courses">
+
+                        Courses
+
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="#about">
+
+                        Why Choose Us
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+
+            <!-- Login / Register -->
+
+            <div class="d-flex gap-2">
+
+                <a th:href="@{/login}"
+                   class="btn btn-outline-light fw-bold px-3">
+
+                    Login
+
+                </a>
+
+
+                <a th:href="@{/student/register}"
+                   class="btn btn-warning fw-bold px-3">
+
+                    Register
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</nav>
+
    <h2>Course Catalog</h2>
 
 <div class="filter-container">
 
+<div class="nav-button-container">
+            <a th:href="@{/}" class="btn-nav-action btn-nav-secondary">
+                <i class="fa-solid fa-house"></i> Go to Homepage
+            </a>
+</div>
   
     <form th:action="@{/courses/show}" method="get" class="filter-form">
         
