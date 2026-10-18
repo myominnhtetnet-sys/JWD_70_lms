@@ -346,7 +346,8 @@ public class StudentExamRepository {
             }
 
             question.setOptions(options);
-        }
+        }   
+        
 
         return questions;
     }
@@ -397,4 +398,6 @@ public class StudentExamRepository {
 
         return results.isEmpty() ? null : results.get(0);
     }
+    
+    
 }

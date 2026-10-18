@@ -21,6 +21,8 @@ import com.Learning_Managnment_System.JWD_70_lms.model.ExamBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.QuestionBean;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/teacher/exams")
 public class ExamController {
@@ -111,19 +113,49 @@ public class ExamController {
 	    }
 	}
 
-	@PostMapping("/save")
-	public String saveExam(ExamBean exam, RedirectAttributes redirectAttributes) {
-		try {
-			exam.setCreatedBy(1L);
-			Long examId = examService.createExam(exam);
-			redirectAttributes.addFlashAttribute("success", "Exam created successfully.");
-			return "redirect:/teacher/exams/view/" + examId;
-		} catch (IllegalArgumentException e) {
-			redirectAttributes.addFlashAttribute("error", e.getMessage());
-			return "redirect:/teacher/exams/create";
-		}
-	}
 
+@PostMapping("/save")
+public String saveExam( ExamBean exam,HttpSession session,
+        RedirectAttributes redirectAttributes) {
+
+    try {
+        // 1. Login ဝင်ထားတဲ့ user ရဲ့ email ကိုယူမယ်
+        Object emailObject = session.getAttribute("email");
+        Object roleObject = session.getAttribute("roleId");
+
+        if (emailObject == null || roleObject == null) {
+            redirectAttributes.addFlashAttribute("error", "Please log in first.");
+            return "redirect:/login";
+        }
+
+        // 2. Teacher role ဟုတ်မဟုတ် စစ်မယ်
+        if (!(roleObject instanceof Number) || ((Number) roleObject).intValue() != 2) {
+            redirectAttributes.addFlashAttribute("error", "Only teachers can create exams.");
+            return "redirect:/teacher/exams";
+        }
+
+        String email = emailObject.toString();
+        Long teacherUserId = jdbcTemplate.queryForObject("SELECT user_id FROM users WHERE email = ?",Long.class,email);
+
+        if (teacherUserId == null) {
+            redirectAttributes.addFlashAttribute("error", "Teacher account not found.");
+            return "redirect:/teacher/exams";
+        }
+
+        // 4. Login ဝင်ထားတဲ့ Teacher ID ကို သတ်မှတ်မယ်
+        exam.setCreatedBy(teacherUserId);
+
+        // 5. Exam ကို save လုပ်မယ်
+        Long examId = examService.createExam(exam);
+
+        redirectAttributes.addFlashAttribute("success", "Exam created successfully.");
+        return "redirect:/teacher/exams/view/" + examId;
+
+    } catch (Exception e) {
+        redirectAttributes.addFlashAttribute("error", "Failed to create exam: " + e.getMessage());
+        return "redirect:/teacher/exams/create";
+    }
+}
 
 	@PostMapping("/update")
 	public String updateExam(

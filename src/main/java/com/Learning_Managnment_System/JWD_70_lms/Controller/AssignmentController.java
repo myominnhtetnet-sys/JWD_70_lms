@@ -142,37 +142,49 @@ public class AssignmentController {
     }
 
     @GetMapping("/assignments/{id}")
-    public String viewAssignment( @PathVariable Integer id, Model model) {
+    public String viewAssignment(@PathVariable Integer id, Model model) {
 
         AssignmentBean assignment = assignmentService.getAssignmentById(id);
 
-        List<Map<String, Object>> batchList =
-                jdbcTemplate.queryForList(
-                    """
-                    SELECT batch_id, batch_code, title
-                    FROM batches
-                    WHERE batch_id = ?
-                    """,
-                    assignment.getBatchId()
-                );
-
-        if (batchList.isEmpty()) {
-            throw new IllegalArgumentException("Batch not found");
+        if (assignment == null) {
+            throw new IllegalArgumentException(
+                "Assignment not found. ID = " + id
+            );
         }
 
-        Map<String, Object> batch = batchList.get(0);
+        System.out.println("========== ASSIGNMENT DEBUG ==========");
+        System.out.println("Assignment ID = " + assignment.getAssignmentId());
+        System.out.println("Batch ID      = " + assignment.getBatchId());
+        System.out.println("Lesson ID     = " + assignment.getLessonId());
 
-        LessonBean lesson =
-                lessonRepository.findById( assignment.getLessonId()
-                ).orElseThrow(
-                        () -> new IllegalArgumentException("Lesson not found"));
+        List<Map<String, Object>> batchList = jdbcTemplate.queryForList(
+            """
+            SELECT batch_id, batch_code, title
+            FROM batches
+            WHERE batch_id = ?
+            """,
+            assignment.getBatchId()
+        );
 
-        model.addAttribute( "assignment",assignment);
-        model.addAttribute("batch",batch);
-        model.addAttribute("lesson", lesson);
+        List<Map<String, Object>> lessonList = jdbcTemplate.queryForList(
+            """
+            SELECT *
+            FROM lessons
+            WHERE lesson_id = ?
+            """,
+            assignment.getLessonId()
+        );
+
+        System.out.println("Batch Data  = " + batchList);
+        System.out.println("Lesson Data = " + lessonList);
+        System.out.println("======================================");
+
+        model.addAttribute("assignment", assignment);
+        model.addAttribute("batchList", batchList);
+        model.addAttribute("lessonList", lessonList);
+
         return "assignment-detail";
     }
-    
     @GetMapping("/assignments/edit/{id}")
     public String showEditForm(@PathVariable Integer id, Model model) {
         AssignmentBean assignment = assignmentService.getAssignmentById(id);
@@ -274,20 +286,42 @@ public class AssignmentController {
         return "/uploads/assignments/" + newFileName;
     }
 
-    private void loadDropdownData(Model model) {
-        String sql = """
+
+
+private void loadDropdownData(Model model) {
+
+    // Courses
+    List<Map<String, Object>> courses =
+        jdbcTemplate.queryForList("""
+            SELECT course_id, title
+            FROM courses
+            ORDER BY course_id DESC
+        """);
+
+    // Course Modules
+    List<Map<String, Object>> modules =
+        jdbcTemplate.queryForList("""
+            SELECT module_id, course_id, title
+            FROM course_modules
+            ORDER BY module_id DESC
+        """);
+
+    // Batches
+    List<Map<String, Object>> batches =
+        jdbcTemplate.queryForList("""
             SELECT batch_id, batch_code, title
             FROM batches
             ORDER BY batch_id DESC
-            """;
+        """);
 
-        List<Map<String, Object>> batches = jdbcTemplate.queryForList(sql);
-        List<LessonBean> lessons = lessonRepository.findAll();
+    // Lessons
+    List<LessonBean> lessons = lessonRepository.findAll();
 
-        model.addAttribute("batches", batches);
-        model.addAttribute("lessons", lessons);
-    }
-    
+    model.addAttribute("courses", courses);
+    model.addAttribute("modules", modules);
+    model.addAttribute("batches", batches);
+    model.addAttribute("lessons", lessons);
+}   
     @GetMapping("/assignments/api/{id}")
     @ResponseBody
     public AssignmentBean getAssignmentApi(@PathVariable Integer id) {

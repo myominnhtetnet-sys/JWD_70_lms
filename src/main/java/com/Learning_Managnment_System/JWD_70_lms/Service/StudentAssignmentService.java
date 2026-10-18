@@ -140,7 +140,7 @@ public class StudentAssignmentService {
         }
     }
     public int getUserIdByEmail(String email) {
-        String sql = "SELECT user_id FROM lms_db.users WHERE email = ? LIMIT 1";
+        String sql = "SELECT user_id FROM learning_db.users WHERE email = ? LIMIT 1";
         return jdbcTemplate.queryForObject(sql, Integer.class, email);
     }
 

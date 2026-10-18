@@ -1,7 +1,10 @@
+
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.util.List;
 import java.util.Map;
+
+import jakarta.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,10 +26,6 @@ public class TeacherExamResultController {
 
     private final TeacherExamResultService service;
 
-    // Local testing only.
-    // Replace 1L with the created_by ID of the exam you want to test.
-    private static final Long TEST_TEACHER_ID = 1L;
-
     public TeacherExamResultController(
             TeacherExamResultService service) {
         this.service = service;
@@ -38,16 +37,20 @@ public class TeacherExamResultController {
             Long attemptId,
             @RequestParam(name = "mode", defaultValue = "view")
             String mode,
+            HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        Long teacherId = TEST_TEACHER_ID;
+        Long teacherId = getLoggedInTeacherId(session);
+
+        if (teacherId == null) {
+            return "redirect:/login";
+        }
 
         loadList(model, teacherId);
 
         if (attemptId != null) {
             try {
-
                 Map<String, Object> attempt =
                         service.getAttempt(attemptId, teacherId);
 
@@ -65,7 +68,6 @@ public class TeacherExamResultController {
                         "grade".equals(mode) ? "grade" : "view");
 
             } catch (IllegalArgumentException e) {
-
                 redirectAttributes.addFlashAttribute(
                         "error", e.getMessage());
 
@@ -81,19 +83,22 @@ public class TeacherExamResultController {
             @PathVariable("attemptId") Long attemptId,
             @ModelAttribute("gradingForm") ExamGradingForm form,
             BindingResult bindingResult,
+            HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        Long teacherId = TEST_TEACHER_ID;
+        Long teacherId = getLoggedInTeacherId(session);
+
+        if (teacherId == null) {
+            return "redirect:/login";
+        }
 
         Map<String, Object> attempt;
 
         try {
-
             attempt = service.getAttempt(attemptId, teacherId);
 
         } catch (IllegalArgumentException e) {
-
             redirectAttributes.addFlashAttribute(
                     "error", e.getMessage());
 
@@ -104,7 +109,6 @@ public class TeacherExamResultController {
                 service.getAnswers(attempt);
 
         try {
-
             if (bindingResult.hasErrors()) {
                 throw new IllegalArgumentException(
                         "Please enter valid numbers for the marks.");
@@ -118,8 +122,6 @@ public class TeacherExamResultController {
             return "redirect:/teacher/exam-results";
 
         } catch (IllegalArgumentException e) {
-
-            // Preserve entered marks when validation fails.
             loadList(model, teacherId);
 
             model.addAttribute("attempt", attempt);
@@ -131,19 +133,42 @@ public class TeacherExamResultController {
         }
     }
 
+    private Long getLoggedInTeacherId(HttpSession session) {
+
+        Object emailObject = session.getAttribute("email");
+        Object roleObject = session.getAttribute("roleId");
+
+        if (!(emailObject instanceof String email)
+                || email.isBlank()) {
+            return null;
+        }
+
+        if (!(roleObject instanceof Number role)
+                || role.intValue() != 2) {
+            return null;
+        }
+
+        try {
+            return service.getTeacherId(email);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
     private void loadList(Model model, Long teacherId) {
 
         List<Map<String, Object>> results =
                 service.getResults(teacherId);
 
         long graded = results.stream()
-                .filter(row -> "GRADED".equals(row.get("status")))
+                .filter(row ->
+                        "GRADED".equals(row.get("status")))
                 .count();
 
         model.addAttribute("results", results);
         model.addAttribute("totalCount", results.size());
         model.addAttribute("gradedCount", graded);
-        model.addAttribute("pendingCount", results.size() - graded);
+        model.addAttribute(
+                "pendingCount", results.size() - graded);
     }
 }
-

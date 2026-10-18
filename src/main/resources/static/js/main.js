@@ -49,7 +49,8 @@ const navMenus = {
 		{ icon: 'fa-file-pen', label: 'Assignments', path: '/teacher/assignments' },
 		{ icon: 'fa-file-circle-check', label: 'Grade Submissions', path: '/teacher/submissions' },
 		{ icon: 'fa-database', label: 'Question Bank' , path: '/teacher/question-list'},
-		{ icon: 'fa-clipboard-list', label: 'Exams', path: '/teacher/exams' }
+		{ icon: 'fa-clipboard-list', label: 'Exams', path: '/teacher/exams' },
+		{ icon: 'fas fa-file-circle-check', label: 'Exam Eesults',path: '/teacher/exam-results'}
 		
 	],
 	student: [

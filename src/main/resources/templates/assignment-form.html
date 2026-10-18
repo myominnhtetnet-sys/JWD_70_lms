@@ -44,23 +44,8 @@
 				        </option>				
 				    </select>
 				</div>
-				
-                    <div class="form-group">
-                        <label>Batch</label>
-
-                        <select th:field="*{batchId}" required>
-                            <option value=""> -- Select Batch -- </option>
-
-                          <!-- 🟢 FIXED: Changed batch.batchId to batch.batch_id -->
-						<option th:each="batch : ${batches}" 
-						        th:value="${batch.batch_id}" 
-						        th:text="${batch.title}">Batch Title</option>
-
-                        </select>
-                    </div>
 
                     <div class="form-group">
-
                         <label>Lesson</label>
                         <select th:field="*{lessonId}" required>
                             <option value=""> -- Select Lesson --</option>

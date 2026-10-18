@@ -547,17 +547,14 @@
     border-color: #3768ed;
     box-shadow: 0 0 0 3px rgba(55, 104, 237, 0.12);
 }
-
 .search-card select {
     cursor: pointer;
 }
-
 .search-actions {
     display: flex;
     align-items: center;
     gap: 12px;
 }
-
 .search-btn,
 .search-reset-btn {
     height: 30px;
@@ -569,16 +566,13 @@
     cursor: pointer;
     white-space: nowrap;
 }
-
 .search-btn {
     background: #3768ed;
     color: #ffffff;
 }
-
 .search-btn:hover {
     background: #2855d9;
 }
-
 .search-reset-btn {
     background: #f1f1f1;
     color: #334155;
@@ -622,7 +616,6 @@
     }
 }
 /* EDIT MODAL */
-
 .exam-edit-overlay {
     display: none;
     position: fixed;
@@ -633,11 +626,9 @@
     justify-content: center;
     padding: 16px;
 }
-
 .exam-edit-overlay.show {
     display: flex;
 }
-
 .exam-edit-box {
     width: 100%;
     max-width: 650px;
@@ -648,7 +639,6 @@
     flex-direction: column;
     overflow: hidden;
 }
-
 .exam-edit-header {
     padding: 18px 22px;
     border-bottom: 1px solid #e2e8f0;
@@ -656,57 +646,47 @@
     justify-content: space-between;
     align-items: center;
 }
-
 .exam-edit-header h2 {
     margin: 0;
     font-size: 20px;
 }
-
 .exam-edit-header p {
     margin: 5px 0 0;
     font-size: 13px;
     color: #64748b;
 }
-
 .exam-edit-close {
     border: none;
     background: transparent;
     font-size: 26px;
     cursor: pointer;
 }
-
 #editExamForm {
     display: flex;
     flex-direction: column;
     min-height: 0;
 }
-
 .exam-edit-body {
     padding: 20px;
     overflow-y: auto;
 }
-
 .exam-edit-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
 }
-
 .exam-edit-full {
     grid-column: 1 / -1;
 }
-
 .exam-edit-group {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
-
 .exam-edit-group label {
     font-size: 13px;
     font-weight: 600;
 }
-
 .exam-edit-group input,
 .exam-edit-group select {
     width: 100%;
@@ -714,17 +694,14 @@
     border: 1px solid #cbd5e1;
     border-radius: 7px;
 }
-
 .exam-edit-group select:disabled {
     background: #f1f5f9;
 }
-
 .exam-edit-check {
     display: flex;
     align-items: center;
     gap: 8px;
 }
-
 .exam-edit-footer {
     display: flex;
     justify-content: flex-end;
@@ -732,24 +709,20 @@
     padding: 15px 20px;
     border-top: 1px solid #e2e8f0;
 }
-
 .exam-edit-footer button {
     padding: 9px 16px;
     border-radius: 7px;
     cursor: pointer;
 }
-
 .exam-edit-save {
     background: #4f46e5;
     color: white;
     border: none;
 }
-
 .exam-edit-cancel {
     background: #e2e8f0;
     border: none;
 }
-
 @media (max-width: 600px) {
     .exam-edit-grid {
         grid-template-columns: 1fr;
@@ -788,11 +761,9 @@
     <!-- Search by exam title -->
     <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text"
-               id="examSearch"
+        <input type="text" id="examSearch"
                placeholder="Search exam title..."
-               autocomplete="off"
-               oninput="filterExams()">
+               autocomplete="off" oninput="filterExams()">
     </div>
 
     <!-- Exam Type -->
@@ -813,15 +784,11 @@
 
     <!-- Buttons -->
     <div class="search-actions">
-        <button type="button"
-                class="search-btn"
-                onclick="filterExams()">
+        <button type="button" class="search-btn" onclick="filterExams()">
             Search
         </button>
 
-        <button type="button"
-                class="search-reset-btn"
-                onclick="resetExamSearch()">
+        <button type="button" class="search-reset-btn" onclick="resetExamSearch()">
             Reset
         </button>
     </div>
@@ -962,8 +929,7 @@
             <i class="fa-solid fa-eye"></i>
             Exam Details
         </h2>
-        <button type="button" class="modal-close"
-                onclick="closeViewModal()">
+        <button type="button" class="modal-close" onclick="closeViewModal()">
             &times;
         </button>
     </div>
@@ -1036,8 +1002,7 @@
                 <p>Update exam information</p>
             </div>
 
-            <button type="button" class="exam-edit-close"
-                    onclick="closeEditModal()">
+            <button type="button" class="exam-edit-close" onclick="closeEditModal()">
                 &times;
             </button>
         </div>
@@ -1045,11 +1010,7 @@
             <form id="editExamForm" method="post" th:action="@{/teacher/exams/update/prepare}">
 
             <input type="hidden" id="editExamId" name="examId">
-
-            <input type="hidden"
-                   th:if="${_csrf != null}"
-                   th:name="${_csrf.parameterName}"
-                   th:value="${_csrf.token}">
+            <input type="hidden" th:if="${_csrf != null}" th:value="${_csrf.token}">
 
             <div class="exam-edit-body">
 
@@ -1195,8 +1156,7 @@
         document.getElementById("viewExamId").textContent = id;
         document.getElementById("viewTitle").textContent = title;
         document.getElementById("viewType").textContent = type;
-        document.getElementById("viewDuration").textContent =
-            duration + " minutes";
+        document.getElementById("viewDuration").textContent = duration + " minutes";
         document.getElementById("viewTotal").textContent = total;
         document.getElementById("viewPass").textContent = pass;
         document.getElementById("viewAttempts").textContent = attempts;
@@ -1215,46 +1175,19 @@
  function openEditModal(button) {
 
      const d = button.dataset;
-
-     document.getElementById("editExamId").value =
-         d.id || "";
-
-     document.getElementById("editCourse").value =
-         d.course || "";
-
-     document.getElementById("editBatch").value =
-         d.batch || "";
-
-     document.getElementById("editTitle").value =
-         d.title || "";
-
-     document.getElementById("editType").value =
-         d.type || "";
-
-     document.getElementById("editDuration").value =
-         d.duration || "";
-
-     document.getElementById("editTotal").value =
-         d.total || "";
-
-     document.getElementById("editPass").value =
-         d.pass || "";
-
-     document.getElementById("editStart").value =
-         d.start || "";
-
-     document.getElementById("editEnd").value =
-         d.end || "";
-
-     document.getElementById("editAttempts").value =
-         d.attempts || "";
-
-     document.getElementById("editStatus").value =
-         d.status || "";
-
-     document.getElementById("editShuffle").checked =
-         d.shuffle === "true";
-
+     document.getElementById("editExamId").value = d.id || "";
+     document.getElementById("editCourse").value = d.course || "";
+     document.getElementById("editBatch").value = d.batch || "";
+     document.getElementById("editTitle").value = d.title || "";
+     document.getElementById("editType").value = d.type || "";
+     document.getElementById("editDuration").value = d.duration || "";
+     document.getElementById("editTotal").value = d.total || "";
+     document.getElementById("editPass").value = d.pass || "";
+     document.getElementById("editStart").value = d.start || "";
+     document.getElementById("editEnd").value = d.end || "";
+     document.getElementById("editAttempts").value = d.attempts || "";
+     document.getElementById("editStatus").value = d.status || "";
+     document.getElementById("editShuffle").checked = d.shuffle === "true";
      document.getElementById("editPass").setCustomValidity("");
      document.getElementById("editEnd").setCustomValidity("");
      document.getElementById("editModal").classList.add("show");
@@ -1291,22 +1224,17 @@
          }
      });
 
- document.getElementById("editPass")
-     .addEventListener("input", function() {
+ document.getElementById("editPass").addEventListener("input", function() {
          this.setCustomValidity("");
      });
 
- document.getElementById("editTotal")
-     .addEventListener("input", function() {
-         document.getElementById("editPass")
-             .setCustomValidity("");
+ document.getElementById("editTotal").addEventListener("input", function() {
+         document.getElementById("editPass").setCustomValidity("");
      });
 
  ["editStart", "editEnd"].forEach(function(id) {
-     document.getElementById(id)
-         .addEventListener("input", function() {
-             document.getElementById("editEnd")
-             .setCustomValidity("");
+     document.getElementById(id).addEventListener("input", function() {
+             document.getElementById("editEnd") .setCustomValidity("");
          });
  });
 
@@ -1383,41 +1311,30 @@
             }
 
             row.classList.remove("exam-new","exam-edited");
-
             const oldBadge = row.querySelector( ".exam-status-badge");
 
             if (oldBadge) {
                 oldBadge.remove();
             }
-
             const titleWrapper =row.querySelector(".exam-title-wrapper");
-
             if (!titleWrapper) {
                 return;
             }
 
             if (editedTime > 0) {
-
                 row.classList.add("exam-edited");
-
                 const badge = document.createElement("span");
-
                 badge.className = "exam-status-badge exam-edited-badge";
                 badge.innerHTML ='<i class="fa-solid fa-pen"></i> EDITED';
-
                 titleWrapper.appendChild(badge);
                 return;
             }
 
             if (createdTime > 0) {
-
                 row.classList.add("exam-new");
-
-                const badge = document.createElement("span");
-                
-                badge.className ="exam-status-badge exam-new-badge";
+                const badge = document.createElement("span"); 
+               badge.className ="exam-status-badge exam-new-badge";
                 badge.innerHTML ='<i class="fa-solid fa-star"></i> NEW';
-
                 titleWrapper.appendChild(badge);
             }
 
@@ -1506,15 +1423,9 @@ function filterExams() {
         const status = (row.dataset.status || "").trim().toUpperCase();
         const titleMatch = title.includes(searchText);
 
-        const typeMatch =
-            selectedType === "" ||
-            selectedType === "ALL" ||
-            type === selectedType;
+        const typeMatch =selectedType === "" || selectedType === "ALL" || type === selectedType;
 
-        const statusMatch =
-            selectedStatus === "" ||
-            selectedStatus === "ALL" ||
-            status === selectedStatus;
+        const statusMatch = selectedStatus === "" || selectedStatus === "ALL" || status === selectedStatus;
 
         const show = titleMatch && typeMatch && statusMatch;
         row.style.display = show ? "" : "none";

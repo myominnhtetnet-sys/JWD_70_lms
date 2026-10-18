@@ -120,9 +120,28 @@ public class StudentExamController {
          * terminate it. The current code below still needs
          * a service method to resume that attempt safely.
          */
+        
+        // teacher အပိုင်းနဲ့ student အပိုင်းပေါင်းပီး exam-result စစ်ရန် commend ပိတ်ထားခြင်း
+//        if (!activeAttempts.isEmpty()) {
+//            model.addAttribute("error",
+//                    "You already have an active exam attempt.");
+//            return "exam_lockout";
+//        }
+        
+     // teacher အပိုင်းနဲ့ student အပိုင်းပေါင်းပီး exam-result စစ်ရန် အသစ်ထည့်လိုက်ခြင်း
         if (!activeAttempts.isEmpty()) {
+
+            int pastAttempts =
+                    examService.getPastAttemptsCount(
+                            examId, enrollmentId
+                    );
+
+            model.addAttribute("examTitle", exam.getTitle());
+            model.addAttribute("maxAttempts", maxAttemptsLimit);
+            model.addAttribute("totalPastAttempts", pastAttempts);
             model.addAttribute("error",
                     "You already have an active exam attempt.");
+
             return "exam_lockout";
         }
 
