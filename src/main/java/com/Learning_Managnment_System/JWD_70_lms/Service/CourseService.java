@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CourseService {
@@ -24,5 +25,9 @@ public class CourseService {
 
     public CourseBean getCourseById(int courseId) {
         return courseRepository.findById(courseId);
+    }
+    
+    public List<Map<String, Object>> getActivePublishedCourses() {
+        return courseRepository.findActivePublishedCourses();
     }
 }
