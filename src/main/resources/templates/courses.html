@@ -646,9 +646,7 @@
                     Explore professional training paths to advance your engineering skills.
                 </p>
             </div>
-            <div>
-                <a th:href="@{/}" class="btn-reset" style="text-decoration: none;"><i class="fa-solid fa-house me-1"></i> Go to Homepage</a>
-            </div>
+            
         </div>
 
         <!-- ===================================================== -->
@@ -1040,53 +1038,66 @@
     </a>
     
 </div>
-
 <!-- ========================================================= -->
-<!-- CALL TO ACTION -->
+<!-- PREMIUM MODERN CTA SECTION (Forces Full-Width Layout)     -->
 <!-- ========================================================= -->
-<section class="py-5 bg-dark text-white text-center" style="background-color: #0f172a !important;">
+<section class="w-100 text-center" style="background-color: #090d16 !important; border-top: 1px solid #1e293b !important; padding: 64px 24px !important; box-sizing: border-box; margin-top: auto;">
+    <div style="max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+        
+        <!-- Sub-indicator Accent Badge -->
+        <div style="background-color: rgba(59, 130, 246, 0.1); color: #60a5fa; padding: 6px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
+            🚀 Expand Your Potential
+        </div>
 
-    <div class="container">
-
-        <h2 class="display-6 fw-bold mb-3" style="color: #ffffff !important;">
+        <!-- SaaS Headline -->
+        <h2 style="color: #ffffff !important; font-size: 28px; font-weight: 800; letter-spacing: -0.025em; margin: 0; font-family: 'Inter', sans-serif;">
             Ready to Start Learning?
         </h2>
 
-        <!-- 🟢 FIXED INLINE COLOR: Explicit hex code bypasses bad CSS stylesheets permanently -->
-        <p class="lead mb-4" style="color: #cbd5e1 !important; opacity: 1 !important; font-size: 18px;">
-            Join our learning community and start building your practical skills today.
+        <!-- High-Contrast Balanced Paragraph -->
+        <p style="color: #94a3b8 !important; font-size: 14.5px; line-height: 1.6; margin: 0; font-weight: 500;">
+            Join our professional engineering community today and start master engineering concepts with practical training blocks.
         </p>
 
-        <a th:href="@{/register}"
-           class="btn btn-warning btn-lg px-4 fw-bold" 
-           style="background-color: #f59e0b !important; color: #0f172a !important; border: none !important;">
-            Register Now
-        </a>
+        <!-- Premium Frameless Call-To-Action Button Trigger Link -->
+        <div style="margin-top: 8px;">
+            <a th:href="@{/student/register}" 
+               class="btn btn-warning" 
+               style="background-color: #f59e0b !important; color: #020617 !important; font-size: 14px !important; font-weight: 700 !important; height: 44px; padding: 0 28px !important; border-radius: 10px !important; text-decoration: none !important; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none !important; transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2) !important;">
+                Get Started Instantly <i class="fa-solid fa-arrow-right" style="font-size: 12px;"></i>
+            </a>
+        </div>
 
     </div>
-
 </section>
 
 
 <!-- ========================================================= -->
-<!-- FOOTER -->
+<!-- PITCH BLACK MINIMALIST FOOTER SECTION                     -->
 <!-- ========================================================= -->
-<footer class="bg-dark text-white border-top border-secondary py-4 text-center" style="background-color: #0f172a !important; border-color: #334155 !important;">
-
-    <div class="container">
-
-        <!-- 🟢 FIXED INLINE COLOR: Clean light silver format guarantees high-contrast text visibility -->
-        <p class="mb-0" style="color: #94a3b8 !important; opacity: 1 !important; font-size: 14px;">
+<footer class="w-100" style="background-color: #020617 !important; border-top: 1px solid #1e293b !important; padding: 24px !important; box-sizing: border-box; margin: 0;">
+    <div style="max-width: 1250px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        
+        <!-- Copyright Core Signature -->
+        <p style="color: #64748b !important; font-size: 13px; margin: 0; font-weight: 500; letter-spacing: 0.01em;">
             &copy; 2026 Learning Management System. All rights reserved.
         </p>
 
-    </div>
+        <!-- Low-Profile Network Connectivity Diagnostic Badge -->
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="width: 6px; height: 6px; background-color: #10b981; border-radius: 50%; display: inline-block;"></span>
+            <span style="color: #475569 !important; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                Offline Storage Matrix Local Connected
+            </span>
+        </div>
 
+    </div>
 </footer>
 
-<!-- Framework Runtime Attachments -->
+<!-- Framework Production Runtime Attachment Bundles -->
 <script th:src="@{/js/bootstrap.bundle.min.js}" src="/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/main.js}" src="/js/main.js"></script>
+
 
 
 </body>
