@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Examination</title>
+    <link rel="stylesheet" th:href="@{/css/style.css(v=1.0)}" href="/css/style.css">
+    <style>
+        .exam-panel-card { background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 18px 24px !important; margin-bottom: 14px !important; box-shadow: 0 1px 3px rgba(0,0,0,0.02); display: block !important; height: auto !important; text-align: left; }
+        .timer-badge { position: fixed; top: 20px; right: 20px; background: #7f1d1d; color: #fef2f2; font-weight: 700; padding: 10px 16px; border-radius: 8px; font-size: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 999; }
+        .option-label { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-top: 6px; cursor: pointer; background: #ffffff; transition: background 0.15s; }
+        .option-label:hover { background: #f8fafc; border-color: #2563eb; }
+        .text-area-box { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: #f8fafc; font-family: inherit; resize: vertical; box-sizing: border-box; }
+    </style>
+</head>
+<body class="student-result-page" style="padding-top: 40px;">
+
+    <!-- ⏳ GLOBAL AUTOMATED SESSION CLOCK TIMER BADGE -->
+    <div class="timer-badge">Time Remaining: <span id="clock-display">--:--</span></div>
+
+    <div class="result-container" style="max-width: 740px; margin: 0 auto; padding: 16px;">
+        
+        <!-- Main Form Stream Handler Layer -->
+      <form id="exam-form" th:action="@{/student/exam-submit}" method="post" style="margin:0; padding:0;">
+            <input type="hidden" name="attemptId" th:value="${attemptId}">
+            <input type="hidden" name="examId" th:value="${examId}">
+
+            <div class="exam-panel-card" style="border-left: 4px solid #0f172a;">
+                <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: #0f172a;" th:text="${exam.title}">Exam Paper Title</h1>
+                <p style="margin: 4px 0 0 0; color: #64748b; font-size: 13.5px;" th:text="'Total Assessment Points: ' + ${exam.total_mark} + ' Marks'"></p>
+            </div>
+
+            <!-- Dynamic Question Loops Iteration Stacks -->
+            <div th:each="q, stat : ${questions}" class="exam-panel-card">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                    <span style="font-weight: 700; color: #0f172a; font-size: 15px;" th:text="'Question ' + ${stat.count}">Question 1</span>
+                    <span style="font-size: 12px; color: #64748b; font-weight: 600;" th:text="${q.questionMark} + ' Pts'">1.00 Pts</span>
+                </div>
+                
+                <h3 style="font-size: 15.5px; font-weight: 600; color: #1e293b; margin: 0 0 12px 0;" th:text="${q.questionText}">Question text goes here?</h3>
+
+            	 <div th:if="${q.questionType == 'MCQ' or q.questionType == 'TRUE_FALSE'}" style="display: block; margin: 0; padding: 0;">
+			    <div th:each="opt : ${q.options}">
+			        <label class="option-label">
+			            <input type="radio" th:name="'question_' + ${q.questionId}" th:value="${opt.optionId}" required style="accent-color: #0f172a;">
+			            <span th:text="${opt.optionText}">Choice Options Text</span>
+			        </label>
+			    </div>
+			</div>
+			
+			<!-- TEXT SHORT ANSWER MODULE FIELD -->
+			<div th:if="${q.questionType == 'SHORT_ANSWER'}" style="display: block; margin: 0; padding: 0;">
+			    <textarea th:name="'question_' + ${q.questionId}" rows="3" class="text-area-box" placeholder="Type your answer response securely here..." required></textarea>
+			</div>
+            </div>
+
+            <!-- Submit Footer Anchor Bar Row -->
+            <div style="text-align: right; margin-top: 16px;">
+                <button type="submit" style="background: #166534; color: #ffffff; border: none; padding: 12px 32px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    Submit Exam Paper 💾
+                </button>
+            </div>
+        </form>
+    </div>
+
+        <!-- JavaScript Complete Simplified Proctor Armor Engine -->
+    <script th:inline="javascript">
+        // 1. Countdown Clock Configuration Setup
+        const rawDurationElement = document.getElementById('raw-duration');
+        let durationMinutes = rawDurationElement ? parseInt(rawDurationElement.value) : 30;
+        if (isNaN(durationMinutes) || durationMinutes <= 0) { durationMinutes = 30; }
+        
+        let timeRemainingSeconds = durationMinutes * 60;
+        const display = document.getElementById('clock-display');
+        const form = document.getElementById('exam-form');
+
+        // Flag tracks if a legitimate browser popup dialog box is currently open
+        let popupActive = false;
+
+        const interval = setInterval(() => {
+            let minutes = Math.floor(timeRemainingSeconds / 60);
+            let seconds = timeRemainingSeconds % 60;
+            
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            
+            if (display) display.textContent = minutes + ':' + seconds;
+
+            if (--timeRemainingSeconds < 0) {
+                clearProctorArmorListeners();
+                clearInterval(interval);
+                alert("Time's up! Your exam paper will be submitted automatically.");
+                form.submit();
+            }
+        }, 1000);
+
+        // 2. 🟢 FIXED: BACK-BUTTON SECOND-CHANCE WARNING (NO AUTO-SUBMIT LOOP)
+        history.pushState(null, null, window.location.href);
+        window.addEventListener('popstate', () => {
+            popupActive = true; 
+            
+            // OK (true) exits the exam room, Cancel (false) keeps them locked on the page safely
+            const leavePage = confirm("⚠️ Browser Back Action Detected!\n\nAre you sure you want to leave the exam room? Your current entries will not be saved.");
+            
+            if (!leavePage) {
+                history.pushState(null, null, window.location.href);
+                // Settles focus states down completely before re-engaging the scanner
+                setTimeout(() => { popupActive = false; }, 2000);
+            } else {
+                clearProctorArmorListeners();
+                window.location.href = "/student/exam-list";
+            }
+        });
+
+        // 3. Browser Refresh/Reload Interception
+        window.addEventListener('beforeunload', handlePageReloadWarning);
+        function handlePageReloadWarning(event) {
+            popupActive = true;
+            event.preventDefault();
+            const warningMsg = "Are you sure you want to refresh? Your inputs will be lost.";
+            event.returnValue = warningMsg;
+            setTimeout(() => { popupActive = false; }, 2000);
+            return warningMsg;
+        }
+
+        // 4. TAB-SWITCH AND WINDOW MINIMIZATION RESTRICTION
+        document.addEventListener('visibilitychange', handleTabSwitchDisqualification);
+        function handleTabSwitchDisqualification() {
+            if (document.hidden && !popupActive) {
+                clearProctorArmorListeners();
+                clearInterval(interval);
+                alert("🚨 SECURITY VIOLATION DETECTED!\n\nYou switched tabs or left the active exam environment. Your paper has been auto-submitted.");
+                form.submit();
+            }
+        }
+
+        // 5. THE MULTI-SCREEN & SPLIT WINDOW DETECTION INTERCEPTOR
+        window.addEventListener('blur', handleWindowBlurDisqualification);
+        function handleWindowBlurDisqualification() {
+            setTimeout(() => {
+                if (!popupActive && document.activeElement && document.activeElement.tagName !== "IFRAME" && !document.hidden) {
+                    clearProctorArmorListeners();
+                    clearInterval(interval);
+                    alert("🚨 CHEAT PREVENTION LOCK: Window focus lost. Force-submitting test paper.");
+                    if (form) form.submit();
+                }
+            }, 600);
+        }
+
+        // Helper cleanup utility routine
+        function clearProctorArmorListeners() {
+            window.removeEventListener('beforeunload', handlePageReloadWarning);
+            document.removeEventListener('visibilitychange', handleTabSwitchDisqualification);
+            window.removeEventListener('blur', handleWindowBlurDisqualification);
+        }
+
+        // 6. Submit Handler Enforces Double-Verification Before Database Push
+        if (form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); 
+                popupActive = true; 
+                
+                const userConfirmed = confirm("Are you completely sure you want to hand in your paper? Unanswered slots will be marked as zero.");
+                if (userConfirmed) {
+                    clearProctorArmorListeners();
+                    clearInterval(interval);
+                    form.submit();
+                } else {
+                    popupActive = false; 
+                }
+            });
+        }
+    </script>
+
+
+
+
+
+
+</body>
+</html>

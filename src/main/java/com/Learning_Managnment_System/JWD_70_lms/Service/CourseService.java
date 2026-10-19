@@ -1,62 +1,33 @@
 package com.Learning_Managnment_System.JWD_70_lms.Service;
 
-import java.util.List;
-
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.jdbc.core.JdbcTemplate;
+import com.Learning_Managnment_System.JWD_70_lms.Repository.CourseRepository;
+import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.Learning_Managnment_System.JWD_70_lms.Mapper.CourseMapper;
-import com.Learning_Managnment_System.JWD_70_lms.Repository.CourseRepository;
-import com.Learning_Managnment_System.JWD_70_lms.Repository.courseSpecification.CourseSpecification;
-import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
-
-
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class CourseService {
 
-    private final CourseRepository courseRepository;
-    private final JdbcTemplate jdbcTemplate;
+    @Autowired
+    private CourseRepository courseRepository;
 
-    // Use constructor injection instead of field @Autowired (best practice)
-    public CourseService(CourseRepository courseRepository, JdbcTemplate jdbcTemplate) {
-        this.courseRepository = courseRepository;
-        this.jdbcTemplate = jdbcTemplate;
+    public List<CourseBean> getFilteredCourses(CourseBean filters, String batchStatus, int page, int pageSize) {
+        return courseRepository.findFilteredCourses(filters, batchStatus, page, pageSize);
     }
 
-    // Your original plain SQL query using JdbcTemplate
-    public List<CourseBean> showAllCourses() {
-        String sql = "SELECT * FROM lms_db.courses WHERE deleted_at IS NULL AND status = 'PUBLISHED'";
-        return jdbcTemplate.query(sql, new CourseMapper());
+    public int getTotalPagesForFilters(CourseBean filters, String batchStatus, int pageSize) {
+        int totalItems = courseRepository.countFilteredCourses(filters, batchStatus);
+        return (int) Math.ceil((double) totalItems / pageSize);
     }
 
-    // The new dynamic filtering method utilizing your Specification
-    public List<CourseBean> filterCourses(CourseBean filter) {
-        Specification<CourseBean> spec = CourseSpecification.filterBy(filter);
-        return courseRepository.findAll(spec);
-    }
- // Inside CourseService.java & CourseServiceImpl.java
-    public Page<CourseBean> filterCourses(CourseBean filter, Pageable pageable) {
-    	 Specification<CourseBean> spec = CourseSpecification.filterBy(filter);
-    	    
-    	    // DIRECT RETURN
-    	    return courseRepository.findAll(spec, pageable);
+    public CourseBean getCourseById(int courseId) {
+        return courseRepository.findById(courseId);
     }
     
-    public CourseBean getCourseById(Integer id) {
-		String sql = "SELECT * FROM lms_db.courses where course_id = ?";
-		try {
-			return jdbcTemplate.queryForObject(sql, new CourseMapper(), id);
-		} catch (EmptyResultDataAccessException e) {
-			return null; 
-		}
-	}
-    
- 
-
-
+    public List<Map<String, Object>> getActivePublishedCourses() {
+        return courseRepository.findActivePublishedCourses();
+    }
 }

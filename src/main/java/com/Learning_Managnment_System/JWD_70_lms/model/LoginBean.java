@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter @Setter
 public class LoginBean {
 	private int role_id;
+	private int user_id;
 	private String full_name;
     private String email;
     private String password_hash;

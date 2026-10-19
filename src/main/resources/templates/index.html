@@ -217,7 +217,7 @@
                 </a>
 
 
-                <a th:href="@{/register}"
+                <a th:href="@{/student/register}"
                    class="btn btn-warning fw-bold px-3">
 
                     Register
@@ -313,7 +313,7 @@
                         </a>
 
 
-                        <a href="#courses"
+                        <a th:href="@{courses/show}"
                            class="btn btn-outline-light btn-lg px-4 fw-bold">
 
                             Explore Courses
@@ -641,283 +641,67 @@
 </section>
 
 
-
 <!-- ========================================================= -->
-<!-- COURSES -->
+<!-- DYNAMIC COURSES COMPONENT -->
 <!-- ========================================================= -->
-
 <section id="courses" class="py-5 bg-white">
-
     <div class="container">
 
         <div class="text-center mb-5">
-
-            <h2 class="fw-bold">
-                Explore Our Courses
-            </h2>
-
-            <p class="text-muted">
-                Explore popular courses to enhance your IT skills
-            </p>
-
+            <h2 class="fw-bold">Explore Our Courses</h2>
+            <p class="text-muted">Explore popular courses to enhance your IT skills</p>
         </div>
 
+        <!-- Empty State Fallback -->
+        <div th:if="${#lists.isEmpty(courses)}" class="p-5 text-center bg-light rounded-3 border">
+            <div class="fs-1 mb-2">📚</div>
+            <h5 class="text-muted fw-bold">No active courses are currently available.</h5>
+        </div>
 
-        <div class="row g-4">
-
-
-            <!-- Java -->
-
-            <div class="col-md-6 col-lg-3">
-
+        <!-- Dynamic Course Grid Stacks -->
+        <div class="row g-4" th:unless="${#lists.isEmpty(courses)}">
+            <div th:each="c : ${courses}" class="col-md-6 col-lg-3">
                 <div class="card h-100 course-card shadow-sm border-0">
-
                     <div class="card-body p-4">
 
-                        <span class="badge bg-primary mb-2">
-                            Available
-                        </span>
+                        <!-- Status Badge Hardcoded Label -->
+                        <span class="badge bg-primary mb-2">Published</span>
 
-                        <h5 class="fw-bold">
-                            Java Programming
-                        </h5>
+                        <!-- Dynamic Course Title -->
+                        <h5 class="fw-bold" th:text="${c.containsKey('title') ? c.title : 'Course Title'}">Java Programming</h5>
 
                         <p class="text-muted small mb-2">
-
                             <i class="fa-regular fa-user me-1"></i>
-
                             Instructor: LMS Expert
-
                         </p>
 
-
                         <div class="d-flex justify-content-between align-items-center small text-muted mb-3">
-
                             <span>
-
                                 <i class="fa-regular fa-clock me-1"></i>
-
-                                2 Months
-
+                                <!-- 🟢 FIXED METHOD CALL: Swapped __contains__ to containsKey to match Java Map rules -->
+                                <span th:text="${c.containsKey('duration_min') ? c.duration_min + ' mins' : '2 Months'}">2 Months</span>
                             </span>
-
-
                             <span class="text-warning">
-
                                 <i class="fa-solid fa-star me-1"></i>
-
-                                4.9
-
+                                <span>4.9</span>
                             </span>
-
                         </div>
 
+                        <!-- Dynamic Action Button Link Routing -->
+						                       <!-- 🟢 FIXED DYNAMIC LINK MAP: Reads the true database column value instantly -->
+						<a th:href="@{/courses/detail/{slug}(slug=${c.slug})}"
+						   class="btn btn-outline-primary w-100">
+						    Learn More
+						</a>
 
-                        <a th:href="@{/login}"
-                           class="btn btn-outline-primary w-100">
-
-                            Learn More
-
-                        </a>
 
                     </div>
-
                 </div>
-
             </div>
-
-
-
-            <!-- Web Development -->
-
-            <div class="col-md-6 col-lg-3">
-
-                <div class="card h-100 course-card shadow-sm border-0">
-
-                    <div class="card-body p-4">
-
-                        <span class="badge bg-primary mb-2">
-                            Available
-                        </span>
-
-                        <h5 class="fw-bold">
-                            Web Development
-                        </h5>
-
-                        <p class="text-muted small mb-2">
-
-                            <i class="fa-regular fa-user me-1"></i>
-
-                            Instructor: LMS Expert
-
-                        </p>
-
-
-                        <div class="d-flex justify-content-between align-items-center small text-muted mb-3">
-
-                            <span>
-
-                                <i class="fa-regular fa-clock me-1"></i>
-
-                                4 Months
-
-                            </span>
-
-
-                            <span class="text-warning">
-
-                                <i class="fa-solid fa-star me-1"></i>
-
-                                4.8
-
-                            </span>
-
-                        </div>
-
-
-                        <a th:href="@{/login}"
-                           class="btn btn-outline-primary w-100">
-
-                            Learn More
-
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- Database -->
-
-            <div class="col-md-6 col-lg-3">
-
-                <div class="card h-100 course-card shadow-sm border-0">
-
-                    <div class="card-body p-4">
-
-                        <span class="badge bg-primary mb-2">
-                            Available
-                        </span>
-
-                        <h5 class="fw-bold">
-                            Database Systems
-                        </h5>
-
-                        <p class="text-muted small mb-2">
-
-                            <i class="fa-regular fa-user me-1"></i>
-
-                            Instructor: LMS Expert
-
-                        </p>
-
-
-                        <div class="d-flex justify-content-between align-items-center small text-muted mb-3">
-
-                            <span>
-
-                                <i class="fa-regular fa-clock me-1"></i>
-
-                                2 Months
-
-                            </span>
-
-
-                            <span class="text-warning">
-
-                                <i class="fa-solid fa-star me-1"></i>
-
-                                4.7
-
-                            </span>
-
-                        </div>
-
-
-                        <a th:href="@{/login}"
-                           class="btn btn-outline-primary w-100">
-
-                            Learn More
-
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- UI UX -->
-
-            <div class="col-md-6 col-lg-3">
-
-                <div class="card h-100 course-card shadow-sm border-0">
-
-                    <div class="card-body p-4">
-
-                        <span class="badge bg-primary mb-2">
-                            Available
-                        </span>
-
-                        <h5 class="fw-bold">
-                            UI/UX Design
-                        </h5>
-
-                        <p class="text-muted small mb-2">
-
-                            <i class="fa-regular fa-user me-1"></i>
-
-                            Instructor: LMS Expert
-
-                        </p>
-
-
-                        <div class="d-flex justify-content-between align-items-center small text-muted mb-3">
-
-                            <span>
-
-                                <i class="fa-regular fa-clock me-1"></i>
-
-                                2.5 Months
-
-                            </span>
-
-
-                            <span class="text-warning">
-
-                                <i class="fa-solid fa-star me-1"></i>
-
-                                4.9
-
-                            </span>
-
-                        </div>
-
-
-                        <a th:href="@{/login}"
-                           class="btn btn-outline-primary w-100">
-
-                            Learn More
-
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
         </div>
 
     </div>
-
 </section>
-
 
 
 <!-- ========================================================= -->

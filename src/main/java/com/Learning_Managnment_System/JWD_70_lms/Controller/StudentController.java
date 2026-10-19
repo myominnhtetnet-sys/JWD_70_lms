@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -18,6 +19,7 @@ import com.Learning_Managnment_System.JWD_70_lms.Service.StudentService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
+@RequestMapping("/student")
 public class StudentController {
 
     private final StudentService studentService;
@@ -28,6 +30,11 @@ public class StudentController {
     @Autowired
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
+    }
+
+    @GetMapping("/home")
+    public String show() {        
+        return "student";        
     }
 
     @GetMapping("/register")
@@ -43,7 +50,8 @@ public class StudentController {
         return "redirect:/login";
     }
 
-    @GetMapping("/student/profile")
+    // 🔴 ပြင်ဆင်ရန်: "/student/profile" မှ "/profile" သို့ ပြောင်းပါ
+    @GetMapping("/profile")
     public String showProfilePage(HttpSession session, Model model) {
         String email = (String) session.getAttribute("email");
         if (email == null) {
@@ -62,7 +70,8 @@ public class StudentController {
         return "profile";
     }
 
-    @PostMapping("/student/profile/update")
+    // 🔴 ပြင်ဆင်ရန်: "/student/profile/update" မှ "/profile/update" သို့ ပြောင်းပါ
+    @PostMapping("/profile/update")
     public String updateProfile(@RequestParam("fullName") String fullName,
                                 @RequestParam(value = "phone", required = false) String phone,
                                 @RequestParam(value = "address", required = false) String address,
@@ -86,7 +95,8 @@ public class StudentController {
         return "redirect:/student/profile";
     }
 
-    @PostMapping("/student/profile/change-password")
+    
+    @PostMapping("/profile/change-password")
     public String changePassword(@RequestParam("currentPassword") String currentPassword,
                                  @RequestParam("newPassword") String newPassword,
                                  @RequestParam("confirmPassword") String confirmPassword,
