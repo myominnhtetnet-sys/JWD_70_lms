@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
-
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <title>Exam Results & Grading</title>
 
     <style>
@@ -331,12 +333,124 @@
                 padding: 16px;
             }
         }
+        
+/* ===== Teacher Sidebar Layout ===== */
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+.exam-layout {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.exam-sidebar {
+    flex: 0 0 200px;
+    width: 200px;
+    min-width: 200px;
+    background: #0f172a;
+    align-self: stretch;
+}
+
+.exam-sidebar > div {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.exam-sidebar aside {
+    width: 100% !important;
+    min-height: 100vh !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 12px !important;
+    border-radius: 0 !important;
+    box-sizing: border-box;
+}
+
+.exam-sidebar nav {
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+}
+
+.exam-sidebar nav a {
+    display: flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+    padding: 9px 10px !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+    white-space: nowrap;
+    border-radius: 8px !important;
+    box-sizing: border-box;
+}
+
+.exam-sidebar nav a i {
+    width: 18px !important;
+    min-width: 18px !important;
+    font-size: 15px !important;
+    text-align: center;
+}
+
+/* ===== Main Content ===== */
+
+.exam-main {
+    flex: 1;
+    min-width: 0;
+    padding: 20px 24px;
+}
+
+.exam-main .container {
+    width: 100%;
+    max-width: 1250px;
+    margin: 0 auto;
+}
+
+/* Keep modal above sidebar and header */
+.modal-overlay {
+    z-index: 9999;
+}
+
+@media (max-width: 700px) {
+    .exam-sidebar {
+        flex: 0 0 180px;
+        width: 180px;
+        min-width: 180px;
+    }
+
+    .exam-main {
+        padding: 16px 12px;
+    }
+}
+        
     </style>
 </head>
 
 <body>
 
-<div class="container">
+<!-- Shared Header -->
+<div th:replace="~{header :: header}"></div>
+
+<!-- Sidebar + Main Content -->
+<div class="exam-layout">
+
+    <!-- Teacher Sidebar -->
+    <div class="exam-sidebar">
+        <div th:replace="~{teacher :: sidebar}"></div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="exam-main">
+
+        <div class="container">
+
 
     <h1>Exam Results & Grading</h1>
     <p class="subtitle">
@@ -497,7 +611,8 @@
         </div>
     </div>
 </div>
-
+</main>
+</div>
 <!-- Modal is rendered only when an attempt has been selected. -->
 <div th:if="${attempt != null}"
      id="examModal"

@@ -53,8 +53,15 @@ const navMenus = {
 	    { icon: 'fa-house', label: 'Dashboard', path: '/teacher/dashboard' },
 	    { icon: 'fa-book-open', label: 'My Courses', path: '/teacher/courses' },
 	    { icon: 'fa-users', label: 'My Batches', path: '/teacher/batches' },
-	    { icon: 'fa-calendar-check', label: 'Take Attendance', path: '/teacher/attendance' }
+	    { icon: 'fa-calendar-check', label: 'Take Attendance', path: '/teacher/attendance' },
+		{ icon: 'fa-database', label: 'Question Bank', path: '/teacher/question-list' },
+		{ icon: 'fa-clipboard-list', label: 'Assignments', path: '/teacher/assignments' },
+		{ icon: 'fa-file-pen', label: 'Grade Submissions', path: '/teacher/submissions' },
+		{ icon: 'fa-file-circle-question', label: 'Exams', path: '/teacher/exams' },
+		{ icon: 'fa-square-poll-vertical', label: 'Exam Results', path: '/teacher/exam-results' },
+		{ icon: 'fa-award', label: 'Final Grades', path: '/teacher/final-grade' }	
 	],
+	
 	student: [
 		{ icon: 'fa-compass', label: 'Dashboard', active: true },
 		{ icon: 'fa-book-bookmark', label: 'My Courses' },
