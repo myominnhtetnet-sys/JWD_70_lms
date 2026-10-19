@@ -175,13 +175,19 @@ public class ExamController {
 			RedirectAttributes redirectAttributes) {
 		try {
 			ExamBean exam = examService.getExamById(examId);
-			List<QuestionBean> questions = examService.getQuestionBank();
+			/* List<QuestionBean> questions = examService.getQuestionBank(); */
+			List<QuestionBean> questions =
+			        examService.getQuestionBankByCourse(exam.getCourseId());
 			List<ExamQuestionBean> selectedQuestions = examService.getSelectedQuestions(examId);
 			Set<Long> selectedQuestionIds = selectedQuestions.stream().map(ExamQuestionBean::getQuestionId)
 					.collect(Collectors.toSet());
 
 			model.addAttribute("exam", exam);
-			model.addAttribute("questions", questions);
+//			model.addAttribute("questions", questions);
+			model.addAttribute(
+			        "questions",
+			        examService.getQuestionBankByCourse(exam.getCourseId())
+			);
 			model.addAttribute("selectedQuestions", selectedQuestions);
 			model.addAttribute("selectedQuestionIds", selectedQuestionIds);
 			return "exam-select-questions";

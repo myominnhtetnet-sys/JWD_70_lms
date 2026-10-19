@@ -194,4 +194,42 @@ public class QuestionRepository {
 
 		return jdbcTemplate.query(sql, new QuestionRowMapper());
 	}
+	
+	
+	public List<QuestionBean> findActiveByCourseId(Long courseId) {
+
+	    String sql = """
+	        SELECT
+	            question_id,
+	            course_id,
+	            question_text,
+	            question_type,
+	            default_mark,
+	            explanation,
+	            is_active,
+	            created_by,
+	            created_at,
+	            updated_at
+	        FROM questions
+	        WHERE is_active = 1
+	          AND course_id = ?
+	        ORDER BY question_id DESC
+	        """;
+
+	    return jdbcTemplate.query(sql, questionRowMapper, courseId);
+	}
+	
+	public List<QuestionBean> findActiveByCourseId(Long courseId) {
+	    String sql = """
+	        SELECT question_id, course_id, question_text, question_type,
+	               default_mark, explanation, is_active, created_by,
+	               created_at, updated_at
+	        FROM questions
+	        WHERE is_active = 1
+	          AND course_id = ?
+	        ORDER BY question_id DESC
+	        """;
+
+	    return jdbcTemplate.query(sql, questionRowMapper, courseId);
+	}
 }
