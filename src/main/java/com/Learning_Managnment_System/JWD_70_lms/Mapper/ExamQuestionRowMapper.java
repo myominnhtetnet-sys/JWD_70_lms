@@ -1,43 +1,42 @@
+
 package com.Learning_Managnment_System.JWD_70_lms.Mapper;
 
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean;
 import org.springframework.jdbc.core.RowMapper;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ExamQuestionRowMapper implements RowMapper<ExamQuestionBean> {
 
     @Override
-    public ExamQuestionBean mapRow(ResultSet rs, int rowNum) throws SQLException {
-        ExamQuestionBean questionNode = new ExamQuestionBean();
-        
-        // 🟢 FIXED: Synchronized precisely with your exact camelCase model setters
-        questionNode.setQuestionId(rs.getInt("question_id"));
-        questionNode.setQuestionText(rs.getString("question_text"));
-        
-        // Trims white spaces and forces uppercase formatting to match Thymeleaf checks perfectly
-        String rawType = rs.getString("question_type");
-        if (rawType != null) {
-            questionNode.setQuestionType(rawType.trim().toUpperCase());
+    public ExamQuestionBean mapRow(ResultSet rs, int rowNum)
+            throws SQLException {
+
+        ExamQuestionBean question = new ExamQuestionBean();
+
+        question.setExamId(rs.getLong("exam_id"));
+        question.setQuestionId(rs.getLong("question_id"));
+        question.setQuestionText(rs.getString("question_text"));
+
+        String questionType = rs.getString("question_type");
+
+        if (questionType != null) {
+            question.setQuestionType(
+                questionType.trim().toUpperCase()
+            );
         } else {
-            questionNode.setQuestionType("MCQ");
+            question.setQuestionType("MCQ");
         }
-        
-        questionNode.setQuestionMark(((Number) rs.getObject("mark")).doubleValue());
-        
-        return questionNode;
-    }
-}
 
-        ExamQuestionBean examQuestion = new ExamQuestionBean();
+        question.setQuestionMark(
+            rs.getDouble("mark")
+        );
 
-        examQuestion.setExamId(rs.getLong("exam_id"));
-        examQuestion.setQuestionId(rs.getLong("question_id"));
-        examQuestion.setQuestionText(rs.getString("question_text"));
-        examQuestion.setQuestionType(rs.getString("question_type"));
-        examQuestion.setMark(rs.getBigDecimal("mark"));
-        examQuestion.setSortOrder(rs.getInt("sort_order"));
+        question.setSortOrder(
+            rs.getInt("sort_order")
+        );
 
-        return examQuestion;
+        return question;
     }
 }

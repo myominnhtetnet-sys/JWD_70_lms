@@ -60,8 +60,8 @@ public class StudentExamController {
         String targetedQuestionSequence = (String) session.getAttribute(sessionCacheKey);
 
         int maxAttemptsLimit = 1;
-        if (exam.getMax_attempts() != null) {
-            maxAttemptsLimit = exam.getMax_attempts().intValue();
+        if (exam.getMaxAttempts() != null) {
+            maxAttemptsLimit = exam.getMaxAttempts().intValue();
         }
 
         // 1. Terminate or manage any stale ongoing raw unsubmitted states

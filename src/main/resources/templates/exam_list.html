@@ -31,12 +31,16 @@
     <div th:unless="${#lists.isEmpty(exams)}" style="display: block;">
         <div th:each="exam : ${exams}" class="exam-row-card">
             <div style="text-align: left;">
-                <span class="badge-quiz" th:text="${exam.exam_type}">QUIZ</span>
+                <span class="badge-quiz" th:text="${exam.examType}">QUIZ</span>
                 <h3 style="margin: 8px 0 4px 0; font-size: 16px; font-weight: 700; color: #0f172a;" th:text="${exam.title}">Java Quiz</h3>
-                <span style="font-size: 12.5px; color: #64748b;" th:text="${exam.duration_min} + ' mins • ' + ${exam.total_mark} + ' Max Marks'"></span>
-            </div>
+<!--                 <span style="font-size: 12.5px; color: #64748b;" th:text="${exam.duration_min} + ' mins • ' + ${exam.total_mark} + ' Max Marks'"></span>
+ -->            
+ <span style="font-size: 12.5px; color: #64748b;"
+      th:text="${exam.durationMin} + ' mins • ' + ${exam.totalMark} + ' Max Marks'">
+</span>
+ </div>
             <div>
-               <a th:href="@{/student/exam-take/{id}(id=${exam.exam_id})}" style="background: #0f172a; color: #ffffff; text-decoration: none; font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: 8px; display: inline-block;">Start →</a>
+               <a th:href="@{/student/exam-take/{id}(id=${exam.examId})}" style="background: #0f172a; color: #ffffff; text-decoration: none; font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: 8px; display: inline-block;">Start →</a>
 
             </div>
         </div>
