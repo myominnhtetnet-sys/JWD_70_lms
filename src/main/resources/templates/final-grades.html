@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Final Grades - Teacher</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+        }
+
+        h1 { margin-bottom: 8px; }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 24px 0;
+        }
+
+        select, button {
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+        }
+
+        button {
+            cursor: pointer;
+            color: white;
+            background: #2563eb;
+            border: none;
+        }
+
+        .publish-btn { background: #15803d; }
+
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 12px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        th { background: #eff6ff; }
+
+        .passed { color: #15803d; font-weight: bold; }
+        .failed { color: #dc2626; font-weight: bold; }
+
+        .message {
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 6px;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .note { color: #64748b; font-size: 13px; }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Final Grades</h1>
+    <p>Calculate, review and publish student final grades.</p>
+
+    <p class="note">
+        Assignment 30% · Exam 60% · Attendance 10%
+    </p>
+
+    <div th:if="${errorMessage}"
+         class="message error"
+         th:text="${errorMessage}"></div>
+
+    <div th:if="${param.published}"
+         class="message success">
+        Grades published successfully.
+    </div>
+
+    <form method="get"
+          th:action="@{/teacher/final-grades}"
+          class="filters">
+
+        <select name="batchId" required>
+            <option value="">-- Select Batch --</option>
+
+            <option th:each="batch : ${batches}"
+                    th:value="${batch['batch_id']}"
+                    th:text="${batch['batch_code'] + ' - '
+                              + batch['title'] + ' ('
+                              + batch['course_title'] + ')'}"
+                    th:selected="${selectedBatchId != null
+                        and selectedBatchId.toString()
+                        == batch['batch_id'].toString()}">
+            </option>
+        </select>
+
+        <button type="submit">Calculate Grades</button>
+    </form>
+
+    <div th:if="${hasGrades}">
+        <h2>Student Grade List</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Assignment (30%)</th>
+                    <th>Exam (60%)</th>
+                    <th>Attendance (10%)</th>
+                    <th>Final Score</th>
+                    <th>Grade</th>
+                    <th>Result</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="g : ${grades}">
+                    <td>
+                        <strong th:text="${g.studentName}"></strong>
+                        <br>
+                        <small th:text="${g.email}"></small>
+                    </td>
+
+                    <td th:text="${g.assignmentScore}"></td>
+                    <td th:text="${g.examScore}"></td>
+                    <td th:text="${g.attendancePercent + '%'}"></td>
+                    <td th:text="${g.totalScore + ' / 100'}"></td>
+                    <td th:text="${g.gradeLetter}"></td>
+
+                    <td th:class="${g.result == 'PASSED'
+                                   ? 'passed' : 'failed'}"
+                        th:text="${g.result}">
+                    </td>
+
+                    <td th:text="${g.published
+                                  ? 'Published' : 'Preview'}">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <form method="post"
+              th:action="@{/teacher/final-grades/publish}"
+              onsubmit="return confirm(
+                  'Publish grades for all students in this batch?'
+              );">
+
+            <input type="hidden"
+                   name="batchId"
+                   th:value="${selectedBatchId}">
+
+            <button type="submit" class="publish-btn">
+                Publish Grades
+            </button>
+        </form>
+
+        <p class="note">
+            Publishing saves the calculated grades in the database.
+        </p>
+    </div>
+
+    <p th:if="${selectedBatchId != null and !hasGrades}">
+        No eligible students found in this batch.
+    </p>
+
+</div>
+</body>
+</html>
