@@ -17,11 +17,11 @@ import com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.QuestionOptionBean;
 
 @Repository
-public class ExamRepository {
+public class StudentExamRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ExamRepository(JdbcTemplate jdbcTemplate) {
+    public StudentExamRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

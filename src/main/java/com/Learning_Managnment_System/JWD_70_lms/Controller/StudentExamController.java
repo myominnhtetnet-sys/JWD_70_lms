@@ -1,6 +1,6 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
-import com.Learning_Managnment_System.JWD_70_lms.Service.ExamService;
+import com.Learning_Managnment_System.JWD_70_lms.Service.StudentExamService;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamAttemptBean;
@@ -14,11 +14,11 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/student")
-public class ExamController {
+public class StudentExamController {
 
-    private final ExamService examService;
+    private final StudentExamService examService;
 
-    public ExamController(ExamService examService) {
+    public StudentExamController(StudentExamService examService) {
         this.examService = examService;
     }
 

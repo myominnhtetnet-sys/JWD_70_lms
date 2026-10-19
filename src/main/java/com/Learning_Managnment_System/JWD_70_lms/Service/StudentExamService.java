@@ -1,6 +1,6 @@
 package com.Learning_Managnment_System.JWD_70_lms.Service;
 
-import com.Learning_Managnment_System.JWD_70_lms.Repository.ExamRepository;
+import com.Learning_Managnment_System.JWD_70_lms.Repository.StudentExamRepository;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamAttemptBean;
@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ExamService {
+public class StudentExamService {
 
-    private final ExamRepository examRepository;
+    private final StudentExamRepository examRepository;
 
-    public ExamService(ExamRepository examRepository) {
+    public StudentExamService(StudentExamRepository examRepository) {
         this.examRepository = examRepository;
     }
 
