@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>User Details</title>
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f4e9ff;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,.08);
+        }
+
+        h2 {
+            color: #4b176b;
+            margin-bottom: 25px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            padding: 13px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 10px 18px;
+            background: #8e44ad;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>
+            <i class="fa-solid fa-user"></i>
+            User Details
+        </h2>
+
+
+        <div class="row">
+            <div class="label">User ID</div>
+            <div th:text="${user.userId}"></div>
+        </div>
+
+
+        <div class="row">
+            <div class="label">Full Name</div>
+            <div th:text="${user.fullName}"></div>
+        </div>
+
+
+        <div class="row">
+            <div class="label">Email</div>
+            <div th:text="${user.email}"></div>
+        </div>
+
+
+        <div class="row">
+            <div class="label">Phone</div>
+            <div th:text="${user.phone}"></div>
+        </div>
+
+
+        <div class="row">
+            <div class="label">Role</div>
+            <div th:text="${user.roleName}"></div>
+        </div>
+
+
+        <div class="row">
+            <div class="label">Status</div>
+            <div th:text="${user.status}"></div>
+        </div>
+
+
+        <div class="row">
+            <div class="label">Date of Birth</div>
+            <div th:text="${user.dob}"></div>
+        </div>
+
+
+        <div class="row">
+            <div class="label">Gender</div>
+            <div th:text="${user.gender}"></div>
+        </div>
+
+
+        <div class="row">
+            <div class="label">Address</div>
+            <div th:text="${user.address}"></div>
+        </div>
+
+
+        <div class="row">
+            <div class="label">Created At</div>
+            <div th:text="${user.createdAt}"></div>
+        </div>
+
+
+        <a
+            href="/admin"
+            class="back">
+
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Users
+
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
