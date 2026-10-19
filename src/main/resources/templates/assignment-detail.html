@@ -44,18 +44,35 @@
                          th:text="${assignment.title}"></div>
                 </div>
 
-<!-- DEBUG: Batch -->
-<div style="background: #fff3cd; padding: 10px; margin: 10px 0;">
-    <strong>Batch Debug:</strong>
-    <span th:text="${batchList}">No batch data</span>
+<!-- Batch Information -->
+<div class="detail-item">
+    <div class="detail-label">Batch</div>
+
+    <div class="detail-value"
+         th:if="${batchList != null and !batchList.isEmpty()}"
+         th:text="${batchList[0]['batch_code'] + ' - ' + batchList[0]['title']}">
+    </div>
+
+    <div class="detail-value"
+         th:if="${batchList == null or batchList.isEmpty()}">
+        Batch not found
+    </div>
 </div>
 
-<!-- DEBUG: Lesson -->
-<div style="background: #d1ecf1; padding: 10px; margin: 10px 0;">
-    <strong>Lesson Debug:</strong>
-    <span th:text="${lessonList}">No lesson data</span>
-</div>
+<!-- Lesson Information -->
+<div class="detail-item">
+    <div class="detail-label">Lesson</div>
 
+    <div class="detail-value"
+         th:if="${lessonList != null and !lessonList.isEmpty()}"
+         th:text="${lessonList[0]}">
+    </div>
+
+    <div class="detail-value"
+         th:if="${lessonList == null or lessonList.isEmpty()}">
+        Lesson not found
+    </div>
+</div>
                 <div class="detail-item full">
                     <div class="detail-label">Description</div>
                     <div class="detail-value"
