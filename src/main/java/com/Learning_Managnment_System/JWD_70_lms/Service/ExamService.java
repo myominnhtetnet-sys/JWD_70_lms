@@ -7,7 +7,6 @@ import com.Learning_Managnment_System.JWD_70_lms.model.ExamAttemptBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,11 +58,13 @@ public class ExamService {
         return examRepository.insertNewAttemptSession(examId, enrollmentId, attemptNo);
     }
 
-    public List<ExamQuestionBean> buildShuffledQuestions(String sequence) {
-        if (sequence == null || sequence.trim().isEmpty()) return Collections.emptyList();
-        List<ExamQuestionBean> questions = examRepository.findQuestionsBySequence(sequence);
-        Collections.shuffle(questions);
-        return questions;
+    /**
+     * 🟢 DYNAMIC ASSESSMENT ROUTER HOOK:
+     * Maps the specific filter request to fetch ONLY the teacher's selected question collection 
+     * out of the ExamRepository data access layer.
+     */
+    public List<ExamQuestionBean> getQuestionsForExam(int examId) {
+        return examRepository.findQuestionsByExamId(examId);
     }
 
     @Transactional
