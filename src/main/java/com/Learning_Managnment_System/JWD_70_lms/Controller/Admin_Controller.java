@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.Learning_Managnment_System.JWD_70_lms.Repository.Admin_Repository;
+import com.Learning_Managnment_System.JWD_70_lms.Service.DashboardService;
 import com.Learning_Managnment_System.JWD_70_lms.model.AdminUserBean;
 
 import jakarta.servlet.http.HttpSession;
@@ -22,14 +23,26 @@ private boolean checkAdmin(HttpSession session) {
 Object role = session.getAttribute("role_id");
 return role != null && Integer.parseInt(role.toString()) == 1;
 }
+//
+//@GetMapping("/dashboard")
+//public String adminDashboard(HttpSession session, Model model) {
+//if (!checkAdmin(session)) return "redirect:/login";
+//model.addAttribute("fullName", session.getAttribute("fullName"));
+//return "dashboard";
+//}
 
+@Autowired
+private DashboardService dashboardService;
 @GetMapping("/dashboard")
-public String adminDashboard(HttpSession session, Model model) {
-if (!checkAdmin(session)) return "redirect:/login";
-model.addAttribute("fullName", session.getAttribute("fullName"));
-return "dashboard";
+public String showDashboard(Model model) {
+    model.addAttribute("activePage", "dashboard");
+    model.addAttribute("banner", dashboardService.getBannerSummary());
+    model.addAttribute("stats", dashboardService.getStatCardsSummary());
+    model.addAttribute("pendingPayments", dashboardService.getPendingPayments());
+    model.addAttribute("batches", dashboardService.getBatchSeatProgress());
+    model.addAttribute("overdues", dashboardService.getOverdueInstallmentsList());
+    return "dashboard";
 }
-
 @GetMapping("/users")
 public String listUsers(HttpSession session, Model model) {
     if (!checkAdmin(session)) return "redirect:/login";
