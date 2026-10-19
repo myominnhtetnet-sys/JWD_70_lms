@@ -20,7 +20,6 @@ public class SubmissionRepository {
 	}
 
 	public int save(SubmissionBean submission) {
-
 		String sql = """
 				INSERT INTO submissions
 				(
@@ -36,12 +35,15 @@ public class SubmissionRepository {
 				VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 				""";
 
-		return jdbcTemplate.update(sql, submission.getAssignmentId(), submission.getEnrollmentId(),
-				submission.getAttemptNo(), submission.getAnswerText(), submission.getAttachment(),
-				Timestamp.valueOf(submission.getSubmittedAt()), submission.getIsLate(), submission.getStatus());
+		return jdbcTemplate.update(sql, submission.getAssignmentId(), 
+				submission.getEnrollmentId(),submission.getAttemptNo(), 
+				submission.getAnswerText(), submission.getAttachment(),
+				Timestamp.valueOf(submission.getSubmittedAt()), 
+				submission.getIsLate(), submission.getStatus());
 	}
 
-	public Optional<SubmissionBean> findByAssignmentAndEnrollment(Integer assignmentId, Integer enrollmentId) {
+	public Optional<SubmissionBean> findByAssignmentAndEnrollment(
+			Integer assignmentId, Integer enrollmentId) {
 
 		String sql = """
 				SELECT

@@ -57,13 +57,12 @@ public class LoginController {
     }
 
 
-    @GetMapping("/teacher")
-    public String teacherPage(HttpSession session) {
-        if (session.getAttribute("roleId") == null || (int) session.getAttribute("roleId") != 2) {
-            return "redirect:/login";
-        }
-        return "teacher";
-    }
+	/*
+	 * @GetMapping("/teacher") public String teacherPage(HttpSession session) { if
+	 * (session.getAttribute("roleId") == null || (int)
+	 * session.getAttribute("roleId") != 2) { return "redirect:/login"; } return
+	 * "redirect:/teacher/dashboard"; }
+	 */
 
     @GetMapping("/student")
     public String studentPage(HttpSession session, Model model) {

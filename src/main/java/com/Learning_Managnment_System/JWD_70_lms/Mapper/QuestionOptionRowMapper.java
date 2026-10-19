@@ -10,8 +10,7 @@ import com.Learning_Managnment_System.JWD_70_lms.model.QuestionOptionBean;
 public class QuestionOptionRowMapper implements RowMapper<QuestionOptionBean> {
 
     @Override
-    public QuestionOptionBean mapRow(ResultSet rs, int rowNum)
-            throws SQLException {
+    public QuestionOptionBean mapRow(ResultSet rs, int rowNum) throws SQLException {
 
         QuestionOptionBean option = new QuestionOptionBean();
 

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Exam Results & Grading</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1250px;
+            margin: 30px auto;
+        }
+
+        h1 {
+            margin: 0 0 7px;
+            font-size: 25px;
+        }
+
+        .subtitle {
+            margin: 0 0 22px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            max-width: 750px;
+            margin-bottom: 18px;
+        }
+
+        .summary-card,
+        .search-card,
+        .table-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .summary-card {
+            padding: 14px 16px;
+        }
+
+        .summary-card p {
+            margin: 0 0 7px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .summary-card strong {
+            font-size: 22px;
+        }
+
+        .search-card {
+            padding: 18px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 2fr 1.4fr 1fr auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            padding: 10px 12px;
+            font: inherit;
+            font-size: 13px;
+            background: white;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: 2px solid #c7d2fe;
+            border-color: #6366f1;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .btn-outline {
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-success {
+            background: #059669;
+            color: white;
+        }
+
+        .table-card {
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            text-align: left;
+            font-size: 13px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .yellow {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .red {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 7px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        .empty {
+            padding: 30px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 640px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .modal-header,
+        .modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .modal-header {
+            margin-bottom: 18px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 19px;
+        }
+
+        .modal-footer {
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 18px;
+            font-size: 13px;
+        }
+
+        .detail-grid span {
+            display: block;
+            margin-bottom: 5px;
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        .question-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .question-card h3 {
+            margin: 8px 0 12px;
+            font-size: 14px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .answer-box {
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 11px;
+            margin: 7px 0 12px;
+            font-size: 13px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .muted {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .mark-input {
+            max-width: 180px;
+        }
+
+        .question-type {
+            font-size: 11px;
+            color: #4f46e5;
+            font-weight: 700;
+        }
+
+        @media (max-width: 800px) {
+            .search-card {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .summary-grid,
+            .search-card,
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-box {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Exam Results & Grading</h1>
+    <p class="subtitle">
+        Review student exam attempts and grade short answers
+    </p>
+
+    <div th:if="${success}"
+         class="alert green"
+         th:text="${success}"></div>
+
+    <div th:if="${error != null and attempt == null}"
+         class="alert red"
+         th:text="${error}"></div>
+
+    <div class="summary-grid">
+        <div class="summary-card">
+            <p>Total Exam Attempts</p>
+            <strong th:text="${totalCount}">0</strong>
+        </div>
+
+        <div class="summary-card">
+            <p>Pending Grading</p>
+            <strong th:text="${pendingCount}">0</strong>
+        </div>
+
+        <div class="summary-card">
+            <p>Graded Attempts</p>
+            <strong th:text="${gradedCount}">0</strong>
+        </div>
+    </div>
+
+    <div class="search-card">
+        <div>
+            <label for="searchInput">Search</label>
+            <input id="searchInput"
+                   type="search"
+                   placeholder="Student or exam...">
+        </div>
+
+        <div>
+            <label for="examFilter">Exam</label>
+            <select id="examFilter">
+                <option value="">All Exams</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="statusFilter">Grading Status</label>
+            <select id="statusFilter">
+                <option value="">All Status</option>
+                <option value="SUBMITTED">Pending Grading</option>
+                <option value="GRADED">Graded</option>
+            </select>
+        </div>
+
+        <button type="button"
+                class="btn btn-secondary"
+                id="resetButton">
+            Reset
+        </button>
+    </div>
+
+    <div class="table-card">
+        <div class="table-header">Student Exam Results</div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Student</th>
+                    <th>Exam</th>
+                    <th>Attempt</th>
+                    <th>Submitted At</th>
+                    <th>Status</th>
+                    <th>Score</th>
+                    <th>Result</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="item, stat : ${results}"
+                    class="result-row"
+                    th:attr="data-student=${item.studentName},
+                             data-exam=${item.examTitle},
+                             data-exam-id=${item.examId},
+                             data-status=${item.status}">
+
+                    <td th:text="${stat.count}"></td>
+                    <td th:text="${item.studentName}"></td>
+                    <td th:text="${item.examTitle}"></td>
+                    <td th:text="${item.attemptNo}"></td>
+
+                    <!-- <td th:text="${item.submittedAt != null
+                        ? #dates.format(item.submittedAt,
+                            'dd MMM yyyy, HH:mm')
+                        : '-'}"></td> -->
+							<td
+								th:text="${item.submittedAt != null
+						    ? #temporals.format(item.submittedAt, 'dd MMM yyyy, HH:mm')
+						    : '-'}">
+							</td>
+
+							<td>
+                        <span class="badge"
+                              th:classappend="${item.status == 'GRADED'
+                                  ? 'green' : 'yellow'}"
+                              th:text="${item.status == 'GRADED'
+                                  ? 'GRADED' : 'PENDING'}"></span>
+                    </td>
+
+                    <td>
+                        <span th:text="${item.status == 'GRADED'
+                            ? item.score : 'Pending'}"></span>
+                        /
+                        <span th:text="${item.totalMark}"></span>
+                    </td>
+
+                    <td>
+                        <span class="badge"
+                              th:classappend="${item.status != 'GRADED'
+                                  ? 'yellow'
+                                  : (item.result == 'PASSED'
+                                      ? 'green' : 'red')}"
+                              th:text="${item.status == 'GRADED'
+                                  ? item.result : 'PENDING'}"></span>
+                    </td>
+
+                    <td>
+                        <div class="actions">
+                            <a class="btn btn-outline"
+                               th:href="@{/teacher/exam-results(
+                                   attemptId=${item.attemptId},
+                                   mode='view')}">
+                                View
+                            </a>
+
+                            <a class="btn btn-primary"
+                               th:href="@{/teacher/exam-results(
+                                   attemptId=${item.attemptId},
+                                   mode='grade')}"
+                               th:text="${item.status == 'GRADED'
+                                   ? 'Regrade' : 'Grade'}">
+                                Grade
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr id="emptyRow" hidden>
+                    <td colspan="9" class="empty">
+                        No matching exam attempts found.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal is rendered only when an attempt has been selected. -->
+<div th:if="${attempt != null}"
+     id="examModal"
+     class="modal-overlay">
+
+    <div class="modal-box"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="modalTitle"
+         tabindex="-1">
+
+        <div class="modal-header">
+            <h2 id="modalTitle"
+                th:text="${mode == 'grade'
+                    ? 'Grade Exam Answers' : 'Exam Answer Details'}">
+            </h2>
+
+            <a class="btn btn-secondary"
+               th:href="@{/teacher/exam-results}"
+               aria-label="Close modal">
+                ✕
+            </a>
+        </div>
+
+        <div th:if="${error}"
+             class="alert red"
+             role="alert"
+             th:text="${error}"></div>
+
+        <div class="detail-grid">
+            <div>
+                <span>Student</span>
+                <strong th:text="${attempt.studentName}"></strong>
+            </div>
+
+            <div>
+                <span>Exam</span>
+                <strong th:text="${attempt.examTitle}"></strong>
+            </div>
+
+            <div>
+                <span>Attempt</span>
+                <strong th:text="${attempt.attemptNo}"></strong>
+            </div>
+
+            <div>
+                <span>Pass Mark / Total Mark</span>
+                <strong th:text="${attempt.passMark
+                    + ' / ' + attempt.totalMark}"></strong>
+            </div>
+        </div>
+
+        <!-- View mode -->
+        <div th:if="${mode == 'view'}">
+
+            <div class="question-card"
+                 th:each="answer, stat : ${examAnswers}">
+
+                <div class="question-type"
+                     th:text="${'Q' + stat.count
+                         + ' · ' + answer.questionType}"></div>
+
+                <h3 th:text="${answer.questionText}"></h3>
+
+                <label>Student Answer</label>
+
+                <div class="answer-box"
+                     th:text="${answer.questionType == 'SHORT_ANSWER'
+                         ? (answer.answerText != null
+                             ? answer.answerText : 'No answer provided.')
+                         : (answer.selectedOptionText != null
+                             ? answer.selectedOptionText
+                             : 'No valid option selected.')}"></div>
+
+                <p class="muted">
+                    Mark:
+                    <strong th:text="${answer.markAwarded != null
+                        ? answer.markAwarded : 'Not graded'}"></strong>
+                    /
+                    <span th:text="${answer.maxMark}"></span>
+                </p>
+            </div>
+
+            <label>Teacher Remark</label>
+            <div class="answer-box"
+                 th:text="${attempt.remark != null
+                     and !#strings.isEmpty(attempt.remark)
+                     ? attempt.remark : 'No remark.'}"></div>
+
+            <div class="modal-footer">
+                <a class="btn btn-secondary"
+                   th:href="@{/teacher/exam-results}">
+                    Close
+                </a>
+
+                <a class="btn btn-primary"
+                   th:href="@{/teacher/exam-results(
+                       attemptId=${attempt.attemptId},
+                       mode='grade')}">
+                    Grade Answers
+                </a>
+            </div>
+        </div>
+
+        <!-- Grade mode -->
+        <form th:if="${mode == 'grade'}"
+              th:object="${gradingForm}"
+              th:action="@{/teacher/exam-results/{id}/grade(
+                  id=${attempt.attemptId})}"
+              method="post">
+
+            <p class="muted">
+                Grade every short answer.
+                MCQ and True/False marks are calculated when you save.
+            </p>
+
+            <div class="question-card"
+                 th:each="answer, stat : ${examAnswers}">
+
+                <div class="question-type"
+                     th:text="${'Q' + stat.count
+                         + ' · ' + answer.questionType}"></div>
+
+                <h3 th:text="${answer.questionText}"></h3>
+
+                <label>Student Answer</label>
+
+                <div class="answer-box"
+                     th:text="${answer.questionType == 'SHORT_ANSWER'
+                         ? (answer.answerText != null
+                             ? answer.answerText : 'No answer provided.')
+                         : (answer.selectedOptionText != null
+                             ? answer.selectedOptionText
+                             : 'No valid option selected.')}"></div>
+
+                <!-- Match form entries to questions by ID. -->
+                <th:block th:if="${answer.questionType == 'SHORT_ANSWER'}">
+
+                    <th:block th:each="entry, entryStat : *{answers}">
+                        <div th:if="${entry.questionId == answer.questionId}">
+
+                            <input type="hidden"
+                                   th:field="*{answers[__${entryStat.index}__].questionId}">
+
+                            <label th:for="${'answers'
+                                + entryStat.index + '.mark'}">
+                                Awarded Mark
+                            </label>
+
+                            <input class="mark-input"
+                                   type="number"
+                                   min="0"
+                                   step="0.01"
+                                   th:max="${answer.maxMark}"
+                                   th:field="*{answers[__${entryStat.index}__].mark}"
+                                   required>
+
+                            <p class="muted">
+                                Maximum:
+                                <span th:text="${answer.maxMark}"></span>
+                            </p>
+                        </div>
+                    </th:block>
+
+                    <div th:if="${answer.explanation != null
+                        and !#strings.isEmpty(answer.explanation)}">
+                        <label>Question Explanation</label>
+                        <div class="answer-box"
+                             th:text="${answer.explanation}"></div>
+                    </div>
+                </th:block>
+
+                <p class="muted"
+                   th:if="${answer.questionType != 'SHORT_ANSWER'}">
+                    Automatic grading · Maximum:
+                    <span th:text="${answer.maxMark}"></span>
+                </p>
+            </div>
+
+            <label for="remark">Teacher Remark (optional)</label>
+            <textarea id="remark"
+                      th:field="*{remark}"
+                      rows="3"></textarea>
+
+            <div class="modal-footer">
+                <a class="btn btn-secondary"
+                   th:href="@{/teacher/exam-results}">
+                    Cancel
+                </a>
+
+                <button type="submit" class="btn btn-success">
+                    Save Grades
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const rows = Array.from(
+        document.querySelectorAll(".result-row")
+    );
+
+    const searchInput = document.getElementById("searchInput");
+    const examFilter = document.getElementById("examFilter");
+    const statusFilter = document.getElementById("statusFilter");
+
+    const exams = new Map();
+
+    rows.forEach(row => {
+        exams.set(row.dataset.examId, row.dataset.exam);
+    });
+
+    exams.forEach((title, id) => {
+        examFilter.add(new Option(title, id));
+    });
+
+    function filterResults() {
+        const keyword = searchInput.value.trim().toLowerCase();
+        let visible = 0;
+
+        rows.forEach(row => {
+            const text = (
+                (row.dataset.student || "") + " " +
+                (row.dataset.exam || "")
+            ).toLowerCase();
+
+            const matches =
+                text.includes(keyword) &&
+                (!examFilter.value ||
+                    row.dataset.examId === examFilter.value) &&
+                (!statusFilter.value ||
+                    row.dataset.status === statusFilter.value);
+
+            row.hidden = !matches;
+
+            if (matches) {
+                visible++;
+            }
+        });
+
+        document.getElementById("emptyRow").hidden = visible > 0;
+    }
+
+    searchInput.addEventListener("input", filterResults);
+    examFilter.addEventListener("change", filterResults);
+    statusFilter.addEventListener("change", filterResults);
+
+    document.getElementById("resetButton")
+        .addEventListener("click", () => {
+            searchInput.value = "";
+            examFilter.value = "";
+            statusFilter.value = "";
+            filterResults();
+        });
+
+    filterResults();
+
+    const modal = document.getElementById("examModal");
+
+    if (modal) {
+        document.body.style.overflow = "hidden";
+
+        const box = modal.querySelector(".modal-box");
+        const closeLink = modal.querySelector(
+            '[aria-label="Close modal"]'
+        );
+
+        box.focus();
+
+        modal.addEventListener("click", event => {
+            if (event.target === modal) {
+                closeLink.click();
+            }
+        });
+
+        modal.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                closeLink.click();
+            }
+
+            if (event.key === "Tab") {
+                const controls = Array.from(box.querySelectorAll(
+                    'a[href], button, input:not([type="hidden"]), ' +
+                    'select, textarea, [tabindex="0"]'
+                )).filter(element => element.getClientRects().length);
+
+                const first = controls[0];
+                const last = controls[controls.length - 1];
+
+                if (event.shiftKey &&
+                    (document.activeElement === first ||
+                     document.activeElement === box)) {
+                    event.preventDefault();
+                    last?.focus();
+                } else if (!event.shiftKey &&
+                    document.activeElement === last) {
+                    event.preventDefault();
+                    first?.focus();
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

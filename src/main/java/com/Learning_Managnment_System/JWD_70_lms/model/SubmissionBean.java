@@ -25,8 +25,8 @@ public class SubmissionBean {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    //for student assign
     
+    //for student assign
     private String studentName;
     private String assignmentTitle;
     private BigDecimal totalMark;

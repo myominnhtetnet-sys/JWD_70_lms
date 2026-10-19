@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam Details</title>
+<link rel="stylesheet" th:href="@{/css/style.css}">
+
+<style>
+
+.exam-detail-container {
+    width: 95%;
+    max-width: 850px !important;
+    margin: 25px auto !important;
+    padding: 0 12px;
+}
+.exam-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 16px;
+}
+.exam-detail-title {
+    font-size: 22px;
+    margin: 0 0 5px;
+}
+.exam-detail-subtitle {
+    font-size: 12px;
+    color: #64748b;
+}
+.exam-detail-card {
+    background: white;
+    padding: 18px !important;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+}
+.exam-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+.exam-info-item {
+    background: #f8fafc;
+    padding: 11px 13px !important;
+    border-radius: 7px;
+    min-width: 0;
+}
+.exam-info-label {
+    display: block;
+    font-size: 11px;
+    color: #64748b;
+    margin-bottom: 5px;
+}
+.exam-info-value {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f172a;
+}
+.exam-detail-card h2 {
+    font-size: 19px;
+    margin: 0 0 5px;
+}
+.question-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 8px;
+    margin-top: 15px;
+}
+.question-summary .summary-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 9px 11px;
+    border-radius: 7px;
+    min-width: 120px;
+    flex: 1;
+}
+.question-summary .summary-label {
+    display: block;
+    font-size: 11px;
+    color: #64748b;
+    margin-bottom: 5px;
+}
+.question-summary .summary-value {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+}
+.mark-warning {
+    width: 100%;
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+    padding: 9px 11px;
+    border-radius: 7px;
+    font-size: 12px;
+}
+.exam-question-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+}
+.exam-question-table th,
+.exam-question-table td {
+    padding: 10px 9px;
+    font-size: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+.exam-question-table th {
+    background: #f1f5f9;
+    color: #475569;
+}
+.exam-actions {
+    display: flex;
+    gap: 8px;
+}
+.exam-detail-container .exam-btn,
+.exam-finish-actions .exam-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 14px;
+    font-size: 12px;
+    border-radius: 7px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.exam-finish-actions {
+    width: 95%;
+    max-width: 850px;
+    margin: 0 auto 30px;
+    padding: 0 12px;
+    display: flex;
+    justify-content: flex-end;
+}
+.exam-finish-actions .exam-btn-primary {
+    background: #4f46e5;
+    color: white;
+}
+@media (max-width: 650px) {
+
+    .exam-detail-container {
+        width: 100%;
+        padding: 0 12px;
+    }
+    .exam-info-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .exam-detail-card {
+        padding: 14px !important;
+    }
+    .exam-detail-header {
+        flex-wrap: wrap;
+    }
+    .question-summary .summary-item {
+        min-width: 100px;
+    }
+    .exam-question-table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+</style>
+</head>
+
+<body>
+
+	<div class="exam-detail-container">
+
+		<div class="exam-detail-header">
+			<div>
+				<h1 class="exam-detail-title" th:text="${exam.title}">Java
+					Basic Exam</h1>
+				<div class="exam-detail-subtitle">Exam Details</div>
+			</div>
+			
+			<div class="exam-actions">
+				<a th:href="@{/teacher/exams}" class="exam-btn exam-btn-secondary">
+					Back </a> <a th:href="@{/teacher/exams/edit/{id}(id=${exam.examId})}"
+					class="exam-btn exam-btn-secondary"> Edit </a>
+			</div>			
+		</div>
+
+		<div class="exam-detail-card">
+
+			<div class="exam-info-grid">
+				<div class="exam-info-item">
+					<span class="exam-info-label"> Exam ID </span> <span
+						class="exam-info-value" th:text="${exam.examId}"> 1 </span>
+				</div>
+				
+				<div class="exam-info-item">
+					<span class="exam-info-label"> Exam Type </span> <span
+						class="exam-info-value" th:text="${exam.examType}"> MCQ </span>
+				</div>
+				
+				<div class="exam-info-item">
+					<span class="exam-info-label"> Duration </span> <span
+						class="exam-info-value"> <span
+						th:text="${exam.durationMin}"> 60 </span> minutes
+					</span>
+				</div>
+
+				<div class="exam-info-item">
+					<span class="exam-info-label"> Total Mark </span> <span
+						class="exam-info-value" th:text="${exam.totalMark}"> 100 </span>
+				</div>
+
+				<div class="exam-info-item">
+					<span class="exam-info-label"> Pass Mark </span> <span
+						class="exam-info-value" th:text="${exam.passMark}"> 40 </span>
+				</div>
+
+				<div class="exam-info-item">
+					<span class="exam-info-label"> Max Attempts </span> <span
+						class="exam-info-value" th:text="${exam.maxAttempts}"> 2 </span>
+				</div>
+
+				<div class="exam-info-item">
+					<span class="exam-info-label"> Status </span> <span
+						class="exam-info-value" th:text="${exam.status}"> DRAFT </span>
+				</div>
+
+				<div class="exam-info-item">
+					<span class="exam-info-label"> Shuffle Questions </span> <span
+						class="exam-info-value"
+						th:text="${exam.shuffleQuestions ? 'Yes' : 'No'}"> No </span>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="exam-detail-card">
+
+			<div class="exam-detail-header">
+
+				<div>
+					<h2>Selected Questions</h2>
+					<div class="exam-detail-subtitle">Questions currently
+						assigned to this exam</div>
+
+					<div class="question-summary">
+					
+						<div class="mark-warning"
+							th:if="${selectedTotalMark.compareTo(exam.totalMark) != 0}">
+							⚠️ Question marks total (<span th:text="${selectedTotalMark}">0</span>)
+							does not match exam total mark (<span th:text="${exam.totalMark}">0</span>).
+						</div>
+
+						<div class="summary-item">
+							<span class="summary-label"> Questions </span> <span
+								class="summary-value" th:text="${questionCount}"> 0 </span>
+						</div>
+
+						<div class="summary-item">
+							<span class="summary-label"> Total Question Marks </span> <span
+								class="summary-value" th:text="${selectedTotalMark}"> 0 </span>
+						</div>
+
+						<div class="summary-item">
+							<span class="summary-label"> Exam Total Mark </span> <span
+								class="summary-value" th:text="${exam.totalMark}"> 0 </span>
+						</div>
+
+					</div>
+				</div>
+
+				<a th:href="@{/teacher/exams/{examId}/questions(examId=${exam.examId})}"
+					class="exam-btn exam-btn-primary"> + Select Questions </a>
+
+			</div>
+
+			<div th:if="${#lists.isEmpty(questions)}" class="exam-empty">
+				No questions selected for this exam yet.</div>
+
+			<table th:if="${!#lists.isEmpty(questions)}" class="exam-question-table">
+
+				<thead>
+					<tr>
+						<th>Order</th>
+						<th>Question</th>
+						<th>Type</th>
+						<th>Mark</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<tr th:each="question : ${questions}">
+						<td th:text="${question.sortOrder}">1</td>
+						<td th:text="${question.questionText}">What is Java?</td>
+						<td th:text="${question.questionType}">MCQ</td>
+						<td th:text="${question.mark}">5</td>
+						<td>
+							<form th:action="@{/teacher/exams/{examId}/questions/remove(examId=${exam.examId})}"
+								method="post">
+								<input type="hidden" name="questionId" th:value="${question.questionId}">
+								<button type="submit" class="exam-btn exam-btn-danger"
+									onclick="return confirm('Remove this question?');">
+									Remove</button>
+							</form>
+						</td>
+					</tr>
+				</tbody>
+
+			</table>
+
+		</div>
+
+	</div>
+<div class="exam-finish-actions">
+    <a th:href="@{/teacher/exams}" class="exam-btn exam-btn-primary">
+        <i class="fa-solid fa-check"></i>
+        Save & Finish
+    </a>
+</div>
+
+</body>
+
+</html>
