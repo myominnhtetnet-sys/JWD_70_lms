@@ -2,6 +2,7 @@ package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,18 +21,19 @@ import com.Learning_Managnment_System.JWD_70_lms.model.CertificateBean;
 @Controller
 @RequestMapping("/admin/certificates")
 public class CertificateController {
-
-    private final CertificateService certificateService;
-
-    public CertificateController(CertificateService certificateService) {
-        this.certificateService = certificateService;
-    }
-
+	
+	@Autowired
+    private CertificateService certificateService;
+	
     // 1. Certificate Dashboard Page Display
     @GetMapping
     public String showCertificatePage(Model model) {
         List<CertificateBean> certificates = certificateService.getAllCertificates();
         model.addAttribute("certificates", certificates);
+        
+        // 🟢 ကျောင်းသားများ၏ Course နှင့် Batch ဆိုင်ရာ Enrollment စာရင်းများကို Modal Dropdown အတွက် ပို့ပေးခြင်း
+        model.addAttribute("enrollments", certificateService.getAllEligibleEnrollmentsForCertificate());
+        
         return "Certificate_Management"; // src/main/resources/templates/Certificate_Management.html
     }
 

@@ -11,13 +11,18 @@ public class BatchRowMapper implements RowMapper<BatchBean> {
     public BatchBean mapRow(ResultSet rs, int rowNum) throws SQLException {
         BatchBean batch = new BatchBean();
         
-        // 🟢 FIXED: All setters are renamed to snake_case to match BatchBean fields
         batch.setBatch_id(rs.getLong("batch_id"));
         batch.setCourse_id(rs.getLong("course_id"));
         batch.setBatch_code(rs.getString("batch_code"));
         batch.setTitle(rs.getString("title"));
-        batch.setStart_date(rs.getDate("start_date").toLocalDate());
-        batch.setEnd_date(rs.getDate("end_date").toLocalDate());
+        
+        if (rs.getDate("start_date") != null) {
+            batch.setStart_date(rs.getDate("start_date").toLocalDate());
+        }
+        if (rs.getDate("end_date") != null) {
+            batch.setEnd_date(rs.getDate("end_date").toLocalDate());
+        }
+        
         batch.setSchedule_note(rs.getString("schedule_note"));
         batch.setMax_seats(rs.getInt("max_seats"));
         batch.setStatus(rs.getString("status"));

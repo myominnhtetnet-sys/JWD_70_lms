@@ -27,7 +27,7 @@
             <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-3" id="sidebar-category">BATCH</div>
             
             <!-- 3. Batch Management Sub-menu -->
-            <div th:with="isBatchActive=${#execInfo.processedTemplateName == 'batch-detail'}" class="w-full">
+            <div th:with="isBatchActive=${#execInfo.processedTemplateName == 'Batch_Detail'}" class="w-full">
 
                 <button type="button" 
                         onclick="toggleBatchSubmenu()"
@@ -79,16 +79,15 @@
                 </div>
             </div>
             
-                     <!-- 4. Create Batch  -->   
-<a th:href="@{/admin/batches-manage}" 
-   th:classappend="${#execInfo.processedTemplateName == 'Batch_Create'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
-   class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer">
-    <i class="fa-solid fa-folder-plus text-sm w-5 text-center"></i>
-    <span>Create Batch</span>
-</a>
-
+            <!-- 4. Create Batch -->   
+            <a th:href="@{/admin/batches-manage}" 
+               th:classappend="${#execInfo.processedTemplateName == 'Batch_Create'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
+               class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer">
+                <i class="fa-solid fa-folder-plus text-sm w-5 text-center"></i>
+                <span>Create Batch</span>
+            </a>
             
-<div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-3" id="sidebar-category">COURSE</div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-3" id="sidebar-category">COURSE</div>
             <!-- 5. Course Management -->
             <a th:href="@{/admin/courses}" 
                th:classappend="${#execInfo.processedTemplateName == 'Course_Management'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
@@ -97,7 +96,7 @@
                 <span>Course Management</span>
             </a>
             
-                        <!-- 6. Course Review -->
+            <!-- 6. Course Review -->
             <a th:href="@{/admin/reviews}" 
                th:classappend="${#execInfo.processedTemplateName == 'Course_Review_Moderation'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
                class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer">
@@ -105,15 +104,14 @@
                 <span>Course Review</span>
             </a>
             
-                        <!-- 7. Course Builder -->
-<a th:href="@{/admin/course-builder}" 
-   th:classappend="${#execInfo.processedTemplateName == 'Course_Builder'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
-   class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer">
-    <i class="fa-solid fa-book-open text-sm w-5 text-center"></i>
-    <span>Course Builder</span>
-</a>
+            <!-- 7. Course Builder -->
+            <a th:href="@{/admin/course-builder}" 
+               th:classappend="${#execInfo.processedTemplateName == 'Course_Builder'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
+               class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer">
+                <i class="fa-solid fa-book-open text-sm w-5 text-center"></i>
+                <span>Course Builder</span>
+            </a>
             
-
             <!-- 4. Analytics -->
             <a th:href="@{/admin/analytics}" 
                th:classappend="${#execInfo.processedTemplateName == 'analytics'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
@@ -138,8 +136,7 @@
                 <span>Announcements Management</span>
             </a>
 
-
-<div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-3" id="sidebar-category">CERTIFICARE</div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-3" id="sidebar-category">CERTIFICARE</div>
             <!-- 8. Certificate Management -->
             <a th:href="@{/admin/certificates}" 
                th:classappend="${#execInfo.processedTemplateName == 'certificates'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'"
@@ -147,8 +144,6 @@
                 <i class="fa-solid fa-certificate text-sm w-5 text-center"></i>
                 <span>Certificate Management</span>
             </a>
-            
-
 
             <!-- 9. System Settings -->
             <a th:href="@{/admin/settings}" 
