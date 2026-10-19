@@ -172,4 +172,18 @@ public class StudentAssignmentRepository {
         return jdbcTemplate.queryForObject(sql, Integer.class, email);
     }
     
+    /**
+     * 🟢 DATABASE LOOKUP:
+     * Pulls the exact file string reference name assigned to an assignment row.
+     */
+    public String findTeacherFileByAssignmentId(int assignmentId) {
+        String sql = "SELECT teacher_attachment FROM learning_db.assignments WHERE assignment_id = ? LIMIT 1";
+        try {
+            return jdbcTemplate.queryForObject(sql, String.class, assignmentId);
+        } catch (Exception e) {
+            return null; 
+        }
+    }
+
+    
 }
