@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment & Refund Management | LearnHub LMS</title>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+:root {
+	--bg: #0f1118;
+	--sidebar: #181d28;
+	--card: #181d28;
+	--border: #293142;
+	--primary: #6c4ce5;
+	--text: #f1f3f9;
+	--muted: #929bb0;
+	--input: #202634;
+	--green: #36c995;
+	--yellow: #f4bd50;
+	--red: #ff7373;
+}
+
+body.light-mode {
+	--bg: #f4f6fb;
+	--sidebar: #ffffff;
+	--card: #ffffff;
+	--border: #e2e6ef;
+	--text: #242938;
+	--muted: #727c91;
+	--input: #f5f6fa;
+}
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	background: var(--bg);
+	color: var(--text);
+	min-height: 100vh;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
+button, input, select {
+	font: inherit;
+	cursor: pointer;
+}
+
+/* Layout CSS */
+.sidebar {
+	width: 260px;
+	position: fixed;
+	inset: 0 auto 0 0;
+	background: var(--sidebar);
+	border-right: 1px solid var(--border);
+	padding: 25px 18px;
+	overflow-y: auto;
+	z-index: 100;
+}
+
+.brand {
+	display: flex;
+	align-items: center;
+	gap: 13px;
+	padding: 5px 10px 32px;
+}
+
+.brand-icon {
+	width: 45px;
+	height: 45px;
+	background: #7895ff;
+	color: white;
+	border-radius: 13px;
+	display: grid;
+	place-items: center;
+	font-size: 21px;
+}
+
+.brand-name {
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.brand-subtitle {
+	color: var(--muted);
+	font-size: 13px;
+	margin-top: 5px;
+}
+
+.menu-heading {
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: var(--muted);
+	padding: 17px 12px 12px;
+}
+
+.nav-link {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 13px 14px;
+	margin-bottom: 5px;
+	border-radius: 10px;
+	color: var(--muted);
+	font-size: 14px;
+}
+
+.nav-link i {
+	width: 20px;
+	text-align: center;
+}
+
+.nav-link:hover, .nav-link.active {
+	background: rgba(108, 76, 229, .19);
+	color: #9b8aff;
+	font-weight: 700;
+}
+
+
+
+.sidebar-bottom {
+	margin-top: 30px;
+	border-top: 1px solid var(--border);
+	padding-top: 15px;
+}
+
+.main {
+	margin-left: 260px;
+	min-height: 100vh;
+}
+
+.topbar {
+	min-height: 88px;
+	padding: 18px 30px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	border-bottom: 1px solid var(--border);
+	background: var(--bg);
+	position: sticky;
+	top: 0;
+	z-index: 50;
+}
+
+.page-heading h1 {
+	font-size: 23px;
+	margin-bottom: 7px;
+}
+
+.page-heading p {
+	color: var(--muted);
+	font-size: 13px;
+}
+
+.topbar-right {
+	display: flex;
+	align-items: center;
+	gap: 13px;
+}
+
+.icon-btn {
+	width: 44px;
+	height: 44px;
+	border-radius: 12px;
+	background: var(--card);
+	border: 1px solid var(--border);
+	color: var(--muted);
+	display: grid;
+	place-items: center;
+}
+
+.profile {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.avatar {
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	display: grid;
+	place-items: center;
+	background: var(--primary);
+	color: white;
+	font-weight: 700;
+}
+
+.profile-name {
+	font-weight: 700;
+	font-size: 14px;
+}
+
+.profile-role {
+	font-size: 12px;
+	color: var(--muted);
+	margin-top: 5px;
+}
+
+.content {
+	padding: 28px 30px 40px;
+}
+
+.flash-message {
+	padding: 12px 18px;
+	border-radius: 9px;
+	margin-bottom: 20px;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.flash-success {
+	background: rgba(54, 201, 149, 0.15);
+	color: var(--green);
+	border: 1px solid var(--green);
+}
+
+.flash-error {
+	background: rgba(255, 115, 115, 0.15);
+	color: var(--red);
+	border: 1px solid var(--red);
+}
+
+.stats-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 18px;
+	margin-bottom: 23px;
+}
+
+.stat-card {
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: 15px;
+	padding: 22px;
+	display: flex;
+	gap: 15px;
+}
+
+.stat-icon {
+	width: 49px;
+	height: 49px;
+	border-radius: 13px;
+	display: grid;
+	place-items: center;
+	font-size: 20px;
+}
+
+.purple {
+	background: rgba(108, 76, 229, .2);
+	color: #a697ff;
+}
+
+.green {
+	background: rgba(54, 201, 149, .15);
+	color: var(--green);
+}
+
+.yellow {
+	background: rgba(244, 189, 80, .15);
+	color: var(--yellow);
+}
+
+.red {
+	background: rgba(255, 115, 115, .15);
+	color: var(--red);
+}
+
+.stat-label {
+	color: var(--muted);
+	font-size: 13px;
+	margin-bottom: 9px;
+}
+
+.stat-value {
+	font-size: 27px;
+	font-weight: 700;
+}
+
+.tab-container {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 20px;
+	border-bottom: 1px solid var(--border);
+	padding-bottom: 10px;
+}
+
+.tab-btn {
+	background: var(--card);
+	border: 1px solid var(--border);
+	color: var(--muted);
+	padding: 10px 20px;
+	border-radius: 10px;
+	font-weight: 600;
+	font-size: 14px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+	background: var(--primary);
+	color: #fff;
+	border-color: var(--primary);
+}
+
+.panel {
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: 15px;
+	padding: 23px;
+	margin-bottom: 20px;
+}
+
+.panel-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 15px;
+	margin-bottom: 20px;
+}
+
+.panel-header h2 {
+	font-size: 18px;
+}
+
+.muted {
+	color: var(--muted);
+	font-size: 13px;
+	margin-top: 7px;
+}
+
+/* Filter Form Enrollment Style Matching */
+.filter-form {
+	display: grid;
+	grid-template-columns: 2fr 1.5fr 1.5fr auto auto;
+	gap: 15px;
+	margin-bottom: 20px;
+	align-items: flex-end;
+}
+
+.field {
+	min-width: 0;
+}
+
+.field label {
+	display: block;
+	margin-bottom: 8px;
+	font-size: 13px;
+	color: var(--text);
+}
+
+.field input, .field select {
+	width: 100%;
+	min-width: 0;
+	padding: 12px;
+	background: var(--input);
+	border: 1px solid var(--border);
+	color: var(--text);
+	border-radius: 9px;
+	outline: none;
+	height: 45px;
+}
+
+.filter-actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.primary-btn {
+	border: none;
+	border-radius: 9px;
+	background: var(--primary);
+	color: white;
+	padding: 0 18px;
+	font-size: 13px;
+	font-weight: 700;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	height: 45px;
+}
+
+.secondary-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--border);
+	border-radius: 9px;
+	background: var(--input);
+	color: var(--text);
+	padding: 0 18px;
+	font-size: 13px;
+	height: 45px;
+}
+
+.table-wrapper {
+	overflow-x: auto;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	white-space: nowrap;
+}
+
+th {
+	text-align: left;
+	color: var(--muted);
+	font-size: 12px;
+	font-weight: 600;
+	padding: 13px 16px;
+	border-bottom: 1px solid var(--border);
+}
+
+td {
+	padding: 14px 16px;
+	border-bottom: 1px solid var(--border);
+	font-size: 13px;
+}
+
+.inline-form {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.inline-form select {
+	padding: 6px;
+	background: var(--input);
+	border: 1px solid var(--border);
+	border-radius: 7px;
+	color: var(--text);
+	font-size: 11px;
+}
+
+.mini-btn {
+	padding: 6px 10px;
+	border: none;
+	border-radius: 7px;
+	background: var(--primary);
+	color: white;
+	font-size: 11px;
+}
+</style>
+</head>
+
+<body>
+	<div class="app">
+
+		<!-- SIDEBAR FRAGMENT -->
+		<div th:replace="~{fragments/admin-layout :: sidebar(activePage='payments')}"></div>
+
+		<!-- MAIN -->
+		<main class="main">
+
+			<!-- TOPBAR FRAGMENT -->
+			<div th:replace="~{fragments/admin-layout :: topbar('Payment & Refund Management', 'Verify student payments and process refund requests.')}"></div>
+
+			<div class="content">
+				<!-- FLASH MESSAGES -->
+				<div th:if="${success}" class="flash-message flash-success" th:text="${success}">Success</div>
+				<div th:if="${error}" class="flash-message flash-error" th:text="${error}">Error</div>
+
+				<!-- STATISTICS -->
+				<section class="stats-grid">
+					<article class="stat-card">
+						<div class="stat-icon purple">
+							<i class="fa-solid fa-receipt"></i>
+						</div>
+						<div>
+							<div class="stat-label">Total Payments</div>
+							<div class="stat-value" th:text="${totalPayments}">0</div>
+						</div>
+					</article>
+					<article class="stat-card">
+						<div class="stat-icon yellow">
+							<i class="fa-solid fa-hourglass-half"></i>
+						</div>
+						<div>
+							<div class="stat-label">Pending Verification</div>
+							<div class="stat-value" th:text="${pendingPayments}">0</div>
+						</div>
+					</article>
+					<article class="stat-card">
+						<div class="stat-icon green">
+							<i class="fa-solid fa-circle-check"></i>
+						</div>
+						<div>
+							<div class="stat-label">Verified Payments</div>
+							<div class="stat-value" th:text="${verifiedPayments}">0</div>
+						</div>
+					</article>
+					<article class="stat-card">
+						<div class="stat-icon red">
+							<i class="fa-solid fa-rotate-left"></i>
+						</div>
+						<div>
+							<div class="stat-label">Pending Refunds</div>
+							<div class="stat-value" th:text="${pendingRefunds}">0</div>
+						</div>
+					</article>
+				</section>
+
+				<!-- NAVIGATION TABS -->
+				<div class="tab-container">
+					<button type="button" class="tab-btn active" id="btnTab1" onclick="switchTab('paymentTab', 'btnTab1')">
+						<i class="fa-solid fa-file-invoice-dollar"></i> Payment Verification
+					</button>
+					<button type="button" class="tab-btn" id="btnTab2" onclick="switchTab('refundTab', 'btnTab2')">
+						<i class="fa-solid fa-hand-holding-dollar"></i> Refund Management
+					</button>
+				</div>
+
+				<!-- TAB 1: PAYMENT VERIFICATION -->
+				<section id="paymentTab" class="panel">
+					<div class="panel-header">
+						<div>
+							<h2>Payment Verification Records</h2>
+							<p class="muted">Search, filter and verify student payment receipts.</p>
+						</div>
+					</div>
+
+					<!-- SEARCH / FILTER -->
+					<form class="filter-form" th:action="@{/admin/payments-refunds}" method="get">
+						<input type="hidden" name="activeTab" value="payment">
+						<div class="field">
+							<label for="payKeyword">Search</label> 
+							<input type="search" id="payKeyword" name="payKeyword" th:value="${payKeyword}" placeholder="Student name, email, txn ID...">
+						</div>
+						<div class="field">
+							<label for="payStatus">Payment Status</label> 
+							<select id="payStatus" name="payStatus">
+								<option value="ALL" th:selected="${selectedPayStatus == 'ALL'}">All Statuses</option>
+								<option value="PENDING" th:selected="${selectedPayStatus == 'PENDING'}">PENDING</option>
+								<option value="SUCCESS" th:selected="${selectedPayStatus == 'SUCCESS'}">SUCCESS</option>
+								<option value="REJECTED" th:selected="${selectedPayStatus == 'REJECTED'}">REJECTED</option>
+							</select>
+						</div>
+						<div class="field"></div>
+						<div class="filter-actions">
+							<button type="submit" class="primary-btn">
+								<i class="fa-solid fa-filter"></i> Filter
+							</button>
+						</div>
+						<div class="filter-actions">
+							<a th:href="@{/admin/payments-refunds}" class="secondary-btn">Reset</a>
+						</div>
+					</form>
+
+					<!-- TABLE -->
+					<div class="table-wrapper">
+						<table>
+							<thead>
+								<tr>
+									<th>PAYMENT ID</th>
+									<th>STUDENT</th>
+									<th>COURSE / BATCH</th>
+									<th>AMOUNT</th>
+									<th>TRANSACTION NO</th>
+									<th>PAYMENT DATE</th>
+									<th>PROOF</th>
+									<th>STATUS</th>
+									<th>ACTION</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="p : ${payments}" th:if="${payments != null and !payments.isEmpty()}">
+									<td th:text="${'#PAY-' + p.payment_id}">#1</td>
+									<td>
+										<div style="font-weight: 700;" th:text="${p.student_name}">Student Name</div>
+										<div style="color: var(--muted); font-size: 11px;" th:text="${p.student_email}">email@mail.com</div>
+									</td>
+									<td>
+										<div th:text="${p.course_name}">Course</div>
+										<div style="color: var(--muted); font-size: 11px;" th:text="${p.batch_name}">Batch</div>
+									</td>
+									<td style="font-weight: 700;" th:text="${p.amount != null ? #numbers.formatDecimal(p.amount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
+									<td th:text="${p.transaction_no}">TXN123456</td>
+									<td th:text="${p.payment_date != null ? p.payment_date : '-'}">-</td>
+									<td>
+										<a th:if="${p.proof_image != null}" th:href="@{'/uploads/' + ${p.proof_image}}" target="_blank" style="color: var(--primary); font-size: 12px; font-weight: 600;">
+											<i class="fa-solid fa-image"></i> View Slip
+										</a>
+										<span th:if="${p.proof_image == null}" style="color: var(--muted);">-</span>
+									</td>
+									<td>
+										<span th:if="${p.status == 'PENDING'}" style="color: var(--yellow); font-weight: 700;">PENDING</span>
+										<span th:if="${p.status == 'SUCCESS' or p.status == 'VERIFIED'}" style="color: var(--green); font-weight: 700;">VERIFIED</span>
+										<span th:if="${p.status == 'REJECTED'}" style="color: var(--red); font-weight: 700;">REJECTED</span>
+									</td>
+									<td>
+										<form th:action="@{/admin/payments-refunds/verify-payment}" method="post" class="inline-form">
+											<input type="hidden" name="paymentId" th:value="${p.payment_id}">
+											<button type="submit" name="action" value="verify" class="mini-btn" style="background: var(--green);"><i class="fa-solid fa-check"></i> Verify</button>
+											<button type="submit" name="action" value="reject" class="mini-btn" style="background: var(--red);"><i class="fa-solid fa-xmark"></i> Reject</button>
+										</form>
+									</td>
+								</tr>
+								<tr th:if="${payments == null or payments.isEmpty()}">
+									<td colspan="9" style="text-align: center; padding: 30px; color: var(--muted);">
+										<i class="fa-solid fa-folder-open" style="font-size: 24px; margin-bottom: 8px;"></i>
+										<p>No payment records found.</p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</section>
+
+				<!-- TAB 2: REFUND MANAGEMENT -->
+				<section id="refundTab" class="panel" style="display: none;">
+					<div class="panel-header">
+						<div>
+							<h2>Refund Requests</h2>
+							<p class="muted">Search, review and approve student refund applications.</p>
+						</div>
+					</div>
+
+					<!-- SEARCH / FILTER -->
+					<form class="filter-form" th:action="@{/admin/payments-refunds}" method="get">
+						<input type="hidden" name="activeTab" value="refund">
+						<div class="field">
+							<label for="refKeyword">Search</label> 
+							<input type="search" id="refKeyword" name="refKeyword" th:value="${refKeyword}" placeholder="Student name, refund ID, reason...">
+						</div>
+						<div class="field">
+							<label for="refStatus">Refund Status</label> 
+							<select id="refStatus" name="refStatus">
+								<option value="ALL" th:selected="${selectedRefStatus == 'ALL'}">All Statuses</option>
+								<option value="PENDING" th:selected="${selectedRefStatus == 'PENDING'}">PENDING</option>
+								<option value="APPROVED" th:selected="${selectedRefStatus == 'APPROVED'}">APPROVED</option>
+								<option value="PAID" th:selected="${selectedRefStatus == 'PAID'}">REFUNDED</option>
+								<option value="REJECTED" th:selected="${selectedRefStatus == 'REJECTED'}">REJECTED</option>
+							</select>
+						</div>
+						<div class="field"></div>
+						<div class="filter-actions">
+							<button type="submit" class="primary-btn">
+								<i class="fa-solid fa-filter"></i> Filter
+							</button>
+						</div>
+						<div class="filter-actions">
+							<a th:href="@{/admin/payments-refunds?activeTab=refund}" class="secondary-btn">Reset</a>
+						</div>
+					</form>
+
+					<!-- TABLE -->
+					<div class="table-wrapper">
+						<table>
+							<thead>
+								<tr>
+									<th>REFUND ID</th>
+									<th>STUDENT</th>
+									<th>REFUND AMOUNT</th>
+									<th>REASON</th>
+									<th>REQUEST DATE</th>
+									<th>STATUS</th>
+									<th>ACTION</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="r : ${refunds}" th:if="${refunds != null and !refunds.isEmpty()}">
+									<td th:text="${'#REF-' + r.refund_id}">#1</td>
+									<td>
+										<div style="font-weight: 700;" th:text="${r.student_name}">Student Name</div>
+									</td>
+									<td style="font-weight: 700; color: var(--yellow);" th:text="${r.amount != null ? #numbers.formatDecimal(r.amount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
+									<td th:text="${r.reason}">Reason text</td>
+									<td th:text="${r.created_at != null ? r.created_at : '-'}">-</td>
+									<td>
+										<span th:if="${r.status == 'PENDING'}" style="color: var(--yellow); font-weight: 700;">PENDING</span>
+										<span th:if="${r.status == 'APPROVED'}" style="color: #7895ff; font-weight: 700;">APPROVED</span>
+										<span th:if="${r.status == 'PAID'}" style="color: var(--green); font-weight: 700;">REFUNDED</span>
+										<span th:if="${r.status == 'REJECTED'}" style="color: var(--red); font-weight: 700;">REJECTED</span>
+									</td>
+									<td>
+										<div class="inline-form">
+											<form th:if="${r.status == 'PENDING'}" th:action="@{/admin/payments-refunds/update-refund-status}" method="post" style="display: inline-flex; gap: 5px;">
+												<input type="hidden" name="refundId" th:value="${r.refund_id}">
+												<button type="submit" name="status" value="APPROVED" class="mini-btn" style="background: var(--primary);"><i class="fa-solid fa-thumbs-up"></i> Approve</button>
+												<button type="submit" name="status" value="REJECTED" class="mini-btn" style="background: var(--red);"><i class="fa-solid fa-ban"></i> Reject</button>
+											</form>
+											<form th:if="${r.status == 'APPROVED'}" th:action="@{/admin/payments-refunds/update-refund-status}" method="post" style="display: inline-flex; gap: 5px;">
+												<input type="hidden" name="refundId" th:value="${r.refund_id}">
+												<button type="submit" name="status" value="PAID" class="mini-btn" style="background: var(--green);"><i class="fa-solid fa-money-bill-transfer"></i> Mark Refunded</button>
+											</form>
+											<span th:if="${r.status == 'PAID' || r.status == 'REJECTED'}" style="color: var(--muted); font-size: 11px;">Completed</span>
+										</div>
+									</td>
+								</tr>
+								<tr th:if="${refunds == null or refunds.isEmpty()}">
+									<td colspan="7" style="text-align: center; padding: 30px; color: var(--muted);">
+										<i class="fa-solid fa-folder-open" style="font-size: 24px; margin-bottom: 8px;"></i>
+										<p>No refund requests found.</p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</section>
+			</div>
+		</main>
+	</div>
+
+	<!-- TAB SWITCHING & DARK/LIGHT MODE SCRIPT -->
+	<script th:inline="javascript">
+		function switchTab(tabId, btnId) {
+			document.getElementById('paymentTab').style.display = 'none';
+			document.getElementById('refundTab').style.display = 'none';
+			document.getElementById('btnTab1').classList.remove('active');
+			document.getElementById('btnTab2').classList.remove('active');
+
+			document.getElementById(tabId).style.display = 'block';
+			document.getElementById(btnId).classList.add('active');
+		}
+
+		/*[# th:if="${param.activeTab != null and param.activeTab[0] == 'refund'}"]*/
+			switchTab('refundTab', 'btnTab2');
+		/*[/]*/
+
+		const themeToggle = document.getElementById("themeToggle");
+		function applyTheme(isLight) {
+			document.body.classList.toggle("light-mode", isLight);
+			if (themeToggle) {
+				themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-regular fa-moon"></i>';
+			}
+			localStorage.setItem("lmsTheme", isLight ? "light" : "dark");
+		}
+
+		applyTheme(localStorage.getItem("lmsTheme") === "light");
+
+		if (themeToggle) {
+			themeToggle.addEventListener("click", () => {
+				applyTheme(!document.body.classList.contains("light-mode"));
+			});
+		}
+	</script>
+</body>
+</html>

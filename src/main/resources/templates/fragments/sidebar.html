@@ -1,70 +1,60 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 
-<html lang="en" xmlns:th="http://www.thymeleaf.org"> <body>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
 
-<aside th:fragment="sidebar" class="sidebar">
+	<aside th:fragment="sidebar" class="sidebar">
 
-<div class="sidebar-title">
-    Admin Portal
-</div>
+		<div class="sidebar-title">Admin Portal</div>
 
-<a th:href="@{/admin/dashboard}"
-   class="sidebar-link"
-   th:classappend="${currentPage == 'dashboard'} ? ' active' : ''">
+		<a th:href="@{/admin/dashboard}" class="sidebar-link"
+			th:classappend="${currentPage == 'dashboard'} ? ' active' : ''">
 
-    <i class="fa-solid fa-gauge-high"></i>
-    <span>Dashboard</span>
+			<i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span>
 
-</a>
+		</a> <a th:href="@{/admin/users}" class="sidebar-link"
+			th:classappend="${currentPage == 'users'} ? ' active' : ''"> <i
+			class="fa-solid fa-users"></i> <span>User &amp; Role</span>
 
-<a th:href="@{/admin/users}"
-   class="sidebar-link"
-   th:classappend="${currentPage == 'users'} ? ' active' : ''">
+		</a> <a th:href="@{/admin/enrollment}" class="sidebar-link"
+			th:classappend="${currentPage == 'enrollment'} ? ' active' : ''">
 
-    <i class="fa-solid fa-users"></i>
-    <span>User &amp; Role</span>
+			<i class="fa-solid fa-user-check"></i> <span>Enrollment</span>
 
-</a>
+		</a>
+        
+      
+    
+    
+		PAYMENTS AND REFUNDS
+		<a th:href="@{/admin/payments-refunds}" class="sidebar-link"
+			th:classappend="${activePage == 'payments'} ? ' active' : ''"> <i
+			class="fa-solid fa-file-invoice-dollar"></i> <span>Payments
+				&amp; Refunds</span>
+		</a> 
+		
+		
+		<a th:href="@{/admin/notification}" class="sidebar-link"
+			th:classappend="${currentPage == 'notification'} ? ' active' : ''">
 
-<a th:href="@{/admin/enrollment}"
-   class="sidebar-link"
-   th:classappend="${currentPage == 'enrollment'} ? ' active' : ''">
+			<i class="fa-regular fa-bell"></i> <span>Notifications</span>
 
-    <i class="fa-solid fa-user-check"></i>
-    <span>Enrollment</span>
+		</a> <a th:href="@{/admin/profile}" class="sidebar-link"
+			th:classappend="${currentPage == 'profile'} ? ' active' : ''"> <i
+			class="fa-regular fa-user"></i> <span>My Profile</span>
 
-</a>
+		</a>
 
-<a th:href="@{/admin/notification}"
-   class="sidebar-link"
-   th:classappend="${currentPage == 'notification'} ? ' active' : ''">
+		<div class="sidebar-bottom">
 
-    <i class="fa-regular fa-bell"></i>
-    <span>Notifications</span>
+			<a th:href="@{/admin/logout}" class="sidebar-link logout-link"> <i
+				class="fa-solid fa-right-from-bracket"></i> <span>Logout</span>
 
-</a>
+			</a>
 
-<a th:href="@{/admin/profile}"
-   class="sidebar-link"
-   th:classappend="${currentPage == 'profile'} ? ' active' : ''">
+		</div>
 
-    <i class="fa-regular fa-user"></i>
-    <span>My Profile</span>
+	</aside>
 
-</a>
-
-<div class="sidebar-bottom">
-
-    <a th:href="@{/admin/logout}"
-       class="sidebar-link logout-link">
-
-        <i class="fa-solid fa-right-from-bracket"></i>
-        <span>Logout</span>
-
-    </a>
-
-</div>
-
-</aside>
-
-</body> </html>
+</body>
+</html> -->
