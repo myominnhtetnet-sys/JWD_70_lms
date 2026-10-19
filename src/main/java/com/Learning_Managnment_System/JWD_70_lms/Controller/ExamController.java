@@ -39,6 +39,11 @@ public class ExamController {
         return "exam_history";
     }
 
+    /**
+     * 🟢 WORKSPACE ENTRY CONTROLLER
+     * ⚡ DECISIVE LOCKOUT FIX: Evaluates historical row counts defensively.
+     * Prevents database transaction commit delays from throwing false-positive lockout flags.
+     */
     @GetMapping("/exam-take/{id}")
     public String takeExam(@PathVariable("id") int examId, Model model, HttpSession session) {
         String studentEmail = (String) session.getAttribute("email");
@@ -52,6 +57,7 @@ public class ExamController {
         
         int attemptId;
         String sessionCacheKey = "exam_" + examId + "_user_" + enrollmentId + "_questions";
+        String targetedQuestionSequence = (String) session.getAttribute(sessionCacheKey);
 
         int maxAttemptsLimit = 1;
         if (exam.getMax_attempts() != null) {
@@ -72,7 +78,7 @@ public class ExamController {
         int totalPastAttemptsCount = examService.getPastAttemptsCount(examId, enrollmentId);
         int currentAttemptNo = totalPastAttemptsCount + 1;
 
-        // Re-verify real-time attempt logs against list data rows to bypass transaction delay bounds
+        // 🟢 THE FIX: Re-verify real-time attempt logs against list data rows to bypass transaction delay bounds
         List<ExamAttemptBean> fullHistoryLog = examService.getExamResultsHistory(studentEmail);
         long matchedCurrentExamCount = fullHistoryLog.stream()
                 .filter(attempt -> attempt.getExam_id() != null && attempt.getExam_id() == examId)
@@ -90,16 +96,19 @@ public class ExamController {
             model.addAttribute("totalPastAttempts", currentAttemptNo - 1);
             return "exam_lockout";
         }
+
+        if (targetedQuestionSequence == null || targetedQuestionSequence.isEmpty()) {
+            targetedQuestionSequence = examService.resolveQuestionSequence(examId);
+            session.setAttribute(sessionCacheKey, targetedQuestionSequence);
+        }
         
         attemptId = examService.createNewAttemptSession(examId, enrollmentId, currentAttemptNo);
-
-        // 🟢 FIXED: Calls the service method that fetches strictly the teacher's selected questions!
-        List<ExamQuestionBean> questions = examService.getQuestionsForExam(examId);
+        List<ExamQuestionBean> questions = examService.buildShuffledQuestions(targetedQuestionSequence);
 
         model.addAttribute("exam", exam);
         model.addAttribute("examId", examId);
         model.addAttribute("attemptId", attemptId);
-        model.addAttribute("questions", questions); 
+        model.addAttribute("questions", questions);
         return "my_exam";
     }
 
@@ -116,6 +125,7 @@ public class ExamController {
 
         examService.processSubmission(examId, attemptId, answerText);
         
+        // Evict local cache key signature strings cleanly on completion
         Integer enrollmentId = examService.resolveEnrollmentId((String) session.getAttribute("email"));
         String sessionCacheKey = "exam_" + examId + "_user_" + enrollmentId + "_questions";
         session.removeAttribute(sessionCacheKey);
