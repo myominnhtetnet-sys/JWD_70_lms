@@ -1,117 +1,308 @@
-
 package com.Learning_Managnment_System.JWD_70_lms.Service;
 
-import java.util.Collections;
+<<<<<<<< HEAD:src/main/java/com/Learning_Managnment_System/JWD_70_lms/Service/ExamService.java
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-
+import java.util.Map;
+import java.util.Set;
+import java.util.LinkedHashSet;
+========
+import com.Learning_Managnment_System.JWD_70_lms.Repository.StudentExamRepository;
+import com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.ExamBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.ExamAttemptBean;
+>>>>>>>> student:src/main/java/com/Learning_Managnment_System/JWD_70_lms/Service/StudentExamService.java
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.Learning_Managnment_System.JWD_70_lms.Repository.StudentExamRepository;
-import com.Learning_Managnment_System.JWD_70_lms.model.StudentExamBean;
-import com.Learning_Managnment_System.JWD_70_lms.model.ExamAttemptBean;
+import com.Learning_Managnment_System.JWD_70_lms.Repository.ExamRepository;
+import com.Learning_Managnment_System.JWD_70_lms.Repository.QuestionRepository;
+import com.Learning_Managnment_System.JWD_70_lms.model.ExamBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.QuestionBean;
 
 @Service
 public class StudentExamService {
 
+<<<<<<<< HEAD:src/main/java/com/Learning_Managnment_System/JWD_70_lms/Service/ExamService.java
+	private final ExamRepository examRepository;
+	private final QuestionRepository questionRepository;
+
+	public ExamService(ExamRepository examRepository, QuestionRepository questionRepository) {
+		this.examRepository = examRepository;
+		this.questionRepository = questionRepository;
+	}
+========
     private final StudentExamRepository examRepository;
 
     public StudentExamService(StudentExamRepository examRepository) {
         this.examRepository = examRepository;
     }
+>>>>>>>> student:src/main/java/com/Learning_Managnment_System/JWD_70_lms/Service/StudentExamService.java
 
-    // 1. Student Exam List
-    public List<StudentExamBean> getAvailableExams(String email) {
-        return examRepository.findAvailableExams(email);
-    }
+	public List<ExamBean> getAllExams() {
+		return examRepository.findAll();
+	}
 
-    // 2. Student Exam History
-    public List<ExamAttemptBean> getExamResultsHistory(String email) {
-        return examRepository.findExamResultsHistory(email);
-    }
+	public ExamBean getExamById(Long examId) {
+		return examRepository.findById(examId)
+				.orElseThrow(() -> new IllegalArgumentException("Exam not found: " + examId));
+	}
 
-    // 3. Find Student Enrollment
-    public int resolveEnrollmentId(String email) {
-        Integer enrollmentId =
-                examRepository.findEnrollmentIdByEmail(email);
+	public long createExam(ExamBean exam) {
+		validateExam(exam);
+		return examRepository.save(exam);
+	}
 
-        return enrollmentId == null ? 0 : enrollmentId;
-    }
+	public int updateExam(ExamBean exam) {
+		getExamById(exam.getExamId());
+		validateExam(exam);
+		int result = examRepository.update(exam);
 
-    // 4. Get Exam Metadata
-    public StudentExamBean getExamMetadata(int examId) {
-        return examRepository.findStudentExamMetadata(examId);
-    }
+		if (result == 0) {
+			throw new IllegalArgumentException("Exam update failed");
+		}
+		return result;
+	}
 
-    // 5. Check Active Attempts
-    public List<ExamAttemptBean> checkActiveAttempts(
-            int examId, int enrollmentId) {
+	@Transactional
+	public int deleteExam(Long examId) {
 
-        return examRepository.findActiveAttempts(examId, enrollmentId);
-    }
+		getExamById(examId);
+		examRepository.removeAllQuestions(examId);
+		int result = examRepository.deleteById(examId);
+		if (result == 0) {
+			throw new IllegalArgumentException("Exam delete failed");
+		}
+		return result;
+	}
 
-    // 6. Terminate Active Attempt
-    @Transactional
-    public void terminateLiveSession(int attemptId) {
-        examRepository.updateAttemptToTerminated(attemptId);
-    }
+	public List<ExamQuestionBean> getSelectedQuestions(Long examId) {
+		getExamById(examId);
+		return examRepository.findQuestionsByExamId(examId);
+	}
 
-    // 7. Count Previous Attempts
-    public int getPastAttemptsCount(int examId, int enrollmentId) {
-        Integer count =
-                examRepository.countPastAttempts(examId, enrollmentId);
+	public int addQuestion(ExamQuestionBean examQuestion) {
+		if (examQuestion.getExamId() == null) {
+			throw new IllegalArgumentException("Exam ID is required");
+		}
 
-        return count == null ? 0 : count;
-    }
+		if (examQuestion.getQuestionId() == null) {
+			throw new IllegalArgumentException("Question ID is required");
+		}
 
-    // 8. Resolve Question Sequence
-    public String resolveQuestionSequence(int examId) {
-        List<Integer> ids =
-                examRepository.findQuestionSequence(examId);
+		if (examQuestion.getMark() == null || examQuestion.getMark().signum() <= 0) {
+			throw new IllegalArgumentException("Question mark must be greater than zero");
+		}
 
-        return ids.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(","));
-    }
+		if (examQuestion.getSortOrder() == null || examQuestion.getSortOrder() <= 0) {
+			throw new IllegalArgumentException("Sort order must be greater than zero");
+		}
 
-    // 9. Create New Attempt
-    @Transactional
-    public int createNewAttemptSession(
-            int examId, int enrollmentId, int attemptNo) {
+		getExamById(examQuestion.getExamId());
+		return examRepository.addQuestionToExam(examQuestion);
+	}
 
-        return examRepository.insertNewAttemptSession(
-                examId, enrollmentId, attemptNo);
-    }
+	public int removeQuestion(Long examId, Long questionId) {
+		getExamById(examId);
+		if (questionId == null) {
+			throw new IllegalArgumentException("Question ID is required");
+		}
+		return examRepository.removeQuestionFromExam(examId, questionId);
+	}
 
-    // 10. Build Exam Questions
-    public List<ExamQuestionBean> buildShuffledQuestions(
-            String sequence) {
+	public int removeAllQuestions(Long examId) {
+		getExamById(examId);
+		return examRepository.removeAllQuestions(examId);
+	}
 
-        if (sequence == null || sequence.trim().isEmpty()) {
-            return Collections.emptyList();
-        }
+	private void validateExam(ExamBean exam) {
+		if (exam.getCourseId() == null) {
+			throw new IllegalArgumentException("Course is required");
+		}
+		if (exam.getBatchId() == null) {
+			throw new IllegalArgumentException("Batch is required");
+		}
+		if (exam.getTitle() == null || exam.getTitle().isBlank()) {
+			throw new IllegalArgumentException("Exam title is required");
+		}
+		if (exam.getExamType() == null || exam.getExamType().isBlank()) {
+			throw new IllegalArgumentException("Exam type is required");
+		}
+		if (exam.getDurationMin() == null || exam.getDurationMin() <= 0) {
+			throw new IllegalArgumentException("Duration must be greater than zero");
+		}
+		if (exam.getTotalMark() == null || exam.getTotalMark().signum() <= 0) {
+			throw new IllegalArgumentException("Total mark must be greater than zero");
+		}
+		if (exam.getPassMark() == null || exam.getPassMark().signum() < 0) {
+			throw new IllegalArgumentException("Pass mark cannot be negative");
+		}
+		if (exam.getPassMark().compareTo(exam.getTotalMark()) > 0) {
+			throw new IllegalArgumentException("Pass mark cannot be greater than total mark");
+		}
+		if (exam.getStartAt() == null) {
+			throw new IllegalArgumentException("Start date is required");
+		}
+		if (exam.getEndAt() == null) {
+			throw new IllegalArgumentException("End date is required");
+		}
+		if (!exam.getEndAt().isAfter(exam.getStartAt())) {
+			throw new IllegalArgumentException("End date must be after start date");
+		}
+		if (exam.getMaxAttempts() == null || exam.getMaxAttempts() <= 0) {
+			throw new IllegalArgumentException("Maximum attempts must be greater than zero");
+		}
+		if (exam.getShuffleQuestions() == null) {
+			exam.setShuffleQuestions(false);
+		}
+		if (exam.getStatus() == null || exam.getStatus().isBlank()) {
+			throw new IllegalArgumentException("Exam status is required");
+		}
+	}
 
-        List<ExamQuestionBean> questions =
-                examRepository.findQuestionsBySequence(sequence);
+	public List<QuestionBean> getQuestionBank() {
+		return questionRepository.findAll();
+	}
 
-        Collections.shuffle(questions);
+	@Transactional
+	public void saveSelectedQuestions(Long examId,
+	        List<Long> questionIds, List<String> marks) {
 
-        return questions;
-    }
+	    getExamById(examId);
 
-    // 11. Submit Exam
-    @Transactional
-    public void processSubmission(
-            int examId, int attemptId, String answerText) {
+	    if (questionIds == null || questionIds.isEmpty()) {
+	        throw new IllegalArgumentException("Please select at least one question.");
+	    }
 
-        examRepository.saveSubmissionResponse(
-                examId, attemptId, answerText);
-    }
+	    if (marks == null || questionIds.size() != marks.size()) {
+	        throw new IllegalArgumentException("Question and mark data are invalid.");
+	    }
 
-    // 12. Get Exam Result
-    public ExamAttemptBean getAttemptResultSummary(int attemptId) {
-        return examRepository.findAttemptResultSummary(attemptId);
-    }
+	    for (int i = 0; i < questionIds.size(); i++) {
+	        Long questionId = questionIds.get(i);
+	        if (questionId == null) {
+	            continue;
+	        }
+	        if (examRepository.existsQuestionInExam(examId, questionId)) {
+	            continue;
+	        }
+
+	        BigDecimal mark;
+
+	        try {
+	            mark = new BigDecimal(marks.get(i));
+	        } catch (Exception e) {
+	            throw new IllegalArgumentException( "Invalid mark for question " + questionId);
+	        }
+
+	        if (mark.signum() <= 0) {
+	            throw new IllegalArgumentException("Question mark must be greater than zero.");
+	        }
+
+	        Integer nextOrder = examRepository.getNextSortOrder(examId);
+	        ExamQuestionBean examQuestion = new ExamQuestionBean();
+
+	        examQuestion.setExamId(examId);
+	        examQuestion.setQuestionId(questionId);
+	        examQuestion.setMark(mark);
+	        examQuestion.setSortOrder(nextOrder);
+
+	        examRepository.addQuestionToExam(examQuestion);
+	    }
+	}
+	@Transactional
+	public void updateExamWithQuestions( ExamBean exam,List<Long> selectedIds) {
+
+	    ExamBean existing = getExamById(exam.getExamId());
+
+	    exam.setCourseId(existing.getCourseId());
+	    exam.setBatchId(existing.getBatchId());
+	    exam.setCreatedBy(existing.getCreatedBy());
+
+	    validateExam(exam);
+
+	    if (selectedIds == null || selectedIds.isEmpty()) {
+	        throw new IllegalArgumentException( "Please select at least one question.");
+	    }
+
+	    Set<Long> uniqueIds = new LinkedHashSet<>(selectedIds);
+
+	    if (uniqueIds.size() != selectedIds.size()) {
+	        throw new IllegalArgumentException("Duplicate questions are not allowed.");
+	    }
+
+	    List<ExamQuestionBean> existingQuestions =
+	            examRepository.findQuestionsByExamId(exam.getExamId());
+
+	    Map<Long, BigDecimal> existingMarks = new HashMap<>();
+
+	    for (ExamQuestionBean question : existingQuestions) {
+	        existingMarks.put( question.getQuestionId(), question.getMark());
+	    }
+
+	    BigDecimal selectedTotal = BigDecimal.ZERO;
+
+	    for (Long questionId : uniqueIds) {
+	        if (questionId == null) {
+	            throw new IllegalArgumentException( "Invalid question ID.");
+	        }
+
+	        BigDecimal mark;
+
+	        if (existingMarks.containsKey(questionId)) {
+	            mark = existingMarks.get(questionId);
+	        } else {
+	            mark = examRepository.getDefaultMark( questionId, exam.getCourseId());
+	        }
+
+	        if (mark == null || mark.signum() <= 0) {
+	            throw new IllegalArgumentException(
+	                "Invalid mark for question " + questionId);
+	        }
+
+	        selectedTotal = selectedTotal.add(mark);
+	    }
+
+	    if (selectedTotal.compareTo(exam.getTotalMark()) != 0) {
+	        throw new IllegalArgumentException(
+	            "Selected Question Marks (" + selectedTotal
+	            + ") must equal Exam Total Mark ("
+	            + exam.getTotalMark() + ").");
+	    }
+
+	    for (ExamQuestionBean question : existingQuestions) {
+	        if (!uniqueIds.contains(question.getQuestionId())) {
+	            examRepository.removeQuestionFromExam(
+	                exam.getExamId(),question.getQuestionId());
+	        }
+	    }
+
+	    for (Long questionId : uniqueIds) {
+	        if (existingMarks.containsKey(questionId)) {
+	            continue;
+	        }
+
+	        ExamQuestionBean newQuestion = new ExamQuestionBean();
+
+	        newQuestion.setExamId(exam.getExamId());
+	        newQuestion.setQuestionId(questionId);
+
+	        newQuestion.setMark(
+	            examRepository.getDefaultMark(
+	                questionId,exam.getCourseId()));
+
+	        newQuestion.setSortOrder(
+	            examRepository.getNextSortOrder(exam.getExamId()));
+
+	        examRepository.addQuestionToExam(newQuestion);
+	    }
+
+	    int updated = examRepository.update(exam);
+	    if (updated == 0) {
+	        throw new IllegalArgumentException("Exam update failed.");
+	    }
+	}
 }
+    
+

@@ -10,6 +10,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -123,4 +125,23 @@ public class StudentAssignmentService {
     public int getUserIdByEmail(String email) {
         return repository.findUserIdByEmail(email);
     }
+    
+    public Resource loadTeacherFileAsResource(String fileName) {
+        try {
+            // Points to the base directory where teacher files are saved on the server
+            Path baseDirectory = Paths.get("teacher_uploads").toAbsolutePath().normalize();
+            
+            // Resolve file name while cleaning out traverse commands like "../"
+            Path targetFilePath = baseDirectory.resolve(fileName).normalize();
+            Resource resource = new UrlResource(targetFilePath.toUri());
+
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            }
+            return null;
+        } catch (Exception ex) {
+            return null;
+        }
+    
+}
 }

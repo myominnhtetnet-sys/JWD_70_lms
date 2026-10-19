@@ -74,12 +74,18 @@ public class CourseController {
     /**
      * 🟢 2. DETAILED SINGLE VIEW VIA TEXT PATH SLUGS
      */
+    /**
+     * 🟢 DETAILED SINGLE VIEW VIA LOOKUP SLUGS
+     */
     @GetMapping("/detail/{slug}")
     public String getCourseDetails(@PathVariable("slug") String slug, Model model) {
-        Optional<CourseBean> courseOpt = courseRepository.findBySlug(slug);
+        // Find the course in the database case-insensitively
+        Optional<CourseBean> courseOpt = courseRepository.findBySlug(slug.trim().toLowerCase());
         
         if (courseOpt.isEmpty()) {
-            return "error/404"; 
+            System.out.println("⚠️ NOTICE: Course slug not resolved: " + slug);
+            // Bypasses the missing error/404 template crash completely by returning to catalog safely
+            return "redirect:/courses/show"; 
         }
         
         CourseBean course = courseOpt.get();
@@ -90,6 +96,7 @@ public class CourseController {
         
         return "course-detail"; 
     }
+
     
     /**
      * 🟢 3. PROCESS TRANS-SUBMISSION OF AN INDIVIDUAL USER COURSE EVALUATION REVIEW

@@ -24,9 +24,6 @@ public class StudentAssignmentRepository {
     private SubmissionRowMapper submissionRowMapper;
 
     public List<AssignmentBean> findAssignmentsByStudentId(int userId) {
- 
-
-//    public List<AssignmentBean> findAllAssignments() {
         String sql = """
                 SELECT a.*, b.batch_code AS batch_code, b.title AS batch_title, l.title AS lesson_title
                 FROM assignments a
@@ -39,17 +36,6 @@ public class StudentAssignmentRepository {
         return jdbcTemplate.query(sql, assignmentRowMapper, userId);
     }
 
-    
-    public List<Integer> findSubmittedAssignmentIds(Integer enrollmentId) {
-        String sql = """
-            SELECT DISTINCT assignment_id
-            FROM submissions
-            WHERE enrollment_id = ?
-        """;
-
-        return jdbcTemplate.queryForList(sql,Integer.class,enrollmentId);
-    }
-    
     public Optional<AssignmentBean> findAssignmentById(Integer assignmentId) {
         String sql = "SELECT * FROM assignments WHERE assignment_id = ? AND status = 'PUBLISHED'";
         List<AssignmentBean> result = jdbcTemplate.query(sql, assignmentRowMapper, assignmentId);
@@ -185,5 +171,19 @@ public class StudentAssignmentRepository {
         String sql = "SELECT user_id FROM learning_db.users WHERE email = ? LIMIT 1";
         return jdbcTemplate.queryForObject(sql, Integer.class, email);
     }
+    
+    /**
+     * 🟢 DATABASE LOOKUP:
+     * Pulls the exact file string reference name assigned to an assignment row.
+     */
+    public String findTeacherFileByAssignmentId(int assignmentId) {
+        String sql = "SELECT teacher_attachment FROM learning_db.assignments WHERE assignment_id = ? LIMIT 1";
+        try {
+            return jdbcTemplate.queryForObject(sql, String.class, assignmentId);
+        } catch (Exception e) {
+            return null; 
+        }
+    }
+
     
 }

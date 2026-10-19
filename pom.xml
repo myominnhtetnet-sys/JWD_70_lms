@@ -41,7 +41,7 @@
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 		
-		<!-- 🟢 SPRING SECURITY: Adds authorization, form controls, and unblocks secure frame options -->
+		<!-- 🟢 REQUIRED: Unlocks AntPathRequestMatcher and Security Configuration Layer Engines -->
 <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-security</artifactId>

@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.Learning_Managnment_System.JWD_70_lms.Service.StudentAssignmentService;
 import com.Learning_Managnment_System.JWD_70_lms.model.SubmissionBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.AssignmentBean;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -29,10 +34,6 @@ public class StudentAssignmentController {
         this.studentAssignmentService = service;
     }
 
-    /**
-     * 🟢 1. SHOW PAGINATED & FILTERED STUDENT ASSIGNMENTS LIST
-     * ⚡ ALIGNED KEY FIX: Checks for 'email' to match your MyCourseController authentication state.
-     */
     @GetMapping("/assignments")
     public String showAssignments(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -41,17 +42,14 @@ public class StudentAssignmentController {
             Model model, 
             HttpSession session) {
             
-        // 🟢 FIXED: Changed session key lookup from "currentUser" to plain "email" string
         String studentEmail = (String) session.getAttribute("email");
         if (studentEmail == null) {
             return "redirect:/login"; 
         }
 
-        // Fetch user ID dynamically via service using the active email token string
         int activeUserId = studentAssignmentService.getUserIdByEmail(studentEmail);
         int pageSize = 6; 
 
-        // Compute items dynamically through service queries
         int totalItems = studentAssignmentService.getTotalAssignmentsCount(activeUserId, title, status);
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
         if (totalPages == 0) {
@@ -68,6 +66,40 @@ public class StudentAssignmentController {
         model.addAttribute("lateAssignments", studentAssignmentService.getLateAssignments(activeUserId));
         
         return "student-assignment-list";
+    }
+
+    /**
+     * 🟢 STREAM TEACHER UPLOADED FILE METHOD FOR STUDENTS
+     * Streams files from the target directory directly into the student's browser canvas.
+     */
+    @GetMapping("/assignments/view-file/{fileName:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> viewTeacherFile(@PathVariable String fileName, HttpServletRequest request, HttpSession session) {
+        // Security Check: Deny entry to anonymous visitors
+        if (session.getAttribute("email") == null) {
+            return ResponseEntity.status(403).build();
+        }
+
+        Resource resource = studentAssignmentService.loadTeacherFileAsResource(fileName);
+        if (resource == null || !resource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Determine content type dynamically to let PDFs/images open in-browser natively
+        String contentType = null;
+        try {
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        } catch (IOException ex) {
+            contentType = "application/octet-stream";
+        }
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 
     @GetMapping("/assignments/submit/{id}")

@@ -516,6 +516,19 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- ========================================================= -->
+<!-- 🟢 CONFLICT-FREE TEACHER ATTACHMENT VIEW TRIGGER BUTTON   -->
+<!-- ========================================================= -->
+<!-- FIXED: Changed assignment.teacherAttachment to assignment.attachment to match your model property exactly -->
+<div th:if="${assignment.attachment != null}" style="margin-top: 12px; text-align: left;">
+    <a th:href="@{/student/assignments/view-file/{name}(name=${assignment.attachment})}" 
+       target="_blank" 
+       style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #0369a1; background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; text-decoration: none; transition: background-color 0.1s;">
+        <i class="fa-solid fa-file-pdf"></i> View Reference Material
+    </a>
+</div>
+                
 
                 <div class="card-footer">
                     <a th:if="${submittedAssignments != null and #lists.contains(submittedAssignments.![assignmentId], assignment.assignmentId)}"
