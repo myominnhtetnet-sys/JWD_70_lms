@@ -1,189 +1,159 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-50" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      class="h-full bg-slate-50"
+      xmlns:th="http://www.thymeleaf.org">
 
-<!-- Head Fragment Include -->
-<head th:replace="~{head :: head}">
+<head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduPulse Dashboard</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
 </head>
 
 <body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
 
-    <div id="app" class="min-h-screen flex flex-col">
-        
-        <!-- Header Fragment -->
-        <div th:replace="~{header :: header}"></div>
+<div id="app" class="min-h-screen flex flex-col">
 
-        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
-        <div class="flex-1 flex overflow-hidden">
-            
-            <!-- DYNAMIC SIDEBAR -->
-            <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex-shrink-0 border-r border-slate-800 flex flex-col justify-between transition-all duration-300">
-                <div class="p-4">
-                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-3" id="sidebar-category">Admin Portal</div>
-                    <nav id="sidebar-menu" class="space-y-1">
-                        <!-- Populated by JavaScript based on active role -->
-                    </nav>
-                </div>
-                
-                <div class="p-4 border-t border-slate-800">
-                    <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                        <div class="flex items-center gap-3">
-                            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                            <span class="text-xs font-medium text-slate-300">EduPulse v2.4 Active</span>
-                        </div>
-                        <p class="text-[11px] text-slate-500 mt-1">All systems operational</p>
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+    <div th:replace="~{header :: header}"></div>
+
+    <!-- =====================================================
+         MAIN APPLICATION AREA
+         ===================================================== -->
+    <div class="flex-1 flex overflow-hidden">
+
+        <!-- =================================================
+             SIDEBAR (STANDARDIZED ADMIN MENU)
+             ================================================= -->
+        <aside id="sidebar"
+               class="w-64 bg-[#0f172a] text-slate-300 flex-shrink-0 flex flex-col justify-between sticky top-0 h-screen text-sm font-medium transition-all duration-300">
+
+            <div>
+                <!-- Logo Area -->
+                <div class="h-20 flex items-center px-6 gap-3 border-b border-slate-800 shrink-0">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center font-bold justify-center">E</div>
+                    <div>
+                        <div class="font-bold text-white text-sm">EduPulse <span class="text-xs bg-indigo-600/30 text-indigo-400 px-1.5 py-0.5 rounded">LMS</span></div>
                     </div>
                 </div>
-            </aside>
 
-            <!-- MAIN DYNAMIC CONTENT CONTAINER -->
-            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-slate-900">
-                <!-- Admin View -->
-                <div id="view-admin" class="role-view">
-                    <div th:replace="~{admin :: admin}"></div>
+                <!-- Navigation Links -->
+                <div class="p-4 space-y-1 overflow-y-auto">
+                    <div id="sidebar-category"
+                         class="px-3 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                        Admin Menu
+                    </div>
+
+                    <nav id="sidebar-menu" class="space-y-1">
+                        <!-- Active Dashboard Link -->
+                        <a th:href="@{/admin}"
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-lg shadow-indigo-600/30 transition">
+                            <i class="fa-solid fa-house w-5"></i>
+                            <span>Dashboard</span>
+                        </a>
+
+                        <a th:href="@{/admin/users}"
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                            <i class="fa-solid fa-users w-5"></i>
+                            <span>Users &amp; Roles</span>
+                        </a>
+
+                        <a th:href="@{/admin/categories/list}"
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                            <i class="fa-solid fa-layer-group w-5"></i>
+                            <span>Category</span>
+                        </a>
+
+                        <a th:href="@{/api/v1/discounts/view}"
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                            <i class="fa-solid fa-tags w-5"></i>
+                            <span>Discounts</span>
+                        </a>
+
+                        <a th:href="@{/admin/installments}"
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                            <i class="fa-solid fa-file-invoice-dollar w-5"></i>
+                            <span>Installment Rules</span>
+                        </a>
+                        
+                        <a th:href="@{/admin/scholarships}"
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                            <i class="fa-solid fa-graduation-cap w-5"></i>
+                            <span>Scholarships</span>
+                        </a>
+
+                        <a th:href="@{/admin/scholarship-applications-review}"
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                            <i class="fa-solid fa-file-lines w-5"></i>
+                            <span>Scholarship Applications</span>
+                        </a>
+
+                        <a th:href="@{/admin/courses}"
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                            <i class="fa-solid fa-book w-5"></i>
+                            <span>Global Courses</span>
+                        </a>
+
+                        <a th:href="@{/admin/Settings}"
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                            <i class="fa-solid fa-gear w-5"></i>
+                            <span>System Settings</span>
+                        </a>
+
+                        <a th:href="@{/admin/reports}"
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                            <i class="fa-solid fa-chart-pie w-5"></i>
+                            <span>Reports</span>
+                        </a>
+                    </nav>
                 </div>
-
-                <!-- Teacher View -->
-                <div id="view-teacher" class="role-view hidden">
-                    <div th:replace="~{teacher :: teacher}"></div>
-                </div>
-
-                <!-- Student View -->
-                <div id="view-student" class="role-view hidden">
-                    <div th:replace="~{student :: student}"></div>
-                </div>
-            </main>
-
-        </div> <!-- End of flex-1 flex overflow-hidden -->
-
-    </div> <!-- End of #app -->
-
-    <!-- MODAL DIALOGS -->
-    
-    <!-- Modal 1: Add New User (Admin) -->
-    <div id="user-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Add New User</h3>
-                <button onclick="closeModal('user-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <form onsubmit="handleAddUser(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Full Name</label>
-                    <input type="text" id="new-user-name" required placeholder="e.g. Elena Rostova" class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg focus:ring-2 focus:ring-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Email Address</label>
-                    <input type="email" id="new-user-email" required placeholder="elena@edupulse.edu" class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg focus:ring-2 focus:ring-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assigned Role</label>
-                    <select id="new-user-role" class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg focus:ring-2 focus:ring-indigo-500">
-                        <option value="Student">Student</option>
-                        <option value="Teacher">Teacher</option>
-                        <option value="Admin">Admin</option>
-                    </select>
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('user-modal')" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow">Create Account</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- Modal 2: Create Assignment (Teacher) -->
-    <div id="assignment-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Create New Assignment</h3>
-                <button onclick="closeModal('assignment-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <!-- Footer Badge -->
+            <div class="p-4 border-t border-slate-800 shrink-0">
+                <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                        <span class="text-xs font-medium text-slate-300">EduPulse v2.4 Active</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1">All systems operational</p>
+                </div>
             </div>
-            <form onsubmit="handleCreateAssignment(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assignment Title</label>
-                    <input type="text" required placeholder="e.g. Midterm Project Proposal" class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Select Course</label>
-                    <select class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg">
-                        <option>CS-301 Advanced Data Structures</option>
-                        <option>AI-402 Machine Learning Fundamentals</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Due Date</label>
-                    <input type="date" required class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg">
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('assignment-modal')" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">Publish Assignment</button>
-                </div>
-            </form>
-        </div>
-    </div>
+        </aside>
 
-    <!-- Modal 3: Submit Work (Student) -->
-    <div id="submit-work-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Submit Assignment</h3>
-                <button onclick="closeModal('submit-work-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <!-- =====================================================
+             MAIN CONTENT
+             ===================================================== -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-slate-900">
+            <div id="view-admin" class="role-view">
+                <div th:replace="~{admin :: admin}"></div>
             </div>
-            <form onsubmit="handleSubmitAssignment(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assignment</label>
-                    <select class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg">
-                        <option>CS-301: B-Trees Implementation Lab</option>
-                        <option>AI-402: Neural Nets Gradient Descent Notebook</option>
-                    </select>
-                </div>
-                <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-6 text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/40 transition">
-                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-indigo-500 mb-2"></i>
-                    <p class="text-xs font-semibold text-slate-700 dark:text-slate-300">Click or drag file to upload</p>
-                    <p class="text-[10px] text-slate-400 mt-1">PDF, ZIP, IPYNB up to 25MB</p>
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('submit-work-modal')" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">Upload & Submit</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal 4: Announcement (Global) -->
-    <div id="announcement-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Broadcast Announcement</h3>
-                <button onclick="closeModal('announcement-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div id="view-teacher" class="role-view hidden">
+                <div th:replace="~{teacher :: teacher}"></div>
             </div>
-            <form onsubmit="handleSendAnnouncement(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Title</label>
-                    <input type="text" required placeholder="System Update / Holiday notice" class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Message</label>
-                    <textarea rows="3" required placeholder="Type broadcast message..." class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg"></textarea>
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('announcement-modal')" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">Send Broadcast</button>
-                </div>
-            </form>
-        </div>
-    </div>
+            <div id="view-student" class="role-view hidden">
+                <div th:replace="~{student :: student}"></div>
+            </div>
+        </main>
 
-    <!-- TOAST NOTIFICATION BANNER -->
-    <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl z-50 flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 border border-slate-700">
-        <i class="fa-solid fa-circle-check text-emerald-400 text-base" id="toast-icon"></i>
-        <span id="toast-message" class="text-xs font-semibold">Notification message</span>
     </div>
+</div>
 
-    <!-- JAVASCRIPT LOGIC -->
-    <script type="text/javascript" th:src="@{/js/main.js}"></script>
-    
+<script type="text/javascript" th:src="@{/js/main.js}"></script>
+
 </body>
 </html>

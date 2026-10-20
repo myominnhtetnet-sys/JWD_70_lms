@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPulse LMS - System Reports</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+<!-- =====================================================
+     LAYOUT WRAPPER (SIDEBAR + MAIN CONTENT)
+     ===================================================== -->
+<div class="flex min-h-screen">
+
+    <!-- ADMIN SIDEBAR -->
+    <aside class="w-64 bg-[#0f172a] text-slate-300 flex flex-col shrink-0 sticky top-0 h-screen text-sm font-medium">
+        <!-- Logo Area -->
+        <div class="h-20 flex items-center px-6 gap-3 border-b border-slate-800 shrink-0">
+            <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center font-bold justify-center">E</div>
+            <div>
+                <div class="font-bold text-white text-sm">EduPulse <span class="text-xs bg-indigo-600/30 text-indigo-400 px-1.5 py-0.5 rounded">LMS</span></div>
+            </div>
+        </div>
+
+        <!-- Menu Links -->
+        <div class="p-4 space-y-1 flex-1 overflow-y-auto">
+            <div class="px-3 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Admin Menu</div>
+            
+            <a href="/admin" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                <i class="fa-solid fa-house w-5"></i> Dashboard
+            </a>
+            <a href="/admin/categories/list" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                <i class="fa-solid fa-layer-group w-5"></i> Category
+            </a>
+            <a href="/api/v1/discounts/view" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                <i class="fa-solid fa-tags w-5"></i> Discounts
+            </a>
+            <a href="/admin/installments" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                <i class="fa-solid fa-file-invoice-dollar w-5"></i> Installment Rules
+            </a>
+            <a href="/admin/scholarships" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                <i class="fa-solid fa-graduation-cap w-5"></i> Scholarships
+            </a>
+            <a href="/admin/scholarship-applications-review" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                <i class="fa-solid fa-file-lines w-5"></i> Scholarship Applications
+            </a>
+            <a href="/admin/Settings" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                <i class="fa-solid fa-gear w-5"></i> System Settings
+            </a>
+            <!-- Active Reports Link -->
+            <a href="/admin/reports" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-lg shadow-indigo-600/30">
+                <i class="fa-solid fa-chart-pie w-5"></i> Reports
+            </a>
+        </div>
+    </aside>
+
+    <!-- RIGHT CONTENT AREA -->
+    <div class="flex-1 flex flex-col min-w-0">
+
+        <!-- Top Header Navbar -->
+        <header class="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between gap-4 sticky top-0 z-20">
+            <div class="relative w-96">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="text" placeholder="Search reports, students, logs..." class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder-slate-400 outline-none">
+            </div>
+
+            <!-- Right Header Actions & Profile -->
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3 pl-2">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" class="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-500/20" alt="Avatar">
+                    <div class="hidden sm:block text-left">
+                        <div class="text-sm font-semibold text-slate-800 leading-tight">Sarah Jenkins</div>
+                        <div class="text-xs text-slate-400">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="p-8 space-y-8 flex-1 overflow-y-auto">
+            <div class="max-w-7xl mx-auto space-y-8">
+
+                <!-- Page Header Title & Actions -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">System Reports</h1>
+                        <p class="text-sm text-slate-500 mt-1">Generate, view, and export comprehensive administrative and academic performance reports.</p>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button onclick="openGenerateModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/20 transition flex items-center gap-2">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            Generate New Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Top Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+
+                    <!-- Stat Card 1 -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Total Reports</span>
+                            <div class="text-2xl font-bold text-slate-900 mt-1">128</div>
+                            <p class="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
+                                <i class="fa-solid fa-arrow-trend-up"></i> +14 this month
+                            </p>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-file-shield"></i>
+                        </div>
+                    </div>
+
+                    <!-- Stat Card 2 -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Scheduled Jobs</span>
+                            <div class="text-2xl font-bold text-slate-900 mt-1">12</div>
+                            <p class="text-xs text-indigo-600 font-medium mt-1 flex items-center gap-1">
+                                <i class="fa-solid fa-clock"></i> Automated daily
+                            </p>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                    </div>
+
+                    <!-- Stat Card 3 -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Storage Used</span>
+                            <div class="text-2xl font-bold text-slate-900 mt-1">1.4 GB</div>
+                            <p class="text-xs text-slate-400 font-medium mt-1">PDF & CSV exports</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-database"></i>
+                        </div>
+                    </div>
+
+                    <!-- Stat Card 4 -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Export Success Rate</span>
+                            <div class="text-2xl font-bold text-slate-900 mt-1">99.9%</div>
+                            <p class="text-xs text-slate-400 font-medium mt-1">Zero failed queues</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Reports Data Table Section -->
+                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+
+                    <!-- Table Filters & Header -->
+                    <div class="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <h2 class="font-bold text-slate-800 text-base">Generated Reports Archive</h2>
+                            <span class="bg-slate-100 text-slate-600 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                                Active Archive
+                            </span>
+                        </div>
+
+                        <!-- Filter Controls -->
+                        <div class="flex items-center gap-3">
+                            <select class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500/20">
+                                <option value="">All Categories</option>
+                                <option value="ACADEMIC">Academic Progress</option>
+                                <option value="FINANCIAL">Financial & Aid</option>
+                                <option value="ATTENDANCE">Student Attendance</option>
+                            </select>
+
+                            <select class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500/20">
+                                <option value="">All Formats</option>
+                                <option value="PDF">PDF Document</option>
+                                <option value="CSV">CSV Spreadsheet</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Responsive Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50/70 border-b border-slate-100 text-[12px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    <th class="py-3.5 px-6">Report ID</th>
+                                    <th class="py-3.5 px-6">Report Title</th>
+                                    <th class="py-3.5 px-6">Category</th>
+                                    <th class="py-3.5 px-6">Generated By</th>
+                                    <th class="py-3.5 px-6">Date Created</th>
+                                    <th class="py-3.5 px-6">Format</th>
+                                    <th class="py-3.5 px-6 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm">
+
+                                <tr class="hover:bg-slate-50/60 transition">
+                                    <td class="py-4 px-6 font-semibold text-slate-800">#RPT-501</td>
+                                    <td class="py-4 px-6 font-semibold text-slate-900">Q3 Scholarship Disbursement Summary</td>
+                                    <td class="py-4 px-6">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-indigo-50 text-indigo-700">Financial & Aid</span>
+                                    </td>
+                                    <td class="py-4 px-6 text-slate-600">Sarah Jenkins</td>
+                                    <td class="py-4 px-6 text-slate-500 text-xs">Oct 14, 2026</td>
+                                    <td class="py-4 px-6">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-rose-50 text-rose-700">
+                                            <i class="fa-solid fa-file-pdf"></i> PDF
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6 text-right space-x-2">
+                                        <button class="bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white font-medium text-xs px-3 py-1.5 rounded-xl transition">
+                                            <i class="fa-solid fa-download"></i> Download
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <tr class="hover:bg-slate-50/60 transition">
+                                    <td class="py-4 px-6 font-semibold text-slate-800">#RPT-502</td>
+                                    <td class="py-4 px-6 font-semibold text-slate-900">JWD_70 Course Attendance Audit</td>
+                                    <td class="py-4 px-6">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700">Student Attendance</span>
+                                    </td>
+                                    <td class="py-4 px-6 text-slate-600">System Bot</td>
+                                    <td class="py-4 px-6 text-slate-500 text-xs">Oct 12, 2026</td>
+                                    <td class="py-4 px-6">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700">
+                                            <i class="fa-solid fa-file-excel"></i> CSV
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6 text-right space-x-2">
+                                        <button class="bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white font-medium text-xs px-3 py-1.5 rounded-xl transition">
+                                            <i class="fa-solid fa-download"></i> Download
+                                        </button>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Table Footer Pagination -->
+                    <div class="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                        <span>Showing 1 to 2 of 128 entries</span>
+                        <div class="flex items-center gap-1">
+                            <button class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Previous</button>
+                            <button class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-medium">1</button>
+                            <button class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">2</button>
+                            <button class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Next</button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- ================= GENERATE REPORT MODAL ================= -->
+<div id="generateModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 overflow-hidden transform transition-all">
+        
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div>
+                <h3 class="font-bold text-slate-900 text-base">Generate New Report</h3>
+                <p class="text-xs text-slate-400">Configure parameters for instant compilation.</p>
+            </div>
+            <button onclick="closeGenerateModal()" class="text-slate-400 hover:text-slate-600 text-lg w-8 h-8 rounded-xl flex items-center justify-center hover:bg-slate-100 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form action="/admin/reports/generate" method="POST" class="p-6 space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Report Title</label>
+                <input type="text" name="reportTitle" required placeholder="e.g. Monthly Enrollment & Revenue Audit" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Report Category</label>
+                <select name="category" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium">
+                    <option value="ACADEMIC">Academic Progress</option>
+                    <option value="FINANCIAL">Financial & Aid Disbursal</option>
+                    <option value="ATTENDANCE">Student Attendance</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Export Format</label>
+                <select name="format" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium">
+                    <option value="PDF">PDF Document</option>
+                    <option value="CSV">CSV Spreadsheet</option>
+                </select>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                <button type="button" onclick="closeGenerateModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition">
+                    Cancel
+                </button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-lg shadow-indigo-600/20 transition">
+                    Compile & Export
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<!-- Script to toggle modal -->
+<script>
+    function openGenerateModal() {
+        document.getElementById('generateModal').classList.remove('hidden');
+    }
+    function closeGenerateModal() {
+        document.getElementById('generateModal').classList.add('hidden');
+    }
+</script>
+
+</body>
+</html>
