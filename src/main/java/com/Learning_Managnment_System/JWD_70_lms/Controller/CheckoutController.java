@@ -41,7 +41,6 @@ public class CheckoutController {
         Map<String, Object> student = studentRepository.findByEmail(email);
         Map<String, Object> course = enrollmentRepository.getCourseById(courseId);
         
-       
         if (course == null) {
             course = enrollmentRepository.getCourseById(1);
         }
@@ -59,15 +58,14 @@ public class CheckoutController {
 
         return "checkout"; 
     }
-
    
     @PostMapping("/student/process-payment")
     public String processPayment(@RequestParam(value = "paymentMethodId", defaultValue = "0") int paymentMethodId,
-                                 @RequestParam("amount") double amount,
-                                 @RequestParam(value = "paymentType", defaultValue = "Full Course Fee") String paymentType,
-                                 @RequestParam(value = "note", required = false) String note,
-                                 HttpSession session,
-                                 RedirectAttributes redirectAttributes) {
+                               @RequestParam("amount") double amount,
+                               @RequestParam(value = "paymentType", defaultValue = "Full Course Fee") String paymentType,
+                               @RequestParam(value = "note", required = false) String note,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
 
         String email = (String) session.getAttribute("email");
         Object studentIdObj = session.getAttribute("studentId");
@@ -77,7 +75,7 @@ public class CheckoutController {
         }
 
         if (paymentMethodId == 0) {
-            redirectAttributes.addFlashAttribute("error", "ကျေးဇူးပြု၍ Payment Method တစ်ခုခုကို ရွေးချယ်ပေးပါရန်။");
+            redirectAttributes.addFlashAttribute("error", "Please select a payment method.");
             return "redirect:/student/checkout";
         }
 
@@ -100,23 +98,32 @@ public class CheckoutController {
         int result = paymentRepository.savePayment(payment);
 
         if (result > 0) {
-            redirectAttributes.addFlashAttribute("amount", amount);
-            redirectAttributes.addFlashAttribute("transactionNo", generatedTxnNo);
-            redirectAttributes.addFlashAttribute("paymentType", paymentType);
-            redirectAttributes.addFlashAttribute("note", note);
-            return "redirect:/student/payment-success";
+            // ဒေတာများ Database ထဲ အောင်မြင်စွာဝင်ပြီးပါက Success စာမျက်နှာသို့ URL parameters များဖြင့် လုံခြုံစွာ ပို့ဆောင်ပေးခြင်း
+            return "redirect:/student/payment-success?amount=" + amount + 
+                   "&transactionNo=" + generatedTxnNo + 
+                   "&paymentType=" + java.net.URLEncoder.encode(paymentType, java.nio.charset.StandardCharsets.UTF_8) + 
+                   "&note=" + java.net.URLEncoder.encode(note != null ? note : "", java.nio.charset.StandardCharsets.UTF_8);
         } else {
             redirectAttributes.addFlashAttribute("error", "Payment submission failed. Please try again.");
             return "redirect:/student/checkout";
         }
     }
 
-   
     @GetMapping("/student/payment-success")
-    public String showSuccessPage(HttpSession session) {
+    public String showSuccessPage(@RequestParam(value = "amount", required = false) Double amount,
+                                @RequestParam(value = "transactionNo", required = false) String transactionNo,
+                                @RequestParam(value = "paymentType", required = false) String paymentType,
+                                @RequestParam(value = "note", required = false) String note,
+                                HttpSession session, Model model) {
         if (session.getAttribute("email") == null) {
             return "redirect:/login";
         }
+        
+        model.addAttribute("amount", amount);
+        model.addAttribute("transactionNo", transactionNo);
+        model.addAttribute("paymentType", paymentType);
+        model.addAttribute("note", note);
+
         return "payment-success";
     }
 }
