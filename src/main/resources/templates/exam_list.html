@@ -145,12 +145,12 @@
                 <div th:unless="${#lists.isEmpty(exams)}" class="space-y-3">
                     <div th:each="exam : ${exams}" class="exam-row-card">
                         <div class="space-y-1">
-                            <span class="badge-quiz" th:text="${exam.exam_type}">QUIZ</span>
+                            <span class="badge-quiz" th:text="${exam.examType}">QUIZ</span>
                             <h3 class="text-sm font-bold text-slate-900 mt-1" th:text="${exam.title}">Java Quiz</h3>
-                            <span class="text-slate-500 font-medium" th:text="${exam.duration_min + ' mins • ' + exam.total_mark + ' Max Marks'}">45 mins • 100 Max Marks</span>
+                            <span class="text-slate-500 font-medium" th:text="${exam.durationMin + ' mins • ' + exam.totalMark + ' Max Marks'}">45 mins • 100 Max Marks</span>
                         </div>
                         <div>
-                            <a th:href="@{/student/exam-take/{id}(id=${exam.exam_id})}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition shadow-sm inline-block">
+                            <a th:href="@{/student/exam-take/{id}(id=${exam.examId})}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition shadow-sm inline-block">
                                 Start →
                             </a>
                         </div>

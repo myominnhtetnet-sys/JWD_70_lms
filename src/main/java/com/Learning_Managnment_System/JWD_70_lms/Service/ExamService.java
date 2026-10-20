@@ -320,11 +320,11 @@ public class ExamService {
 	    }
 	}
 	
-	public List<QuestionBean> getQuestionBankByCourse(Long courseId) {
-	    if (courseId == null) {
-	        throw new IllegalArgumentException("Course ID is required.");
-	    }
-
-	    return questionRepository.findActiveByCourseId(courseId);
-	}
+//	public List<QuestionBean> getQuestionBankByCourse(Long courseId) {
+//	    if (courseId == null) {
+//	        throw new IllegalArgumentException("Course ID is required.");
+//	    }
+//
+//	    return questionRepository.findActiveByCourseId(courseId);
+//	}
 }
