@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class CourseRepository {
@@ -66,6 +67,17 @@ public class CourseRepository {
             course.getThumbnail(),
             course.getCreated_by()
         );
+    }
+    
+ // 🟢 Added missing findBySlug method
+    public Optional<CourseBean> findBySlug(String slug) {
+        String sql = "SELECT c.*, cat.name AS category_name, u.full_name AS created_by_name " +
+                     "FROM courses c " +
+                     "LEFT JOIN categories cat ON c.category_id = cat.category_id " +
+                     "LEFT JOIN users u ON c.created_by = u.user_id " +
+                     "WHERE c.slug = ? AND c.deleted_at IS NULL";
+        List<CourseBean> list = jdbcTemplate.query(sql, new CourseMapper(), slug);
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
 
     public void update(CourseBean course) {

@@ -20,6 +20,7 @@ public class PageController {
 	@GetMapping("/question-list")
     public String questionList() {
         return "question-list";
+	}
 	
 	@GetMapping("/register")
     public String showRegisterPage(Model model) {

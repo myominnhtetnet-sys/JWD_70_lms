@@ -15,6 +15,7 @@ public class CertificateRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // 1. ကျောင်းသားများ၏ Certificate များကိုသာ ရှာဖွေဖော်ပြခြင်း
     public List<CertificateBean> findAllWithDetails() {
         String sql = "SELECT c.*, " +
                      "u.full_name AS student_name, " +
@@ -25,9 +26,11 @@ public class CertificateRepository {
                      "FROM certificates c " +
                      "JOIN enrollments e ON c.enrollment_id = e.enrollment_id " +
                      "JOIN users u ON e.user_id = u.user_id " +
+                     "JOIN roles r ON u.role_id = r.role_id " +
                      "JOIN batches b ON e.batch_id = b.batch_id " +
                      "JOIN courses cr ON b.course_id = cr.course_id " +
                      "LEFT JOIN users issuer ON c.issued_by = issuer.user_id " +
+                     "WHERE r.role_name = 'Student' " + // 🟢 ကျောင်းသားများသာ
                      "ORDER BY c.created_at DESC";
         return jdbcTemplate.query(sql, new CertificateRowMapper());
     }
@@ -42,10 +45,11 @@ public class CertificateRepository {
                      "FROM certificates c " +
                      "JOIN enrollments e ON c.enrollment_id = e.enrollment_id " +
                      "JOIN users u ON e.user_id = u.user_id " +
+                     "JOIN roles r ON u.role_id = r.role_id " +
                      "JOIN batches b ON e.batch_id = b.batch_id " +
                      "JOIN courses cr ON b.course_id = cr.course_id " +
                      "LEFT JOIN users issuer ON c.issued_by = issuer.user_id " +
-                     "WHERE c.certificate_id = ?";
+                     "WHERE c.certificate_id = ? AND r.role_name = 'Student'";
         return jdbcTemplate.queryForObject(sql, new CertificateRowMapper(), id);
     }
 
@@ -58,6 +62,29 @@ public class CertificateRepository {
     public int revokeCertificate(Long certificateId, String reason) {
         String sql = "UPDATE certificates SET status = 'REVOKED', revoked_reason = ? WHERE certificate_id = ?";
         return jdbcTemplate.update(sql, reason, certificateId);
+    }
+
+    // 2. ကျောင်းသား (Student) များ၏ Enrollment, Course, Batch အချက်အလက်များကို Modal Dropdown အတွက် သီးသန့်ဆွဲထုတ်ခြင်း
+    public List<CertificateBean> findAllEnrollmentsWithStudentAndCourse() {
+        String sql = "SELECT e.enrollment_id, u.full_name AS student_name, u.email AS student_email, " +
+                     "b.batch_code AS batch_code, cr.title AS course_title " +
+                     "FROM enrollments e " +
+                     "JOIN users u ON e.user_id = u.user_id " +
+                     "JOIN roles r ON u.role_id = r.role_id " +
+                     "JOIN batches b ON e.batch_id = b.batch_id " +
+                     "JOIN courses cr ON b.course_id = cr.course_id " +
+                     "WHERE r.role_name = 'Student' " + // 🟢 ဆရာမများ မပါစေဘဲ ကျောင်းသားများကိုသာ ရွေးထုတ်ရန်
+                     "ORDER BY e.enrollment_id DESC";
+        
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            CertificateBean bean = new CertificateBean();
+            bean.setEnrollmentId(rs.getLong("enrollment_id"));
+            bean.setStudentName(rs.getString("student_name"));
+            bean.setStudentEmail(rs.getString("student_email"));
+            bean.setBatchCode(rs.getString("batch_code"));
+            bean.setCourseTitle(rs.getString("course_title"));
+            return bean;
+        });
     }
 
 }

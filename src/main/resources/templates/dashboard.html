@@ -1,79 +1,4 @@
 <!DOCTYPE html>
-<html lang="en"
-      class="h-full bg-slate-50"
-      xmlns:th="http://www.thymeleaf.org">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduPulse Dashboard</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-    </style>
-</head>
-
-<body>
-<div class="app">
-
-    <!-- SIDEBAR FRAGMENT -->
-    <div th:replace="~{fragments/admin-layout :: sidebar(activePage='dashboard')}"></div>
-
-    <!-- MAIN -->
-    <main class="main">
-
-        <!-- TOPBAR FRAGMENT -->
-        <div th:replace="~{fragments/admin-layout :: topbar('Dashboard', 'Learning Management System')}"></div>
-
-        <!-- PAGE CONTENT -->
-        <div class="content">
-            <div th:if="${success}" class="flash-message flash-success" th:text="${success}">Success</div>
-            <div th:if="${error}" class="flash-message flash-error" th:text="${error}">Error</div>
-
-            <!-- STATISTICS -->
-            <section class="stats-grid">
-                <article class="stat-card">
-                    <div class="stat-icon purple"><i class="fa-solid fa-users"></i></div>
-                    <div>
-                        <div class="stat-label">Total Users</div>
-                        <div class="stat-value" th:text="${totalUsers}">0</div>
-                    </div>
-                </article>
-                <article class="stat-card">
-                    <div class="stat-icon green"><i class="fa-solid fa-user-check"></i></div>
-                    <div>
-                        <div class="stat-label">Active Users</div>
-                        <div class="stat-value" th:text="${activeUsers}">0</div>
-                    </div>
-                </article>
-                <article class="stat-card">
-                    <div class="stat-icon yellow"><i class="fa-solid fa-shield-halved"></i></div>
-                    <div>
-                        <div class="stat-label">Total Roles</div>
-                        <div class="stat-value" th:text="${totalRoles}">0</div>
-                    </div>
-                </article>
-                <article class="stat-card">
-                    <div class="stat-icon red"><i class="fa-solid fa-user-slash"></i></div>
-                    <div>
-                        <div class="stat-label">Inactive Users</div>
-                        <div class="stat-value" th:text="${inactiveUsers}">0</div>
-                    </div>
-                </article>
-            </section>
-        </div>
-
-    </main>
-</div>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-full bg-slate-50">
 <div th:replace="~{head :: head}"></div>
 
@@ -97,6 +22,551 @@
         <aside id="sidebar"
                class="w-64 bg-[#0f172a] text-slate-300 flex-shrink-0 flex flex-col justify-between sticky top-0 h-screen text-sm font-medium transition-all duration-300">
 
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Monthly Revenue</span>
+                                <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-dollar-sign text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <span class="text-2xl font-bold text-slate-900 dark:text-white">$42,850</span>
+                                <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                    <i class="fa-solid fa-arrow-trend-up"></i> +8.4%
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">98.2% invoice collection rate</p>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">System Health</span>
+                                <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-server text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <span class="text-2xl font-bold text-slate-900 dark:text-white">99.98%</span>
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Normal</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">Server load: 24%</p>
+                        </div>
+                    </div>
+
+                    <!-- Visual Analytics Charts Row -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="font-bold text-base text-slate-900 dark:text-white">Enrollment Growth</h3>
+                                    <p class="text-xs text-slate-500">New student registrations over the last 6 months</p>
+                                </div>
+                                <select class="text-xs bg-slate-100 dark:bg-slate-700 border-none rounded-lg px-3 py-1.5 font-medium">
+                                    <option>2026 Academic Year</option>
+                                    <option>2025 Academic Year</option>
+                                </select>
+                            </div>
+                            <div class="h-64 relative">
+                                <canvas id="adminEnrollmentChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-bold text-base text-slate-900 dark:text-white mb-1">System Resource Usage</h3>
+                                <p class="text-xs text-slate-500 mb-6">Realtime server & cloud storage distribution</p>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="flex justify-between text-xs font-semibold mb-1">
+                                            <span>Cloud Storage (AWS S3)</span>
+                                            <span>1.4 TB / 2.0 TB</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-indigo-600 rounded-full" style="width: 70%"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between text-xs font-semibold mb-1">
+                                            <span>Database Capacity</span>
+                                            <span>42%</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-emerald-500 rounded-full" style="width: 42%"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between text-xs font-semibold mb-1">
+                                            <span>Active Bandwidth</span>
+                                            <span>810 Mbps</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-amber-500 rounded-full" style="width: 85%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
+                                <button onclick="showToast('Initiating server diagnostic backup...')" class="w-full py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 transition">
+                                    Run System Diagnostic
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Management Table -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="font-bold text-base text-slate-900 dark:text-white">User Management</h3>
+                                <p class="text-xs text-slate-500">Filter, edit, and manage accounts and permissions</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <input type="text" id="userTableSearch" onkeyup="filterUserTable()" placeholder="Filter users..." class="text-xs px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-transparent rounded-lg focus:outline-none focus:bg-white dark:focus:bg-slate-800 border-slate-200 dark:border-slate-600">
+                                <select id="roleFilter" onchange="filterUserTable()" class="text-xs px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg font-medium">
+                                    <option value="all">All Roles</option>
+                                    <option value="Student">Students</option>
+                                    <option value="Teacher">Teachers</option>
+                                    <option value="Admin">Admins</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                                <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-700">
+                                    <tr>
+                                        <th class="px-6 py-3.5">User</th>
+                                        <th class="px-6 py-3.5">Role</th>
+                                        <th class="px-6 py-3.5">Status</th>
+                                        <th class="px-6 py-3.5">Joined Date</th>
+                                        <th class="px-6 py-3.5 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userTableBody" class="divide-y divide-slate-100 dark:divide-slate-700/60 font-medium">
+                                    <!-- Dynamic rows via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- ================= TEACHER VIEW ================= -->
+                <div id="view-teacher" class="role-view space-y-6 hidden">
+                    <!-- Title & Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Teacher Dashboard</h1>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Welcome back, Professor David Vance. Here is your teaching schedule and grading queue.</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="openModal('create-course-modal')" class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center gap-2">
+                                <i class="fa-solid fa-plus text-indigo-500"></i>
+                                New Class Module
+                            </button>
+                            <button onclick="openModal('assignment-modal')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-2">
+                                <i class="fa-solid fa-file-circle-plus"></i>
+                                Create Assignment
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Teacher Stats -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Enrolled Students</span>
+                                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-graduation-cap text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <span class="text-2xl font-bold text-slate-900 dark:text-white">284</span>
+                                <span class="text-xs text-slate-400">Across 4 courses</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pending Grading</span>
+                                <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <span class="text-2xl font-bold text-amber-600 dark:text-amber-400">12</span>
+                                <span class="text-xs font-semibold text-amber-600 bg-amber-50 dark:bg-amber-950/50 px-2 py-0.5 rounded-full">Requires Action</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Avg Class GPA</span>
+                                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-chart-line text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <span class="text-2xl font-bold text-slate-900 dark:text-white">3.68</span>
+                                <span class="text-xs font-semibold text-emerald-600">+0.2 vs last term</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Upcoming Lectures</span>
+                                <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                                    <i class="fa-regular fa-calendar-check text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <span class="text-2xl font-bold text-slate-900 dark:text-white">3 Today</span>
+                                <span class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">Next @ 2:00 PM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Teacher Section: Active Classes & Grading Queue -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- My Active Classes -->
+                        <div class="lg:col-span-2 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h3 class="font-bold text-base text-slate-900 dark:text-white">My Managed Courses</h3>
+                                <a href="#" onclick="showToast('Redirecting to full course list...')" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">View All Courses</a>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <!-- Course Card 1 -->
+                                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex justify-between items-start mb-3">
+                                            <span class="px-2.5 py-1 text-[10px] font-bold uppercase rounded-md bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">CS-301</span>
+                                            <span class="text-xs text-slate-400">72 Students</span>
+                                        </div>
+                                        <h4 class="font-bold text-slate-900 dark:text-white text-base">Advanced Data Structures</h4>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Syllabus progression: Week 8 of 14</p>
+                                    </div>
+                                    <div class="mt-6">
+                                        <div class="flex justify-between text-xs font-semibold mb-1 text-slate-600 dark:text-slate-300">
+                                            <span>Syllabus Completion</span>
+                                            <span>62%</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-4">
+                                            <div class="h-full bg-indigo-600 rounded-full" style="width: 62%"></div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <button onclick="showToast('Opening module editor...')" class="flex-1 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition">
+                                                Edit Syllabus
+                                            </button>
+                                            <button onclick="showToast('Loading analytics for CS-301')" class="p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition">
+                                                <i class="fa-solid fa-chart-pie"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Course Card 2 -->
+                                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex justify-between items-start mb-3">
+                                            <span class="px-2.5 py-1 text-[10px] font-bold uppercase rounded-md bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400">AI-402</span>
+                                            <span class="text-xs text-slate-400">95 Students</span>
+                                        </div>
+                                        <h4 class="font-bold text-slate-900 dark:text-white text-base">Machine Learning Fundamentals</h4>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Syllabus progression: Week 10 of 14</p>
+                                    </div>
+                                    <div class="mt-6">
+                                        <div class="flex justify-between text-xs font-semibold mb-1 text-slate-600 dark:text-slate-300">
+                                            <span>Syllabus Completion</span>
+                                            <span>78%</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-4">
+                                            <div class="h-full bg-emerald-500 rounded-full" style="width: 78%"></div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <button onclick="showToast('Opening module editor...')" class="flex-1 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition">
+                                                Edit Syllabus
+                                            </button>
+                                            <button onclick="showToast('Loading analytics for AI-402')" class="p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition">
+                                                <i class="fa-solid fa-chart-pie"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Grading Submissions Quick Box -->
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-bold text-base text-slate-900 dark:text-white">Grading Queue</h3>
+                                    <span class="text-xs bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 font-bold px-2 py-0.5 rounded-full">12 Pending</span>
+                                </div>
+                                <div id="grading-queue-list" class="space-y-3">
+                                    <!-- Grading Items via JS -->
+                                </div>
+                            </div>
+                            <button onclick="showToast('Opening full grading suite...')" class="mt-4 w-full py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-xs font-bold text-slate-700 dark:text-slate-200 rounded-lg transition">
+                                View Full Submissions Log
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- ================= STUDENT VIEW ================= -->
+                <div id="view-student" class="role-view space-y-6 hidden">
+                    <!-- Title & Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Welcome Back, Alex! 👋</h1>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">You have 2 assignments due this week. Keep up the momentum!</p>
+                        </div>
+                        <button onclick="openModal('submit-work-modal')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-2">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            Submit Homework
+                        </button>
+                    </div>
+
+                    <!-- Student Stat Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Enrolled Courses</span>
+                                <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-book text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <span class="text-2xl font-bold text-slate-900 dark:text-white">5 Courses</span>
+                                <span class="text-xs font-semibold text-indigo-600">Active Term</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Completed Hours</span>
+                                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                                    <i class="fa-regular fa-clock text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <span class="text-2xl font-bold text-slate-900 dark:text-white">48.5 hrs</span>
+                                <span class="text-xs text-emerald-600 font-semibold">+6 hrs this week</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Overall GPA</span>
+                                <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-award text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <span class="text-2xl font-bold text-slate-900 dark:text-white">3.85 / 4.0</span>
+                                <span class="text-xs font-semibold text-purple-600">Top 5% Rank</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Upcoming Deadlines</span>
+                                <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <span class="text-2xl font-bold text-rose-600 dark:text-rose-400">2 Due Soon</span>
+                                <span class="text-xs font-semibold text-rose-600 bg-rose-50 dark:bg-rose-950/50 px-2 py-0.5 rounded-full">Next in 8h</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enrolled Courses & Homework Deadlines -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Active Enrolled Courses Cards -->
+                        <div class="lg:col-span-2 space-y-4">
+                            <h3 class="font-bold text-base text-slate-900 dark:text-white">Continue Learning</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="student-courses-container">
+                                <!-- Enrolled Course cards generated via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Side panel: Deadlines & Teacher Feedback -->
+                        <div class="space-y-6">
+                            <!-- Deadlines Box -->
+                            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                                <h3 class="font-bold text-base text-slate-900 dark:text-white mb-4">Upcoming Deadlines</h3>
+                                <div class="space-y-3" id="student-deadlines-list">
+                                    <!-- Dynamic Deadlines -->
+                                </div>
+                            </div>
+
+                            <!-- Recent Teacher Feedback -->
+                            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                                <h3 class="font-bold text-base text-slate-900 dark:text-white mb-3">Recent Grades & Feedback</h3>
+                                <div class="space-y-3">
+                                    <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-xs font-bold text-slate-900 dark:text-white">Algorithm Design - Quiz 2</span>
+                                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded">98% (A+)</span>
+                                        </div>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 italic">"Excellent optimization analysis on dynamic programming!"</p>
+                                        <span class="text-[10px] text-slate-400 mt-1 block">Graded yesterday by Prof. Vance</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL DIALOGS -->
+    
+    <!-- Modal 1: Add New User (Admin) -->
+    <div id="user-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Add New User</h3>
+                <button onclick="closeModal('user-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleAddUser(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Full Name</label>
+                    <input type="text" id="new-user-name" required placeholder="e.g. Elena Rostova" class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Email Address</label>
+                    <input type="email" id="new-user-email" required placeholder="elena@edupulse.edu" class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assigned Role</label>
+                    <select id="new-user-role" class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg focus:ring-2 focus:ring-indigo-500">
+                        <option value="Student">Student</option>
+                        <option value="Teacher">Teacher</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('user-modal')" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Create Assignment (Teacher) -->
+    <div id="assignment-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Create New Assignment</h3>
+                <button onclick="closeModal('assignment-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleCreateAssignment(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assignment Title</label>
+                    <input type="text" required placeholder="e.g. Midterm Project Proposal" class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Select Course</label>
+                    <select class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg">
+                        <option>CS-301 Advanced Data Structures</option>
+                        <option>AI-402 Machine Learning Fundamentals</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Due Date</label>
+                    <input type="date" required class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('assignment-modal')" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">Publish Assignment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Submit Work (Student) -->
+    <div id="submit-work-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Submit Assignment</h3>
+                <button onclick="closeModal('submit-work-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleSubmitAssignment(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assignment</label>
+                    <select class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg">
+                        <option>CS-301: B-Trees Implementation Lab</option>
+                        <option>AI-402: Neural Nets Gradient Descent Notebook</option>
+                    </select>
+                </div>
+                <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-6 text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/40 transition">
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-indigo-500 mb-2"></i>
+                    <p class="text-xs font-semibold text-slate-700 dark:text-slate-300">Click or drag file to upload</p>
+                    <p class="text-[10px] text-slate-400 mt-1">PDF, ZIP, IPYNB up to 25MB</p>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('submit-work-modal')" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">Upload & Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4: Announcement (Global) -->
+    <div id="announcement-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 fade-in">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Broadcast Announcement</h3>
+                <button onclick="closeModal('announcement-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleSendAnnouncement(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Title</label>
+                    <input type="text" required placeholder="System Update / Holiday notice" class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Message</label>
+                    <textarea rows="3" required placeholder="Type broadcast message..." class="w-full text-sm px-3 py-2 bg-slate-100 dark:bg-slate-700 border-none rounded-lg"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('announcement-modal')" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">Send Broadcast</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION BANNER -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl z-50 flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 border border-slate-700">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-base" id="toast-icon"></i>
+        <span id="toast-message" class="text-xs font-semibold">Notification message</span>
+    </div>
+    
+    <!-- Create Announcement Modal -->
+<div id="announcement-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
+        
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3 mb-4">
+            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100">Create New Announcement</h3>
+            <button onclick="closeAnnouncementModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
+        </div>
+
+        <!-- Form -->
+        <form id="create-announcement-form" onsubmit="submitAnnouncement(event)" class="space-y-4">
+            
+            <!-- Select Batch -->
             <div>
                 <!-- Logo Area -->
                 <div class="h-20 flex items-center px-6 gap-3 border-b border-slate-800 shrink-0">

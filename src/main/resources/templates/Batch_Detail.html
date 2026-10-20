@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<div th:replace="~{head :: head}"></div>
+<head th:replace="~{head :: head}"></head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
  <div id="app" class="min-h-screen flex flex-col">
@@ -14,7 +14,7 @@
             <!-- DYNAMIC SIDEBAR -->
             <div th:replace="~{nav :: nav}"></div>
 
-    <div class="max-w-7xl mx-auto p-6">
+    <div class="max-w-7xl mx-auto p-6 w-full">
         
         <!-- Page Header & Batch Overview -->
         <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
@@ -130,7 +130,6 @@
             <h3 class="text-lg font-bold text-gray-800 mb-4">Add Class Session</h3>
             <form id="sessionForm" onsubmit="submitSession(event)">
                 
-                <!-- 🌟 Database မှ Lessons များကို Dynamic ဆွဲထုတ်ပြသသော Dropdown -->
                 <div class="mb-3">
                     <label class="block text-xs font-semibold mb-1">Select Lesson</label>
                     <select id="sessionLessonId" required class="w-full border rounded-lg p-2 text-sm bg-white focus:ring-2 focus:ring-emerald-500 outline-none">
@@ -188,6 +187,7 @@
         </div>
     </div>
     </div>
+</div>
 
     <!-- JavaScript Data Fetching & Utilities -->
     <script th:inline="javascript">

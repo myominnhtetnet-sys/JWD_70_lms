@@ -654,6 +654,58 @@ function deleteCourse(courseId) {
         .then(() => loadCoursesFromDB())
         .catch(err => alert(err.message));
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadCategoriesFromDB();
+    loadCoursesFromDB();
+
+    // 🟢 Edit Modal မှာ ပုံအသစ်ရွေးလိုက်ရင် Preview ပုံအဖြစ် တန်းပြပေးရန်
+    const editImageInput = document.getElementById("edit_image");
+    const editPreviewImg = document.getElementById("edit_thumbnail_preview");
+
+    if (editImageInput && editPreviewImg) {
+        editImageInput.addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    editPreviewImg.src = e.target.result;
+                    editPreviewImg.classList.remove("hidden");
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // 🟢 Add Modal မှာလည်း အသစ်ရွေးရင် Preview ပြချင်ပါက (Optional)
+    const addImageInput = document.getElementById("add_image");
+    const addPreviewImg = document.getElementById("add_thumbnail_preview");
+
+    if (addImageInput && addPreviewImg) {
+        addImageInput.addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    addPreviewImg.src = e.target.result;
+                    addPreviewImg.classList.remove("hidden");
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+
+const previewImg = document.getElementById("edit_thumbnail_preview");
+if (previewImg) {
+    if (course.thumbnail) {
+        previewImg.src = `/uploads/courses/${encodeURIComponent(course.thumbnail)}`;
+        previewImg.onerror = () => previewImg.classList.add("hidden");
+        previewImg.classList.remove("hidden");
+    } else {
+        previewImg.classList.add("hidden");
+    }
+}
 </script>
 </body>
 </html>

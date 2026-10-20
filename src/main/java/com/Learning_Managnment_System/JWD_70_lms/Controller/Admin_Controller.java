@@ -1,16 +1,14 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
-import com.Learning_Managnment_System.JWD_70_lms.Repository.Admin_Repository;
-import com.Learning_Managnment_System.JWD_70_lms.model.AdminBean_category;
-
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
+import com.Learning_Managnment_System.JWD_70_lms.Repository.Admin_Repository;
+import com.Learning_Managnment_System.JWD_70_lms.model.AdminUserBean;
 
 @Controller
 @RequestMapping("/admin")
@@ -19,54 +17,29 @@ public class Admin_Controller {
     @Autowired
     private Admin_Repository adminRepository;
 
-   
-    @GetMapping({"", "/", "/dashboard"})
-    public String showDashboard(Model model) {
-
-        model.addAttribute("totalUsers", 1248);
-        model.addAttribute("activeCourses", 64);
-
-        model.addAttribute(
-                "categories",
-                adminRepository.getAllCategories()
-        );
-
+    @GetMapping({"", "/"})
+    public String show() {
         return "dashboard";
     }
 
-    // =========================================
-    // CATEGORY LIST
-    // URLs: /admin/categories, /admin/categories/list
-    // =========================================
-    @GetMapping({"/categories", "/categories/list"})
-    public String listCategories(Model model) {
-
-        List<AdminBean_category> categories =
-                adminRepository.getAllCategories();
-
-        model.addAttribute("categories", categories);
-
-        return "category-list";
+    @GetMapping("/dashboard")
+    public String adminDashboard(Model model) {
+        List<AdminUserBean> users = adminRepository.getAllUsers();
+        model.addAttribute("users", users);
+        return "dashboard";
     }
 
-    // =========================================
-    // REDIRECT OLD NEW-CATEGORY URL TO LIST
-    // URL: /admin/categories/new
-    // =========================================
-    @GetMapping("/categories/new")
-    public String redirectToCategoryList() {
-        return "redirect:/admin/categories/list";
+    // 🟢 Fix: Added missing mapping for /admin/users to display in dashboard.html
+    @GetMapping("/users")
+    public String listUsers(Model model) {
+        List<AdminUserBean> users = adminRepository.getAllUsers();
+        model.addAttribute("users", users);
+        return "users";
     }
 
-    // =========================================
-    // SAVE OR UPDATE CATEGORY
-    // URL: POST /admin/categories/save
-    // =========================================
-    @PostMapping("/categories/save")
-    public String saveCategory(
-            @ModelAttribute("category")
-            AdminBean_category category,
-            RedirectAttributes redirectAttributes,
+    @GetMapping("/users/search")
+    public String searchUsers(
+            @RequestParam("keyword") String keyword,
             Model model) {
 
         try {
@@ -148,50 +121,165 @@ public class Admin_Controller {
 
         model.addAttribute("category", category);
 
-        model.addAttribute(
-                "parentCategories",
-                adminRepository.getAllCategories()
-        );
-
-        return "category-form";
+        return "dashboard"; // 👈 users အစား dashboard သို့ ပြန်ညွှန်းရန်
     }
 
-    // =========================================
-    // DELETE CATEGORY
-    // URL: /admin/categories/delete/{id}
-    // =========================================
-    @GetMapping("/categories/delete/{id}")
-    public String deleteCategory(
-            @PathVariable("id") Integer id,
+    @GetMapping("/users/add")
+    public String showAddUserForm(Model model) {
+        model.addAttribute("user", new AdminUserBean());
+        return "admin/user_form";
+    }
+
+    @PostMapping("/users/add")
+    public String addUser(
+            AdminUserBean user,
             RedirectAttributes redirectAttributes) {
 
-        adminRepository.deleteCategory(id);
+        if (user.getFull_name() == null || user.getFull_name().trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Full name is required.");
+            return "redirect:/admin/users/add";
+        }
 
         redirectAttributes.addFlashAttribute(
                 "successMessage",
                 "Category deleted successfully."
         );
 
-        return "redirect:/admin/categories/list";
+        if (user.getPassword_hash() == null || user.getPassword_hash().trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Password is required.");
+            return "redirect:/admin/users/add";
+        }
+
+        if (adminRepository.emailExists(user.getEmail())) {
+            redirectAttributes.addFlashAttribute("error", "This email is already registered.");
+            return "redirect:/admin/users/add";
+        }
+
+        if (user.getStatus() == null || user.getStatus().isBlank()) {
+            user.setStatus("ACTIVE");
+        }
+
+        int result = adminRepository.addUser(user);
+
+        if (result > 0) {
+            redirectAttributes.addFlashAttribute("success", "User added successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Unable to add user.");
+        }
+
+        return "redirect:/admin/dashboard";
     }
 
-    // =========================================
-    // DISCOUNT PAGE
-    // URL: /admin/discounts
-    // IMPORTANT: Keep only ONE mapping for this URL.
-    // =========================================
-    @GetMapping("/discounts")
-    public String showDiscountsPage() {
-        return "discount-list";
+    @GetMapping("/users/view/{id}")
+    public String viewUser(
+            @PathVariable("id") int id,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        AdminUserBean user = adminRepository.getUserById(id);
+
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("error", "User not found.");
+            return "redirect:/admin/dashboard";
+        }
+
+        model.addAttribute("user", user);
+        return "admin/user_view";
     }
 
-    // =========================================
-    // DASHBOARD LIST PAGE
-    // URL: /admin/dashboard-list
-    // =========================================
-    @GetMapping("/dashboard-list")
-    public String dashboardList() {
-        return "dashboard-list";
+    @GetMapping("/users/edit/{id}")
+    public String showEditUserForm(
+            @PathVariable("id") int id,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        AdminUserBean user = adminRepository.getUserById(id);
+
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("error", "User not found.");
+            return "redirect:/admin/dashboard";
+        }
+
+        model.addAttribute("user", user);
+        return "admin/user_form";
     }
-   
-} 
+
+    @PostMapping("/users/update")
+    public String updateUser(
+            AdminUserBean user,
+            RedirectAttributes redirectAttributes) {
+
+        if (user.getFull_name() == null || user.getFull_name().trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Full name is required.");
+            return "redirect:/admin/users/edit/" + user.getUser_id();
+        }
+
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Email is required.");
+            return "redirect:/admin/users/edit/" + user.getUser_id();
+        }
+
+        if (adminRepository.emailExistsForOtherUser(user.getEmail(), user.getUser_id())) {
+            redirectAttributes.addFlashAttribute("error", "This email is already used by another user.");
+            return "redirect:/admin/users/edit/" + user.getUser_id();
+        }
+
+        int result = adminRepository.updateUser(user);
+
+        if (result > 0) {
+            redirectAttributes.addFlashAttribute("success", "User updated successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Unable to update user.");
+        }
+
+        return "redirect:/admin/dashboard";
+    }
+
+    @PostMapping("/users/suspend")
+    public String suspendUser(
+            @RequestParam("userId") int userId,
+            RedirectAttributes redirectAttributes) {
+
+        int result = adminRepository.updateStatus(userId, "SUSPENDED");
+
+        if (result > 0) {
+            redirectAttributes.addFlashAttribute("success", "User suspended successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Unable to suspend user.");
+        }
+
+        return "redirect:/admin/dashboard";
+    }
+
+    @PostMapping("/users/activate")
+    public String activateUser(
+            @RequestParam("userId") int userId,
+            RedirectAttributes redirectAttributes) {
+
+        int result = adminRepository.updateStatus(userId, "ACTIVE");
+
+        if (result > 0) {
+            redirectAttributes.addFlashAttribute("success", "User activated successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Unable to activate user.");
+        }
+
+        return "redirect:/admin/dashboard";
+    }
+
+    @PostMapping("/users/delete")
+    public String deleteUser(
+            @RequestParam("userId") int userId,
+            RedirectAttributes redirectAttributes) {
+
+        int result = adminRepository.deleteUser(userId);
+
+        if (result > 0) {
+            redirectAttributes.addFlashAttribute("success", "User deleted successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Unable to delete user.");
+        }
+
+        return "redirect:/admin/dashboard";
+    }
+}

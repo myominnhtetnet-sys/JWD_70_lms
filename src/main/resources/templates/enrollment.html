@@ -1,741 +1,309 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enrollments | LearnHub LMS</title>
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<style>
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-}
-
-:root {
-	--bg: #0f1118;
-	--sidebar: #181d28;
-	--card: #181d28;
-	--border: #293142;
-	--primary: #6c4ce5;
-	--text: #f1f3f9;
-	--muted: #929bb0;
-	--input: #202634;
-	--green: #36c995;
-	--yellow: #f4bd50;
-	--red: #ff7373;
-}
-
-body.light-mode {
-	--bg: #f4f6fb;
-	--sidebar: #ffffff;
-	--card: #ffffff;
-	--border: #e2e6ef;
-	--text: #242938;
-	--muted: #727c91;
-	--input: #f5f6fa;
-}
-
-body {
-	font-family: Arial, Helvetica, sans-serif;
-	background: var(--bg);
-	color: var(--text);
-	min-height: 100vh;
-}
-
-a {
-	text-decoration: none;
-	color: inherit;
-}
-
-button, input, select {
-	font: inherit;
-	cursor: pointer;
-}
-
-/* Layout CSS */
-.sidebar {
-	width: 260px;
-	position: fixed;
-	inset: 0 auto 0 0;
-	background: var(--sidebar);
-	border-right: 1px solid var(--border);
-	padding: 25px 18px;
-	overflow-y: auto;
-	z-index: 100;
-}
-
-.brand {
-	display: flex;
-	align-items: center;
-	gap: 13px;
-	padding: 5px 10px 32px;
-}
-
-.brand-icon {
-	width: 45px;
-	height: 45px;
-	background: #7895ff;
-	color: white;
-	border-radius: 13px;
-	display: grid;
-	place-items: center;
-	font-size: 21px;
-}
-
-.brand-name {
-	font-size: 20px;
-	font-weight: 700;
-}
-
-.brand-subtitle {
-	color: var(--muted);
-	font-size: 13px;
-	margin-top: 5px;
-}
-
-.menu-heading {
-	font-size: 12px;
-	text-transform: uppercase;
-	letter-spacing: 1px;
-	color: var(--muted);
-	padding: 17px 12px 12px;
-}
-
-.nav-link {
-	display: flex;
-	align-items: center;
-	gap: 14px;
-	padding: 13px 14px;
-	margin-bottom: 5px;
-	border-radius: 10px;
-	color: var(--muted);
-	font-size: 14px;
-}
-
-.nav-link i {
-	width: 20px;
-	text-align: center;
-}
-
-.nav-link:hover, .nav-link.active {
-	background: rgba(108, 76, 229, .19);
-	color: #9b8aff;
-	font-weight: 700;
-}
-
-.sidebar-bottom {
-	margin-top: 30px;
-	border-top: 1px solid var(--border);
-	padding-top: 15px;
-}
-
-.main {
-	margin-left: 260px;
-	min-height: 100vh;
-}
-
-.topbar {
-	min-height: 88px;
-	padding: 18px 30px;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 20px;
-	border-bottom: 1px solid var(--border);
-	background: var(--bg);
-	position: sticky;
-	top: 0;
-	z-index: 50;
-}
-
-.page-heading h1 {
-	font-size: 23px;
-	margin-bottom: 7px;
-}
-
-.page-heading p {
-	color: var(--muted);
-	font-size: 13px;
-}
-
-.topbar-right {
-	display: flex;
-	align-items: center;
-	gap: 13px;
-}
-
-.icon-btn {
-	width: 44px;
-	height: 44px;
-	border-radius: 12px;
-	background: var(--card);
-	border: 1px solid var(--border);
-	color: var(--muted);
-	display: grid;
-	place-items: center;
-}
-
-.profile {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-}
-
-.avatar {
-	width: 44px;
-	height: 44px;
-	border-radius: 50%;
-	display: grid;
-	place-items: center;
-	background: var(--primary);
-	color: white;
-	font-weight: 700;
-}
-
-.profile-name {
-	font-weight: 700;
-	font-size: 14px;
-}
-
-.profile-role {
-	font-size: 12px;
-	color: var(--muted);
-	margin-top: 5px;
-}
-
-.content {
-	padding: 28px 30px 40px;
-}
-
-.stats-grid {
-	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-	gap: 18px;
-	margin-bottom: 23px;
-}
-
-.stat-card {
-	background: var(--card);
-	border: 1px solid var(--border);
-	border-radius: 15px;
-	padding: 22px;
-	display: flex;
-	gap: 15px;
-}
-
-.stat-icon {
-	width: 49px;
-	height: 49px;
-	border-radius: 13px;
-	display: grid;
-	place-items: center;
-	font-size: 20px;
-}
-
-.purple {
-	background: rgba(108, 76, 229, .2);
-	color: #a697ff;
-}
-
-.green {
-	background: rgba(54, 201, 149, .15);
-	color: var(--green);
-}
-
-.yellow {
-	background: rgba(244, 189, 80, .15);
-	color: var(--yellow);
-}
-
-.stat-label {
-	color: var(--muted);
-	font-size: 13px;
-	margin-bottom: 9px;
-}
-
-.stat-value {
-	font-size: 27px;
-	font-weight: 700;
-}
-
-.panel {
-	background: var(--card);
-	border: 1px solid var(--border);
-	border-radius: 15px;
-	padding: 23px;
-	margin-bottom: 20px;
-}
-
-.panel-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 15px;
-	margin-bottom: 20px;
-}
-
-.panel-header h2 {
-	font-size: 18px;
-}
-
-.muted {
-	color: var(--muted);
-	font-size: 13px;
-	margin-top: 7px;
-}
-
-/* Filter Form Dashboard Style Fix */
-.filter-form {
-	display: grid;
-	grid-template-columns: 2fr 1.5fr 1.5fr auto auto;
-	gap: 15px;
-	margin-bottom: 20px;
-	align-items: flex-end;
-}
-
-.field {
-	min-width: 0;
-}
-
-.field label {
-	display: block;
-	margin-bottom: 8px;
-	font-size: 13px;
-	color: var(--text);
-}
-
-.field input, .field select {
-	width: 100%;
-	min-width: 0;
-	padding: 12px;
-	background: var(--input);
-	border: 1px solid var(--border);
-	color: var(--text);
-	border-radius: 9px;
-	outline: none;
-	height: 45px;
-}
-
-.filter-actions {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-}
-
-.primary-btn {
-	border: none;
-	border-radius: 9px;
-	background: var(--primary);
-	color: white;
-	padding: 0 18px;
-	font-size: 13px;
-	font-weight: 700;
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	height: 45px;
-}
-
-.secondary-btn {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	border: 1px solid var(--border);
-	border-radius: 9px;
-	background: var(--input);
-	color: var(--text);
-	padding: 0 18px;
-	font-size: 13px;
-	height: 45px;
-}
-
-.table-wrapper {
-	overflow-x: auto;
-}
-
-table {
-	width: 100%;
-	border-collapse: collapse;
-	white-space: nowrap;
-}
-
-th {
-	text-align: left;
-	color: var(--muted);
-	font-size: 12px;
-	font-weight: 600;
-	padding: 13px 16px;
-	border-bottom: 1px solid var(--border);
-}
-
-td {
-	padding: 14px 16px;
-	border-bottom: 1px solid var(--border);
-	font-size: 13px;
-}
-
-.inline-form {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-}
-
-.inline-form select {
-	padding: 6px;
-	background: var(--input);
-	border: 1px solid var(--border);
-	border-radius: 7px;
-	color: var(--text);
-	font-size: 11px;
-}
-
-.mini-btn {
-	padding: 6px 10px;
-	border: none;
-	border-radius: 7px;
-	background: var(--primary);
-	color: white;
-	font-size: 11px;
-}
-</style>
-</head>
-
-<body>
-	<div class="app">
-
-		<!-- SIDEBAR FRAGMENT -->
-		<div
-			th:replace="~{fragments/admin-layout :: sidebar(activePage='enrollments')}"></div>
-
-		<!-- MAIN -->
-		<main class="main">
-
-			<!-- TOPBAR FRAGMENT -->
-			<div
-				th:replace="~{fragments/admin-layout :: topbar('Enrollment Management', 'Manage student course enrollments and payments.')}"></div>
-
-			<div class="content">
-				<!-- FLASH MESSAGES -->
-				<div th:if="${success}" class="flash-message flash-success"
-					th:text="${success}">Success</div>
-				<div th:if="${error}" class="flash-message flash-error"
-					th:text="${error}">Error</div>
-
-				<!-- STATISTICS -->
-				<section class="stats-grid">
-					<article class="stat-card">
-						<div class="stat-icon purple">
-							<i class="fa-solid fa-users"></i>
-						</div>
-						<div>
-							<div class="stat-label">Total Enrollments</div>
-							<div class="stat-value" th:text="${totalEnrollments}">0</div>
-						</div>
-					</article>
-					<article class="stat-card">
-						<div class="stat-icon green">
-							<i class="fa-solid fa-circle-check"></i>
-						</div>
-						<div>
-							<div class="stat-label">Active Enrollments</div>
-							<div class="stat-value" th:text="${activeEnrollments}">0</div>
-						</div>
-					</article>
-					<article class="stat-card">
-						<div class="stat-icon yellow">
-							<i class="fa-regular fa-clock"></i>
-						</div>
-						<div>
-							<div class="stat-label">Pending Enrollments</div>
-							<div class="stat-value" th:text="${pendingEnrollments}">0</div>
-						</div>
-					</article>
-					<article class="stat-card">
-						<div class="stat-icon purple">
-							<i class="fa-solid fa-money-bill-wave"></i>
-						</div>
-						<div>
-							<div class="stat-label">Total Amount</div>
-							<div class="stat-value" style="font-size: 22px"
-								th:text="${totalAmount != null ? #numbers.formatDecimal(totalAmount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</div>
-						</div>
-					</article>
-				</section>
-
-				<!-- ENROLLMENT TABLE PANEL -->
-				<section class="panel">
-					<div class="panel-header">
-						<div>
-							<h2>All Enrollments</h2>
-							<p class="muted">Search, filter and manage enrollment
-								records.</p>
-						</div>
-						<button type="button" class="primary-btn"
-							onclick="openEnrollmentModal()">
-							<i class="fa-solid fa-plus"></i> Add Enrollment
-						</button>
-					</div>
-
-					<!-- SEARCH / FILTER -->
-					<form class="filter-form" th:action="@{/admin/enrollments}"
-						method="get">
-						<div class="field">
-							<label for="keyword">Search</label> <input type="search"
-								id="keyword" name="keyword" th:value="${keyword}"
-								placeholder="Student, email, course...">
-						</div>
-						<div class="field">
-							<label for="statusFilter">Enrollment Status</label> <select
-								id="statusFilter" name="status">
-								<option value="ALL" th:selected="${selectedStatus == 'ALL'}">All
-									Statuses</option>
-								<option value="PENDING"
-									th:selected="${selectedStatus == 'PENDING'}">Pending</option>
-								<option value="ACTIVE"
-									th:selected="${selectedStatus == 'ACTIVE'}">Active</option>
-								<option value="COMPLETED"
-									th:selected="${selectedStatus == 'COMPLETED'}">Completed</option>
-								<option value="DROPPED"
-									th:selected="${selectedStatus == 'DROPPED'}">Dropped</option>
-								<option value="CANCELLED"
-									th:selected="${selectedStatus == 'CANCELLED'}">Cancelled</option>
-							</select>
-						</div>
-						<div class="field">
-							<label for="paymentFilter">Payment Status</label> <select
-								id="paymentFilter" name="paymentStatus">
-								<option value="ALL"
-									th:selected="${selectedPaymentStatus == 'ALL'}">All
-									Payments</option>
-								<option value="UNPAID"
-									th:selected="${selectedPaymentStatus == 'UNPAID'}">Unpaid</option>
-								<option value="PARTIAL"
-									th:selected="${selectedPaymentStatus == 'PARTIAL'}">Partial</option>
-								<option value="PAID"
-									th:selected="${selectedPaymentStatus == 'PAID'}">Paid</option>
-								<option value="REFUNDED"
-									th:selected="${selectedPaymentStatus == 'REFUNDED'}">Refunded</option>
-							</select>
-						</div>
-						<div class="filter-actions">
-							<button type="submit" class="primary-btn">
-								<i class="fa-solid fa-filter"></i> Filter
-							</button>
-						</div>
-						<div class="filter-actions">
-							<a th:href="@{/admin/enrollments}" class="secondary-btn">Reset</a>
-						</div>
-					</form>
-
-					<!-- TABLE -->
-					<div class="table-wrapper">
-						<table>
-							<thead>
-								<tr>
-									<th>ID</th>
-									<th>STUDENT</th>
-									<th>COURSE / BATCH</th>
-									<th>AMOUNT</th>
-									<th>PAYMENT TYPE</th>
-									<th>PAYMENT STATUS</th>
-									<th>ENROLLMENT STATUS</th>
-									<th>ENROLLED AT</th>
-									 <th>ACTION</th> 
-								</tr>
-							</thead>
-							<tbody>
-								<tr th:each="e : ${enrollments}">
-									<td th:text="${e.enrollment_id}">1</td>
-									<td>
-										<div class="student-name" th:text="${e.student_name}">Student
-											Name</div>
-									</td>
-									<td>
-										<div th:text="${e.course_name}">Course</div>
-										<div class="student-email" th:text="${e.batch_name}">Batch</div>
-									</td>
-									<td
-										th:text="${e.final_amount != null ? #numbers.formatDecimal(e.final_amount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
-									<td th:text="${e.payment_type}">FULL</td>
-									<td>
-										<form th:action="@{/admin/enrollments/payment-status}"
-											method="post" class="inline-form">
-											<input type="hidden" name="enrollmentId"
-												th:value="${e.enrollment_id}"> <select
-												name="paymentStatus">
-												<option value="UNPAID"
-													th:selected="${e.payment_status == 'UNPAID'}">UNPAID</option>
-												<option value="PARTIAL"
-													th:selected="${e.payment_status == 'PARTIAL'}">PARTIAL</option>
-												<option value="PAID"
-													th:selected="${e.payment_status == 'PAID'}">PAID</option>
-												<option value="REFUNDED"
-													th:selected="${e.payment_status == 'REFUNDED'}">REFUNDED</option>
-											</select>
-											<button type="submit" class="mini-btn">Save</button>
-										</form>
-									</td>
-									<td>
-										<form th:action="@{/admin/enrollments/status}" method="post"
-											class="inline-form">
-											<input type="hidden" name="enrollmentId"
-												th:value="${e.enrollment_id}"> <select name="status">
-												<option value="PENDING"
-													th:selected="${e.status == 'PENDING'}">PENDING</option>
-												<option value="ACTIVE" th:selected="${e.status == 'ACTIVE'}">ACTIVE</option>
-												<option value="COMPLETED"
-													th:selected="${e.status == 'COMPLETED'}">COMPLETED</option>
-												<option value="DROPPED"
-													th:selected="${e.status == 'DROPPED'}">DROPPED</option>
-												<option value="CANCELLED"
-													th:selected="${e.status == 'CANCELLED'}">CANCELLED</option>
-											</select>
-											<button type="submit" class="mini-btn">Save</button>
-										</form>
-									</td>
-									<td><span th:if="${e.enrolled_at != null}"
-										th:text="${#temporals.format(e.enrolled_at, 'yyyy-MM-dd HH:mm')}">2026-01-01</span>
-										<span th:if="${e.enrolled_at == null}">-</span></td>
-
-									<!-- 👇 ဤနေရာတွင် View Detail ခလုတ်ကို အသစ်ထည့်ပေးပါ -->
-									<td><a
-										th:href="@{/admin/enrollments/detail/{id}(id=${e.enrollment_id})}"
-										class="mini-btn"
-										style="background: var(--primary); color: white; display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 7px; text-decoration: none;">
-											<i class="fa-solid fa-eye"></i> Detail
-									</a></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</section>
-			</div>
-		</main>
-		<!-- ADD ENROLLMENT MODAL -->
-		<div id="enrollmentModal" class="modal-overlay"
-			style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center;">
-			<div class="modal-content"
-				style="background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 25px; width: 100%; max-width: 500px;">
-				<div
-					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-					<h3 style="font-size: 18px;">Add New Enrollment</h3>
-					<button type="button" onclick="closeEnrollmentModal()"
-						style="background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer;">
-						<i class="fa-solid fa-xmark"></i>
-					</button>
-				</div>
-
-				<form th:action="@{/admin/enrollments/create}" method="post"
-					th:object="${enrollment}">
-					<div class="field" style="margin-bottom: 15px;">
-						<label for="student_id">Select Student</label> <select
-							id="student_id" name="user_id" required
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-							<option value="">-- Choose Student --</option>
-							<option th:each="s : ${students}" th:value="${s.user_id}"
-								th:text="${s.full_name}"></option>
-						</select>
-					</div>
-
-					<div class="field" style="margin-bottom: 15px;">
-						<label for="batch_id">Select Course / Batch</label> <select
-							id="batch_id" name="batch_id" required
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-							<option value="">-- Choose Batch --</option>
-							<option th:each="b : ${batches}" th:value="${b.batch_id}"
-								th:text="${b.course_name + ' (' + b.batch_name + ')'}"></option>
-						</select>
-					</div>
-
-					<div class="field" style="margin-bottom: 15px;">
-						<label for="original_amount">Original Amount</label> <input
-							type="number" step="0.01" id="original_amount"
-							name="original_amount" required placeholder="0.00"
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-					</div>
-
-					<div class="field" style="margin-bottom: 15px;">
-						<label for="discount_amount">Discount Amount</label> <input
-							type="number" step="0.01" id="discount_amount"
-							name="discount_amount" value="0.00"
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-					</div>
-
-					<div class="field" style="margin-bottom: 15px;">
-						<label for="scholarship_amount">Scholarship Amount</label> <input
-							type="number" step="0.01" id="scholarship_amount"
-							name="scholarship_amount" value="0.00"
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-					</div>
-
-					<div class="field" style="margin-bottom: 15px;">
-						<label for="payment_type">Payment Type</label> <select
-							id="payment_type" name="payment_type"
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-							<option th:each="pt : ${paymentTypes}" th:value="${pt}"
-								th:text="${pt}"></option>
-						</select>
-					</div>
-
-					<div class="field" style="margin-bottom: 15px;">
-						<label for="payment_status">Payment Status</label> <select
-							id="payment_status" name="payment_status"
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-							<option th:each="ps : ${paymentStatuses}" th:value="${ps}"
-								th:text="${ps}"></option>
-						</select>
-					</div>
-
-					<div class="field" style="margin-bottom: 20px;">
-						<label for="status">Enrollment Status</label> <select id="status"
-							name="status"
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-							<option th:each="st : ${enrollmentStatuses}" th:value="${st}"
-								th:text="${st}"></option>
-						</select>
-					</div>
-
-					<div style="display: flex; justify-content: flex-end; gap: 10px;">
-						<button type="button" onclick="closeEnrollmentModal()"
-							class="secondary-btn">Cancel</button>
-						<button type="submit" class="primary-btn">Save Enrollment</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-	<script>
-    // Theme Toggle Script
-    const themeToggle = document.getElementById("themeToggle");
-    function applyTheme(isLight) {
-        document.body.classList.toggle("light-mode", isLight);
-        if (themeToggle) {
-            themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-regular fa-moon"></i>';
+<head th:replace="~{head :: head}"></head>
+
+<body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
+
+    <div id="app" class="min-h-screen flex flex-col">
+        
+        <!-- TOP HEADER BAR -->
+        <div th:replace="~{header :: header}"></div>
+
+        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- DYNAMIC SIDEBAR -->
+            <div th:replace="~{nav :: nav}"></div>
+
+            <!-- MAIN CONTENT -->
+            <main class="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-900/50 p-6 lg:p-8">
+                <div class="max-w-7xl mx-auto space-y-6">
+
+                    <!-- FLASH MESSAGES -->
+                    <div th:if="${success}" class="p-4 mb-4 text-sm text-emerald-800 rounded-lg bg-emerald-50 dark:bg-gray-800 dark:text-emerald-400 border border-emerald-200"
+                        th:text="${success}">Success</div>
+                    <div th:if="${error}" class="p-4 mb-4 text-sm text-rose-800 rounded-lg bg-rose-50 dark:bg-gray-800 dark:text-rose-400 border border-rose-200"
+                        th:text="${error}">Error</div>
+
+                    <!-- STATISTICS -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Enrollments</div>
+                                <div class="text-2xl font-bold text-slate-800 dark:text-white" th:text="${totalEnrollments}">0</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Enrollments</div>
+                                <div class="text-2xl font-bold text-slate-800 dark:text-white" th:text="${activeEnrollments}">0</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-xl">
+                                <i class="fa-regular fa-clock"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pending Enrollments</div>
+                                <div class="text-2xl font-bold text-slate-800 dark:text-white" th:text="${pendingEnrollments}">0</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-money-bill-wave"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Amount</div>
+                                <div class="text-2xl font-bold text-slate-800 dark:text-white"
+                                    th:text="${totalAmount != null ? #numbers.formatDecimal(totalAmount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ENROLLMENT TABLE PANEL -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm overflow-hidden">
+                        <div class="p-6 border-b border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-800 dark:text-white">All Enrollments</h2>
+                                <p class="text-xs text-slate-400 mt-0.5">Search, filter and manage enrollment records.</p>
+                            </div>
+                            <button type="button" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition flex items-center gap-2 cursor-pointer shadow-lg shadow-indigo-600/20"
+                                onclick="openEnrollmentModal()">
+                                <i class="fa-solid fa-plus"></i> Add Enrollment
+                            </button>
+                        </div>
+
+                        <!-- SEARCH / FILTER -->
+                        <form class="p-6 bg-slate-50/50 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-700/60 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end" th:action="@{/admin/enrollments}"
+                            method="get">
+                            <div class="space-y-1.5">
+                                <label for="keyword" class="text-xs font-semibold text-slate-600 dark:text-slate-300">Search</label> 
+                                <input type="search" id="keyword" name="keyword" th:value="${keyword}"
+                                    placeholder="Student, email, course..."
+                                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label for="statusFilter" class="text-xs font-semibold text-slate-600 dark:text-slate-300">Enrollment Status</label> 
+                                <select id="statusFilter" name="status"
+                                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500">
+                                    <option value="ALL" th:selected="${selectedStatus == 'ALL'}">All Statuses</option>
+                                    <option value="PENDING" th:selected="${selectedStatus == 'PENDING'}">Pending</option>
+                                    <option value="ACTIVE" th:selected="${selectedStatus == 'ACTIVE'}">Active</option>
+                                    <option value="COMPLETED" th:selected="${selectedStatus == 'COMPLETED'}">Completed</option>
+                                    <option value="DROPPED" th:selected="${selectedStatus == 'DROPPED'}">Dropped</option>
+                                    <option value="CANCELLED" th:selected="${selectedStatus == 'CANCELLED'}">Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label for="paymentFilter" class="text-xs font-semibold text-slate-600 dark:text-slate-300">Payment Status</label> 
+                                <select id="paymentFilter" name="paymentStatus"
+                                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500">
+                                    <option value="ALL" th:selected="${selectedPaymentStatus == 'ALL'}">All Payments</option>
+                                    <option value="UNPAID" th:selected="${selectedPaymentStatus == 'UNPAID'}">Unpaid</option>
+                                    <option value="PARTIAL" th:selected="${selectedPaymentStatus == 'PARTIAL'}">Partial</option>
+                                    <option value="PAID" th:selected="${selectedPaymentStatus == 'PAID'}">Paid</option>
+                                    <option value="REFUNDED" th:selected="${selectedPaymentStatus == 'REFUNDED'}">Refunded</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl transition flex items-center gap-2 cursor-pointer">
+                                    <i class="fa-solid fa-filter"></i> Filter
+                                </button>
+                                <a th:href="@{/admin/enrollments}" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-xl transition text-center">Reset</a>
+                            </div>
+                        </form>
+
+                        <!-- TABLE -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="border-b border-slate-200 dark:border-slate-700/60 bg-slate-50 dark:bg-slate-900/40 text-slate-400 font-semibold uppercase tracking-wider">
+                                        <th class="p-4">ID</th>
+                                        <th class="p-4">STUDENT</th>
+                                        <th class="p-4">COURSE / BATCH</th>
+                                        <th class="p-4">AMOUNT</th>
+                                        <th class="p-4">PAYMENT TYPE</th>
+                                        <th class="p-4">PAYMENT STATUS</th>
+                                        <th class="p-4">ENROLLMENT STATUS</th>
+                                        <th class="p-4">ENROLLED AT</th>
+                                        <th class="p-4">ACTION</th> 
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 dark:divide-slate-700/60">
+                                    <tr th:each="e : ${enrollments}" class="hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition">
+                                        <td class="p-4 font-medium text-slate-600 dark:text-slate-300" th:text="${e.enrollment_id}">1</td>
+                                        <td class="p-4">
+                                            <div class="font-semibold text-slate-800 dark:text-white" th:text="${e.student_name}">Student Name</div>
+                                        </td>
+                                        <td class="p-4">
+                                            <div class="font-medium text-slate-800 dark:text-white" th:text="${e.course_name}">Course</div>
+                                            <div class="text-slate-400 text-[11px]" th:text="${e.batch_name}">Batch</div>
+                                        </td>
+                                        <td class="p-4 font-semibold text-slate-800 dark:text-white"
+                                            th:text="${e.final_amount != null ? #numbers.formatDecimal(e.final_amount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
+                                        <td class="p-4 text-slate-600 dark:text-slate-300" th:text="${e.payment_type}">FULL</td>
+                                        <td class="p-4">
+                                            <form th:action="@{/admin/enrollments/payment-status}" method="post" class="flex items-center gap-2">
+                                                <input type="hidden" name="enrollmentId" th:value="${e.enrollment_id}"> 
+                                                <select name="paymentStatus" class="px-2 py-1 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-800 dark:text-white focus:outline-none">
+                                                    <option value="UNPAID" th:selected="${e.payment_status == 'UNPAID'}">UNPAID</option>
+                                                    <option value="PARTIAL" th:selected="${e.payment_status == 'PARTIAL'}">PARTIAL</option>
+                                                    <option value="PAID" th:selected="${e.payment_status == 'PAID'}">PAID</option>
+                                                    <option value="REFUNDED" th:selected="${e.payment_status == 'REFUNDED'}">REFUNDED</option>
+                                                </select>
+                                                <button type="submit" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium text-[11px] transition">Save</button>
+                                            </form>
+                                        </td>
+                                        <td class="p-4">
+                                            <form th:action="@{/admin/enrollments/status}" method="post" class="flex items-center gap-2">
+                                                <input type="hidden" name="enrollmentId" th:value="${e.enrollment_id}"> 
+                                                <select name="status" class="px-2 py-1 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-800 dark:text-white focus:outline-none">
+                                                    <option value="PENDING" th:selected="${e.status == 'PENDING'}">PENDING</option>
+                                                    <option value="ACTIVE" th:selected="${e.status == 'ACTIVE'}">ACTIVE</option>
+                                                    <option value="COMPLETED" th:selected="${e.status == 'COMPLETED'}">COMPLETED</option>
+                                                    <option value="DROPPED" th:selected="${e.status == 'DROPPED'}">DROPPED</option>
+                                                    <option value="CANCELLED" th:selected="${e.status == 'CANCELLED'}">CANCELLED</option>
+                                                </select>
+                                                <button type="submit" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium text-[11px] transition">Save</button>
+                                            </form>
+                                        </td>
+                                        <td class="p-4 text-slate-500 dark:text-slate-400">
+                                            <span th:if="${e.enrolled_at != null}" th:text="${#temporals.format(e.enrolled_at, 'yyyy-MM-dd HH:mm')}">2026-01-01</span>
+                                            <span th:if="${e.enrolled_at == null}">-</span>
+                                        </td>
+                                        <td class="p-4">
+                                            <a th:href="@{/admin/enrollments/detail/{id}(id=${e.enrollment_id})}"
+                                                class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg inline-flex items-center gap-1.5 transition text-xs shadow-sm">
+                                                <i class="fa-solid fa-eye"></i> Detail
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- ADD ENROLLMENT MODAL -->
+        <div id="enrollmentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" style="display: none;">
+            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 w-full max-w-lg shadow-xl">
+                <div class="flex justify-between items-center mb-5">
+                    <h3 class="text-base font-bold text-slate-800 dark:text-white">Add New Enrollment</h3>
+                    <button type="button" onclick="closeEnrollmentModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-base cursor-pointer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <form th:action="@{/admin/enrollments/create}" method="post" th:object="${enrollment}" class="space-y-4 text-xs">
+                    <div>
+                        <label for="student_id" class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Select Student</label> 
+                        <select id="student_id" name="user_id" required
+                            class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500">
+                            <option value="">-- Choose Student --</option>
+                            <option th:each="s : ${students}" th:value="${s.user_id}" th:text="${s.full_name}"></option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="batch_id" class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Select Course / Batch</label> 
+                        <select id="batch_id" name="batch_id" required
+                            class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500">
+                            <option value="">-- Choose Batch --</option>
+                            <option th:each="b : ${batches}" th:value="${b.batch_id}" th:text="${b.course_name + ' (' + b.batch_name + ')'}"></option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="original_amount" class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Original Amount</label> 
+                        <input type="number" step="0.01" id="original_amount" name="original_amount" required placeholder="0.00"
+                            class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+
+                    <div>
+                        <label for="discount_amount" class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Discount Amount</label> 
+                        <input type="number" step="0.01" id="discount_amount" name="discount_amount" value="0.00"
+                            class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+
+                    <div>
+                        <label for="scholarship_amount" class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Scholarship Amount</label> 
+                        <input type="number" step="0.01" id="scholarship_amount" name="scholarship_amount" value="0.00"
+                            class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+
+                    <div>
+                        <label for="payment_type" class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Payment Type</label> 
+                        <select id="payment_type" name="payment_type"
+                            class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500">
+                            <option th:each="pt : ${paymentTypes}" th:value="${pt}" th:text="${pt}"></option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="payment_status" class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Payment Status</label> 
+                        <select id="payment_status" name="payment_status"
+                            class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500">
+                            <option th:each="ps : ${paymentStatuses}" th:value="${ps}" th:text="${ps}"></option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="status" class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Enrollment Status</label> 
+                        <select id="status" name="status"
+                            class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500">
+                            <option th:each="st : ${enrollmentStatuses}" th:value="${st}" th:text="${st}"></option>
+                        </select>
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-2">
+                        <button type="button" onclick="closeEnrollmentModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-xl transition cursor-pointer">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition cursor-pointer">Save Enrollment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme Toggle Script
+        const themeToggle = document.getElementById("themeToggle");
+        function applyTheme(isLight) {
+            document.body.classList.toggle("light-mode", isLight);
+            if (themeToggle) {
+                themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-regular fa-moon"></i>';
+            }
+            localStorage.setItem("lmsTheme", isLight ? "light" : "dark");
         }
-        localStorage.setItem("lmsTheme", isLight ? "light" : "dark");
-    }
-    applyTheme(localStorage.getItem("lmsTheme") === "light");
-    if(themeToggle) {
-        themeToggle.addEventListener("click", () => applyTheme(!document.body.classList.contains("light-mode")));
-    }
-
-    // Enrollment Modal Open / Close Functions
-    function openEnrollmentModal() {
-        const modal = document.getElementById("enrollmentModal");
-        if (modal) {
-            modal.style.display = "flex";
+        applyTheme(localStorage.getItem("lmsTheme") === "light");
+        if(themeToggle) {
+            themeToggle.addEventListener("click", () => applyTheme(!document.body.classList.contains("light-mode")));
         }
-    }
 
-    function closeEnrollmentModal() {
-        const modal = document.getElementById("enrollmentModal");
-        if (modal) {
-            modal.style.display = "none";
+        // Enrollment Modal Open / Close Functions
+        function openEnrollmentModal() {
+            const modal = document.getElementById("enrollmentModal");
+            if (modal) {
+                modal.style.display = "flex";
+            }
         }
-    }
-</script>
+
+        function closeEnrollmentModal() {
+            const modal = document.getElementById("enrollmentModal");
+            if (modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>

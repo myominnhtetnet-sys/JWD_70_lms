@@ -1,13 +1,11 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
-import org.springframework.beans.factory.annotation.Autowired; 
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.Learning_Managnment_System.JWD_70_lms.Service.CourseService;
 import com.Learning_Managnment_System.JWD_70_lms.Service.ReviewService;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.CourseRepository;
@@ -18,6 +16,7 @@ import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.Review;
 import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,11 +28,24 @@ public class CourseController {
     private final CourseRepository courseRepository;
     private final CategoryService categoryService;
     private final CourseFileUploadService fileUploadService;
+    private final CourseService courseService;
+    private final ReviewService reviewService;
 
-    public CourseController(CourseRepository courseRepository, CategoryService categoryService, CourseFileUploadService fileUploadService) {
+    public CourseController(CourseRepository courseRepository, 
+                            CategoryService categoryService, 
+                            CourseFileUploadService fileUploadService,
+                            CourseService courseService,
+                            ReviewService reviewService) {
         this.courseRepository = courseRepository;
         this.categoryService = categoryService;
         this.fileUploadService = fileUploadService;
+        this.courseService = courseService;
+        this.reviewService = reviewService;
+    }
+
+    @GetMapping({"", "/"})
+    public String adminCoursesRoot() {
+        return "Course_Management";
     }
 
     @GetMapping("/show")
@@ -47,26 +59,90 @@ public class CourseController {
         List<CourseBean> courseList = courseService.getFilteredCourses(filters, batchStatus, page, pageSize);
         int totalPages = courseService.getTotalPagesForFilters(filters, batchStatus, pageSize);
         
-        // 🟢 FIXED: Create a robust, universally queryable flat hash map instance container 
-        java.util.Map<String, List<java.util.Map<String, Object>>> reviewsMap = new java.util.HashMap<>();
+        Map<String, List<Map<String, Object>>> reviewsMap = new java.util.HashMap<>();
         
         for (CourseBean course : courseList) {
-            List<java.util.Map<String, Object>> reviews = reviewService.getReviewsByCourseId(course.getCourse_id());
-            // Stringify the course ID mapping key accurately to prevent lookup evaluation errors
+            List<Map<String, Object>> reviews = reviewService.getReviewsByCourseId(course.getCourse_id());
             reviewsMap.put(String.valueOf(course.getCourse_id()), reviews);
         }
         
-        model.addAttribute("list", courseList);              
-        model.addAttribute("currentPage", page);                           
+        model.addAttribute("list", courseList);            
+        model.addAttribute("currentPage", page);                                     
         model.addAttribute("totalPages", totalPages);      
         model.addAttribute("courseBean", filters); 
         model.addAttribute("selectedBatchStatus", batchStatus); 
-        
-        // Pass the unified database review list tracker map container down to your template engine
         model.addAttribute("reviewsMap", reviewsMap); 
         
-        return "courses"; 
+        return "Course_Management"; 
     }
+
+    // ==========================================
+    // 🟢 AJAX REST API ENDPOINTS FOR FRONTEND JS
+    // ==========================================
+
+    @GetMapping("/api/list")
+    @ResponseBody
+    public List<CourseBean> apiGetCoursesList() {
+        return courseService.getAllCourses();
+    }
+
+    @GetMapping("/api/categories")
+    @ResponseBody
+    public List<CategoryBean> apiGetCategories() {
+        return categoryService.getAllCategories();
+    }
+    @GetMapping("/api/{id}")
+    @ResponseBody
+    public CourseBean apiGetCourseById(@PathVariable("id") int id) {
+        return courseService.getCourseById(id);
+    }
+
+    @PostMapping("/api/create")
+    @ResponseBody
+    public ResponseEntity<?> apiCreateCourse(
+            @RequestPart("course") CourseBean course,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+        try {
+            if (image != null && !image.isEmpty()) {
+                String fileName = fileUploadService.saveFile(image);
+                course.setThumbnail(fileName);
+            }
+            courseService.saveCourse(course);
+            return ResponseEntity.ok(Map.of("message", "Course created successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/api/update")
+    @ResponseBody
+    public ResponseEntity<?> apiUpdateCourse(
+            @RequestPart("course") CourseBean course,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+        try {
+            if (image != null && !image.isEmpty()) {
+                String fileName = fileUploadService.saveFile(image);
+                course.setThumbnail(fileName);
+            }
+            courseService.updateCourse(course);
+            return ResponseEntity.ok(Map.of("message", "Course updated successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/api/delete/{id}")
+    @ResponseBody
+    public ResponseEntity<?> apiDeleteCourse(@PathVariable("id") int id) {
+        try {
+            courseService.deleteCourse(id);
+            return ResponseEntity.ok(Map.of("message", "Course deleted successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // ==========================================
 
     @GetMapping("/detail/{slug}")
     public String getCourseDetails(@PathVariable("slug") String slug, Model model) {
@@ -77,18 +153,15 @@ public class CourseController {
         }
         
         CourseBean course = courseOpt.get();
-        
-        // 🟢 FIX: Fetch using your service's working JOIN method
         List<Map<String, Object>> courseReviews = reviewService.getReviewsByCourseId(course.getCourse_id());
         
         model.addAttribute("course", course);
-        model.addAttribute("courseReviews", courseReviews); // Passed straight as a clean list
+        model.addAttribute("courseReviews", courseReviews);
         
         return "course-detail"; 
     }
     
-    // 🟢 FIXED: Added an explicit absolute context path slash to ensure it binds to /courses/{id}/review cleanly
-    @PostMapping("/{id}/review") // Resolves to /courses/{id}/review natively
+    @PostMapping("/{id}/review") 
     public String saveCourseReview(
             @PathVariable("id") Long courseId,
             @RequestParam("rating") int rating,
@@ -108,17 +181,16 @@ public class CourseController {
             return "redirect:/login";
         }
 
-        // Duplicate Review Prevention Check
         if (reviewService.hasUserReviewedCourse(realMasterUserId, courseId.intValue())) {
             redirectAttributes.addFlashAttribute("errorMessage", "You have already submitted a review for this course.");
             CourseBean course = courseService.getCourseById(courseId.intValue());
-            return "redirect:/courses/detail/" + course.getSlug(); // Redirect back to details page
+            return "redirect:/admin/courses/detail/" + course.getSlug(); 
         }
 
         CourseBean course = courseService.getCourseById(courseId.intValue());
         if (course == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Course record not found.");
-            return "redirect:/courses/show";
+            return "redirect:/admin/courses/show";
         }
 
         Review review = new Review();
@@ -129,18 +201,11 @@ public class CourseController {
         StudentBean studentUser = new StudentBean();
         review.setUser(studentUser); 
 
-        // Save row into your MySQL DB
         reviewService.saveReview(review, realMasterUserId);
 
-     // This tells the page a new review was just successfully added
-     redirectAttributes.addFlashAttribute("reviewSubmitted", true); 
-     redirectAttributes.addFlashAttribute("successMessage", "Thank you! Your feedback has been published.");
+        redirectAttributes.addFlashAttribute("reviewSubmitted", true); 
+        redirectAttributes.addFlashAttribute("successMessage", "Thank you! Your feedback has been published.");
 
-     return "redirect:/courses/show#detailModal-" + courseId;
+        return "redirect:/admin/courses/show#detailModal-" + courseId;
     }
-
-
-
-   
-
 }

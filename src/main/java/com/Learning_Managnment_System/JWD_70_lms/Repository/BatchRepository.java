@@ -1,54 +1,54 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
-import java.util.List; 
-import java.util.Optional;
-
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-
-import com.Learning_Managnment_System.JWD_70_lms.Mapper.BatchRowMapper;
-import com.Learning_Managnment_System.JWD_70_lms.model.BatchBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.BatchBean.BatchInfo;
 
 @Repository
 public class BatchRepository {
 
-	@Autowired
-    JdbcTemplate jdbcTemplate;
-    BatchRowMapper batchRowMapper;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-  
-
-    public List<BatchBean> findAll() {
-
-        String sql = "SELECT * FROM lms_db.batches ORDER BY batch_id";
-           
-
-        List<BatchBean> batches =jdbcTemplate.query(sql,new BatchRowMapper());
-        System.out.println("Total Batches: " + batches.size());
-        return batches;
-    }
-    
-    public Optional<BatchBean> findById(Integer id) {
-        String sql = "SELECT * FROM lms_db.batches where batch_id = ?";
-
-        List<BatchBean> batches = jdbcTemplate.query(sql, new BatchRowMapper(), id);
-        return batches.stream().findFirst();
-import java.util.List;
-
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
-import com.Learning_Managnment_System.JWD_70_lms.Mapper.BatchMapper.BatchRowMapper;
-import com.Learning_Managnment_System.JWD_70_lms.model.BatchBean.*;
-
-@Repository
-public class BatchRepository {
-	
-	private final JdbcTemplate jdbcTemplate;
-
-    public BatchRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    // 🟢 BatchInfo အတွက် RowMapper (Course Title ပါ တွဲယူပေးသည်)
+    private final RowMapper<BatchInfo> batchInfoRowMapper = (rs, rowNum) -> {
+        BatchInfo b = new BatchInfo();
+        b.setBatchId(rs.getLong("batch_id"));
+        b.setCourseId(rs.getLong("course_id"));
+        
+        try {
+            b.setCourseTitle(rs.getString("course_title"));
+        } catch (Exception e) {
+            // Column မပါလာရင် ကျော်ရန်
+        }
+        
+        b.setBatchCode(rs.getString("batch_code"));
+        b.setTitle(rs.getString("title"));
+        
+        if (rs.getDate("start_date") != null) {
+            b.setStartDate(rs.getDate("start_date").toLocalDate());
+        }
+        if (rs.getDate("end_date") != null) {
+            b.setEndDate(rs.getDate("end_date").toLocalDate());
+        }
+        
+        b.setScheduleNote(rs.getString("schedule_note"));
+        b.setMaxSeats(rs.getInt("max_seats"));
+        b.setStatus(rs.getString("status"));
+        b.setCreatedBy(rs.getLong("created_by"));
+        
+        if (rs.getTimestamp("created_at") != null) {
+            b.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        }
+        if (rs.getTimestamp("updated_at") != null) {
+            b.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        }
+        
+        return b;
+    };
 
     public List<BatchInfo> findAllBatches() {
         String sql = """
@@ -57,7 +57,7 @@ public class BatchRepository {
             LEFT JOIN courses c ON b.course_id = c.course_id 
             ORDER BY b.batch_id DESC
         """;
-        return jdbcTemplate.query(sql, new BatchRowMapper());
+        return jdbcTemplate.query(sql, batchInfoRowMapper);
     }
 
     public BatchInfo findBatchById(Long batchId) {
@@ -67,7 +67,7 @@ public class BatchRepository {
             LEFT JOIN courses c ON b.course_id = c.course_id 
             WHERE b.batch_id = ?
         """;
-        List<BatchInfo> list = jdbcTemplate.query(sql, new BatchRowMapper(), batchId);
+        List<BatchInfo> list = jdbcTemplate.query(sql, batchInfoRowMapper, batchId);
         return list.isEmpty() ? null : list.get(0);
     }
 
