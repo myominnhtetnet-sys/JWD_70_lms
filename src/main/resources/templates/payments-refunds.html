@@ -5,8 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Payment & Refund Management | LearnHub LMS</title>
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
 * {
 	margin: 0;
@@ -125,8 +124,6 @@ button, input, select {
 	color: #9b8aff;
 	font-weight: 700;
 }
-
-
 
 .sidebar-bottom {
 	margin-top: 30px;
@@ -343,7 +340,6 @@ button, input, select {
 	margin-top: 7px;
 }
 
-/* Filter Form Enrollment Style Matching */
 .filter-form {
 	display: grid;
 	grid-template-columns: 2fr 1.5fr 1.5fr auto auto;
@@ -439,15 +435,6 @@ td {
 	gap: 6px;
 }
 
-.inline-form select {
-	padding: 6px;
-	background: var(--input);
-	border: 1px solid var(--border);
-	border-radius: 7px;
-	color: var(--text);
-	font-size: 11px;
-}
-
 .mini-btn {
 	padding: 6px 10px;
 	border: none;
@@ -461,13 +448,11 @@ td {
 
 <body>
 	<div class="app">
-
 		<!-- SIDEBAR FRAGMENT -->
 		<div th:replace="~{fragments/admin-layout :: sidebar(activePage='payments')}"></div>
 
 		<!-- MAIN -->
 		<main class="main">
-
 			<!-- TOPBAR FRAGMENT -->
 			<div th:replace="~{fragments/admin-layout :: topbar('Payment & Refund Management', 'Verify student payments and process refund requests.')}"></div>
 
@@ -598,13 +583,17 @@ td {
 										</a>
 										<span th:if="${p.proof_image == null}" style="color: var(--muted);">-</span>
 									</td>
+									<!-- DATABASE STATUS (DYNAMIC FROM DB) -->
 									<td>
-										<span th:if="${p.status == 'PENDING'}" style="color: var(--yellow); font-weight: 700;">PENDING</span>
-										<span th:if="${p.status == 'SUCCESS' or p.status == 'VERIFIED'}" style="color: var(--green); font-weight: 700;">VERIFIED</span>
-										<span th:if="${p.status == 'REJECTED'}" style="color: var(--red); font-weight: 700;">REJECTED</span>
+										<span th:text="${p.status}" 
+											  th:style="${p.status == 'PENDING' ? 'color: var(--yellow); font-weight: 700;' : 
+														(p.status == 'SUCCESS' or p.status == 'VERIFIED' ? 'color: var(--green); font-weight: 700;' : 
+														'color: var(--red); font-weight: 700;')}">
+											STATUS
+										</span>
 									</td>
 									<td>
-										<form th:action="@{/admin/payments-refunds/verify-payment}" method="post" class="inline-form">
+										<form th:action="@{/admin/payments-refunds/process-payment}" method="post" class="inline-form">
 											<input type="hidden" name="paymentId" th:value="${p.payment_id}">
 											<button type="submit" name="action" value="verify" class="mini-btn" style="background: var(--green);"><i class="fa-solid fa-check"></i> Verify</button>
 											<button type="submit" name="action" value="reject" class="mini-btn" style="background: var(--red);"><i class="fa-solid fa-xmark"></i> Reject</button>
@@ -682,11 +671,15 @@ td {
 									<td style="font-weight: 700; color: var(--yellow);" th:text="${r.amount != null ? #numbers.formatDecimal(r.amount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
 									<td th:text="${r.reason}">Reason text</td>
 									<td th:text="${r.created_at != null ? r.created_at : '-'}">-</td>
+									<!-- DATABASE REFUND STATUS (DYNAMIC FROM DB) -->
 									<td>
-										<span th:if="${r.status == 'PENDING'}" style="color: var(--yellow); font-weight: 700;">PENDING</span>
-										<span th:if="${r.status == 'APPROVED'}" style="color: #7895ff; font-weight: 700;">APPROVED</span>
-										<span th:if="${r.status == 'PAID'}" style="color: var(--green); font-weight: 700;">REFUNDED</span>
-										<span th:if="${r.status == 'REJECTED'}" style="color: var(--red); font-weight: 700;">REJECTED</span>
+										<span th:text="${r.status}" 
+											  th:style="${r.status == 'PENDING' ? 'color: var(--yellow); font-weight: 700;' : 
+														(r.status == 'APPROVED' ? 'color: #7895ff; font-weight: 700;' : 
+														(r.status == 'PAID' or r.status == 'REFUNDED' ? 'color: var(--green); font-weight: 700;' : 
+														'color: var(--red); font-weight: 700;'))}">
+											STATUS
+										</span>
 									</td>
 									<td>
 										<div class="inline-form">
@@ -699,7 +692,7 @@ td {
 												<input type="hidden" name="refundId" th:value="${r.refund_id}">
 												<button type="submit" name="status" value="PAID" class="mini-btn" style="background: var(--green);"><i class="fa-solid fa-money-bill-transfer"></i> Mark Refunded</button>
 											</form>
-											<span th:if="${r.status == 'PAID' || r.status == 'REJECTED'}" style="color: var(--muted); font-size: 11px;">Completed</span>
+											<span th:if="${r.status == 'PAID' || r.status == 'REJECTED' || r.status == 'REFUNDED'}" style="color: var(--muted); font-size: 11px;">Completed</span>
 										</div>
 									</td>
 								</tr>
@@ -718,7 +711,7 @@ td {
 	</div>
 
 	<!-- TAB SWITCHING & DARK/LIGHT MODE SCRIPT -->
-	<script th:inline="javascript">
+	<!-- <script th:inline="javascript">
 		function switchTab(tabId, btnId) {
 			document.getElementById('paymentTab').style.display = 'none';
 			document.getElementById('refundTab').style.display = 'none';
@@ -749,6 +742,30 @@ td {
 				applyTheme(!document.body.classList.contains("light-mode"));
 			});
 		}
-	</script>
+	</script> -->
+	<script th:inline="javascript">
+    function switchTab(tabId, btnId) {
+        document.getElementById('paymentTab').style.display = 'none';
+        document.getElementById('refundTab').style.display = 'none';
+        document.getElementById('btnTab1').classList.remove('active');
+        document.getElementById('btnTab2').classList.remove('active');
+
+        document.getElementById(tabId).style.display = 'block';
+        document.getElementById(btnId).classList.add('active');
+        
+        // Tab ပြောင်းတဲ့အခါ ပေါ်နေတဲ့ Flash Message တွေကို ဖယ်ရှားပေးရန် (Optional)
+        const flashMsg = document.querySelector('.flash-message');
+        if (flashMsg) {
+            flashMsg.style.display = 'none';
+        }
+    }
+
+    /* Controller ကနေ activeTab=refund လို့ လာရင် အလိုအလျောက် Refund Tab ကိုဖွင့်ရန် */
+    /*[# th:if="${param.activeTab != null and param.activeTab[0] == 'refund'}"]*/
+        window.addEventListener('DOMContentLoaded', () => {
+            switchTab('refundTab', 'btnTab2');
+        });
+    /*[/]*/
+</script>
 </body>
 </html>

@@ -78,6 +78,35 @@ public class PaymentRefundController {
         }
         return "redirect:/admin/payments-refunds";
     }
+    
+ // Verify နဲ့ Reject နှစ်ခုစလုံးကို တစ်နေရာတည်းမှ ခွဲထုတ်လက်ခံမည့် Method
+    @PostMapping("/process-payment")
+    public String processPayment(
+            @RequestParam("paymentId") Long paymentId,
+            @RequestParam("action") String action,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        if (!checkAdmin(session)) {
+            return "redirect:/login";
+        }
+
+        try {
+            Object userObj = session.getAttribute("user_id");
+            Long adminId = (userObj != null) ? Long.valueOf(userObj.toString()) : 1L;
+            if ("verify".equalsIgnoreCase(action)) {
+                paymentRefundService.verifyPayment(paymentId, adminId);
+                redirectAttributes.addFlashAttribute("success", "Payment verified as SUCCESS!");
+            } else if ("reject".equalsIgnoreCase(action)) {
+                paymentRefundService.rejectPayment(paymentId, adminId);
+                redirectAttributes.addFlashAttribute("success", "Payment status reset to PENDING!");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error processing payment: " + e.getMessage());
+        }
+        
+        return "redirect:/admin/payments-refunds";
+    }
 
     @PostMapping("/update-refund-status")
     public String updateRefundStatus(

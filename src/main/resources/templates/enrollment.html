@@ -535,7 +535,7 @@ td {
 						<table>
 							<thead>
 								<tr>
-									<th>ID</th>
+									<th>No</th>
 									<th>STUDENT</th>
 									<th>COURSE / BATCH</th>
 									<th>AMOUNT</th>
@@ -547,69 +547,60 @@ td {
 								</tr>
 							</thead>
 							<tbody>
-								<tr th:each="e : ${enrollments}">
-									<td th:text="${e.enrollment_id}">1</td>
-									<td>
-										<div class="student-name" th:text="${e.student_name}">Student
-											Name</div>
-									</td>
-									<td>
-										<div th:text="${e.course_name}">Course</div>
-										<div class="student-email" th:text="${e.batch_name}">Batch</div>
-									</td>
-									<td
-										th:text="${e.final_amount != null ? #numbers.formatDecimal(e.final_amount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
-									<td th:text="${e.payment_type}">FULL</td>
-									<td>
-										<form th:action="@{/admin/enrollments/payment-status}"
-											method="post" class="inline-form">
-											<input type="hidden" name="enrollmentId"
-												th:value="${e.enrollment_id}"> <select
-												name="paymentStatus">
-												<option value="UNPAID"
-													th:selected="${e.payment_status == 'UNPAID'}">UNPAID</option>
-												<option value="PARTIAL"
-													th:selected="${e.payment_status == 'PARTIAL'}">PARTIAL</option>
-												<option value="PAID"
-													th:selected="${e.payment_status == 'PAID'}">PAID</option>
-												<option value="REFUNDED"
-													th:selected="${e.payment_status == 'REFUNDED'}">REFUNDED</option>
-											</select>
-											<button type="submit" class="mini-btn">Save</button>
-										</form>
-									</td>
-									<td>
-										<form th:action="@{/admin/enrollments/status}" method="post"
-											class="inline-form">
-											<input type="hidden" name="enrollmentId"
-												th:value="${e.enrollment_id}"> <select name="status">
-												<option value="PENDING"
-													th:selected="${e.status == 'PENDING'}">PENDING</option>
-												<option value="ACTIVE" th:selected="${e.status == 'ACTIVE'}">ACTIVE</option>
-												<option value="COMPLETED"
-													th:selected="${e.status == 'COMPLETED'}">COMPLETED</option>
-												<option value="DROPPED"
-													th:selected="${e.status == 'DROPPED'}">DROPPED</option>
-												<option value="CANCELLED"
-													th:selected="${e.status == 'CANCELLED'}">CANCELLED</option>
-											</select>
-											<button type="submit" class="mini-btn">Save</button>
-										</form>
-									</td>
-									<td><span th:if="${e.enrolled_at != null}"
-										th:text="${#temporals.format(e.enrolled_at, 'yyyy-MM-dd HH:mm')}">2026-01-01</span>
-										<span th:if="${e.enrolled_at == null}">-</span></td>
+    <!-- th:each ထဲတွင် , iterStat ကို ထည့်ပေးပါ -->
+    <tr th:each="e, iterStat : ${enrollments}">
+        <!-- e.enrollment_id အစား iterStat.count ကို သုံးပါ -->
+        <td th:text="${iterStat.count}">1</td>
+        
+        <td>
+            <div class="student-name" th:text="${e.student_name}">Student Name</div>
+        </td>
+        <td>
+            <div th:text="${e.course_name}">Course</div>
+            <div class="student-email" th:text="${e.batch_name}">Batch</div>
+        </td>
+        <td th:text="${e.final_amount != null ? #numbers.formatDecimal(e.final_amount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
+        <td th:text="${e.payment_type}">FULL</td>
+        <td>
+            <form th:action="@{/admin/enrollments/payment-status}" method="post" class="inline-form">
+                <input type="hidden" name="enrollmentId" th:value="${e.enrollment_id}">
+                <select name="paymentStatus">
+                    <option value="UNPAID" th:selected="${e.payment_status == 'UNPAID'}">UNPAID</option>
+                    <option value="PARTIAL" th:selected="${e.payment_status == 'PARTIAL'}">PARTIAL</option>
+                    <option value="PAID" th:selected="${e.payment_status == 'PAID'}">PAID</option>
+                    <option value="REFUNDED" th:selected="${e.payment_status == 'REFUNDED'}">REFUNDED</option>
+                </select>
+                <button type="submit" class="mini-btn">Save</button>
+            </form>
+        </td>
+        <td>
+            <form th:action="@{/admin/enrollments/status}" method="post" class="inline-form">
+                <input type="hidden" name="enrollmentId" th:value="${e.enrollment_id}">
+                <select name="status">
+                    <option value="PENDING" th:selected="${e.status == 'PENDING'}">PENDING</option>
+                    <option value="ACTIVE" th:selected="${e.status == 'ACTIVE'}">ACTIVE</option>
+                    <option value="COMPLETED" th:selected="${e.status == 'COMPLETED'}">COMPLETED</option>
+                    <option value="DROPPED" th:selected="${e.status == 'DROPPED'}">DROPPED</option>
+                    <option value="CANCELLED" th:selected="${e.status == 'CANCELLED'}">CANCELLED</option>
+                </select>
+                <button type="submit" class="mini-btn">Save</button>
+            </form>
+        </td>
+        <td>
+            <span th:if="${e.enrolled_at != null}" th:text="${#temporals.format(e.enrolled_at, 'yyyy-MM-dd HH:mm')}">2026-01-01</span>
+            <span th:if="${e.enrolled_at == null}">-</span>
+        </td>
 
-									<!-- DETAIL MODAL ဖွင့်မည့် ခလုတ် -->
-									<td>
-										<button type="button" class="mini-btn"
-											style="background: var(--primary); color: white; display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 7px; border: none;"
-											th:onclick="'openDetailModal(' + ${e.enrollment_id} + ')'">
-											<i class="fa-solid fa-eye"></i> Detail
-										</button>
-									</td>
-								</tr>
-							</tbody>
+        <!-- DETAIL MODAL ဖွင့်မည့် ခလုတ် -->
+        <td>
+            <button type="button" class="mini-btn"
+                style="background: var(--primary); color: white; display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 7px; border: none;"
+                th:onclick="'openDetailModal(' + ${e.enrollment_id} + ')'">
+                <i class="fa-solid fa-eye"></i> Detail
+            </button>
+        </td>
+    </tr>
+</tbody>
 						</table>
 					</div>
 				</section>

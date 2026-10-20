@@ -177,13 +177,15 @@ public class PaymentRefundService {
             "UPDATE installment_schedules SET reminder_sent_at = NOW() WHERE schedule_id = ?", scheduleId);
         return updated > 0;
     }
+ // Verify နှိပ်လျှင် SUCCESS သို့ပြောင်းမည်
     public void verifyPayment(Long paymentId, Long adminId) {
-        // Database ထဲတွင် status ကို SUCCESS / VERIFIED သို့ပြောင်းရန် SQL Query သို့မဟုတ် Repository method ရေးပါ
-    	String sql = "UPDATE payments SET status = 'SUCCESS', processed_by = ? WHERE payment_id = ?";
+        String sql = "UPDATE payments SET status = 'SUCCESS', processed_by = ? WHERE payment_id = ?";
         jdbcTemplate.update(sql, adminId, paymentId);
     }
+
+    // Reject နှိပ်လျှင် PENDING သို့ပြောင်းမည်
     public void rejectPayment(Long paymentId, Long adminId) {
-        String sql = "UPDATE payments SET status = 'REJECTED', processed_by = ? WHERE payment_id = ?";
+        String sql = "UPDATE payments SET status = 'PENDING', processed_by = ? WHERE payment_id = ?";
         jdbcTemplate.update(sql, adminId, paymentId);
     }
 }
