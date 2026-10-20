@@ -14,54 +14,59 @@
     </style>
 </head>
 <body class="student-result-page" style="padding-top: 40px;">
-
-    <!-- ⏳ GLOBAL AUTOMATED SESSION CLOCK TIMER BADGE -->
-    <div class="timer-badge">Time Remaining: <span id="clock-display">--:--</span></div>
-
-    <div class="result-container" style="max-width: 740px; margin: 0 auto; padding: 16px;">
-        
-        <!-- Main Form Stream Handler Layer -->
-      <form id="exam-form" th:action="@{/student/exam-submit}" method="post" style="margin:0; padding:0;">
-            <input type="hidden" name="attemptId" th:value="${attemptId}">
-            <input type="hidden" name="examId" th:value="${examId}">
-
-            <div class="exam-panel-card" style="border-left: 4px solid #0f172a;">
-                <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: #0f172a;" th:text="${exam.title}">Exam Paper Title</h1>
-                <p style="margin: 4px 0 0 0; color: #64748b; font-size: 13.5px;" th:text="'Total Assessment Points: ' + ${exam.totalMark} + ' Marks'"></p>
-            </div>
-
-            <!-- Dynamic Question Loops Iteration Stacks -->
-            <div th:each="q, stat : ${questions}" class="exam-panel-card">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-                    <span style="font-weight: 700; color: #0f172a; font-size: 15px;" th:text="'Question ' + ${stat.count}">Question 1</span>
-                    <span style="font-size: 12px; color: #64748b; font-weight: 600;" th:text="${q.questionMark} + ' Pts'">1.00 Pts</span>
-                </div>
-                
-                <h3 style="font-size: 15.5px; font-weight: 600; color: #1e293b; margin: 0 0 12px 0;" th:text="${q.questionText}">Question text goes here?</h3>
-
-            	 <div th:if="${q.questionType == 'MCQ' or q.questionType == 'TRUE_FALSE'}" style="display: block; margin: 0; padding: 0;">
-			    <div th:each="opt : ${q.options}">
-			        <label class="option-label">
-			            <input type="radio" th:name="'question_' + ${q.questionId}" th:value="${opt.optionId}" required style="accent-color: #0f172a;">
-			            <span th:text="${opt.optionText}">Choice Options Text</span>
-			        </label>
-			    </div>
-			</div>
-			
-			<!-- TEXT SHORT ANSWER MODULE FIELD -->
-			<div th:if="${q.questionType == 'SHORT_ANSWER'}" style="display: block; margin: 0; padding: 0;">
-			    <textarea th:name="'question_' + ${q.questionId}" rows="3" class="text-area-box" placeholder="Type your answer response securely here..." required></textarea>
-			</div>
-            </div>
-
-            <!-- Submit Footer Anchor Bar Row -->
-            <div style="text-align: right; margin-top: 16px;">
-                <button type="submit" style="background: #166534; color: #ffffff; border: none; padding: 12px 32px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    Submit Exam Paper 💾
-                </button>
-            </div>
-        </form>
+<!-- ========================================================= -->
+<!-- DYNAMIC FIXED QUESTIONS ITERATION BLOCK                   -->
+<!-- ========================================================= -->
+<div th:each="q, stat : ${questions}" class="exam-panel-card" style="background: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 12px !important; padding: 24px !important; margin-bottom: 16px !important; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02) !important; box-sizing: border-box !important; display: block !important;">
+    
+    <!-- Question Meta Header Bar -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px dashed #f1f5f9; padding-bottom: 8px;">
+        <span style="font-weight: 800; color: #0f172a; font-size: 15px;" th:text="'Question ' + ${stat.count}">Question 1</span>
+        <span style="font-size: 12px; color: #4f46e5; font-weight: 700; background-color: #f0f9ff; padding: 2px 8px; border-radius: 20px;" th:text="${q.mark} + ' Pts'">1.0 Pts</span>
     </div>
+    
+    <!-- Question Text -->
+    <h3 style="font-size: 16px; font-weight: 600; color: #1e293b; margin: 0 0 16px 0; line-height: 1.5;" th:text="${q.questionText}">Question text goes here?</h3>
+
+    <!-- 🟢 BLOCK TYPE A: RADIOS LIST (MCQ & TRUE_FALSE) -->
+    <!-- Enclosed inside a strict parent th:if block to isolate the inner loop iteration -->
+    <div th:if="${q.questionType == 'MCQ' or q.questionType == 'TRUE_FALSE'}" style="display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; width: 100%;">
+        
+        <!-- The choice iterator is localized completely within this private division boundary -->
+        <div th:each="opt : ${q.options}" style="display: block; width: 100%; margin: 0; padding: 0;">
+            <label class="option-label" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 10px; margin: 0; cursor: pointer; background: #ffffff; transition: all 0.15s ease; box-sizing: border-box; width: 100%;">
+                
+                <!-- ⚡ CRITICAL FIX: Maps uniquely to questionId to separate input selections -->
+                <input type="radio" 
+                       th:name="'question_' + ${q.questionId}" 
+                       th:value="${opt.optionId}" 
+                       required 
+                       style="accent-color: #0f172a; width: 16px; height: 16px; margin: 0; cursor: pointer; flex-shrink: 0;">
+                
+                <span style="font-size: 14.5px; font-weight: 500; color: #334155; line-height: 1.2;">
+                    <!-- Appends your selector letters (A, B, C) if active inside database rows -->
+                    <strong th:if="${opt.optionLabel != null}" th:text="${opt.optionLabel + '. '}" style="color: #0f172a;">A. </strong>
+                    <span th:text="${opt.optionText}">Choice Options Text</span>
+                </span>
+            </label>
+        </div>
+
+    </div> <!-- 🟢 Safely terminates choice loops branch context -->
+    
+    <!-- 🟢 BLOCK TYPE B: WRITTEN RESPONSE (SHORT_ANSWER) -->
+    <!-- Completely outside the choice loops container block -->
+    <div th:if="${q.questionType == 'SHORT_ANSWER'}" style="display: block; margin: 12px 0 0 0; padding: 0; width: 100%; box-sizing: border-box;">
+        <div style="margin-bottom: 6px; font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Your Written Response:</div>
+        <textarea th:name="'question_' + ${q.questionId}" 
+                  rows="4" 
+                  class="text-area-box" 
+                  placeholder="Type your structured answer response securely here..." 
+                  required 
+                  style="width: 100%; padding: 14px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14.5px; font-weight: 500; background-color: #f8fafc; color: #1e293b; font-family: inherit; resize: vertical; box-sizing: border-box; outline: none; transition: border-color 0.15s ease;"></textarea>
+    </div>
+
+</div> <!-- 🟢 FULLY SEALED: Closes the main outer question iterator loop block perfectly -->
+
 
         <!-- JavaScript Complete Simplified Proctor Armor Engine -->
     <script th:inline="javascript">
