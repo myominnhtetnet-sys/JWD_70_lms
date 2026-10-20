@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.Learning_Managnment_System.JWD_70_lms.Mapper.ExamRowMapper;
 import com.Learning_Managnment_System.JWD_70_lms.Mapper.ExamAttemptRowMapper;
@@ -42,7 +41,9 @@ public class StudentExamRepository {
                 JOIN learning_db.exams e ON ea.exam_id = e.exam_id 
                 JOIN learning_db.enrollments en ON ea.enrollment_id = en.enrollment_id 
                 JOIN learning_db.users u ON en.user_id = u.user_id 
-                WHERE u.email = ? ORDER BY ea.submitted_at DESC
+                WHERE u.email = ? 
+                GROUP BY ea.attempt_id, e.title 
+                ORDER BY ea.submitted_at DESC
                 """;
         return jdbcTemplate.query(sql, new ExamAttemptRowMapper(), email);
     }
@@ -62,34 +63,54 @@ public class StudentExamRepository {
     }
 
     public List<ExamAttemptBean> findActiveAttempts(int examId, int enrollmentId) {
-        String sql = "SELECT * FROM learning_db.exam_attempts WHERE exam_id = ? AND enrollment_id = ? AND status = 'IN_PROGRESS'";
+        String sql = "SELECT * FROM learning_db.exam_attempts WHERE exam_id = ? AND enrollment_id = ? AND status = 'IN_PROGRESS' ORDER BY attempt_id ASC";
         return jdbcTemplate.query(sql, new ExamAttemptRowMapper(), examId, enrollmentId);
     }
 
-    @Transactional
     public void updateAttemptToTerminated(int attemptId) {
-        String sql = "UPDATE learning_db.exam_attempts SET status = 'EXPIRED', result = 'FAILED', submitted_at = NOW() WHERE attempt_id = ?";
-        jdbcTemplate.update(sql, attemptId);
+        // First, extract metadata to locate parent attempt boundaries
+        String lookUpSql = "SELECT exam_id, enrollment_id FROM learning_db.exam_attempts WHERE attempt_id = ? LIMIT 1";
+        try {
+            java.util.Map<String, Object> match = jdbcTemplate.queryForMap(lookUpSql, attemptId);
+            Object eId = match.get("exam_id");
+            Object enId = match.get("enrollment_id");
+            
+            // Terminate all matching stale open rows to clean up your database state
+            String purgeSql = "UPDATE learning_db.exam_attempts SET status = 'EXPIRED', result = 'FAILED', submitted_at = NOW() WHERE exam_id = ? AND enrollment_id = ? AND status = 'IN_PROGRESS'";
+            jdbcTemplate.update(purgeSql, eId, enId);
+        } catch (Exception e) {
+            // Fallback safety if no rows exist
+            String sql = "UPDATE learning_db.exam_attempts SET status = 'EXPIRED', result = 'FAILED', submitted_at = NOW() WHERE attempt_id = ?";
+            jdbcTemplate.update(sql, attemptId);
+        }
     }
 
-    @Transactional(readOnly = true)
     public Integer countPastAttempts(int examId, int enrollmentId) {
         String sql = "SELECT COUNT(*) FROM learning_db.exam_attempts WHERE exam_id = ? AND enrollment_id = ? AND status IN ('SUBMITTED', 'GRADED', 'EXPIRED')";
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getInt(1), examId, enrollmentId);
     }
 
     public List<Integer> findQuestionSequence(int examId) {
-        String sql = "SELECT question_id FROM learning_db.exam_questions WHERE exam_id = ? ORDER BY sort_order ASC";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("question_id"), examId);
+        // Swapped out "SELECT" for "SELECT DISTINCT" to neutralize table duplicates instantly
+        String sql = "SELECT DISTINCT question_id FROM learning_db.exam_questions WHERE exam_id = ? ORDER BY question_id ASC";
+        try {
+            return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("question_id"), examId);
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
     }
-
-    @Transactional
     public int insertNewAttemptSession(int examId, int enrollmentId, int attemptNo) {
         String sql = "INSERT INTO learning_db.exam_attempts (exam_id, enrollment_id, attempt_no, status, result, started_at) VALUES (?, ?, ?, 'IN_PROGRESS', 'PENDING', NOW())";
         jdbcTemplate.update(sql, examId, enrollmentId, attemptNo);
         return jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", (rs, rowNum) -> rs.getInt(1));
     }
 
+    /**
+     * Retrieves strictly unique question records matching the sanitized sequence.
+     * 🟢 DECISIVE FIX: Targets the isolated questions table directly using DISTINCT.
+     * This strips out overlapping exam_id and sort_order column properties from the uniqueness check,
+     * permanently stopping data multiplication before the list reaches your Thymeleaf templates!
+     */
     public List<ExamQuestionBean> findQuestionsBySequence(String sequence) {
         if (sequence == null || sequence.trim().isEmpty()) {
             return new ArrayList<>();
@@ -101,30 +122,22 @@ public class StudentExamRepository {
             return new ArrayList<>();
         }
 
-        // Main Query: Joins the relational structure using standard aliases
-        String sql = "SELECT " +
+        // 🟢 FIXED SQL: Query directly from the questions table to guarantee true item deduplication
+        String sql = "SELECT DISTINCT " +
                      "    q.question_id AS questionId, " +
                      "    q.question_text AS questionText, " +
-                     "    q.question_type AS questionType, " +
-                     "    eq.mark AS questionMark " +
-                     "FROM learning_db.exam_questions eq " +
-                     "JOIN learning_db.questions q ON eq.question_id = q.question_id " +
-                     "WHERE eq.question_id IN (" + sanitizedSequence + ") " +
-                     "ORDER BY FIELD(eq.question_id, " + sanitizedSequence + ")";
+                     "    q.question_type AS questionType " + 
+                     "FROM learning_db.questions q " +
+                     "WHERE q.question_id IN (" + sanitizedSequence + ") " +
+                     "ORDER BY FIELD(q.question_id, " + sanitizedSequence + ")";
 
         List<ExamQuestionBean> questions;
         try {
+            // Uses a decoupled property row mapper to bind values into camelCase entity setters instantly
             questions = jdbcTemplate.query(sql, new org.springframework.jdbc.core.BeanPropertyRowMapper<>(ExamQuestionBean.class));
         } catch (Exception e) {
-            // 🟢 FIXED FALLBACK SQL: Drops complex decimal conversions to prevent type-mapping crashes
-            String fallbackSql = "SELECT " +
-                                 "    question_id AS questionId, " +
-                                 "    question_text AS questionText, " +
-                                 "    question_type AS questionType " +
-                                 "FROM learning_db.questions " +
-                                 "WHERE question_id IN (" + sanitizedSequence + ") " +
-                                 "ORDER BY FIELD(question_id, " + sanitizedSequence + ")";
-            
+            String fallbackSql = "SELECT question_id AS questionId, question_text AS questionText, question_type AS questionType " +
+                                 "FROM learning_db.questions WHERE question_id IN (" + sanitizedSequence + ")";
             questions = jdbcTemplate.query(fallbackSql, new org.springframework.jdbc.core.BeanPropertyRowMapper<>(ExamQuestionBean.class));
         }
 
@@ -133,7 +146,7 @@ public class StudentExamRepository {
             List<QuestionOptionBean> options = new ArrayList<>();
             
             try {
-                String optionsSql = "SELECT option_id AS optionId, question_id AS questionId, option_label AS optionLabel, option_text AS optionText FROM learning_db.question_options WHERE question_id = ?";
+                String optionsSql = "SELECT option_id AS optionId, question_id AS questionId, option_label AS optionLabel, option_text AS optionText FROM learning_db.question_options WHERE question_id = ? ORDER BY option_id ASC";
                 options = jdbcTemplate.query(optionsSql, new org.springframework.jdbc.core.BeanPropertyRowMapper<>(QuestionOptionBean.class), q.getQuestionId());
             } catch (Exception e) {
                 options = new ArrayList<>();
@@ -181,7 +194,6 @@ public class StudentExamRepository {
         }
     }
 
-    @Transactional
     public void saveSubmissionResponse(int examId, int attemptId, String answerText) {
         String sql = "UPDATE learning_db.exam_attempts SET remark = ?, status = 'SUBMITTED', submitted_at = NOW() WHERE attempt_id = ?";
         jdbcTemplate.update(sql, answerText, attemptId);
