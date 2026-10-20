@@ -1,4 +1,4 @@
-package com.Learning_Managnment_System.JWD_70_lms.config;
+package com.Learning_Managnment_System.JWD_70_lms.Config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
