@@ -2,7 +2,6 @@ package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +28,6 @@ public class Admin_Controller {
         return "dashboard";
     }
 
-    // 🟢 Fix: Added missing mapping for /admin/users to display in dashboard.html
     @GetMapping("/users")
     public String listUsers(Model model) {
         List<AdminUserBean> users = adminRepository.getAllUsers();
@@ -41,87 +39,10 @@ public class Admin_Controller {
     public String searchUsers(
             @RequestParam("keyword") String keyword,
             Model model) {
-
-        try {
-
-            boolean isNew =
-                    category.getCategory_id() == null
-                    || category.getCategory_id() <= 0;
-
-            if (isNew) {
-
-                int newId =
-                        adminRepository.saveCategory(category);
-
-                redirectAttributes.addFlashAttribute(
-                        "activeId", newId
-                );
-
-                redirectAttributes.addFlashAttribute(
-                        "actionType", "NEW"
-                );
-
-                redirectAttributes.addFlashAttribute(
-                        "successMessage",
-                        "Category created successfully."
-                );
-
-            } else {
-
-                adminRepository.updateCategory(category);
-
-                redirectAttributes.addFlashAttribute(
-                        "activeId",
-                        category.getCategory_id()
-                );
-
-                redirectAttributes.addFlashAttribute(
-                        "actionType", "EDITED"
-                );
-
-                redirectAttributes.addFlashAttribute(
-                        "successMessage",
-                        "Category updated successfully."
-                );
-            }
-
-            return "redirect:/admin/categories/list";
-
-        } catch (DuplicateKeyException e) {
-
-            model.addAttribute(
-                    "errorMessage",
-                    "The category name or slug already exists."
-            );
-
-            model.addAttribute(
-                    "parentCategories",
-                    adminRepository.getAllCategories()
-            );
-
-            return "category-form";
-        }
-    }
-
-    // =========================================
-    // EDIT CATEGORY
-    // URL: /admin/categories/edit/{id}
-    // =========================================
-    @GetMapping("/categories/edit/{id}")
-    public String showEditForm(
-            @PathVariable("id") Integer id,
-            Model model) {
-
-        AdminBean_category category =
-                adminRepository.getCategoryById(id);
-
-        if (category == null) {
-            return "redirect:/admin/categories/list";
-        }
-
-        model.addAttribute("category", category);
-
-        return "dashboard"; // 👈 users အစား dashboard သို့ ပြန်ညွှန်းရန်
+        List<AdminUserBean> users = adminRepository.searchUsers(keyword);
+        model.addAttribute("users", users);
+        model.addAttribute("keyword", keyword);
+        return "users";
     }
 
     @GetMapping("/users/add")
@@ -139,11 +60,6 @@ public class Admin_Controller {
             redirectAttributes.addFlashAttribute("error", "Full name is required.");
             return "redirect:/admin/users/add";
         }
-
-        redirectAttributes.addFlashAttribute(
-                "successMessage",
-                "Category deleted successfully."
-        );
 
         if (user.getPassword_hash() == null || user.getPassword_hash().trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Password is required.");

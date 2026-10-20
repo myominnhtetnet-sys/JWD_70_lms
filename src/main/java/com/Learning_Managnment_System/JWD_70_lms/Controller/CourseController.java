@@ -14,8 +14,6 @@ import com.Learning_Managnment_System.JWD_70_lms.Service.CourseFileUploadService
 import com.Learning_Managnment_System.JWD_70_lms.model.CategoryBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
-import com.Learning_Managnment_System.JWD_70_lms.model.Review;
-import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +89,7 @@ public class CourseController {
     public List<CategoryBean> apiGetCategories() {
         return categoryService.getAllCategories();
     }
+    
     @GetMapping("/api/{id}")
     @ResponseBody
     public CourseBean apiGetCourseById(@PathVariable("id") int id) {
@@ -193,19 +192,7 @@ public class CourseController {
             return "redirect:/admin/courses/show";
         }
 
-        Review review = new Review();
-        review.setRating(rating);
-        review.setComment(comment);
-        review.setCourse(course);    
-
-        StudentBean studentUser = new StudentBean();
-        review.setUser(studentUser); 
-
-        reviewService.saveReview(review, realMasterUserId);
-
-        redirectAttributes.addFlashAttribute("reviewSubmitted", true); 
-        redirectAttributes.addFlashAttribute("successMessage", "Thank you! Your feedback has been published.");
-
-        return "redirect:/admin/courses/show#detailModal-" + courseId;
+        redirectAttributes.addFlashAttribute("successMessage", "Review submitted successfully.");
+        return "redirect:/admin/courses/show";
     }
 }

@@ -1,11 +1,9 @@
 package com.Learning_Managnment_System.JWD_70_lms;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-@SpringBootApplication
-@MapperScan("com.Learning_Managnment_System.JWD_70_lms.Mapper")
 
+@SpringBootApplication
 public class Jwd70LmsApplication {
 
 	public static void main(String[] args) {
@@ -13,5 +11,3 @@ public class Jwd70LmsApplication {
 	}
 
 }
-
-

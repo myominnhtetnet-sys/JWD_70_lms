@@ -15,7 +15,6 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // FIXED: Added '**' so files inside these folders are properly matched
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**", "/webfonts/**", "/uploads/**", "/favicon.ico").permitAll()
                 .anyRequest().permitAll()
             )

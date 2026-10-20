@@ -6,21 +6,16 @@
 
 <div id="app" class="min-h-screen flex flex-col">
 
-    <!-- =====================================================
-         HEADER
-         ===================================================== -->
-    <div th:replace="~{header :: header}"></div>
+  <!-- TOP HEADER BAR -->
+        <div th:replace="~{header :: header}"></div>
 
-    <!-- =====================================================
-         MAIN APPLICATION AREA
-         ===================================================== -->
-    <div class="flex-1 flex overflow-hidden">
+        <!-- MAIN APP CONTENT AREA -->
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- DYNAMIC SIDEBAR -->
+            <div th:replace="~{nav :: nav}"></div>
 
-        <!-- =================================================
-             SIDEBAR (STANDARDIZED ADMIN MENU)
-             ================================================= -->
-        <aside id="sidebar"
-               class="w-64 bg-[#0f172a] text-slate-300 flex-shrink-0 flex flex-col justify-between sticky top-0 h-screen text-sm font-medium transition-all duration-300">
+             <div  class="w-64 bg-[#0f172a] text-slate-300 flex-shrink-0 flex flex-col justify-between sticky top-0 h-screen text-sm font-medium transition-all duration-300">
 
                         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
                             <div class="flex items-center justify-between">
@@ -666,7 +661,7 @@
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-slate-900">
             <div id="view-admin" class="role-view">
                 <div th:replace="~{admin :: admin}"></div>
-            </div>
+            </div>  
             <div id="view-teacher" class="role-view hidden">
                 <div th:replace="~{teacher :: teacher}"></div>
             </div>
