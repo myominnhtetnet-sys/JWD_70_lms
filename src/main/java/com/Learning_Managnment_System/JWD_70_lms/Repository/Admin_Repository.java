@@ -3,6 +3,8 @@ package com.Learning_Managnment_System.JWD_70_lms.Repository;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -56,28 +58,17 @@ public class Admin_Repository {
         return jdbcTemplate.query(sql, userMapper, search, search, search, search, search);
     }
 
-    // 3. GET USER BY ID
-    public AdminUserBean getUserById(int userId) {
-        String sql = """
-            SELECT
-                u.user_id, u.role_id, u.full_name, u.email, u.phone,
-                u.password_hash, u.dob, u.gender, u.address, r.role_name,
-                u.status, u.created_at, u.updated_at
-            FROM users u
-            JOIN roles r ON u.role_id = r.role_id
-            WHERE u.user_id = ? AND u.deleted_at IS NULL
-            """;
+    public int saveCategory(AdminBean_category category) {
+        String sql = "INSERT INTO categories (parent_id, name, slug, description, is_active, created_at, updated_at) " +
+                     "VALUES (?, ?, ?, ?, ?, NOW(), NOW())";
 
         List<AdminUserBean> users = jdbcTemplate.query(sql, userMapper, userId);
         return users.isEmpty() ? null : users.get(0);
     }
 
-    // 4. CHECK EMAIL EXISTS
-    public boolean emailExists(String email) {
-        String sql = "SELECT COUNT(*) FROM users WHERE email = ? AND deleted_at IS NULL";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
-        return count != null && count > 0;
-    }
+    public int updateCategory(AdminBean_category category) {
+        String sql = "UPDATE categories SET parent_id = ?, name = ?, slug = ?, description = ?, is_active = ?, updated_at = NOW() " +
+                     "WHERE category_id = ?";
 
     // 5. CHECK EMAIL EXISTS FOR OTHER USER
     public boolean emailExistsForOtherUser(String email, int userId) {

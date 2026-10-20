@@ -2,13 +2,10 @@ package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.Admin_Repository;
 import com.Learning_Managnment_System.JWD_70_lms.model.AdminUserBean;
@@ -45,16 +42,84 @@ public class Admin_Controller {
             @RequestParam("keyword") String keyword,
             Model model) {
 
-        List<AdminUserBean> users;
+        try {
 
-        if (keyword == null || keyword.trim().isEmpty()) {
-            users = adminRepository.getAllUsers();
-        } else {
-            users = adminRepository.searchUsers(keyword);
+            boolean isNew =
+                    category.getCategory_id() == null
+                    || category.getCategory_id() <= 0;
+
+            if (isNew) {
+
+                int newId =
+                        adminRepository.saveCategory(category);
+
+                redirectAttributes.addFlashAttribute(
+                        "activeId", newId
+                );
+
+                redirectAttributes.addFlashAttribute(
+                        "actionType", "NEW"
+                );
+
+                redirectAttributes.addFlashAttribute(
+                        "successMessage",
+                        "Category created successfully."
+                );
+
+            } else {
+
+                adminRepository.updateCategory(category);
+
+                redirectAttributes.addFlashAttribute(
+                        "activeId",
+                        category.getCategory_id()
+                );
+
+                redirectAttributes.addFlashAttribute(
+                        "actionType", "EDITED"
+                );
+
+                redirectAttributes.addFlashAttribute(
+                        "successMessage",
+                        "Category updated successfully."
+                );
+            }
+
+            return "redirect:/admin/categories/list";
+
+        } catch (DuplicateKeyException e) {
+
+            model.addAttribute(
+                    "errorMessage",
+                    "The category name or slug already exists."
+            );
+
+            model.addAttribute(
+                    "parentCategories",
+                    adminRepository.getAllCategories()
+            );
+
+            return "category-form";
+        }
+    }
+
+    // =========================================
+    // EDIT CATEGORY
+    // URL: /admin/categories/edit/{id}
+    // =========================================
+    @GetMapping("/categories/edit/{id}")
+    public String showEditForm(
+            @PathVariable("id") Integer id,
+            Model model) {
+
+        AdminBean_category category =
+                adminRepository.getCategoryById(id);
+
+        if (category == null) {
+            return "redirect:/admin/categories/list";
         }
 
-        model.addAttribute("users", users);
-        model.addAttribute("keyword", keyword);
+        model.addAttribute("category", category);
 
         return "dashboard"; // 👈 users အစား dashboard သို့ ပြန်ညွှန်းရန်
     }
@@ -75,10 +140,10 @@ public class Admin_Controller {
             return "redirect:/admin/users/add";
         }
 
-        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Email is required.");
-            return "redirect:/admin/users/add";
-        }
+        redirectAttributes.addFlashAttribute(
+                "successMessage",
+                "Category deleted successfully."
+        );
 
         if (user.getPassword_hash() == null || user.getPassword_hash().trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Password is required.");
