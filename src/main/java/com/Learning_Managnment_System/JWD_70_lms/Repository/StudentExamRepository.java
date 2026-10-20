@@ -2,7 +2,6 @@ package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -91,45 +90,62 @@ public class StudentExamRepository {
         return jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", (rs, rowNum) -> rs.getInt(1));
     }
 
-    public List<ExamQuestionBean> findQuestionsBySequence(String queryIds) {
-        if (queryIds == null || queryIds.trim().isEmpty()) return new ArrayList<>();
-        
-        String sql = """
-                SELECT 
-                    eq.question_id, 
-                    q.question_text, 
-                    q.question_type, 
-                    eq.mark 
-                FROM learning_db.exam_questions eq
-                JOIN learning_db.questions q ON eq.question_id = q.question_id
-                WHERE eq.question_id IN (""" + queryIds + ") ORDER BY eq.sort_order ASC";
-        
-        List<ExamQuestionBean> questions = jdbcTemplate.query(sql, new ExamQuestionRowMapper());
-        
+    public List<ExamQuestionBean> findQuestionsBySequence(String sequence) {
+        if (sequence == null || sequence.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Clean out any malicious character inputs to protect from SQL injection risks
+        String sanitizedSequence = sequence.replaceAll("[^0-9,]", "");
+        if (sanitizedSequence.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Main Query: Joins the relational structure using standard aliases
+        String sql = "SELECT " +
+                     "    q.question_id AS questionId, " +
+                     "    q.question_text AS questionText, " +
+                     "    q.question_type AS questionType, " +
+                     "    eq.mark AS questionMark " +
+                     "FROM learning_db.exam_questions eq " +
+                     "JOIN learning_db.questions q ON eq.question_id = q.question_id " +
+                     "WHERE eq.question_id IN (" + sanitizedSequence + ") " +
+                     "ORDER BY FIELD(eq.question_id, " + sanitizedSequence + ")";
+
+        List<ExamQuestionBean> questions;
+        try {
+            questions = jdbcTemplate.query(sql, new org.springframework.jdbc.core.BeanPropertyRowMapper<>(ExamQuestionBean.class));
+        } catch (Exception e) {
+            // 🟢 FIXED FALLBACK SQL: Drops complex decimal conversions to prevent type-mapping crashes
+            String fallbackSql = "SELECT " +
+                                 "    question_id AS questionId, " +
+                                 "    question_text AS questionText, " +
+                                 "    question_type AS questionType " +
+                                 "FROM learning_db.questions " +
+                                 "WHERE question_id IN (" + sanitizedSequence + ") " +
+                                 "ORDER BY FIELD(question_id, " + sanitizedSequence + ")";
+            
+            questions = jdbcTemplate.query(fallbackSql, new org.springframework.jdbc.core.BeanPropertyRowMapper<>(ExamQuestionBean.class));
+        }
+
+        // Hydration Cycle: Append child options lists arrays for each question entry dynamically
         for (ExamQuestionBean q : questions) {
             List<QuestionOptionBean> options = new ArrayList<>();
             
             try {
-                String optionsSql = "SELECT option_id, question_id, option_label, option_text FROM learning_db.question_options WHERE question_id = ?";
-                options = jdbcTemplate.query(optionsSql, (rs, rowNum) -> {
-                    QuestionOptionBean opt = new QuestionOptionBean();
-                    opt.setOptionId(rs.getInt("option_id"));
-                    opt.setQuestionId(rs.getInt("question_id"));
-                    opt.setOptionLabel(rs.getString("option_label"));
-                    opt.setOptionText(rs.getString("option_text"));
-                    return opt;
-                }, q.getQuestionId());
+                String optionsSql = "SELECT option_id AS optionId, question_id AS questionId, option_label AS optionLabel, option_text AS optionText FROM learning_db.question_options WHERE question_id = ?";
+                options = jdbcTemplate.query(optionsSql, new org.springframework.jdbc.core.BeanPropertyRowMapper<>(QuestionOptionBean.class), q.getQuestionId());
             } catch (Exception e) {
                 options = new ArrayList<>();
             }
             
-            // 🟢 TRUE/FALSE SYSTEM SAFEGUARD: Automatically generates option buttons if table lines are blank
+            // TRUE/FALSE SYSTEM SAFEGUARD: Automatically generates option buttons if table lines are blank
             if ("TRUE_FALSE".equals(q.getQuestionType()) && options.isEmpty()) {
                 String[] tfTexts = {"True", "False"};
                 String[] tfLabels = {"A", "B"};
                 for (int i = 0; i < 2; i++) {
                     QuestionOptionBean tfOpt = new QuestionOptionBean();
-                    tfOpt.setOptionId(i + 1); // Generates standard optionId tokens (1 and 2)
+                    tfOpt.setOptionId(i + 1); 
                     tfOpt.setQuestionId(q.getQuestionId());
                     tfOpt.setOptionLabel(tfLabels[i]);
                     tfOpt.setOptionText(tfTexts[i]);
@@ -141,12 +157,6 @@ public class StudentExamRepository {
         }
         
         return questions;
-    }
-
-    @Transactional
-    public void saveSubmissionResponse(int examId, int attemptId, String answerText) {
-        String sql = "UPDATE learning_db.exam_attempts SET remark = ?, status = 'SUBMITTED', submitted_at = NOW() WHERE attempt_id = ?";
-        jdbcTemplate.update(sql, answerText, attemptId);
     }
 
     public ExamAttemptBean findAttemptResultSummary(int attemptId) {
@@ -169,5 +179,11 @@ public class StudentExamRepository {
             fallback.setPass_mark(java.math.BigDecimal.valueOf(50.00));
             return fallback;
         }
+    }
+
+    @Transactional
+    public void saveSubmissionResponse(int examId, int attemptId, String answerText) {
+        String sql = "UPDATE learning_db.exam_attempts SET remark = ?, status = 'SUBMITTED', submitted_at = NOW() WHERE attempt_id = ?";
+        jdbcTemplate.update(sql, answerText, attemptId);
     }
 }
