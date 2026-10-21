@@ -150,6 +150,14 @@ public class ExamService {
 		return questionRepository.findAll();
 	}
 
+	public List<QuestionBean> getQuestionBankByCourse(Long courseId) {
+
+	    if (courseId == null) {
+	        throw new IllegalArgumentException("Course ID is required.");
+	    }
+
+	    return questionRepository.findActiveByCourseId(courseId);
+	}
 	@Transactional
 	public void saveSelectedQuestions(Long examId,
 	        List<Long> questionIds, List<String> marks) {
@@ -288,4 +296,35 @@ public class ExamService {
 	        throw new IllegalArgumentException("Exam update failed.");
 	    }
 	}
+	private void validateQuestionBelongsToExam(
+	        Long examId, Long questionId) {
+
+	    ExamBean exam = getExamById(examId);
+
+	    QuestionBean question =
+	            questionRepository.getQuestionById(questionId);
+
+	    if (question == null) {
+	        throw new IllegalArgumentException(
+	                "Question not found: " + questionId);
+	    }
+
+	    if (!exam.getCourseId().equals(question.getCourseId())) {
+	        throw new IllegalArgumentException(
+	                "This question does not belong to the exam course.");
+	    }
+
+	    if (!Boolean.TRUE.equals(question.getIsActive())) {
+	        throw new IllegalArgumentException(
+	                "This question is inactive.");
+	    }
+	}
+	
+//	public List<QuestionBean> getQuestionBankByCourse(Long courseId) {
+//	    if (courseId == null) {
+//	        throw new IllegalArgumentException("Course ID is required.");
+//	    }
+//
+//	    return questionRepository.findActiveByCourseId(courseId);
+//	}
 }

@@ -37,10 +37,12 @@
                             <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
                                 <i class="fa-solid fa-border-all text-base"></i> Dashboard
                             </a>
-                            <!-- Certificates Link (Corrected path) -->
-                            <a th:href="@{/student/certificate}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
-                                <i class="fa-solid fa-award text-base"></i> Certificates
-                            </a>
+                            
+							<a th:href="@{/student/awards}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+							    <i class="fa-solid fa-graduation-cap text-base"></i>
+							    <span>Grades & Certificates</span>
+							</a>
+
                         </div>
                     </div>
 

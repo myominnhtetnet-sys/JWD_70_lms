@@ -1,7 +1,7 @@
 
 /*<![CDATA[*/
 // State Management
-let currentRole = 'admin';
+let currentRole = 'teacher';
 
 // Mock Data
 let usersData = [
@@ -53,8 +53,15 @@ const navMenus = {
 	    { icon: 'fa-house', label: 'Dashboard', path: '/teacher/dashboard' },
 	    { icon: 'fa-book-open', label: 'My Courses', path: '/teacher/courses' },
 	    { icon: 'fa-users', label: 'My Batches', path: '/teacher/batches' },
-	    { icon: 'fa-calendar-check', label: 'Take Attendance', path: '/teacher/attendance' }
+	    { icon: 'fa-calendar-check', label: 'Take Attendance', path: '/teacher/attendance' },
+		{ icon: 'fa-database', label: 'Question Bank', path: '/teacher/question-list' },
+		{ icon: 'fa-clipboard-list', label: 'Assignments', path: '/teacher/assignments' },
+		{ icon: 'fa-file-pen', label: 'Grade Submissions', path: '/teacher/submissions' },
+		{ icon: 'fa-file-circle-question', label: 'Exams', path: '/teacher/exams' },
+		{ icon: 'fa-square-poll-vertical', label: 'Exam Results', path: '/teacher/exam-results' },
+		{ icon: 'fa-award', label: 'Final Grades', path: '/teacher/final-grade' }	
 	],
+	
 	student: [
 		{ icon: 'fa-compass', label: 'Dashboard', active: true },
 		{ icon: 'fa-book-bookmark', label: 'My Courses' },
@@ -74,22 +81,12 @@ const profiles = {
 
 // Initialize App
 window.onload = function() {
-    // Dynamically set the role view based on the session roleId passed from Spring Boot
-    let roleId = "[[${session.roleId!= null ? session.roleId : 1}]]";
-    if (roleId == "2") {
-        switchRole('teacher');
-    } else if (roleId == "3") {
-        switchRole('student');
-    } else {
-        switchRole('admin');
-    }
-	// Only run if elements exist on the current view
-	    if (document.getElementById('userTableBody')) renderUserTable();
-	    if (document.getElementById('grading-queue-list')) renderTeacherGradingQueue();
-	    if (document.getElementById('student-courses-container')) renderStudentViews();
-	    if (document.getElementById('adminEnrollmentChart')) initCharts();
-	};
-
+	switchRole('teacher');
+	renderUserTable();
+	renderTeacherGradingQueue();
+	renderStudentViews();
+	initCharts();
+};
 
 // Role Switching Logic
 function switchRole(role) {
@@ -168,6 +165,12 @@ function renderSidebar(role) {
 				           window.location.href = item.path;
 				           return;
 				   }
+				//
+				if(item.label == "Grade Submissions"){
+					window.location.href = '/teacher/submissions';
+					return;
+				}
+
 				   
 			    setActiveNavItem(navItem);
 			    showToast(`Navigated to ${item.label}`);

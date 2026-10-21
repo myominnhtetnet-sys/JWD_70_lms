@@ -13,21 +13,35 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // 1. Disable CSRF to allow your raw HTML Thymeleaf POST forms to submit data safely
             .csrf(csrf -> csrf.disable())
             
-            // 2. 🟢 THE FIX: Permitt all web request routing entry points so your custom handlers function
             .authorizeHttpRequests(auth -> auth
+                // 🟢 FIXED: Removed all overlapping multi-wildcard paths (like /**/css/**).
+                // Flat, standard root-relative strings allow the modern parser to boot successfully!
+                .requestMatchers(
+                    "/css/**", "/js/**", "/images/**", "/assets/**", 
+                    "/webfonts/**", "/uploads/**", "/favicon.ico"
+                ).permitAll()
                 .anyRequest().permitAll()
             )
             
-            // 3. 🟢 THE FIX: Explicitly turn off Spring Security's built-in default form login overlay
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
             
-            // 4. Keep your iframe options unblocked so YouTube videos play cleanly without connection errors
             .headers(headers -> headers
                 .frameOptions(frameOptions -> frameOptions.sameOrigin())
+                // Content Security Policy unblocks third-party script and grid layouts safely
+                .contentSecurityPolicy(csp -> csp.policyDirectives(
+                    "default-src 'self'; " +
+                    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.tailwindcss.com https://*.jsdelivr.net; " +
+                    "script-src-elem 'self' 'unsafe-inline' https://*.tailwindcss.com https://*.jsdelivr.net; " +
+                    "style-src 'self' 'unsafe-inline' https://*.cloudflare.com https://*.googleapis.com https://*.jsdelivr.net; " +
+                    "font-src 'self' data: https://*.cloudflare.com https://*.gstatic.com; " +
+                    "img-src 'self' data: https://*; " +
+                    "media-src 'self' https://*.youtube.com https://*.vimeo.com https://*; " +
+                    "frame-src 'self' https://*.youtube.com https://*.vimeo.com; " +
+                    "worker-src 'self' blob:;"
+                ))
             );
             
         return http.build();

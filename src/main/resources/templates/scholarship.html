@@ -112,17 +112,26 @@
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 <tr th:each="sch : ${scholarships}" class="hover:bg-slate-50/80 transition">
-                                    <td class="p-3.5 font-semibold text-slate-900" th:text="${sch.title}">IT Excellence Scholarship</td>
+                                    <!-- Changed from sch.title to sch.programName -->
+                                    <td class="p-3.5 font-semibold text-slate-900" th:text="${sch.programName}">IT Excellence Scholarship</td>
+                                    
+                                    <!-- Changed from sch.appliedDate to sch.appliedDate -->
                                     <td class="p-3.5 text-slate-500" th:text="${sch.appliedDate}">2026-03-15</td>
-                                    <td class="p-3.5 font-semibold text-indigo-600" th:text="${sch.discountPercentage + '%'}">50%</td>
+                                    
+                                    <!-- Changed from sch.discountPercentage to sch.discountPercent -->
+                                    <td class="p-3.5 font-semibold text-indigo-600" th:text="${sch.discountPercent + '%'}">50%</td>
+                                    
                                     <td class="p-3.5">
                                         <span th:text="${sch.status}" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700">
                                             Pending
                                         </span>
                                     </td>
                                     <td class="p-3.5 text-right">
-                                        <button class="text-xs px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition">View Details</button>
-                                    </td>
+    <a th:href="@{/student/scholarship/details/{id}(id=${sch.applicationId})}" 
+       class="text-xs px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition inline-block">
+       View Details
+    </a>
+</td>
                                 </tr>
                                 
                                 <!-- Empty State -->

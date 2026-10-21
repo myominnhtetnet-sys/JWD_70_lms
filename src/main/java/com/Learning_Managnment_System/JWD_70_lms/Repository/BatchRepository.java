@@ -21,7 +21,7 @@ public class BatchRepository {
 
     public List<BatchBean> findAll() {
 
-        String sql = "SELECT * FROM lms_db.batches ORDER BY batch_id";
+        String sql = "SELECT * FROM learning_db.batches ORDER BY batch_id";
            
 
         List<BatchBean> batches =jdbcTemplate.query(sql,new BatchRowMapper());
@@ -30,7 +30,7 @@ public class BatchRepository {
     }
     
     public Optional<BatchBean> findById(Integer id) {
-        String sql = "SELECT * FROM lms_db.batches where batch_id = ?";
+        String sql = "SELECT * FROM learning_db.batches where batch_id = ?";
 
         List<BatchBean> batches = jdbcTemplate.query(sql, new BatchRowMapper(), id);
         return batches.stream().findFirst();

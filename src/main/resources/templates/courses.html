@@ -1,10 +1,101 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Catalog Management</title>
+
+    <!-- Global System Typography Engine Lookups -->
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icon Asset Libraries -->
+    <link rel="stylesheet" href="https://cloudflare.com" crossorigin="anonymous">
+
+    <!-- Your Custom CSS Stylesheet Assets -->
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 30px; background-color: #f4f6f9; color: #333; }
-        h2 { color: #2c3e50; margin-bottom: 20px; }
+        body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0 0 40px 0; background-color: #f4f6f9; color: #333; }
+        .main-content-container { padding: 32px 24px; max-width: 1300px; margin: 0 auto; box-sizing: border-box; }
+
+        /* Scoped Parent Overrides: Left-Aligned Ultra-Modern Black Navbar */
+        nav.navbar {
+            background-color: #000000 !important;
+            border-bottom: 1px solid #1e293b !important;
+            padding: 14px 24px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 1030 !important;
+            box-sizing: border-box !important;
+        }
+        nav.navbar .container-fluid {
+            display: flex !important;
+            width: 100% !important;
+            max-width: 1250px !important;
+            margin: 0 auto !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+        nav.navbar .navbar-brand {
+            font-size: 22px !important;
+            font-weight: 800 !important;
+            color: #3b82f6 !important;
+            text-decoration: none !important;
+            margin-right: 32px !important;
+        }
+        nav.navbar .collapse {
+            display: flex !important;
+            flex-grow: 1 !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+        nav.navbar .navbar-nav {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 24px !important;
+            margin: 0 auto 0 0 !important; /* Pulls Home and Courses link next to logo */
+            padding: 0 !important;
+            list-style: none !important;
+        }
+        nav.navbar .nav-link {
+            color: #94a3b8 !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+        }
+        nav.navbar .nav-link:hover, nav.navbar .nav-link.active {
+            color: #ffffff !important;
+        }
+        nav.navbar .d-flex.gap-2 {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            margin-left: auto !important;
+        }
+        nav.navbar .btn {
+            height: 36px !important;
+            padding: 0 16px !important;
+            border-radius: 8px !important;
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            box-sizing: border-box !important;
+        }
+        nav.navbar .btn-outline-light { color: #f8fafc !important; border: 1px solid #cbd5e1 !important; }
+        nav.navbar .btn-outline-light:hover { background-color: #f8fafc !important; color: #0f172a !important; }
+        nav.navbar .btn-warning { background-color: #f59e0b !important; border: 1px solid #f59e0b !important; color: #0f172a !important; }
+        nav.navbar .btn-warning:hover { background-color: #d97706 !important; }
+
+        
      /* Ultra-Modern Minimalist Filter Bar */
 .filter-container { 
     background: #ffffff;
@@ -372,119 +463,20 @@
     cursor: pointer;
 }
 
-/* Modal Mask Background Layout overlay */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(4px);
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Clicking target activates modal view layer visibility */
-.modal-overlay:target {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-/* Modal Inner Wrapper Panel */
-.modal-content {
-    background: #ffffff;
-    width: 90%;
-    max-width: 680px;
-    border-radius: 16px;
-    padding: 28px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    position: relative;
-    transform: translateY(20px);
-    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    max-height: 85vh;
-    overflow-y: auto;
-}
-
-.modal-overlay:target .modal-content {
-    transform: translateY(0);
-}
-
-/* Transparent close click target filling background behind modal box container */
-.modal-close-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    cursor: default;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    border-bottom: 1px solid #f1f5f9;
-    padding-bottom: 16px;
-    margin-bottom: 20px;
-}
-
-.modal-close-btn {
-    text-decoration: none;
-    color: #94a3b8;
-    font-size: 28px;
-    line-height: 20px;
-    transition: color 0.15s;
-}
-
-.modal-close-btn:hover {
-    color: #0f172a;
-}
-
-/* Pure CSS HTML Radio Tab Selection Navigation Matrices */
-.modal-tabs {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.tab-radio {
-    display: none;
-}
-
-.tab-label {
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 13.5px;
-    font-weight: 600;
-    color: #64748b;
-    border-bottom: 2px solid transparent;
-    transition: all 0.15s ease;
-}
-
-.tab-panel {
-    width: 100%;
-    padding-top: 20px;
-    display: none;
-    order: 99; /* Forces all panel contents below tab selectors row */
-    font-size: 14.5px;
-    line-height: 1.6;
-    color: #334155;
-}
-
-/* Active tab CSS bindings */
-.tab-radio:checked + .tab-label {
-    color: #0f172a;
-    border-bottom-color: #0f172a;
-}
-
-.tab-radio:checked + .tab-label + .tab-panel {
-    display: block;
-}
+   /* Pure CSS Dynamic Modal Rules */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.6); z-index: 9999; display: none; align-items: center; justify-content: center; }
+        .modal-overlay:target { display: flex !important; }
+        .modal-close-backdrop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: default; z-index: 1; }
+        .modal-content { background: #ffffff; border-radius: 16px; padding: 24px; width: 90%; max-width: 680px; position: relative; z-index: 10; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px; margin-bottom: 20px; }
+        .modal-close-btn { font-size: 28px; color: #94a3b8; text-decoration: none; line-height: 1; }
+        .modal-tabs { display: flex; flex-wrap: wrap; position: relative; width: 100%; }
+        .tab-radio { display: none; }
+        .tab-label { padding: 8px 16px; font-size: 14px; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; order: 1; }
+        .tab-panel { display: none; width: 100%; padding-top: 20px; order: 2; border-top: 1px solid #e2e8f0; }
+        .tab-radio:checked + .tab-label { color: #0f172a; border-bottom: 2px solid #3b82f6; }
+        .tab-radio:checked + .tab-label + .tab-panel { display: block; }
+   
 
 /* Extra tab panel sub-element styles */
 .nested-content-list {
@@ -620,27 +612,66 @@
 </head>
 <body>
 
-   <h2>Course Catalog</h2>
-
-<div class="filter-container">
-    <form th:action="@{/courses/show}" method="get" class="filter-form">
-        
-        <!-- Search Keyword -->
-        <div class="form-group search-main">
-            <label for="title">Course Title</label>
-            <div class="input-wrapper">
-                <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <input type="text" id="title" name="title" th:value="${param.title}" placeholder="Search key topics...">
+    
+    <!-- Navigation Bar Locked In Guest Black Mode -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow-sm">
+        <div class="container-fluid px-lg-5">
+            <a class="navbar-brand fw-bold text-primary fs-4" th:href="@{/}">
+                <i class="fa-solid fa-graduation-cap me-2 text-warning"></i>LMS
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/courses/show}">Courses</a></li>
+                </ul>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/login}" class="btn btn-outline-light fw-bold px-3"><i class="fa-solid fa-right-to-bracket me-1"></i> Login</a>
+                    <a th:href="@{/student/register}" class="btn btn-warning fw-bold px-3">Register</a>
+                </div>
             </div>
         </div>
+    </nav>
 
-        <!-- Level Option -->
-        <div class="form-group">
-            <label for="level">Level</label>
-            <div class="input-wrapper">
-                <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
-                <select id="level" name="level">
-                    <option value="">All Levels</option>
+    <!-- Main Dynamic Interface Workspace Canvas Container -->
+    <div class="main-content-container">
+            
+        <!-- Premium Minimalist SaaS Platform Heading Row -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 28px; width: 100%; flex-wrap: wrap; gap: 16px;">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="width: 8px; height: 8px; background-color: #3b82f6; border-radius: 50%; display: inline-block;"></span>
+                    <h2 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.025em;">Course Catalog</h2>
+                </div>
+                <p style="font-size: 13.5px; color: #64748b; margin: 0; line-height: 1.4; font-weight: 500;">
+                    Explore professional training paths to advance your engineering skills.
+                </p>
+            </div>
+            
+        </div>
+
+        <!-- ===================================================== -->
+        <!-- ORIGINAL MODERN STYLED FILTER CONTAINER ROW           -->
+        <!-- ===================================================== -->
+        <div class="filter-container">
+            <!-- 🟢 FLEXROW ALIGNMENT: Forces every field tag to align evenly on the horizontal axis -->
+            <form th:action="@{/courses/show}" method="get" class="filter-form" style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; width: 100%;">
+                
+                <!-- 1. Search Keyword -->
+                <div class="form-group search-main">
+                    <label for="title">Course Title</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input type="text" id="title" name="title" th:value="${param.title}" placeholder="Search key topics...">
+                    </div>
+                </div>
+
+                <!-- 2. Level Option Select -->
+                <div class="form-group">
+                    <label for="level">Level</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
+                        <select id="level" name="level">
+                            <option value="">All Levels</option>
                     <option value="BEGINNER" th:selected="${#strings.equals(param.level, 'BEGINNER')}">Beginner</option>
                     <option value="INTERMEDIATE" th:selected="${#strings.equals(param.level, 'INTERMEDIATE')}">Intermediate</option>
                     <option value="ADVANCED" th:selected="${#strings.equals(param.level, 'ADVANCED')}">Advanced</option>
@@ -964,51 +995,6 @@
     </ul>
 </div>
 
-
-                <!-- 2. Write a Review Form Submission Block Linked to Session User -->
-<!--<di v class="add-review-box" th:if="${session.currentUser != null}">
-    <h4 style="margin: 0 0 12px 0; font-size: 14px; color: #0f172a;">Share your feedback</h4>
-    
-    <form th:action="@{/courses/{id}/review(id=${course.course_id})}" method="POST" class="review-submit-form">
-        
-        Pass the logged-in User's ID implicitly
-        <input type="hidden" name="userId" th:value="${session.currentUser.user_id}">
-
-        <div class="review-form-row" style="align-items: center;">
-            Read-Only Username Visual Anchor Display
-            <div class="review-form-group" style="flex: 1;">
-                <label style="font-size: 11px; color:#64748b; margin-bottom: 4px; text-transform:none;">Reviewing as:</label>
-                <div style="font-size: 14px; font-weight: 600; color: #0f172a; padding: 6px 0;" 
-                     th:text="${session.currentUser.full_name}">Logged In User Name</div>
-            </div>
-            
-            Rating Selector Dropdown
-            <div class="review-form-group" style="width: 110px; flex: 0 0 auto;">
-                <label style="font-size: 11px; color:#64748b; margin-bottom: 4px; text-transform:none;">Rating:</label>
-                <select name="rating" required class="review-input-field select-rating">
-                    <option value="5">⭐⭐⭐⭐⭐</option>
-                    <option value="4">⭐⭐⭐⭐</option>
-                    <option value="3">⭐⭐⭐</option>
-                    <option value="2">⭐⭐</option>
-                    <option value="1">⭐</option>
-                </select>
-            </div>
-        </div>
-
-        Comment Textarea Input Area
-        <div class="review-form-group" style="margin-top: 10px;">
-            <textarea name="comment" rows="3" required placeholder="Write your review comments here..." class="review-input-field review-textarea"></textarea>
-        </div>
-
-        Action Button Submission Row
-        <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
-            <button type="submit" class="btn-submit-review">Submit Review</button>
-        </div>
-    </form>
-</div> -->
-
-
-
     </div>
 
 </div>
@@ -1052,6 +1038,66 @@
     </a>
     
 </div>
+<!-- ========================================================= -->
+<!-- PREMIUM MODERN CTA SECTION (Forces Full-Width Layout)     -->
+<!-- ========================================================= -->
+<section class="w-100 text-center" style="background-color: #090d16 !important; border-top: 1px solid #1e293b !important; padding: 64px 24px !important; box-sizing: border-box; margin-top: auto;">
+    <div style="max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+        
+        <!-- Sub-indicator Accent Badge -->
+        <div style="background-color: rgba(59, 130, 246, 0.1); color: #60a5fa; padding: 6px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
+            🚀 Expand Your Potential
+        </div>
+
+        <!-- SaaS Headline -->
+        <h2 style="color: #ffffff !important; font-size: 28px; font-weight: 800; letter-spacing: -0.025em; margin: 0; font-family: 'Inter', sans-serif;">
+            Ready to Start Learning?
+        </h2>
+
+        <!-- High-Contrast Balanced Paragraph -->
+        <p style="color: #94a3b8 !important; font-size: 14.5px; line-height: 1.6; margin: 0; font-weight: 500;">
+            Join our professional engineering community today and start master engineering concepts with practical training blocks.
+        </p>
+
+        <!-- Premium Frameless Call-To-Action Button Trigger Link -->
+        <div style="margin-top: 8px;">
+            <a th:href="@{/student/register}" 
+               class="btn btn-warning" 
+               style="background-color: #f59e0b !important; color: #020617 !important; font-size: 14px !important; font-weight: 700 !important; height: 44px; padding: 0 28px !important; border-radius: 10px !important; text-decoration: none !important; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none !important; transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2) !important;">
+                Get Started Instantly <i class="fa-solid fa-arrow-right" style="font-size: 12px;"></i>
+            </a>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ========================================================= -->
+<!-- PITCH BLACK MINIMALIST FOOTER SECTION                     -->
+<!-- ========================================================= -->
+<footer class="w-100" style="background-color: #020617 !important; border-top: 1px solid #1e293b !important; padding: 24px !important; box-sizing: border-box; margin: 0;">
+    <div style="max-width: 1250px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        
+        <!-- Copyright Core Signature -->
+        <p style="color: #64748b !important; font-size: 13px; margin: 0; font-weight: 500; letter-spacing: 0.01em;">
+            &copy; 2026 Learning Management System. All rights reserved.
+        </p>
+
+        <!-- Low-Profile Network Connectivity Diagnostic Badge -->
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="width: 6px; height: 6px; background-color: #10b981; border-radius: 50%; display: inline-block;"></span>
+            <span style="color: #475569 !important; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                Offline Storage Matrix Local Connected
+            </span>
+        </div>
+
+    </div>
+</footer>
+
+<!-- Framework Production Runtime Attachment Bundles -->
+<script th:src="@{/js/bootstrap.bundle.min.js}" src="/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}" src="/js/main.js"></script>
+
 
 
 </body>

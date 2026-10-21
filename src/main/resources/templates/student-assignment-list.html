@@ -1,531 +1,250 @@
 <!DOCTYPE html>
-<html xmlns:th="http://thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Assignments Workspace</title>
-    <!-- Keep your original style link for external layouts -->
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Student Assignments - LearnHub LMS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <style>
-        /* Modern Dashboard UI Styling Tokens */
-        :root {
-            --bg-main: #f8fafc;
-            --slate-900: #0f172a;
-            --slate-700: #334155;
-            --slate-400: #94a3b8;
-            --blue-600: #2563eb;
-            --blue-50: #eff6ff;
-            --emerald-600: #166534;
-            --emerald-50: #f0fdf4;
-            --amber-600: #b45309;
-            --amber-50: #fef3c7;
-            --border-color: #e2e8f0;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            color: var(--slate-900);
-            margin: 0;
-            padding: 0;
-        }
-
-        .dashboard-wrapper {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 24px;
-        }
-
-        .header-section {
-            margin-bottom: 32px;
-        }
-
-        .header-title {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--slate-900);
-            margin: 0 0 8px 0;
-            letter-spacing: -0.025em;
-        }
-
-        .header-subtitle {
-            font-size: 15px;
-            color: var(--slate-700);
-            margin: 0;
-        }
-
-        /* Top Summary Counters Panel */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-
-        .metric-card {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .metric-label {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--slate-400);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 4px;
-        }
-
-        .metric-value {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--slate-900);
-        }
-
-        /* Core Content Assignment Cards Grid */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 24px;
-        }
-
         .assignment-card {
             background: #ffffff;
             border-radius: 16px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             overflow: hidden;
         }
-
         .assignment-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
-
-        .card-header {
-            padding: 20px 20px 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        .batch-badge {
-            background: var(--blue-50);
-            color: var(--blue-600);
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 8px;
-            border-radius: 6px;
-            letter-spacing: 0.025em;
-        }
-
-        .status-badge-container {
-            flex-shrink: 0;
-        }
-
-        .badge-ui {
-            font-size: 11px;
-            font-weight: 800;
-            padding: 6px 10px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            display: inline-block;
-        }
-
-        .badge-pending { background: #f1f5f9; color: var(--slate-700); }
-        .badge-submitted { background: var(--emerald-50); color: var(--emerald-600); }
-        .badge-late { background: var(--amber-50); color: var(--amber-600); }
-
-        .card-body {
-            padding: 16px 20px;
-            flex-grow: 1;
-        }
-
-        .assignment-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--slate-900);
-            margin: 0 0 8px 0;
-            line-height: 1.4;
-        }
-
-        .assignment-desc {
-            font-size: 14px;
-            color: var(--slate-700);
-            margin: 0 0 16px 0;
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .meta-row {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            border-top: 1px solid #f1f5f9;
-            padding-top: 16px;
-        }
-
-        .meta-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .meta-label {
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--slate-400);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 2px;
-        }
-
-        .meta-value {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--slate-700);
-        }
-
-        .card-footer {
-            background: #fafafa;
-            padding: 16px 20px;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .btn-action {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 8px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: background-color 0.15s ease;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
-
-        .btn-turnin {
-            background: var(--blue-600);
-            color: #ffffff;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-turnin:hover {
-            background: #1d4ed8;
-        }
-
-        .btn-review {
-            background: var(--slate-900);
-            color: #ffffff;
-        }
-
-        .btn-review:hover {
-            background: #1e293b;
-        }
-
-        .empty-state-box {
-            grid-column: 1 / -1;
-            background: #ffffff;
-            border: 1px dashed var(--slate-400);
-            border-radius: 16px;
-            padding: 60px 24px;
-            text-align: center;
-            margin-top: 16px;
-        }
-
-        .alert {
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
-        .alert-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-        .alert-danger { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
-        
-              /* Sleek Modern Pagination Container */
-.pagination-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    margin: 40px 0 20px 0;
-    width: 100%;
-}
-
-/* Base Style for Interactive Pagination Controls */
-.pagination-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 38px;
-    height: 38px;
-    padding: 0 6px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #475569;
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    text-decoration: none;
-    transition: all 0.15s ease;
-    box-sizing: border-box;
-}
-
-/* Hover, Focus, Active Interaction System States */
-.pagination-link:hover:not(.disabled) {
-    background-color: #f1f5f9;
-    color: #0f172a;
-    border-color: #cbd5e0;
-}
-
-/* Active Highlight Style for Current Page */
-.pagination-link.active {
-    background-color: #0f172a;
-    color: #ffffff;
-    border-color: #0f172a;
-    cursor: default;
-}
-
-/* Immutable Disabled UI Control Layout state */
-.pagination-link.disabled {
-    color: #cbd5e0;
-    background-color: #f8fafc;
-    border-color: #e2e8f0;
-    cursor: not-allowed;
-    pointer-events: none;
-}
     </style>
 </head>
-<body>
+<body class="bg-slate-100 text-slate-800 antialiased font-sans">
 
-    <div class="dashboard-wrapper">
+    <div class="flex min-h-screen">
         
-        <!-- Header Summary Section -->
-        <div class="header-section">
-            <h1 class="header-title">My Assignment Space</h1>
-            <p class="header-subtitle">Track, manage, and turn in your coursework submissions.</p>
-        </div>
-
-        <!-- Feedback Messages Container -->
-        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
-
-        <!-- Metric Performance Grid Block Overview -->
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <span class="metric-label">Total Assigned</span>
-                <span class="metric-value" th:text="${assignments != null ? #lists.size(assignments) : 0}">0</span>
-            </div>
-            <div class="metric-card">
-                <span class="metric-label">Completed Tasks</span>
-                <span class="metric-value" th:text="${submittedAssignments != null ? #lists.size(submittedAssignments) : 0}">0</span>
-            </div>
-            <div class="metric-card">
-                <span class="metric-label">Late Submissions</span>
-                <span class="metric-value" th:text="${lateAssignments != null ? #lists.size(lateAssignments) : 0}">0</span>
-            </div>
-        </div>
-
-        <!-- ========================================================= -->
-<!-- 🎓 ULTRA-MODERN ASSIGNMENT FILTER SYSTEM BAR -->
-<!-- ========================================================= -->
-<div class="filter-container" style="background: #ffffff; padding: 16px 24px; border-radius: 14px; border: 1px solid #eef2f6; box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04); margin-bottom: 35px;">
-    <form th:action="@{/student/assignments}" method="get" class="filter-form" style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px; width: 100%;">
-        
-        <!-- Search Keyword Title Input -->
-        <div class="form-group search-main" style="display: flex; flex-direction: column; flex: 2 1 260px; position: relative;">
-            <label for="title" style="font-size: 11px; font-weight: 600; margin-bottom: 6px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; display: flex; align-items: center; gap: 4px;">
-                <svg class="input-icon" style="width: 15px; height: 15px; color: #94a3b8;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-                Assignment Title
-            </label>
-            <div class="input-wrapper">
-                <input type="text" id="title" name="title" th:value="${param.title}" placeholder="Search key assignment topics..." style="width: 100%; padding: 11px 14px 11px 38px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13.5px; font-weight: 500; background-color: #f8fafc; color: #1e293b; box-sizing: border-box;">
-            </div>
-        </div>
-
-        <!-- Submission Status Selection Option -->
-        <div class="form-group" style="display: flex; flex-direction: column; flex: 1 1 170px; position: relative;">
-            <label for="status" style="font-size: 11px; font-weight: 600; margin-bottom: 6px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; display: flex; align-items: center; gap: 4px;">
-                Submission Status
-            </label>
-            <div class="input-wrapper">
-                <select id="status" name="status" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13.5px; font-weight: 500; background-color: #f8fafc; color: #1e293b; box-sizing: border-box;">
-                    <option value="">All Statuses</option> 
-                    <option value="PENDING" th:selected="${param.status != null and param.status == 'PENDING'}">Pending</option>
-                    <option value="SUBMITTED" th:selected="${param.status != null and param.status == 'SUBMITTED'}">Submitted</option>
-                    <option value="LATE" th:selected="${param.status != null and param.status == 'LATE'}">Late</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Integrated Action Control Group Button Blocks -->
-        <div class="button-group" style="display: flex; align-items: center; gap: 8px; flex: 0 0 auto; margin-top: 30px;">
-            <a th:href="@{/student/assignments}" class="btn-reset" style="background-color: #f1f5f9; color: #475569; text-decoration: none; text-align: center; padding: 11px 18px; border-radius: 10px; font-size: 13.5px; font-weight: 600; border: 1px solid #e2e8f0;">Reset</a>
-            <button type="submit" class="btn-submit" style="background-color: #0f172a; color: #ffffff; border: none; padding: 11px 22px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13.5px; display: flex; align-items: center; gap: 6px;">Filter</button>
-        </div>
-        
-    </form>
-</div>
-        
-
-        <!-- Dynamic Content Layout Grid Framework -->
-        <div class="cards-grid">
-            
-            <!-- Dynamic Iterator Item Card -->
-            <div th:each="assignment : ${assignments}" class="assignment-card">
-                
-                <div class="card-header">
-                    <span class="batch-badge" th:text="${assignment.batchCode}">JV-01</span>
-                    <div class="status-badge-container" style="display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-    
-       <!-- 🟢 CONDITION A: STUDENT HAS TURNED IN THE ASSIGNMENT -->
-    <th:block th:if="${submittedAssignments != null and #lists.contains(submittedAssignments.![assignmentId], assignment.assignmentId)}">
-        
-        <!-- Base Submission Receipt Badge Tag -->
-        <span class="badge-ui" style="background-color: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-block; text-transform: uppercase;">
-            SUBMITTED
-        </span>
-
-        <!-- 🟢 INSERTED HERE: Checks your late list array and appends the red late submission tag on the fly -->
-        <span th:if="${lateAssignments != null and #lists.contains(lateAssignments.![assignmentId], assignment.assignmentId)}"
-              class="badge-ui" style="background-color: #fef2f2; color: #991b1b; border: 1px solid #fee2e2; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-block;">
-            LATE
-        </span>
-
-        
-        <!-- Loop over submitted tracking records to extract the exact grading status -->
-        <th:block th:each="sub : ${submittedAssignments}" th:if="${sub.assignmentId == assignment.assignmentId}">
-            
-            <!-- Case A1: Evaluates to GRADED -->
-            <span th:if="${sub.status == 'GRADED'}" class="badge-ui" style="background-color: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-block;">
-                GRADED
-            </span>
-            
-            <!-- Case A2: Evaluates to UNGRADED / PENDING -->
-            <span th:unless="${sub.status == 'GRADED'}" class="badge-ui" style="background-color: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-block;">
-                PENDING GRADING
-            </span>
-            
-        </th:block>
-    </th:block>
-    
-       <!-- 🟢 CONDITION B: ASSIGNMENT IS PENDING (NOT SUBMITTED) -->
-    <th:block th:unless="${submittedAssignments != null and #lists.contains(submittedAssignments.![assignmentId], assignment.assignmentId)}">
-        
-        <!-- Case B1: The deadline has already passed (LATE) -->
-        <span th:if="${assignment.dueAt != null and #temporals.createNow().isAfter(assignment.dueAt)}" 
-              class="badge-ui" style="background-color: #fef2f2; color: #991b1b; border: 1px solid #fee2e2; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-block;">
-            ⚠️ LATE / NOT SUBMITTED
-        </span>
-        
-        <!-- Case B2: Still has time left (ON TIME / PENDING) -->
-        <span th:unless="${assignment.dueAt != null and #temporals.createNow().isAfter(assignment.dueAt)}" 
-              class="badge-ui" style="background-color: #fef3c7; color: #b45309; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-block;">
-            NOT SUBMITTED
-        </span>
-
-    </th:block>
-
-
-</div>
-
-                </div>
-
-                <div class="card-body">
-                    <h3 class="assignment-title" th:text="${assignment.title}">Core Java Homework</h3>
-                    <p class="assignment-desc" th:text="${assignment.description}">Assignment detail text description block metrics...</p>
-                    
-                    <div class="meta-row">
-                        <div class="meta-item">
-                            <span class="meta-label">Deadline Cutoff</span>
-                            <span class="meta-value" th:text="${#temporals.format(assignment.dueAt, 'dd MMM yyyy, hh:mm a')}">12 Oct 2026, 11:30 PM</span>
-                        </div>
-                        <div class="meta-item" style="margin-left: auto;">
-                            <span class="meta-label">Total Points</span>
-                            <span class="meta-value" style="font-weight: 700;" th:text="${#numbers.formatDecimal(assignment.totalMark, 1, 0)}">100</span>
-                        </div>
+        <!-- Sidebar Navigation Menu -->
+        <aside class="w-64 bg-slate-900 text-slate-300 hidden md:flex flex-col justify-between shrink-0 sticky top-0 h-screen overflow-y-auto border-r border-slate-800">
+            <div>
+                <!-- Logo -->
+                <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
+                        <i class="fa-solid fa-graduation-cap text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-base font-bold text-white tracking-wide block leading-none">LearnHub</span>
+                        <small class="text-[11px] font-medium text-slate-400">Student Portal</small>
                     </div>
                 </div>
 
-                <div class="card-footer">
-                    <a th:if="${submittedAssignments != null and #lists.contains(submittedAssignments.![assignmentId], assignment.assignmentId)}"
-                       th:href="@{/student/assignments/submission/{id}(id=${assignment.assignmentId})}"
-                       class="btn-action btn-review">View My Work</a>
+                <!-- Navigation Links -->
+                <nav class="p-4 space-y-6">
+                    <div>
+                        <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Learning</div>
+                        <div class="space-y-1">
+                            <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                <i class="fa-solid fa-border-all text-base"></i> Dashboard
+                            </a>
+                            <a th:href="@{/student/my-courses}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                <i class="fa-solid fa-book-open text-base"></i> My Courses
+                            </a>
+                            <a th:href="@{/student/schedule}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                <i class="fa-regular fa-calendar text-base"></i> Schedule
+                            </a>
+                            <!-- Active Page Highlight -->
+                            <a th:href="@{/student/assignments}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 shadow-sm transition">
+                                <i class="fa-solid fa-file-lines text-base"></i> Assignments
+                            </a>
+                            <a th:href="@{/student/exam-list}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                <i class="fa-solid fa-square-check text-base"></i> My Exams
+                            </a>
+                            <a th:href="@{/student/exam-results}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                <i class="fa-solid fa-chart-column text-base"></i> My Results
+                            </a>
+                            <a th:href="@{/student/certificate}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                <i class="fa-solid fa-award text-base"></i> Certificates
+                            </a>
+                        </div>
+                    </div>
 
-                    <a th:unless="${submittedAssignments != null and #lists.contains(submittedAssignments.![assignmentId], assignment.assignmentId)}"
-                       th:href="@{/student/assignments/submit/{id}(id=${assignment.assignmentId})}"
-                       class="btn-action btn-turnin">Turn In Task</a>
-                </div>
-                
-            </div> <!-- Closes .assignment-card loop securely -->
-            
-            <!-- Empty State View display when no active assignments exist in context payload -->
-            <div th:if="${#lists.isEmpty(assignments)}" class="empty-state-box">
-                <div style="font-size: 40px; margin-bottom: 12px;">🎉</div>
-                <h3 style="margin: 0 0 6px 0; font-size: 16px; color: var(--slate-900);">All Caught Up!</h3>
-                <p style="margin: 0; font-size: 14px; color: var(--slate-700);">No active assignments are currently published for your active course enrollments.</p>
+                    <div>
+                        <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Account</div>
+                        <div class="space-y-1">
+                            <a th:href="@{/student/scholarship}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                <i class="fa-solid fa-user-graduate text-base"></i> Scholarships
+                            </a>
+                            <a th:href="@{/student/checkout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                <i class="fa-regular fa-credit-card text-base"></i> Payments
+                            </a>
+                            <a th:href="@{/student/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                <i class="fa-regular fa-user text-base"></i> My Profile
+                            </a>
+                        </div>
+                    </div>
+                </nav>
             </div>
 
-        </div> <!-- Closes .cards-grid framework wrapper securely -->
-
-        <!-- Dynamic Pagination Navigation Bar -->
-        <div class="pagination-container" th:if="${totalPages > 1}">
-            
-            <!-- Previous Page Action Link Button (🟢 ROUTED TO ASSIGNMENTS ROOT ABSOLUTE) -->
-            <a th:href="${currentPage > 0} ? @{/student/assignments(page=${currentPage - 1})} : '#'"
-               class="pagination-link"
-               th:classappend="${currentPage == 0} ? 'disabled' : ''">
-                <svg style="width:16px; height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
-                </svg>
-            </a>
-
-            <!-- Interactive Sequenced Numeric Page Elements (🟢 ROUTED TO ASSIGNMENTS ROOT ABSOLUTE) -->
-            <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-                <a th:href="@{/student/assignments(page=${i})}"
-                   th:text="${i + 1}"
-                   class="pagination-link"
-                   th:classappend="${currentPage == i} ? 'active' : ''">
-                    1
+            <!-- Logout -->
+            <div class="p-4 border-t border-slate-800">
+                <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                    <i class="fa-solid fa-right-from-bracket text-base"></i> Logout
                 </a>
-            </th:block>
+            </div>
+        </aside>
 
-            <!-- Next Page Action Link Button (🟢 ROUTED TO ASSIGNMENTS ROOT ABSOLUTE) -->
-            <a th:href="${currentPage < totalPages - 1} ? @{/student/assignments(page=${currentPage + 1})} : '#'"
-               class="pagination-link"
-               th:classappend="${currentPage == totalPages - 1} ? 'disabled' : ''">
-                <svg style="width:16px; height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                </svg>
-            </a>
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
             
-        </div> <!-- Closes .pagination-container securely -->
-        
-    </div> <!-- Closes .dashboard-wrapper layout wrapper securely -->
+            <!-- Top Header -->
+            <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 leading-tight">My Assignments</h2>
+                    <p class="text-xs text-slate-400 font-medium">Track your coursework deliverables, milestones, and grading feedback details.</p>
+                </div>
+
+                <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
+                    <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+                        <span th:text="${fullName != null ? #strings.substring(fullName,0,2) : 'ST'}">ST</span>
+                    </div>
+                    <div class="hidden lg:block">
+                        <b class="block text-xs font-bold text-slate-800 leading-none" th:text="${fullName != null ? fullName : 'Student'}">Student</b>
+                        <small class="text-[11px] text-slate-400 font-medium">Student Portal</small>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Body Content -->
+            <main class="p-6 lg:p-8 space-y-6 max-w-[1300px] mx-auto w-full text-xs">
+
+                <!-- Feedback Messages Container -->
+                <div th:if="${successMessage}" class="p-4 bg-emerald-100 text-emerald-700 rounded-xl font-semibold" th:text="${successMessage}"></div>
+                <div th:if="${errorMessage}" class="p-4 bg-rose-100 text-rose-700 rounded-xl font-semibold" th:text="${errorMessage}"></div>
+
+                <!-- Metric Performance Grid Block Overview -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Assigned</span>
+                        <span class="text-xl font-bold text-slate-900" th:text="${assignments != null ? #lists.size(assignments) : 0}">0</span>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Completed Tasks</span>
+                        <span class="text-xl font-bold text-slate-900" th:text="${submittedAssignments != null ? #lists.size(submittedAssignments) : 0}">0</span>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Late Submissions</span>
+                        <span class="text-xl font-bold text-slate-900" th:text="${lateAssignments != null ? #lists.size(lateAssignments) : 0}">0</span>
+                    </div>
+                </div>
+
+                <!-- Filter Form Container -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <form th:action="@{/student/assignments}" method="get" class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                        <div>
+                            <label class="block font-bold text-slate-600 mb-1">Assignment Title</label>
+                            <input type="text" name="title" th:value="${param.title}" placeholder="Search key assignment topics..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-600 mb-1">Submission Status</label>
+                            <select name="status" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 outline-none focus:border-indigo-500">
+                                <option value="">All Statuses</option> 
+                                <option value="PENDING" th:selected="${param.status != null and param.status == 'PENDING'}">Pending</option>
+                                <option value="SUBMITTED" th:selected="${param.status != null and param.status == 'SUBMITTED'}">Submitted</option>
+                                <option value="LATE" th:selected="${param.status != null and param.status == 'LATE'}">Late</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-xl transition">Filter</button>
+                            <a th:href="@{/student/assignments}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-center transition">Reset</a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Assignment Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div th:each="assignment : ${assignments}" class="assignment-card">
+                        
+                        <div class="p-5 pb-0 flex justify-between items-start gap-3">
+                            <span class="bg-indigo-50 text-indigo-600 font-bold px-2.5 py-1 rounded-lg text-[10px] uppercase" th:text="${assignment.batchCode}">JV-01</span>
+                            
+                            <!-- Status Badges -->
+                            <div class="flex gap-1.5 flex-wrap justify-end">
+                                <span class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full font-bold text-[10px]" th:text="${assignment.status != null ? assignment.status : 'PENDING'}">PENDING</span>
+                            </div>
+                        </div>
+
+                        <div class="p-5 flex-grow space-y-2">
+                            <h3 class="font-bold text-slate-900 text-sm" th:text="${assignment.title}">Assignment Title</h3>
+                            <p class="text-slate-500 line-clamp-2" th:text="${assignment.description}">Description...</p>
+                            
+                            <div class="pt-3 border-t border-slate-100 flex justify-between items-center">
+                                <div>
+                                    <span class="block text-[9px] font-bold text-slate-400 uppercase">Deadline Cutoff</span>
+                                    <span class="font-semibold text-slate-700 text-[11px]" th:text="${assignment.dueAt != null ? assignment.dueAt : 'No Deadline'}">Date</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="block text-[9px] font-bold text-slate-400 uppercase">Points</span>
+                                    <span class="font-bold text-slate-900" th:text="${assignment.totalMark != null ? assignment.totalMark : 0}">100</span>
+                                </div>
+                            </div>
+                        </div>
+
+<div th:if="${assignment.attachment != null}" style="margin-top: 12px; text-align: left;">
+    <a th:href="@{/student/assignments/view-file(fileName=${assignment.attachment})}" 
+       target="_blank" 
+       style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #0369a1; background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; text-decoration: none; transition: background-color 0.1s;">
+        <i class="fa-solid fa-file-pdf"></i> View Reference Material
+    </a>
+</div>
+
+
+                       <!-- ========================================================= -->
+<!-- 🎓 DYNAMIC WORKSPACE ACTION FOOTER ROW                    -->
+<!-- ========================================================= -->
+<div class="p-4 bg-slate-50 border-t border-slate-100" style="background-color: #f8fafc !important; border-top: 1px solid #f1f5f9 !important; padding: 16px !important; box-sizing: border-box;">
+    
+    <!-- 🟢 CASE 1: ASSIGNMENT IS ALREADY SUBMITTED -->
+    <!-- Checks your submitted array list map and switches to the Review Submission View path -->
+    <th:block th:if="${submittedAssignments != null and #lists.contains(submittedAssignments.![assignmentId], assignment.assignmentId)}">
+        <a th:href="@{/student/assignments/submission/{id}(id=${assignment.assignmentId})}"
+           class="w-full block text-center py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl transition"
+           style="width: 100% !important; display: block !important; text-align: center !important; padding: 10px 0 !important; background-color: #1e293b !important; color: white !important; font-weight: 700 !important; border-radius: 12px !important; text-decoration: none !important; font-size: 13.5px !important; transition: all 0.15s ease;">
+            <i class="fa-solid fa-file-invoice me-1"></i> View My Submission
+        </a>
+    </th:block>
+
+    <!-- 🔴 CASE 2: ASSIGNMENT HAS NOT BEEN SUBMITTED YET -->
+    <!-- Keeps the default workspace link active so the student can upload files -->
+    <th:block th:unless="${submittedAssignments != null and #lists.contains(submittedAssignments.![assignmentId], assignment.assignmentId)}">
+        <a th:href="@{/student/assignments/submit/{id}(id=${assignment.assignmentId})}"
+           class="w-full block text-center py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition"
+           style="width: 100% !important; display: block !important; text-align: center !important; padding: 10px 0 !important; background-color: #4f46e5 !important; color: white !important; font-weight: 700 !important; border-radius: 12px !important; text-decoration: none !important; font-size: 13.5px !important; transition: all 0.15s ease;">
+            <i class="fa-solid fa-cloud-arrow-up me-1"></i> View / Turn In Task
+        </a>
+    </th:block>
+
+</div>
+
+
+                    </div>
+
+                    <!-- Empty State -->
+                    <div th:if="${#lists.isEmpty(assignments)}" class="col-span-full bg-white border border-dashed border-slate-300 rounded-2xl p-12 text-center">
+                        <div class="text-3xl mb-2">🎉</div>
+                        <h3 class="font-bold text-slate-900 text-sm mb-1">All Caught Up!</h3>
+                        <p class="text-slate-400">No active assignments are currently published for your course enrollments.</p>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
 
 </body>
 </html>
-
-
