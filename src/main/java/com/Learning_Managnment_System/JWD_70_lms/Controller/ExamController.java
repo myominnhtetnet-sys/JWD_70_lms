@@ -170,32 +170,60 @@ public class ExamController {
 		return "redirect:/teacher/exams/view/" + examId;
 	}
 
+//	@GetMapping("/{examId}/questions")
+//	public String selectQuestions(@PathVariable("examId") Long examId, Model model,
+//			RedirectAttributes redirectAttributes) {
+//		try {
+//			ExamBean exam = examService.getExamById(examId);
+//			/* List<QuestionBean> questions = examService.getQuestionBank(); */
+//			List<QuestionBean> questions =
+//			        examService.getQuestionBankByCourse(exam.getCourseId());
+//			List<ExamQuestionBean> selectedQuestions = examService.getSelectedQuestions(examId);
+//			Set<Long> selectedQuestionIds = selectedQuestions.stream().map(ExamQuestionBean::getQuestionId)
+//					.collect(Collectors.toSet());
+//
+//			model.addAttribute("exam", exam);
+////			model.addAttribute("questions", questions);
+//			model.addAttribute(
+//			        "questions",
+//			        examService.getQuestionBankByCourse(exam.getCourseId())
+//			);
+//			model.addAttribute("selectedQuestions", selectedQuestions);
+//			model.addAttribute("selectedQuestionIds", selectedQuestionIds);
+//			return "exam-select-questions";
+//
+//		} catch (IllegalArgumentException e) {
+//			redirectAttributes.addFlashAttribute("error", e.getMessage());
+//			return "redirect:/teacher/exams";
+//		}
+//	}
 	@GetMapping("/{examId}/questions")
-	public String selectQuestions(@PathVariable("examId") Long examId, Model model,
-			RedirectAttributes redirectAttributes) {
-		try {
-			ExamBean exam = examService.getExamById(examId);
-			/* List<QuestionBean> questions = examService.getQuestionBank(); */
-			List<QuestionBean> questions =
-			        examService.getQuestionBankByCourse(exam.getCourseId());
-			List<ExamQuestionBean> selectedQuestions = examService.getSelectedQuestions(examId);
-			Set<Long> selectedQuestionIds = selectedQuestions.stream().map(ExamQuestionBean::getQuestionId)
-					.collect(Collectors.toSet());
+	public String selectQuestions(
+	        @PathVariable("examId") Long examId,
+	        Model model,
+	        RedirectAttributes redirectAttributes) {
 
-			model.addAttribute("exam", exam);
-//			model.addAttribute("questions", questions);
-			model.addAttribute(
-			        "questions",
-			        examService.getQuestionBankByCourse(exam.getCourseId())
-			);
-			model.addAttribute("selectedQuestions", selectedQuestions);
-			model.addAttribute("selectedQuestionIds", selectedQuestionIds);
-			return "exam-select-questions";
+	    try {
+	        ExamBean exam = examService.getExamById(examId);
+	        // ရွေးထားတဲ့ Course အလိုက် Questions ယူမယ်
+	        List<QuestionBean> questions = examService.getQuestionBankByCourse(exam.getCourseId());
+	        List<ExamQuestionBean> selectedQuestions = examService.getSelectedQuestions(examId);
 
-		} catch (IllegalArgumentException e) {
-			redirectAttributes.addFlashAttribute("error", e.getMessage());
-			return "redirect:/teacher/exams";
-		}
+	        Set<Long> selectedQuestionIds = selectedQuestions.stream()
+	                .map(ExamQuestionBean::getQuestionId)
+	                .collect(Collectors.toSet());
+
+	        model.addAttribute("exam", exam);
+	        model.addAttribute("questions", questions);
+	        model.addAttribute("selectedQuestions", selectedQuestions);
+	        model.addAttribute("selectedQuestionIds", selectedQuestionIds);
+
+	        return "exam-select-questions";
+
+	    } catch (IllegalArgumentException e) {
+	        redirectAttributes.addFlashAttribute("error", e.getMessage());
+	        return "redirect:/teacher/exams";
+	    }
 	}
 
 	@PostMapping("/{examId}/questions/save")
@@ -246,16 +274,15 @@ public class ExamController {
 	        exam.setBatchId(existing.getBatchId());
 	        exam.setCreatedBy(existing.getCreatedBy());
 
-	        List<ExamQuestionBean> selectedQuestions =
-	                examService.getSelectedQuestions(exam.getExamId());
+	        List<ExamQuestionBean> selectedQuestions = examService.getSelectedQuestions(exam.getExamId());
 
-	        Set<Long> selectedQuestionIds =
-	                selectedQuestions.stream()
+	        Set<Long> selectedQuestionIds = selectedQuestions.stream()
 	                    .map(ExamQuestionBean::getQuestionId)
 	                    .collect(Collectors.toSet());
 
 	        model.addAttribute("exam", exam);
-	        model.addAttribute("questions", examService.getQuestionBank());
+	        //model.addAttribute("questions", examService.getQuestionBank());
+	        model.addAttribute( "questions",examService.getQuestionBankByCourse(exam.getCourseId())	);
 	        model.addAttribute("selectedQuestions", selectedQuestions);
 	        model.addAttribute("selectedQuestionIds", selectedQuestionIds);
 
@@ -268,9 +295,8 @@ public class ExamController {
 	}
 	
 	@PostMapping("/update/confirm")
-	public String confirmExamUpdate( ExamBean exam,
-	        @RequestParam(value = "questionIds",
-	            required = false ) List<Long> questionIds,
+	public String confirmExamUpdate( ExamBean exam, @RequestParam(value = "questionIds",
+	        required = false ) List<Long> questionIds,
 	        RedirectAttributes redirectAttributes) {
 
 	    try {
