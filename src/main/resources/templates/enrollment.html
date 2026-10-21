@@ -737,7 +737,7 @@ td {
     const themeToggle = document.getElementById("themeToggle");
     function applyTheme(isLight) {
         document.body.classList.toggle("light-mode", isLight);
-        if (themeToggle) {
+        if(themeToggle) {
             themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-regular fa-moon"></i>';
         }
         localStorage.setItem("lmsTheme", isLight ? "light" : "dark");
@@ -746,7 +746,6 @@ td {
     if(themeToggle) {
         themeToggle.addEventListener("click", () => applyTheme(!document.body.classList.contains("light-mode")));
     }
-
     // Enrollment Modal Open / Close Functions
     function openEnrollmentModal() {
         const modal = document.getElementById("enrollmentModal");

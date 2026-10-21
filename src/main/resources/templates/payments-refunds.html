@@ -726,6 +726,7 @@ td {
 			switchTab('refundTab', 'btnTab2');
 		/*[/]*/
 
+
 		const themeToggle = document.getElementById("themeToggle");
 		function applyTheme(isLight) {
 			document.body.classList.toggle("light-mode", isLight);
@@ -766,6 +767,21 @@ td {
             switchTab('refundTab', 'btnTab2');
         });
     /*[/]*/
+    
+    
+    
+      const themeToggle = document.getElementById("themeToggle");
+    function applyTheme(isLight) {
+        document.body.classList.toggle("light-mode", isLight);
+        if(themeToggle) {
+            themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-regular fa-moon"></i>';
+        }
+        localStorage.setItem("lmsTheme", isLight ? "light" : "dark");
+    }
+    applyTheme(localStorage.getItem("lmsTheme") === "light");
+    if(themeToggle) {
+        themeToggle.addEventListener("click", () => applyTheme(!document.body.classList.contains("light-mode")));
+    }
 </script>
 </body>
 </html>

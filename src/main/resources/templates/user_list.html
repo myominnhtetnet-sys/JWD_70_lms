@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 
@@ -253,9 +253,9 @@
 <body>
 
 
-<!-- =====================================================
+=====================================================
      NAVBAR
-===================================================== -->
+=====================================================
 
 <div class="navbar">
 
@@ -275,14 +275,14 @@
 </div>
 
 
-<!-- =====================================================
+=====================================================
      MAIN
-===================================================== -->
+=====================================================
 
 <div class="container">
 
 
-    <!-- PAGE HEADER -->
+    PAGE HEADER
 
     <div class="page-header">
 
@@ -307,7 +307,7 @@
     </div>
 
 
-    <!-- SUCCESS -->
+    SUCCESS
 
     <div th:if="${success}"
          class="message success">
@@ -321,7 +321,7 @@
     </div>
 
 
-    <!-- ERROR -->
+    ERROR
 
     <div th:if="${error}"
          class="message error">
@@ -335,9 +335,9 @@
     </div>
 
 
-    <!-- =====================================================
+    =====================================================
          TABLE
-    ===================================================== -->
+    =====================================================
 
     <div class="table-card">
 
@@ -369,7 +369,7 @@
             <tbody>
 
 
-            <!-- USERS -->
+            USERS
 
             <tr th:each="user : ${users}">
 
@@ -422,7 +422,7 @@
                     <div class="actions">
 
 
-                        <!-- EDIT -->
+                        EDIT
 
                         <a th:href="@{/admin/users/edit/{id}(id=${user.user_id})}"
                            class="action-btn edit-btn"
@@ -433,7 +433,7 @@
                         </a>
 
 
-                        <!-- SUSPEND -->
+                        SUSPEND
 
                         <form th:if="${user.status == 'ACTIVE'
                                       and user.roleName != 'ADMIN'}"
@@ -452,7 +452,7 @@
                         </form>
 
 
-                        <!-- ACTIVATE -->
+                        ACTIVATE
 
                         <form th:if="${user.status == 'SUSPENDED'}"
                               th:action="@{/admin/users/activate/{id}(id=${user.user_id})}"
@@ -478,7 +478,7 @@
             </tr>
 
 
-            <!-- NO DATA -->
+            NO DATA
 
             <tr th:if="${#lists.isEmpty(users)}">
 
@@ -506,4 +506,4 @@
 
 </body>
 
-</html>
+</html> -->
