@@ -28,6 +28,8 @@ public class StudentAssignmentService {
 
     @Autowired
     private SubmissionRepository submissionRepository;
+    
+    private final Path fileStorageLocation = Paths.get("uploads/assignments").toAbsolutePath().normalize();
 
     public List<AssignmentBean> getStudentAssignments(int userId) {
         return repository.findAssignmentsByStudentId(userId);
@@ -126,13 +128,23 @@ public class StudentAssignmentService {
         return repository.findUserIdByEmail(email);
     }
     
-    public Resource loadTeacherFileAsResource(String fileName) {
+    public Resource loadTeacherFileAsResource(String rawFileName) {
         try {
-            // Points to the base directory where teacher files are saved on the server
-            Path baseDirectory = Paths.get("teacher_uploads").toAbsolutePath().normalize();
-            
-            // Resolve file name while cleaning out traverse commands like "../"
-            Path targetFilePath = baseDirectory.resolve(fileName).normalize();
+            if (rawFileName == null || rawFileName.trim().isEmpty()) {
+                return null;
+            }
+
+            // 🟢 SANITIZATION LAYER: Isolate the pure filename out of the complex query path string
+            String cleanFileName = rawFileName;
+            if (cleanFileName.contains("/")) {
+                cleanFileName = cleanFileName.substring(cleanFileName.lastIndexOf("/") + 1);
+            }
+            if (cleanFileName.contains("\\")) {
+                cleanFileName = cleanFileName.substring(cleanFileName.lastIndexOf("\\") + 1);
+            }
+
+            // Target the unified file directly within "uploads/assignments" path boundary safely
+            Path targetFilePath = this.fileStorageLocation.resolve(cleanFileName).normalize();
             Resource resource = new UrlResource(targetFilePath.toUri());
 
             if (resource.exists() || resource.isReadable()) {
@@ -142,6 +154,5 @@ public class StudentAssignmentService {
         } catch (Exception ex) {
             return null;
         }
-    
-}
+    }
 }

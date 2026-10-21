@@ -68,16 +68,20 @@ public class StudentAssignmentController {
         return "student-assignment-list";
     }
 
-    /**
-     * 🟢 STREAM TEACHER UPLOADED FILE METHOD FOR STUDENTS
-     * Streams files from the target directory directly into the student's browser canvas.
-     */
-    @GetMapping("/assignments/view-file/{fileName:.+}")
+    @GetMapping("/assignments/view-file")
     @ResponseBody
-    public ResponseEntity<Resource> viewTeacherFile(@PathVariable String fileName, HttpServletRequest request, HttpSession session) {
-        // Security Check: Deny entry to anonymous visitors
+    public ResponseEntity<Resource> viewTeacherFile(@RequestParam("fileName") String fileName, HttpServletRequest request, HttpSession session) {
+        // Security Gate: Deny entry to anonymous visitors
         if (session.getAttribute("email") == null) {
             return ResponseEntity.status(403).build();
+        }
+
+        // 🟢 PATH SANITIZATION: Strips out directory strings so Spring reads only from your target directory folder
+        if (fileName.contains("/")) {
+            fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
+        }
+        if (fileName.contains("\\")) {
+            fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
         }
 
         Resource resource = studentAssignmentService.loadTeacherFileAsResource(fileName);

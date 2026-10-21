@@ -60,8 +60,8 @@ public class StudentExamController {
         String targetedQuestionSequence = (String) session.getAttribute(sessionCacheKey);
 
         int maxAttemptsLimit = 1;
-        if (exam.getMax_attempts() != null) {
-            maxAttemptsLimit = exam.getMax_attempts().intValue();
+        if (exam.getMaxAttempts() != null) {
+            maxAttemptsLimit = exam.getMaxAttempts().intValue();
         }
 
         // 1. Terminate or manage any stale ongoing raw unsubmitted states
@@ -109,6 +109,20 @@ public class StudentExamController {
         model.addAttribute("examId", examId);
         model.addAttribute("attemptId", attemptId);
         model.addAttribute("questions", questions);
+     // 🟢 10-SECOND CONSOLE TRACE PROBE
+        System.out.println("--- DEBUG ANALYSIS START ---");
+        System.out.println("Total Question Model Beans passed to Thymeleaf UI: " + questions.size());
+        for (ExamQuestionBean question : questions) {
+            System.out.println("Question ID: " + question.getQuestionId() + " | Text: " + question.getQuestionText());
+            if (question.getOptions() != null) {
+                System.out.println("  -> Options Found: " + question.getOptions().size());
+                for (var opt : question.getOptions()) {
+                    System.out.println("     * Option ID: " + opt.getOptionId() + " | Text: " + opt.getOptionText());
+                }
+            }
+        }
+        System.out.println("--- DEBUG ANALYSIS END ---");
+
         return "my_exam";
     }
 

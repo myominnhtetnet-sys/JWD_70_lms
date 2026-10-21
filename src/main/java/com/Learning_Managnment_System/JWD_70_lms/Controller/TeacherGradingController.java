@@ -1,4 +1,3 @@
-
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.math.BigDecimal;
@@ -6,56 +5,66 @@ import java.math.BigDecimal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.Learning_Managnment_System.JWD_70_lms.Service.TeacherGradingService;
 import com.Learning_Managnment_System.JWD_70_lms.model.SubmissionBean;
 
 @Controller
-@RequestMapping("/teacher")
+@RequestMapping("/teacher/submissions")
 public class TeacherGradingController {
 
-    private final TeacherGradingService service;
+    private final TeacherGradingService gradingService;
 
-    public TeacherGradingController(TeacherGradingService service) {
-        this.service = service;
+    public TeacherGradingController(
+            TeacherGradingService gradingService) {
+        this.gradingService = gradingService;
     }
 
-    @GetMapping("/submissions")
-    public String showSubmissions(Model model) {
-        model.addAttribute("submissions", service.getAllSubmissions());
+    @GetMapping
+    public String listSubmissions(Model model) {
+        model.addAttribute("submissions",
+                gradingService.getAllSubmissions());
         return "teacher-submission-list";
     }
 
-    @GetMapping("/submissions/grade/{id}")
-    public String showGradingForm(@PathVariable Integer id,Model model) {
-    	
-        SubmissionBean submission = service.getSubmissionById(id);
-        model.addAttribute("submission", submission);
-        return "teacher-grading-form";
+    @GetMapping("/grade/{id}")
+    public String showGradePage(
+            @PathVariable Integer id,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            SubmissionBean submission = gradingService.getSubmissionById(id);
+            model.addAttribute("submission", submission);
+            return "teacher-grading-form";
+
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/teacher/submissions";
+        }
     }
 
-    @PostMapping("/submissions/grade")
-    public String gradeSubmission(
+    @PostMapping("/grade")
+    public String saveGrade(
             @RequestParam Integer submissionId,
             @RequestParam BigDecimal score,
             @RequestParam String feedback,
             RedirectAttributes redirectAttributes) {
 
         try {
-            service.gradeSubmission(submissionId, score,feedback);
-            redirectAttributes.addFlashAttribute("success",
-                    "Student submission graded successfully!");
+
+            gradingService.gradeSubmission( submissionId,score,feedback);
+            redirectAttributes.addFlashAttribute("success","Submission graded successfully!" );
+            return "redirect:/teacher/submissions";
 
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("error",e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/teacher/submissions/grade/" + submissionId;
         }
-
-        return "redirect:/teacher/submissions";
     }
 }

@@ -43,5 +43,8 @@ public class WebConfig implements WebMvcConfigurer {
         // Explicitly maps root video folders and multi-tier nested student routes to satisfy the PathPatternParser rules perfectly!
         registry.addResourceHandler("/videos/**", "/student/videos/**", "/student/exam-take/videos/**", "/student/awards/videos/**")
                 .addResourceLocations("classpath:/static/videos/");
+        
+        
     }
+    
 }

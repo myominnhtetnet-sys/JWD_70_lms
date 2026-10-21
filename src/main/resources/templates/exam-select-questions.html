@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Select Questions</title>
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+	<div class="exam-select-container">
+
+		<div class="exam-select-header">
+			<div>
+				<h1>Select Questions</h1>
+				<div class="exam-select-subtitle">
+					Exam: <strong th:text="${exam.title}"> Java Basic Exam </strong>
+				</div>
+			</div>
+			<a th:href="@{/teacher/exams/view/{id}(id=${exam.examId})}"
+				class="exam-btn exam-btn-secondary"> Back </a>
+		</div>
+
+		<div class="exam-select-card">
+
+			<div th:if="${#lists.isEmpty(questions)}" class="exam-select-empty">
+				No questions found in Question Bank.</div>
+
+			<form id="questionForm" th:if="${!#lists.isEmpty(questions)}"
+				th:action="@{/teacher/exams/{examId}/questions/save(examId=${exam.examId})}"
+				method="post">
+
+				<div class="question-filter">
+
+					<div class="filter-group">
+						<label for="questionSearch"> Search Question </label> <input
+							type="text" id="questionSearch" placeholder="Search question...">
+					</div>
+
+					<div class="filter-group">
+						<label for="questionTypeFilter"> Question Type </label> <select
+							id="questionTypeFilter">
+							<option value="">All Types</option>
+							<option value="MCQ">MCQ</option>
+							<option value="TRUE_FALSE">TRUE_FALSE</option>
+							<option value="SHORT_ANSWER">SHORT_ANSWER</option>
+						</select>
+					</div>
+
+				</div>
+
+				<div class="question-table-wrapper">
+
+					<table class="exam-question-table">
+
+						<thead>
+							<tr>
+								<th>Select</th>
+								<th>Question</th>
+								<th>Type</th>
+								<th>Default Mark</th>
+								<th>Exam Mark</th>
+							</tr>
+						</thead>
+
+						<tbody id="questionTableBody">
+
+							<tr th:each="question : ${questions}" class="question-row"
+								th:attr="
+                            data-question-text=${question.questionText},
+                            data-question-type=${question.questionType}">
+
+								<td>
+									<span th:if="${selectedQuestionIds.contains(question.questionId)}"
+									class="added"> ✓ Added </span> 
+									<input th:unless="${selectedQuestionIds.contains(question.questionId)}"
+									type="checkbox" class="question-checkbox"
+									th:value="${question.questionId}">
+								</td>
+
+								<td><span class="question-text"
+									th:text="${question.questionText}"> What is Java? </span>
+								</td>
+
+								<td th:text="${question.questionType}">MCQ</td>
+								<td th:text="${question.defaultMark}">5</td>
+
+								<td>
+								<input type="number" class="mark-input" step="0.01"
+									min="0.01" th:value="${question.defaultMark}"
+									th:disabled="${selectedQuestionIds.contains(question.questionId)}">
+								</td>
+
+							</tr>
+
+						</tbody>
+					</table>
+
+				</div>
+
+				<div id="hiddenInputs"></div>
+				<div class="actions">
+					<a th:href="@{/teacher/exams/view/{id}(id=${exam.examId})}"
+						class="exam-btn exam-btn-secondary"> Cancel </a>
+					<button type="submit" class="exam-btn exam-btn-primary">
+						Save Selected Questions</button>
+				</div>
+
+			</form>
+
+		</div>
+
+	</div>
+
+
+	<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+	<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const questionForm = document.getElementById("questionForm");
+
+    if (questionForm) {
+		questionForm.addEventListener("submit", function (event) {
+
+                const selectedQuestions = document.querySelectorAll( ".question-checkbox:checked" );
+                const hiddenInputs = document.getElementById("hiddenInputs");
+                hiddenInputs.innerHTML = "";
+
+                if (selectedQuestions.length === 0) {
+                    event.preventDefault();
+                    alert( "Please select at least one new question." );
+                    return;
+                }
+                
+                let hasError = false;
+                selectedQuestions.forEach(
+                		
+                    function (checkbox) {
+                    	
+                        const questionId =checkbox.value;
+                        const row = checkbox.closest(".question-row");
+                        const markInput = row.querySelector(".mark-input" );
+                        let mark = markInput.value.trim();
+
+                        if ( mark === "" || Number(mark) <= 0) {
+                            hasError = true;
+                            markInput.focus();
+                            alert("Exam mark must be greater than 0.");
+                            return;
+                        }
+
+                       const questionIdInput = document.createElement("input");
+                        questionIdInput.type ="hidden";
+                        questionIdInput.name = "questionIds";
+                        questionIdInput.value = questionId;
+
+                        const markHiddenInput = document.createElement("input");
+                        markHiddenInput.type = "hidden";
+                        markHiddenInput.name = "marks";
+                        markHiddenInput.value = mark;
+
+                        hiddenInputs.appendChild(questionIdInput);
+                        hiddenInputs.appendChild(markHiddenInput);
+
+                    });
+
+                if (hasError) {
+                    event.preventDefault();
+                    hiddenInputs.innerHTML = "";
+                }
+
+            });
+
+    }
+
+    const questionSearch = document.getElementById("questionSearch" );
+    const questionTypeFilter = document.getElementById("questionTypeFilter");
+    const questionRows =document.querySelectorAll(".question-row" );
+
+    function filterQuestions() {
+        const searchText =
+            questionSearch
+                ? questionSearch.value
+                    .toLowerCase()
+                    .trim()
+                : "";
+
+        const selectedType =
+            questionTypeFilter
+                ? questionTypeFilter.value
+                    .toLowerCase()
+                : "";
+
+
+        questionRows.forEach(
+            function (row) {
+                const questionText =(row.dataset.questionText || "") .toLowerCase();       
+				const questionType = (row.dataset.questionType || "").toLowerCase();
+				const matchText = questionText.includes(searchText);
+				const matchType = selectedType === "" || questionType === selectedType;
+
+				if (matchText && matchType) {
+					row.style.display = "";
+				} else {
+					row.style.display = "none";
+				}
+			});
+		}
+    
+    if (questionSearch) {
+		questionSearch.addEventListener("input",filterQuestions);
+
+	}
+
+	if (questionTypeFilter) {
+		questionTypeFilter.addEventListener("change",filterQuestions);
+	}
+
+});
+							
+	</script>
+
+</body>
+
+</html>
