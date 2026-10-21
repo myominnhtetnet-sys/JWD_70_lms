@@ -10,248 +10,55 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <!-- Google Fonts: Inter -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#eef2ff',
-                            100: '#e0e7ff',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
-                            800: '#3730a3',
-                            900: '#312e81',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-</script>
 
 <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.05);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(0,0,0,0.2);
-            border-radius: 3px;
-        }
-        .fade-in {
-            animation: fadeIn 0.25s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .user-management {
-            background: #fff;
-            padding: 25px;
-            border-radius: 12px;
-            margin-top: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
-        }
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .section-header h2 {
-            color: #4b176b;
-            margin: 0;
-        }
-        .section-header p {
-            color: #777;
-        }
-        .add-user-btn {
-            background: #8e44ad;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 7px;
-            text-decoration: none;
-        }
-        .search-form {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .search-form input {
-            flex: 1;
-            padding: 11px;
-            border: 1px solid #ccc;
-            border-radius: 7px;
-        }
-        .search-form button {
-            background: #8e44ad;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 7px;
-            cursor: pointer;
-        }
-        .search-form a {
-            padding: 10px 18px;
-            background: #eee;
-            border-radius: 7px;
-            text-decoration: none;
-            color: #333;
-        }
-        .table-container {
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table th,
-        table td {
-            padding: 13px;
-            border-bottom: 1px solid #eee;
-            text-align: left;
-        }
-        table th {
-            background: #f8f0fc;
-            color: #4b176b;
-        }
-        .status {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .status.active {
-            background: #dff5e5;
-            color: #198754;
-        }
-        .status.inactive {
-            background: #eee;
-            color: #666;
-        }
-        .status.suspended {
-            background: #ffe0e0;
-            color: #c0392b;
-        }
-        .actions {
-            white-space: nowrap;
-        }
-        .actions a,
-        .actions button {
-            border: none;
-            margin-right: 5px;
-            padding: 7px 9px;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .view-btn {
-            background: #eee;
-            color: #333;
-        }
-        .edit-btn {
-            background: #f4e9ff;
-            color: #8e44ad;
-        }
-        .suspend-btn {
-            background: #fff0d5;
-            color: #d68910;
-        }
-        .activate-btn {
-            background: #dff5e5;
-            color: #198754;
-        }
-        .delete-btn {
-            background: #ffe0e0;
-            color: #c0392b;
-        }
-        .alert {
-            padding: 12px;
-            border-radius: 7px;
-            margin-bottom: 15px;
-        }
-        .alert.success {
-            background: #dff5e5;
-            color: #198754;
-        }
-        .alert.error {
-            background: #ffe0e0;
-            color: #c0392b;
-        }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.03);
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,0.15);
+        border-radius: 3px;
+    }
+    .fade-in {
+        animation: fadeIn 0.25s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
 </head>
-<body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
+<body class="h-full font-sans text-slate-900 bg-slate-50 antialiased">
 
     <div id="app" class="min-h-screen flex flex-col">
         
         <!-- TOP HEADER BAR -->
-        <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 shadow-sm transition-colors duration-200">
-            <div class="px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+            <div class="px-6 py-3.5 flex items-center justify-between gap-4">
                 
-                <!-- Left: Branding & Search -->
+                <!-- Left: Branding & User Profile -->
                 <div class="flex items-center gap-6 flex-1 max-w-xl">
                     <div class="flex items-center gap-3 cursor-pointer">
-                        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-200 dark:shadow-none">
+                        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-100">
                             <i class="fa-solid font-bold text-lg">E</i>
                         </div>
                         <div>
-                            <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-indigo-600 to-indigo-800 dark:from-indigo-400 dark:to-indigo-200 bg-clip-text text-transparent">EduPulse</span>
-                            <span class="text-xs px-2 py-0.5 ml-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold border border-indigo-200 dark:border-indigo-800/50">LMS</span>
-                        </div>
-                    </div>
-
-                    <!-- Global Search -->
-                    <div class="relative flex-1 hidden md:block">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                        <input id="globalSearch" type="text" placeholder="Search courses, users, materials..." 
-                            class="w-full pl-10 pr-4 py-2 text-sm bg-slate-100 dark:bg-slate-700/60 border border-transparent dark:border-slate-600 rounded-lg focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-indigo-500 transition-all text-slate-800 dark:text-slate-100 placeholder-slate-400">
-                    </div>
-                </div>
-
-                <!-- Right: Utilities & User Profile -->
-                <div class="flex items-center gap-3">
-                    <!-- Dark Mode Toggle -->
-                    <button onclick="toggleDarkMode()" class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition">
-                        <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
-                    </button>
-
-                    <!-- Notifications Button -->
-                    <div class="relative">
-                        <button onclick="toggleNotifications()" class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition relative">
-                            <i class="fa-regular fa-bell text-lg"></i>
-                            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-600 rounded-full ring-2 ring-white dark:ring-slate-800"></span>
-                        </button>
-                        <!-- Notifications Dropdown -->
-                        <div id="notif-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 fade-in">
-                            <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                                <span class="font-bold text-sm">Notifications</span>
-                                <span class="text-xs text-indigo-600 dark:text-indigo-400 cursor-pointer hover:underline">Mark read</span>
-                            </div>
-                            <div class="max-h-64 overflow-y-auto">
-                                <a href="#" class="block px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition border-b border-slate-50 dark:border-slate-700/50">
-                                    <p class="text-xs font-semibold">New batch student enrollment</p>
-                                    <p class="text-[11px] text-slate-400 mt-0.5">A student joined your batch roster.</p>
-                                </a>
-                            </div>
+                            <span class="font-extrabold text-base tracking-tight bg-gradient-to-r from-indigo-600 to-indigo-800 bg-clip-text text-transparent">EduPulse</span>
+                            <span class="text-xs px-2 py-0.5 ml-1 rounded-full bg-indigo-50 text-indigo-700 font-bold border border-indigo-200">LMS</span>
                         </div>
                     </div>
 
                     <!-- User Profile Info -->
-                    <div class="flex items-center gap-3 pl-3 border-l border-slate-200 dark:border-slate-700">
-                        <div class="h-9 w-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-sm" th:text="${#strings.substring(fullName,0,2)}">TE</div>
+                    <div class="flex items-center gap-3.5 pl-6 border-l border-slate-200">
+                        <div class="h-9 w-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-xs" th:text="${#strings.substring(fullName,0,2)}">TE</div>
                         <div class="hidden sm:block text-left">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-200" th:text="${fullName}">Teacher Name</div>
-                            <div class="text-[10px] text-slate-400">Instructor Account</div>
+                            <div class="text-xs font-bold text-slate-900" th:text="${fullName}">Teacher Name</div>
+                            <div class="text-xs font-medium text-slate-600">Instructor Account</div>
                         </div>
                     </div>
                 </div>
@@ -263,38 +70,38 @@
         <div class="flex-1 flex">
   
             <!-- SIDEBAR -->
-            <aside class="w-64 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex flex-col p-4 border-r border-slate-200 dark:border-slate-700 transition-colors duration-200">
-                <nav class="space-y-1 text-xs font-medium">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-bold px-3 mb-2">Teaching Portal</div>
+            <aside class="w-64 bg-white text-slate-700 flex flex-col p-4 border-r border-slate-200">
+                <nav class="space-y-1.5 text-xs font-medium">
+                    <div class="text-xs uppercase tracking-wider text-slate-600 font-bold px-3 mb-2">Teaching Portal</div>
                     
-                    <a href="#" onclick="switchView('dashboard')" id="nav-dashboard" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl bg-teal-600 text-white font-semibold transition shadow-sm">
+                    <a href="#" onclick="switchView('dashboard')" id="nav-dashboard" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-teal-600 text-white font-semibold transition shadow-xs">
                         <i class="fa-solid fa-house w-4"></i> Dashboard
                     </a>
-                    <a href="#" onclick="switchView('courses')" id="nav-courses" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700/60 transition">
+                    <a href="#" onclick="switchView('courses')" id="nav-courses" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-book-open w-4"></i> My Courses
                     </a>
-                    <a href="#" onclick="switchView('batches')" id="nav-batches" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700/60 transition">
+                    <a href="#" onclick="switchView('batches')" id="nav-batches" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-users w-4"></i> My Batches
                     </a>
-                    <a href="#" onclick="switchView('attendance')" id="nav-attendance" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700/60 transition">
-                        <i class="fa-solid fa-calendar-check w-4"></i> Take Attendance
+                    <a href="#" onclick="switchView('attendance')" id="nav-attendance" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-calendar-check w-4"></i> Check Attendance
                     </a>
                 </nav>
             </aside>
 
             <!-- MAIN CONTENT AREA -->
-            <main class="flex-1 p-8 overflow-y-auto bg-slate-50 dark:bg-slate-900 transition-colors duration-200">
+            <main class="flex-1 p-8 overflow-y-auto bg-slate-50">
     
                 <!-- ================= VIEW 1: DASHBOARD ================= -->
                 <div id="view-dashboard" class="teacher-view">
                    <!-- Hero Banner -->
-                    <section class="bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-600 dark:from-teal-900 dark:via-teal-800 dark:to-emerald-900 text-white p-8 rounded-2xl shadow-sm mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-colors duration-200">
+                    <section class="bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-600 text-white p-8 rounded-2xl shadow-xs mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                         <div>
                             <h1 class="text-2xl font-bold mb-2" th:text="'Mingalabar, ' + ${fullName} + '!'">Mingalabar, Teacher!</h1>
-                            <p class="text-sm text-teal-100 max-w-xl">Manage your active batches, course materials, and daily attendance records seamlessly.</p>
+                            <p class="text-sm font-medium text-teal-100 max-w-xl">Manage your active batches, course materials, and daily attendance records seamlessly.</p>
                         </div>
                         <div class="flex items-center gap-3 shrink-0">
-                            <button onclick="switchView('attendance')" class="px-4 py-2.5 bg-white text-teal-700 hover:bg-teal-50 rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-2">
+                            <button onclick="switchView('attendance')" class="px-4 py-2.5 bg-white text-teal-800 hover:bg-teal-50 rounded-xl text-xs font-bold transition shadow-xs flex items-center gap-2 cursor-pointer">
                                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                                 Take attendance
                             </button>
@@ -303,38 +110,38 @@
                     
                     <!-- Stats Grid -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-start gap-4 transition-colors duration-200">
-                            <div class="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-start gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center shrink-0">
                                 <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16 14.2A5 5 0 0 1 21.5 19"/></svg>
                             </div>
                             <div>
-                                <div class="text-xs font-semibold text-slate-400 uppercase">Active Batches</div>
-                                <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5" th:text="${batches != null ? batches.size() : 0}">0</div>
-                                <div class="text-[11px] text-slate-400 mt-0.5">Assigned to you</div>
+                                <div class="text-xs font-bold text-slate-600 uppercase">Active Batches</div>
+                                <div class="text-2xl font-bold text-slate-900 mt-0.5" th:text="${batches != null ? batches.size() : 0}">0</div>
+                                <div class="text-xs font-medium text-slate-600 mt-0.5">Assigned to you</div>
                             </div>
                         </div>
 
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-start gap-4 transition-colors duration-200">
-                            <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-start gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0">
                                 <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2.5Z"/><path d="M8 7h8"/></svg>
                             </div>
                             <div>
-                                <div class="text-xs font-semibold text-slate-400 uppercase">Assigned Courses</div>
-                                <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5" th:text="${courses != null ? courses.size() : 0}">0</div>
-                                <div class="text-[11px] text-slate-400 mt-0.5">Curriculum builder</div>
+                                <div class="text-xs font-bold text-slate-600 uppercase">Assigned Courses</div>
+                                <div class="text-2xl font-bold text-slate-900 mt-0.5" th:text="${courses != null ? courses.size() : 0}">0</div>
+                                <div class="text-xs font-medium text-slate-600 mt-0.5">Curriculum builder</div>
                             </div>
                         </div>
                     </div>
                     
                     <!-- MY BATCHES TABLE PREVIEW -->
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8 transition-colors duration-200">
+                    <div class="bg-white rounded-2xl shadow-xs border border-slate-200 p-6 mb-8">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-base text-slate-900 dark:text-white">My Active Batches</h3>
-                            <button onclick="switchView('batches')" class="text-xs font-semibold text-teal-600 dark:text-teal-400 hover:underline">View All</button>
+                            <h3 class="font-bold text-base text-slate-900">My Active Batches</h3>
+                            <button onclick="switchView('batches')" class="text-xs font-bold text-teal-700 hover:underline cursor-pointer">View All</button>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm">
-                                <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-700/50 text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-700">
+                                <thead class="text-xs uppercase bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
                                     <tr>
                                         <th class="p-3">Batch Code</th>
                                         <th class="p-3">Course Title</th>
@@ -344,21 +151,21 @@
                                         <th class="p-3 text-right">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                                <tbody class="divide-y divide-slate-100">
                                     <tr th:each="b : ${batches}">
-                                        <td class="p-3 font-bold text-slate-900 dark:text-white" th:text="${b.batch_code}">BATCH-001</td>
-                                        <td class="p-3 text-slate-600 dark:text-slate-300" th:text="${b.course_title}">Web Dev</td>
-                                        <td class="p-3 text-slate-500 dark:text-slate-400 text-xs" th:text="${b.schedule_note}">Mon/Wed 7-9PM</td>
-                                        <td class="p-3 text-slate-600 dark:text-slate-300" th:text="${b.max_seats}">30</td>
+                                        <td class="p-3 font-bold text-slate-900" th:text="${b.batch_code}">BATCH-001</td>
+                                        <td class="p-3 font-medium text-slate-800" th:text="${b.course_title}">Web Dev</td>
+                                        <td class="p-3 text-slate-700 text-xs font-medium" th:text="${b.schedule_note}">Mon/Wed 7-9PM</td>
+                                        <td class="p-3 font-medium text-slate-800" th:text="${b.max_seats}">30</td>
                                         <td class="p-3">
-                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400" th:text="${b.status}">ONGOING</span>
+                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200" th:text="${b.status}">ONGOING</span>
                                         </td>
                                         <td class="p-3 text-right">
-                                            <a th:href="@{/teacher/batches/{id}(id=${b.batch_id})}" class="px-3 py-1.5 bg-teal-50 text-teal-700 hover:bg-teal-100 dark:bg-teal-950/50 dark:text-teal-400 dark:hover:bg-teal-900/50 rounded-lg text-xs font-semibold transition">Open Batch</a>
+                                            <a th:href="@{/teacher/batches/{id}(id=${b.batch_id})}" class="px-3 py-1.5 bg-teal-50 text-teal-800 hover:bg-teal-100 rounded-lg text-xs font-bold transition">Open Batch</a>
                                         </td>
                                     </tr>
                                     <tr th:if="${batches == null or batches.empty}">
-                                        <td colspan="6" class="p-6 text-center text-slate-400 text-xs">No batches assigned to your account yet.</td>
+                                        <td colspan="6" class="p-6 text-center text-slate-600 text-xs font-medium">No batches assigned to your account yet.</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -366,21 +173,21 @@
                     </div>
 
                     <!-- MY COURSES SECTION PREVIEW -->
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 transition-colors duration-200">
+                    <div class="bg-white rounded-2xl shadow-xs border border-slate-200 p-6">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-base text-slate-900 dark:text-white">My Assigned Courses</h3>
-                            <button onclick="switchView('courses')" class="text-xs font-semibold text-teal-600 dark:text-teal-400 hover:underline">Manage Builder</button>
+                            <h3 class="font-bold text-base text-slate-900">My Assigned Courses</h3>
+                            <button onclick="switchView('courses')" class="text-xs font-bold text-teal-700 hover:underline cursor-pointer">Manage Builder</button>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div th:each="c : ${courses}" class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/30 flex flex-col justify-between">
+                            <div th:each="c : ${courses}" class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
                                 <div>
-                                    <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300" th:text="${c.level}">BEGINNER</span>
-                                    <h4 class="font-bold text-slate-900 dark:text-white mt-2" th:text="${c.title}">Course Title</h4>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2" th:text="${c.short_description}">Description details...</p>
+                                    <span class="px-2 py-0.5 text-xs font-bold rounded bg-teal-100 text-teal-900" th:text="${c.level}">BEGINNER</span>
+                                    <h4 class="font-bold text-slate-900 mt-2" th:text="${c.title}">Course Title</h4>
+                                    <p class="text-xs font-medium text-slate-600 mt-1 line-clamp-2" th:text="${c.short_description}">Description details...</p>
                                 </div>
-                                <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
-                                    <span class="text-[11px] font-semibold text-slate-400" th:text="${c.status}">PUBLISHED</span>
-                                    <a th:href="@{/teacher/courses/{id}/builder(id=${c.course_id})}" class="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold transition">Course Builder</a>
+                                <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center">
+                                    <span class="text-xs font-bold text-slate-600" th:text="${c.status}">PUBLISHED</span>
+                                    <a th:href="@{/teacher/courses/{id}/builder(id=${c.course_id})}" class="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition">Course Builder</a>
                                 </div>
                             </div>
                         </div>
@@ -391,25 +198,25 @@
                 <div id="view-courses" class="teacher-view hidden">
                     <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">My Assigned Courses</h1>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Manage your course curriculum and builder tools.</p>
+                            <h1 class="text-2xl font-bold text-slate-900">My Assigned Courses</h1>
+                            <p class="text-sm font-medium text-slate-600">Manage your course curriculum and builder tools.</p>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div th:each="c : ${courses}" class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between transition-colors duration-200">
+                        <div th:each="c : ${courses}" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
                             <div>
-                                <span class="px-2.5 py-1 text-[10px] font-bold uppercase rounded-md bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-400" th:text="${c.level}">BEGINNER</span>
-                                <h4 class="font-bold text-slate-900 dark:text-white text-base mt-2" th:text="${c.title}">Course Title</h4>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2" th:text="${c.short_description}">Description...</p>
+                                <span class="px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-teal-50 text-teal-800 border border-teal-200" th:text="${c.level}">BEGINNER</span>
+                                <h4 class="font-bold text-slate-900 text-base mt-2" th:text="${c.title}">Course Title</h4>
+                                <p class="text-xs font-medium text-slate-600 mt-1 line-clamp-2" th:text="${c.short_description}">Description...</p>
                             </div>
-                            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
-                                <span class="text-[11px] text-slate-400 font-mono" th:text="'Slug: ' + ${c.slug}">slug</span>
-                                <a th:href="@{/teacher/courses/{id}/builder(id=${c.course_id})}" class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold transition">
+                            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                                <span class="text-xs font-mono font-medium text-slate-600" th:text="'Slug: ' + ${c.slug}">slug</span>
+                                <a th:href="@{/teacher/courses/{id}/builder(id=${c.course_id})}" class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition">
                                     Course Builder
                                 </a>
                             </div>
                         </div>
-                        <div th:if="${courses == null or courses.empty}" class="col-span-full bg-white dark:bg-slate-800 p-8 rounded-2xl text-center border border-slate-200 dark:border-slate-700 text-slate-400 text-xs">
+                        <div th:if="${courses == null or courses.empty}" class="col-span-full bg-white p-8 rounded-2xl text-center border border-slate-200 text-slate-600 text-xs font-medium">
                             No courses assigned to your instructor account yet.
                         </div>
                     </div>
@@ -419,14 +226,14 @@
                 <div id="view-batches" class="teacher-view hidden">
                     <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">My Assigned Batches</h1>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">View and manage all active teaching batches and rosters.</p>
+                            <h1 class="text-2xl font-bold text-slate-900">My Assigned Batches</h1>
+                            <p class="text-sm font-medium text-slate-600">View and manage all active teaching batches and rosters.</p>
                         </div>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 transition-colors duration-200">
+                    <div class="bg-white rounded-2xl shadow-xs border border-slate-200 p-6">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm">
-                                <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-700/50 text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-700">
+                                <thead class="text-xs uppercase bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
                                     <tr>
                                         <th class="p-3">Batch Code</th>
                                         <th class="p-3">Course Title</th>
@@ -436,21 +243,21 @@
                                         <th class="p-3 text-right">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                                <tbody class="divide-y divide-slate-100">
                                     <tr th:each="b : ${batches}">
-                                        <td class="p-3 font-bold text-slate-900 dark:text-white" th:text="${b.batch_code}">BATCH-001</td>
-                                        <td class="p-3 text-slate-600 dark:text-slate-300" th:text="${b.course_title}">Web Dev</td>
-                                        <td class="p-3 text-slate-500 dark:text-slate-400 text-xs" th:text="${b.schedule_note}">Mon/Wed 7-9PM</td>
-                                        <td class="p-3 text-slate-600 dark:text-slate-300" th:text="${b.max_seats}">30</td>
+                                        <td class="p-3 font-bold text-slate-900" th:text="${b.batch_code}">BATCH-001</td>
+                                        <td class="p-3 font-medium text-slate-800" th:text="${b.course_title}">Web Dev</td>
+                                        <td class="p-3 text-slate-700 text-xs font-medium" th:text="${b.schedule_note}">Mon/Wed 7-9PM</td>
+                                        <td class="p-3 font-medium text-slate-800" th:text="${b.max_seats}">30</td>
                                         <td class="p-3">
-                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400" th:text="${b.status}">ONGOING</span>
+                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200" th:text="${b.status}">ONGOING</span>
                                         </td>
                                         <td class="p-3 text-right">
-                                            <a th:href="@{/teacher/batches/{id}(id=${b.batch_id})}" class="px-3 py-1.5 bg-teal-50 text-teal-700 hover:bg-teal-100 dark:bg-teal-950/50 dark:text-teal-400 dark:hover:bg-teal-900/50 rounded-lg text-xs font-semibold transition">Open Batch</a>
+                                            <a th:href="@{/teacher/batches/{id}(id=${b.batch_id})}" class="px-3 py-1.5 bg-teal-50 text-teal-800 hover:bg-teal-100 rounded-lg text-xs font-bold transition">Open Batch</a>
                                         </td>
                                     </tr>
                                     <tr th:if="${batches == null or batches.empty}">
-                                        <td colspan="6" class="p-6 text-center text-slate-400 text-xs">No batches assigned to your account yet.</td>
+                                        <td colspan="6" class="p-6 text-center text-slate-600 text-xs font-medium">No batches assigned to your account yet.</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -459,83 +266,125 @@
                 </div>
 
                 <!-- ================= VIEW 4: ATTENDANCE ================= -->
-                <div id="view-attendance" class="teacher-view hidden">
-                    <div class="flex justify-between items-center mb-6">
+                <div id="view-attendance" class="teacher-view hidden space-y-6">
+                    <div class="flex justify-between items-center mb-2">
                         <div>
-                            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Class Attendance</h1>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Record daily attendance status for enrolled students.</p>
+                            <h1 class="text-2xl font-bold text-slate-900">Class Attendance</h1>
+                            <p class="text-sm font-medium text-slate-600">Record daily attendance status for enrolled students.</p>
                         </div>
                     </div>
 
-                    <!-- BATCH & SESSION SELECTOR FORM -->
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8 transition-colors duration-200">
-                        <form method="get" action="/teacher/attendance" class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                    <!-- BATCH & SESSION SELECTOR FORM (ROUNDER & DARKER BORDERS) -->
+                    <div class="bg-white rounded-2xl shadow-xs border border-slate-200 p-6">
+                        <form method="get" action="/teacher/attendance" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
                             
                             <!-- Batch Selector -->
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-2">Select Active Batch</label>
-                                <select name="batchId" onchange="this.form.submit()" class="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:border-teal-500">
-                                    <option value="">-- Choose a Batch --</option>
-                                    <option th:each="b : ${batches}" 
-                                            th:value="${b.batch_id}" 
-                                            th:text="${b.batch_code + ' - ' + b.title}"
-                                            th:selected="${b.batch_id == selectedBatchId}">Batch</option>
-                                </select>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-800">
+                                    <i class="fa-solid fa-layer-group text-teal-600"></i> Select Active Batch
+                                </label>
+                                <div class="relative">
+                                    <select name="batchId" onchange="this.form.submit()" class="w-full appearance-none bg-white hover:bg-slate-50 border-2 border-slate-400 text-slate-900 font-bold text-sm rounded-2xl px-4 py-3.5 pr-10 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-600 transition cursor-pointer shadow-2xs">
+                                        <option value="">-- Choose a Batch --</option>
+                                        <option th:each="b : ${batches}" 
+                                                th:value="${b.batch_id}" 
+                                                th:text="${b.batch_code + ' - ' + b.title}"
+                                                th:selected="${b.batch_id == selectedBatchId}">Batch</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-700">
+                                        <i class="fa-solid fa-chevron-down text-xs font-bold"></i>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Session Date Selector -->
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-2">Select Class Session Date</label>
-                                <select name="sessionId" onchange="this.form.submit()" class="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:border-teal-500" th:disabled="${selectedBatchId == null}">
-                                    <option value="">-- Choose Session Date --</option>
-                                    <option th:each="s : ${sessions}" 
-                                            th:value="${s.session_id}" 
-                                            th:text="${s.title + ' (' + s.start_at + ')'}"
-                                            th:selected="${s.session_id == selectedSessionId}">Session</option>
-                                </select>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-800">
+                                    <i class="fa-solid fa-calendar-day text-teal-600"></i> Select Class Session Date
+                                </label>
+                                <div class="relative">
+                                    <select name="sessionId" onchange="this.form.submit()" class="w-full appearance-none bg-white hover:bg-slate-50 border-2 border-slate-400 text-slate-900 font-bold text-sm rounded-2xl px-4 py-3.5 pr-10 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-600 transition cursor-pointer shadow-2xs disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-100" th:disabled="${selectedBatchId == null}">
+                                        <option value="">-- Choose Session Date --</option>
+                                        <option th:each="s : ${sessions}" 
+                                                th:value="${s.session_id}" 
+                                                th:text="${s.title + ' (' + s.start_at + ')'}"
+                                                th:selected="${s.session_id == selectedSessionId}">Session</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-700">
+                                        <i class="fa-solid fa-chevron-down text-xs font-bold"></i>
+                                    </div>
+                                </div>
                             </div>
 
                         </form>
                     </div>
 
-                    <!-- ATTENDANCE MARKING TABLE -->
-                    <div th:if="${selectedSessionId != null}" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 transition-colors duration-200">
+                    <!-- ATTENDANCE MARKING & LOOKUP TABLE -->
+                    <div th:if="${selectedSessionId != null}" class="bg-white rounded-2xl shadow-xs border border-slate-200 p-6">
                         <form th:action="@{/teacher/attendance/save}" method="post">
-                            
-                            <!-- Hidden Session ID so the backend knows which date this is for -->
                             <input type="hidden" name="sessionId" th:value="${selectedSessionId}"/>
+                            <input type="hidden" name="batchId" th:value="${selectedBatchId}"/>
 
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left text-sm">
-                                    <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-700/50 text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-700">
+                                    <thead class="text-xs uppercase bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
                                         <tr>
                                             <th class="p-3">Student Name</th>
                                             <th class="p-3">Email</th>
                                             <th class="p-3 text-center">Status Options</th>
+                                            <th class="p-3">Marked At</th>
+                                            <th class="p-3 text-right">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                                        <tr th:each="s, iterStat : ${students}">
-                                            <td class="p-3 font-bold text-slate-900 dark:text-white">
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr th:each="s, iterStat : ${students}" th:with="studentKey=${#strings.toString(s.enrollment_id)}, currentStatus=${attendanceMap != null ? attendanceMap.get(studentKey) : null}">
+                                            
+                                            <!-- Student Name -->
+                                            <td class="p-3 font-bold text-slate-900">
                                                 <input type="hidden" th:name="'attendanceList[' + ${iterStat.index} + '].enrollmentId'" th:value="${s.enrollment_id}"/>
                                                 <span th:text="${s.full_name}">Student Name</span>
                                             </td>
-                                            <td class="p-3 text-slate-600 dark:text-slate-400 text-xs" th:text="${s.email}">student@email.com</td>
+
+                                            <!-- Email -->
+                                            <td class="p-3 text-slate-700 text-xs font-medium" th:text="${s.email}">student@email.com</td>
+
+                                            <!-- Status Options (Obvious Disabled Grey Box Container) -->
                                             <td class="p-3 text-center">
-                                                <div class="inline-flex rounded-lg p-1 bg-slate-100 dark:bg-slate-700 text-xs font-semibold gap-1">
-                                                    <label class="px-3 py-1 rounded-md cursor-pointer transition has-[:checked]:bg-emerald-500 has-[:checked]:text-white">
-                                                        <input type="radio" th:name="'attendanceList[' + ${iterStat.index} + '].status'" value="PRESENT" checked class="hidden"/> Present
+                                                <div th:id="'status-container-' + ${s.enrollment_id}" 
+                                                     class="inline-flex rounded-xl p-1.5 bg-slate-200/90 border border-slate-300 text-xs font-bold gap-1 shadow-inner opacity-75 transition-all">
+                                                     
+                                                    <label class="px-3 py-1 rounded-lg cursor-pointer transition has-[:checked]:bg-emerald-600 has-[:checked]:text-white text-slate-600">
+                                                        <input type="radio" th:name="'attendanceList[' + ${iterStat.index} + '].status'" value="PRESENT" 
+                                                               th:checked="${currentStatus == 'PRESENT' || currentStatus == null}" disabled class="attendance-radio hidden"/> Present
                                                     </label>
-                                                    <label class="px-3 py-1 rounded-md cursor-pointer transition has-[:checked]:bg-amber-500 has-[:checked]:text-white">
-                                                        <input type="radio" th:name="'attendanceList[' + ${iterStat.index} + '].status'" value="LATE" class="hidden"/> Late
+                                                    <label class="px-3 py-1 rounded-lg cursor-pointer transition has-[:checked]:bg-amber-600 has-[:checked]:text-white text-slate-600">
+                                                        <input type="radio" th:name="'attendanceList[' + ${iterStat.index} + '].status'" value="LATE" 
+                                                               th:checked="${currentStatus == 'LATE'}" disabled class="attendance-radio hidden"/> Late
                                                     </label>
-                                                    <label class="px-3 py-1 rounded-md cursor-pointer transition has-[:checked]:bg-rose-500 has-[:checked]:text-white">
-                                                        <input type="radio" th:name="'attendanceList[' + ${iterStat.index} + '].status'" value="ABSENT" class="hidden"/> Absent
+                                                    <label class="px-3 py-1 rounded-lg cursor-pointer transition has-[:checked]:bg-rose-600 has-[:checked]:text-white text-slate-600">
+                                                        <input type="radio" th:name="'attendanceList[' + ${iterStat.index} + '].status'" value="ABSENT" 
+                                                               th:checked="${currentStatus == 'ABSENT'}" disabled class="attendance-radio hidden"/> Absent
                                                     </label>
-                                                    <label class="px-3 py-1 rounded-md cursor-pointer transition has-[:checked]:bg-blue-500 has-[:checked]:text-white">
-                                                        <input type="radio" th:name="'attendanceList[' + ${iterStat.index} + '].status'" value="EXCUSED" class="hidden"/> Excused
+                                                    <label class="px-3 py-1 rounded-lg cursor-pointer transition has-[:checked]:bg-blue-600 has-[:checked]:text-white text-slate-600">
+                                                        <input type="radio" th:name="'attendanceList[' + ${iterStat.index} + '].status'" value="EXCUSED" 
+                                                               th:checked="${currentStatus == 'EXCUSED'}" disabled class="attendance-radio hidden"/> Excused
                                                     </label>
                                                 </div>
+                                            </td>
+
+                                            <!-- Marked At Timestamp -->
+                                            <td class="p-3 text-slate-700 text-xs font-mono font-medium">
+                                                <span th:with="markedTime=${markedAtMap != null ? markedAtMap.get(studentKey) : null}"
+                                                      th:text="${markedTime != null ? markedTime : 'Not Marked Yet'}">--</span>
+                                            </td>
+
+                                            <!-- Individual Toggle Change Button -->
+                                            <td class="p-3 text-right">
+                                                <button type="button" th:onclick="'toggleStudentRow(' + ${s.enrollment_id} + ')'" 
+                                                        th:id="'edit-btn-' + ${s.enrollment_id}"
+                                                        class="px-3 py-1.5 bg-slate-200 hover:bg-teal-600 hover:text-white text-slate-800 rounded-lg text-xs font-bold transition cursor-pointer shadow-xs">
+                                                    Change
+                                                </button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -543,65 +392,67 @@
                             </div>
 
                             <div class="mt-6 flex justify-end">
-                                <button type="submit" class="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold transition shadow-sm">
+                                <button type="submit" class="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer">
                                     Save Attendance Records
                                 </button>
                             </div>
                         </form>
                     </div>
 
-                    <div th:if="${selectedSessionId == null}" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-12 text-center text-slate-400 text-xs transition-colors duration-200">
+                    <!-- INITIAL PLACEHOLDER WHEN NO SESSION IS SELECTED -->
+                    <div th:if="${selectedSessionId == null}" class="bg-white rounded-2xl shadow-xs border border-slate-200 p-12 text-center text-slate-600 text-xs font-medium">
                         Please select a batch and session date above to load the attendance sheet.
                     </div>
-				</div>
+                </div>
+
                 <!-- ================= VIEW 5: BATCH DETAIL ================= -->
                 <div id="view-batch-detail" class="teacher-view hidden">
                     <!-- Top Bar -->
                     <div class="flex justify-between items-center mb-8">
                         <div>
                             <div class="flex items-center gap-2 mb-1">
-                                <button onclick="switchView('batches')" class="text-xs text-slate-400 hover:text-teal-600 transition cursor-pointer">← Back to Batches</button>
+                                <button onclick="switchView('batches')" class="text-xs font-bold text-slate-600 hover:text-teal-700 transition cursor-pointer">← Back to Batches</button>
                             </div>
-                            <h1 class="text-2xl font-bold text-slate-900 dark:text-white" th:text="${batch != null ? batch.batch_code : 'Batch Detail'}">BATCH-001</h1>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Manage enrolled students, schedules, and batch progress.</p>
+                            <h1 class="text-2xl font-bold text-slate-900" th:text="${batch != null ? batch.batch_code : 'Batch Detail'}">BATCH-001</h1>
+                            <p class="text-sm font-medium text-slate-600">Manage enrolled students, schedules, and batch progress.</p>
                         </div>
-                        <a th:href="@{/teacher/attendance(batchId=${batchId})}" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold transition shadow-sm flex items-center gap-2">
+                        <a th:href="@{/teacher/attendance(batchId=${batchId})}" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition shadow-xs flex items-center gap-2">
                             <i class="fa-solid fa-calendar-check"></i> Take Attendance for Batch
                         </a>
                     </div>
 
                     <!-- BATCH INFO OVERVIEW CARD -->
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors duration-200">
-                            <span class="text-xs text-slate-400 font-semibold uppercase">Course</span>
-                            <div class="text-base font-bold text-slate-900 dark:text-white mt-1" th:text="${batch != null ? batch.course_title : 'Course Name'}">Web Dev</div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+                            <span class="text-xs font-bold text-slate-600 uppercase">Course</span>
+                            <div class="text-base font-bold text-slate-900 mt-1" th:text="${batch != null ? batch.course_title : 'Course Name'}">Web Dev</div>
                         </div>
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors duration-200">
-                            <span class="text-xs text-slate-400 font-semibold uppercase">Schedule</span>
-                            <div class="text-base font-bold text-slate-900 dark:text-white mt-1" th:text="${batch != null ? batch.schedule_note : 'Mon/Wed'}">Mon/Wed 7-9PM</div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+                            <span class="text-xs font-bold text-slate-600 uppercase">Schedule</span>
+                            <div class="text-base font-bold text-slate-900 mt-1" th:text="${batch != null ? batch.schedule_note : 'Mon/Wed'}">Mon/Wed 7-9PM</div>
                         </div>
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors duration-200">
-                            <span class="text-xs text-slate-400 font-semibold uppercase">Max Seats</span>
-                            <div class="text-base font-bold text-slate-900 dark:text-white mt-1" th:text="${batch != null ? batch.max_seats : '30'}">30</div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+                            <span class="text-xs font-bold text-slate-600 uppercase">Max Seats</span>
+                            <div class="text-base font-bold text-slate-900 mt-1" th:text="${batch != null ? batch.max_seats : '30'}">30</div>
                         </div>
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors duration-200">
-                            <span class="text-xs text-slate-400 font-semibold uppercase">Status</span>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+                            <span class="text-xs font-bold text-slate-600 uppercase">Status</span>
                             <div class="mt-1">
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400" th:text="${batch != null ? batch.status : 'ACTIVE'}">ACTIVE</span>
+                                <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200" th:text="${batch != null ? batch.status : 'ACTIVE'}">ACTIVE</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- ENROLLED STUDENTS TABLE -->
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 transition-colors duration-200">
+                    <div class="bg-white rounded-2xl shadow-xs border border-slate-200 p-6">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-base text-slate-900 dark:text-white">Enrolled Students</h3>
-                            <span class="text-xs text-slate-400" th:text="${students != null ? students.size() + ' Students Enrolled' : '0 Students'}">0 Students</span>
+                            <h3 class="font-bold text-base text-slate-900">Enrolled Students</h3>
+                            <span class="text-xs font-bold text-slate-600" th:text="${students != null ? students.size() + ' Students Enrolled' : '0 Students'}">0 Students</span>
                         </div>
 
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm">
-                                <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-700/50 text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-700">
+                                <thead class="text-xs uppercase bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
                                     <tr>
                                         <th class="p-3">Student Name</th>
                                         <th class="p-3">Email Address</th>
@@ -610,23 +461,23 @@
                                         <th class="p-3 text-right">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                                <tbody class="divide-y divide-slate-100">
                                     <tr th:each="s : ${students}">
-                                        <td class="p-3 font-bold text-slate-900 dark:text-white flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center font-bold text-xs" th:text="${#strings.substring(s.full_name,0,2)}">ST</div>
+                                        <td class="p-3 font-bold text-slate-900 flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs" th:text="${#strings.substring(s.full_name,0,2)}">ST</div>
                                             <span th:text="${s.full_name}">Student Name</span>
                                         </td>
-                                        <td class="p-3 text-slate-600 dark:text-slate-400 text-xs" th:text="${s.email}">student@email.com</td>
-                                        <td class="p-3 text-slate-500 dark:text-slate-400 text-xs" th:text="${s != null and s['enrolled_at'] != null ? s['enrolled_at'] : '-'}">2026-01-10</td>
+                                        <td class="p-3 text-slate-700 text-xs font-medium" th:text="${s.email}">student@email.com</td>
+                                        <td class="p-3 text-slate-700 text-xs font-medium" th:text="${s != null and s['enrolled_at'] != null ? s['enrolled_at'] : '-'}">2026-01-10</td>
                                         <td class="p-3">
-                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400" th:text="${s.status}">ACTIVE</span>
+                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200" th:text="${s.status}">ACTIVE</span>
                                         </td>
                                         <td class="p-3 text-right">
-                                            <button onclick="alert('Student progress view coming soon!')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition">View Progress</button>
+                                            <button onclick="alert('Student progress view coming soon!')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs font-bold transition cursor-pointer">View Progress</button>
                                         </td>
                                     </tr>
                                     <tr th:if="${students == null or students.empty}">
-                                        <td colspan="5" class="p-8 text-center text-slate-400 text-xs">No students currently enrolled in this batch.</td>
+                                        <td colspan="5" class="p-8 text-center text-slate-600 text-xs font-medium">No students currently enrolled in this batch.</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -639,35 +490,36 @@
     </div>
 
 <script>
-// Dark Mode Toggle Logic
-function toggleDarkMode() {
-    const html = document.documentElement;
-    const icon = document.getElementById('theme-icon');
-    if (html.classList.contains('dark')) {
-        html.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-        if(icon) icon.className = "fa-solid fa-moon text-lg";
-    } else {
-        html.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-        if(icon) icon.className = "fa-solid fa-sun text-lg";
+// Toggle Function to Enable / Disable Row Editing State
+function toggleStudentRow(enrollmentId) {
+    const container = document.getElementById('status-container-' + enrollmentId);
+    const editBtn = document.getElementById('edit-btn-' + enrollmentId);
+    
+    if (container && editBtn) {
+        const radios = container.querySelectorAll('.attendance-radio');
+        const isCurrentlyDisabled = radios[0].disabled;
+        
+        if (isCurrentlyDisabled) {
+            // Enable editing mode
+            radios.forEach(radio => radio.disabled = false);
+            container.classList.remove('opacity-75', 'bg-slate-200/90', 'border-slate-300', 'shadow-inner');
+            container.classList.add('bg-white', 'ring-2', 'ring-teal-500', 'border-teal-500', 'shadow-md');
+            
+            editBtn.textContent = 'Lock / Done';
+            editBtn.classList.remove('bg-slate-200', 'text-slate-800');
+            editBtn.classList.add('bg-amber-600', 'text-white');
+        } else {
+            // Disable/Lock back down mode
+            radios.forEach(radio => radio.disabled = true);
+            container.classList.remove('bg-white', 'ring-2', 'ring-teal-500', 'border-teal-500', 'shadow-md');
+            container.classList.add('opacity-75', 'bg-slate-200/90', 'border-slate-300', 'shadow-inner');
+            
+            editBtn.textContent = 'Change';
+            editBtn.classList.remove('bg-amber-600', 'text-white');
+            editBtn.classList.add('bg-slate-200', 'text-slate-800');
+        }
     }
 }
-
-// Notifications dropdown toggle
-function toggleNotifications() {
-    const dropdown = document.getElementById('notif-dropdown');
-    dropdown.classList.toggle('hidden');
-}
-
-// Initialize theme from storage
-(function() {
-    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-        const icon = document.getElementById('theme-icon');
-        if(icon) icon.className = "fa-solid fa-sun text-lg";
-    }
-})();
 
 // SPA View Switcher
 function switchView(viewName) {
@@ -681,14 +533,14 @@ function switchView(viewName) {
     }
     
     document.querySelectorAll('.nav-link').forEach(el => {
-        el.classList.remove('bg-teal-600', 'text-white', 'font-semibold', 'shadow-sm');
-        el.classList.add('text-slate-600', 'dark:text-slate-300');
+        el.classList.remove('bg-teal-600', 'text-white', 'font-semibold', 'shadow-xs');
+        el.classList.add('text-slate-700');
     });
     
     const activeLink = document.getElementById('nav-' + viewName);
     if (activeLink) {
-        activeLink.classList.remove('text-slate-600', 'dark:text-slate-300');
-        activeLink.classList.add('bg-teal-600', 'text-white', 'font-semibold', 'shadow-sm');
+        activeLink.classList.remove('text-slate-700');
+        activeLink.classList.add('bg-teal-600', 'text-white', 'font-semibold', 'shadow-xs');
     }
 }
 

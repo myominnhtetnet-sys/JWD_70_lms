@@ -1,10 +1,6 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.Learning_Managnment_System.JWD_70_lms.Repository.Teacher_Repository;
@@ -22,11 +17,10 @@ import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 
 import jakarta.servlet.http.HttpSession;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/teacher")
@@ -101,7 +95,6 @@ public class Teacher_Controller {
         return "teacher";
     }
 
-    // 4. Attendance Route
     @GetMapping("/attendance")
     public String takeAttendance(@RequestParam(value = "batchId", required = false) Long batchId, 
                                  @RequestParam(value = "sessionId", required = false) Long sessionId,
@@ -110,83 +103,78 @@ public class Teacher_Controller {
         addCommonAttributes(session, model);
         
         model.addAttribute("selectedBatchId", batchId);
-        model.addAttribute("selectedSessionId", sessionId); // <-- Pass selected session ID to model
+        model.addAttribute("selectedSessionId", sessionId);
 
         if (batchId != null) {
-            model.addAttribute("sessions", teacherRepository.getSessionsByBatch(batchId)); // <-- Loads session dates
-            model.addAttribute("students", teacherRepository.getRosterByBatch(batchId));
+            model.addAttribute("sessions", teacherRepository.getSessionsByBatch(batchId));
+            
+            if (sessionId != null) {
+                // 1. Fetch roster of students for the batch
+                List<Map<String, Object>> students = teacherRepository.getRosterByBatch(batchId);
+                model.addAttribute("students", students);
+                
+                // 2. Fetch saved attendance records for this session
+                List<Map<String, Object>> savedRows = teacherRepository.getAttendanceBySession(sessionId);
+                
+                // 3. Map enrollmentId -> status & enrollmentId -> marked_at timestamp for HTML lookup
+                Map<String, Object> attendanceMap = new HashMap<>();
+                Map<String, Object> markedAtMap = new HashMap<>();
+                
+                for (Map<String, Object> row : savedRows) {
+                    // Convert enrollment_id to String/Long safely depending on your DB driver
+                    Object enrollmentIdObj = row.get("enrollment_id");
+                    if (enrollmentIdObj != null) {
+                        String enrollmentIdStr = enrollmentIdObj.toString();
+                        
+                        attendanceMap.put(enrollmentIdStr, row.get("status"));
+                        
+                        Object markedAt = row.get("marked_at");
+                        if (markedAt != null) {
+                            markedAtMap.put(enrollmentIdStr, markedAt.toString());
+                        }
+                    }
+                }
+                
+                model.addAttribute("attendanceMap", attendanceMap);
+                model.addAttribute("markedAtMap", markedAtMap);
+                
+            } else {
+                model.addAttribute("students", Collections.emptyList());
+                model.addAttribute("attendanceMap", Collections.emptyMap());
+                model.addAttribute("markedAtMap", Collections.emptyMap());
+            }
         } else {
             model.addAttribute("sessions", Collections.emptyList());
             model.addAttribute("students", Collections.emptyList());
+            model.addAttribute("attendanceMap", Collections.emptyMap());
+            model.addAttribute("markedAtMap", Collections.emptyMap());
         }
 
         model.addAttribute("activeView", "attendance");
         return "teacher"; 
     }
-
     @PostMapping("/attendance/save")
-    public String saveAttendance(@ModelAttribute("attendanceForm") AttendanceBean form, 
-                                 HttpSession session, RedirectAttributes redirectAttributes) {
+    public String saveAttendance(@ModelAttribute AttendanceBean attendanceForm, HttpSession session, RedirectAttributes redirectAttributes) {
         if (isNotTeacher(session)) return "redirect:/login";
+        
+        Long sessionId = attendanceForm.getSessionId();
+        Long batchId = attendanceForm.getBatchId(); // <-- Grab batchId
+        List<AttendanceBean.AttendanceItem> items = attendanceForm.getAttendanceList();
+        
+        Integer teacherId = (Integer) session.getAttribute("user_id");
+        int markedBy = (teacherId != null) ? teacherId : 1; 
 
-        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
-        int teacherId = currentUser != null ? currentUser.getUser_id() : 2;
-
-        // Ensure session ID and attendance list are present before saving
-        if (form.getSessionId() != null && form.getAttendanceList() != null) {
-            for (var item : form.getAttendanceList()) {
-                // Pass form.getSessionId() instead of hardcoded 1
-                teacherRepository.saveAttendance(form.getSessionId(), item.getEnrollmentId(), item.getStatus(), teacherId);
+        if (sessionId != null && items != null) {
+            for (AttendanceBean.AttendanceItem item : items) {
+                if (item.getEnrollmentId() != null && item.getStatus() != null && !item.getStatus().trim().isEmpty()) {
+                    teacherRepository.saveAttendance(sessionId, item.getEnrollmentId(), item.getStatus(), markedBy);
+                }
             }
         }
-
-        redirectAttributes.addFlashAttribute("success", "Attendance saved successfully!");
-        return "redirect:/teacher/attendance?batchId=" + form.getSessionId(); // Keeps the view active
+        
+        redirectAttributes.addFlashAttribute("successMessage", "Attendance saved successfully!");
+        
+        // Redirect back carrying BOTH batchId and sessionId so the view stays fully intact
+        return "redirect:/teacher/attendance?batchId=" + batchId + "&sessionId=" + sessionId;
     }
-	/*
-	 * @PostMapping("/lessons/{lessonId}/materials/upload") public String
-	 * uploadLessonMaterial(@PathVariable("lessonId") Long lessonId,
-	 * 
-	 * @RequestParam("title") String title,
-	 * 
-	 * @RequestParam("file") MultipartFile file, HttpSession session,
-	 * RedirectAttributes redirectAttributes) { if (isNotTeacher(session)) return
-	 * "redirect:/login";
-	 * 
-	 * try { if (!file.isEmpty()) { Path uploadPath =
-	 * Paths.get("uploads/materials/"); if (!Files.exists(uploadPath)) {
-	 * Files.createDirectories(uploadPath); }
-	 * 
-	 * String originalFileName = file.getOriginalFilename(); String uniqueFileName =
-	 * UUID.randomUUID().toString() + "_" + originalFileName; Path filePath =
-	 * uploadPath.resolve(uniqueFileName);
-	 * 
-	 * Files.copy(file.getInputStream(), filePath);
-	 * 
-	 * // Calculate file size in KB long fileSizeKb = file.getSize() / 1024; String
-	 * fileExtension = originalFileName.substring(originalFileName.lastIndexOf(".")
-	 * + 1).toUpperCase();
-	 * 
-	 * // Save to existing lesson_materials table
-	 * teacherRepository.saveLessonMaterial(lessonId, title, uniqueFileName,
-	 * fileExtension, fileSizeKb); redirectAttributes.addFlashAttribute("success",
-	 * "Lesson material uploaded successfully!"); } } catch (Exception e) {
-	 * e.printStackTrace(); redirectAttributes.addFlashAttribute("error",
-	 * "Upload failed: " + e.getMessage()); }
-	 * 
-	 * return "redirect:/teacher/lessons/" + lessonId; } // Serve / Preview Uploaded
-	 * Files directly in the browser (PDF, images, text, etc.)
-	 * 
-	 * @GetMapping("/materials/preview/{fileName}") public ResponseEntity<Resource>
-	 * previewFile(@PathVariable("fileName") String fileName) { try { Path filePath
-	 * = Paths.get(UPLOAD_DIR).resolve(fileName).normalize(); Resource resource =
-	 * new UrlResource(filePath.toUri());
-	 * 
-	 * if (resource.exists() || resource.isReadable()) { // 'inline' tells the
-	 * browser to display the file instead of downloading it directly return
-	 * ResponseEntity.ok() .header(HttpHeaders.CONTENT_DISPOSITION,
-	 * "inline; filename=\"" + resource.getFilename() + "\"") .body(resource); } }
-	 * catch (Exception e) { e.printStackTrace(); } return
-	 * ResponseEntity.notFound().build(); }
-	 */
-}
+	}

@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class AttendanceBean {
 	private Long sessionId;
+	private Long batchId;
     private List<AttendanceItem> attendanceList;
 
     public static class AttendanceItem {

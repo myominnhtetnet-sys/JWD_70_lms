@@ -74,23 +74,23 @@ public class Teacher_Repository {
 
  // Save or update attendance records for a specific session date
     public void saveAttendance(Long sessionId, Long enrollmentId, String status, int markedBy) {
-        String sql = "INSERT INTO attendance (session_id, enrollment_id, status, marked_by) " +
-                     "VALUES (?, ?, ?, ?) " +
-                     "ON DUPLICATE KEY UPDATE status = ?";
-        jdbcTemplate.update(sql, sessionId, enrollmentId, status, markedBy, status);
+        String sql = "INSERT INTO attendance (session_id, enrollment_id, status, marked_by, marked_at) " +
+                     "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP) " +
+                     "ON DUPLICATE KEY UPDATE " +
+                     "status = ?, " +
+                     "marked_by = ?, " +
+                     "marked_at = CURRENT_TIMESTAMP";
+        
+        jdbcTemplate.update(sql, sessionId, enrollmentId, status, markedBy, status, markedBy);
     }
-	/*
-	 * // Get materials for a specific lesson public List<Map<String, Object>>
-	 * getMaterialsByLesson(Long lessonId) { String sql =
-	 * "SELECT material_id, lesson_id, title, file_path, file_type, file_size_kb, created_at "
-	 * + "FROM lesson_materials WHERE lesson_id = ? ORDER BY created_at DESC";
-	 * return jdbcTemplate.queryForList(sql, lessonId); }
-	 * 
-	 * // Save uploaded material into lesson_materials public void
-	 * saveLessonMaterial(Long lessonId, String title, String filePath, String
-	 * fileType, long fileSizeKb) { String sql =
-	 * "INSERT INTO lesson_materials (lesson_id, title, file_path, file_type, file_size_kb) "
-	 * + "VALUES (?, ?, ?, ?, ?)"; jdbcTemplate.update(sql, lessonId, title,
-	 * filePath, fileType, fileSizeKb); }
-	 */
+ // Fetch saved attendance records for a specific session date
+    public List<Map<String, Object>> getAttendanceBySession(Long sessionId) {
+        String sql = "SELECT a.attendance_id, a.session_id, a.enrollment_id, a.status, a.marked_at, " +
+                     "u.full_name, u.email " +
+                     "FROM attendance a " +
+                     "JOIN enrollments e ON a.enrollment_id = e.enrollment_id " +
+                     "JOIN users u ON e.user_id = u.user_id " +
+                     "WHERE a.session_id = ?";
+        return jdbcTemplate.queryForList(sql, sessionId);
+    }
 }
