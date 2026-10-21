@@ -150,12 +150,16 @@ public class StudentAssignmentController {
                 return "redirect:/student/assignments";
             }
 
-            Path uploadPath = Paths.get("uploads");
+            // 🟢 FIXED CONFIGURATION: Pointing explicitly to the unified 'uploads/assignments' folder
+            Path uploadPath = Paths.get("uploads/assignments");
             Files.createDirectories(uploadPath);
+            
             String savedFileName = UUID.randomUUID() + extension;
             Path filePath = uploadPath.resolve(savedFileName);
             Files.copy(file.getInputStream(), filePath);
-            submission.setAttachment("uploads/" + savedFileName);
+            
+            // 🟢 FIXED SETTER PAYLOAD: Storing the standardized string prefix to match database schemas
+            submission.setAttachment("uploads/assignments/" + savedFileName);
         }
 
         try {
@@ -166,6 +170,7 @@ public class StudentAssignmentController {
         }
         return "redirect:/student/assignments";
     }
+
     
     @GetMapping("/assignments/submission/{id}")
     public String showMySubmission(@PathVariable Integer id, Model model, HttpSession session) {
