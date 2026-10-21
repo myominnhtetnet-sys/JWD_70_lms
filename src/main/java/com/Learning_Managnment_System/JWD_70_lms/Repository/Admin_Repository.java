@@ -38,29 +38,32 @@ public class Admin_Repository {
             return u;
         }
     };
+public List<AdminUserBean> searchUsers(String keyword) {
+    String sql = """
+        SELECT u.*, r.role_name
+        FROM users u
+        LEFT JOIN roles r ON r.role_id = u.role_id
+        WHERE u.deleted_at IS NULL
+          AND (
+              LOWER(u.full_name) LIKE ?
+              OR LOWER(u.email) LIKE ?
+              OR LOWER(u.phone) LIKE ?
+          )
+        ORDER BY u.user_id DESC
+        """;
 
-    public List<AdminUserBean> searchUsers(String keyword) {
-        StringBuilder sql = new StringBuilder("""
-            SELECT u.*, r.role_name 
-            FROM users u
-            LEFT JOIN roles r ON r.role_id = u.role_id
-            WHERE u.deleted_at IS NULL
-            """);
+    String search = "%" + keyword.trim()
+            .toLowerCase(java.util.Locale.ROOT) + "%";
 
-        List<Object> params = new ArrayList<>();
+    return jdbcTemplate.query(
+        sql,
+        userMapper,
+        search,
+        search,
+        search
+    );
+}
 
-        if (keyword != null && !keyword.isBlank()) {
-            sql.append(" AND (LOWER(u.full_name) LIKE ? OR LOWER(u.email) LIKE ? OR LOWER(u.phone) LIKE ?) ");
-            String search = "%" + keyword.trim().toLowerCase() + "%";
-            params.add(search);
-            params.add(search);
-            params.add(search);
-        }
-
-        sql.append(" ORDER BY u.user_id DESC");
-
-        return jdbcTemplate.query(sql.toString(), userMapper, params.toArray());
-    }
     public List<AdminUserBean> getUsers() {
         String sql = """
             SELECT u.*, r.role_name 
@@ -99,25 +102,27 @@ public class Admin_Repository {
                 u.getAddress()
         );
     }
+public int updateUser(AdminUserBean u) {
+    String sql = """
+        UPDATE users
+        SET role_id = ?,
+            full_name = ?,
+            email = ?,
+            status = ?
+        WHERE user_id = ?
+          AND deleted_at IS NULL
+        """;
 
-    public int updateUser(AdminUserBean u) {
-        String sql = """
-            UPDATE users 
-            SET role_id = ?, full_name = ?, email = ?, phone = ?, dob = ?, gender = ?, address = ?
-            WHERE user_id = ?
-            """;
-        return jdbcTemplate.update(
-                sql,
-                u.getRole_id(),
-                u.getFull_name(),
-                u.getEmail(),
-                u.getPhone(),
-                u.getDob(),
-                u.getGender(),
-                u.getAddress(),
-                u.getUser_id()
-        );
-    }
+    return jdbcTemplate.update(
+        sql,
+        u.getRole_id(),
+        u.getFull_name(),
+        u.getEmail(),
+        u.getStatus(),
+        u.getUser_id()
+    );
+}
+
 
     public int updateStatus(int userId, String status) {
         String sql = "UPDATE users SET status = ? WHERE user_id = ?";

@@ -269,17 +269,35 @@ button, input, select {
 	margin-bottom: 20px;
 }
 
+
 .panel-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 15px;
-	margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 48px;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.panel-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    min-width: 0;
 }
 
 .panel-header h2 {
-	font-size: 18px;
+    font-size: 18px;
+    line-height: 1.4;
+    margin: 0;
 }
+
+.panel-header .muted {
+    margin-top: 7px;
+}
+
 
 .muted {
 	color: var(--muted);
@@ -467,17 +485,16 @@ td {
 
 				<!-- ENROLLMENT TABLE PANEL -->
 				<section class="panel">
-					<div class="panel-header">
-						<div>
-							<h2>All Enrollments</h2>
-							<p class="muted">Search, filter and manage enrollment
-								records.</p>
-						</div>
-						<button type="button" class="primary-btn"
-							onclick="openEnrollmentModal()">
-							<i class="fa-solid fa-plus"></i> Add Enrollment
-						</button>
-					</div>
+				
+<div class="panel-header">
+    <div class="panel-title">
+        <h2>All Enrollments</h2>
+        <p class="muted">
+            Search, filter and manage enrollment records.
+        </p>
+    </div>
+</div>
+
 
 					<!-- SEARCH / FILTER -->
 					<form class="filter-form" th:action="@{/admin/enrollments}"
@@ -607,98 +624,6 @@ td {
 			</div>
 		</main>
 
-		<!-- ADD ENROLLMENT MODAL -->
-		<div id="enrollmentModal" class="modal-overlay"
-			style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center;">
-			<div class="modal-content"
-				style="background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 25px; width: 100%; max-width: 500px;">
-				<div
-					style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-					<h3 style="font-size: 18px;">Add New Enrollment</h3>
-					<button type="button" onclick="closeEnrollmentModal()"
-						style="background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer;">
-						<i class="fa-solid fa-xmark"></i>
-					</button>
-				</div>
-
-				<form th:action="@{/admin/enrollments/create}" method="post"
-					th:object="${enrollment}">
-					<div class="field" style="margin-bottom: 15px;">
-						<label for="student_id">Select Student</label> <select
-							id="student_id" name="user_id" required
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-							<option value="">-- Choose Student --</option>
-							<option th:each="s : ${students}" th:value="${s.user_id}"
-								th:text="${s.full_name}"></option>
-						</select>
-					</div>
-
-					<div class="field" style="margin-bottom: 15px;">
-						<label for="batch_id">Select Course / Batch</label> <select
-							id="batch_id" name="batch_id" required
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-							<option value="">-- Choose Batch --</option>
-							<option th:each="b : ${batches}" th:value="${b.batch_id}"
-								th:text="${b.course_name + ' (' + b.batch_name + ')'}"></option>
-						</select>
-					</div>
-
-					<div class="field" style="margin-bottom: 15px;">
-						<label for="original_amount">Original Amount</label> <input
-							type="number" step="0.01" id="original_amount"
-							name="original_amount" required placeholder="0.00"
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-					</div>
-
-					<div class="field" style="margin-bottom: 15px;">
-						<label for="discount_amount">Discount Amount</label> <input
-							type="number" step="0.01" id="discount_amount"
-							name="discount_amount" value="0.00"
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-					</div>
-
-					<div class="field" style="margin-bottom: 15px;">
-						<label for="scholarship_amount">Scholarship Amount</label> <input
-							type="number" step="0.01" id="scholarship_amount"
-							name="scholarship_amount" value="0.00"
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-					</div>
-
-					<div class="field" style="margin-bottom: 15px;">
-						<label for="payment_type">Payment Type</label> <select
-							id="payment_type" name="payment_type"
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-							<option th:each="pt : ${paymentTypes}" th:value="${pt}"
-								th:text="${pt}"></option>
-						</select>
-					</div>
-
-					<div class="field" style="margin-bottom: 15px;">
-						<label for="payment_status">Payment Status</label> <select
-							id="payment_status" name="payment_status"
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-							<option th:each="ps : ${paymentStatuses}" th:value="${ps}"
-								th:text="${ps}"></option>
-						</select>
-					</div>
-
-					<div class="field" style="margin-bottom: 20px;">
-						<label for="status">Enrollment Status</label> <select id="status"
-							name="status"
-							style="width: 100%; padding: 11px; background: var(--input); border: 1px solid var(--border); color: var(--text); border-radius: 9px;">
-							<option th:each="st : ${enrollmentStatuses}" th:value="${st}"
-								th:text="${st}"></option>
-						</select>
-					</div>
-
-					<div style="display: flex; justify-content: flex-end; gap: 10px;">
-						<button type="button" onclick="closeEnrollmentModal()"
-							class="secondary-btn">Cancel</button>
-						<button type="submit" class="primary-btn">Save Enrollment</button>
-					</div>
-				</form>
-			</div>
-		</div>
 
 		<!-- ENROLLMENT DETAIL & EDIT MODAL -->
 		<div id="enrollmentDetailModal" class="modal-overlay"

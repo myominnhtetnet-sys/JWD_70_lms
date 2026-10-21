@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class AdminUserBean {
 
-	 private int user_id;
+	private Integer user_id;
 	    private int role_id;
 	    private String role_name;
 	    private String full_name;
@@ -21,4 +21,17 @@ public class AdminUserBean {
 	    private String gender;
 	    private String address;
 	    private String status;
+	
+
+private String password;
+
+public String getPassword() {
+    return password;
+}
+
+public void setPassword(String password) {
+    this.password = password;
+}
+
+	    
 }

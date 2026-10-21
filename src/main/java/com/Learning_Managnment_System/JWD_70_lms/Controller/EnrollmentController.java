@@ -41,16 +41,6 @@ public class EnrollmentController {
         }
     }
 
-//    @GetMapping("/detail/{id}")
-//    public String viewEnrollmentDetail(@PathVariable int id, HttpSession session, Model model) {
-//        if (!checkAdmin(session)) return "redirect:/login";
-//
-//        EnrollmentDetailBean detail = enrollmentService.getEnrollmentDetailById(id);
-//
-//        model.addAttribute("detail", detail);
-//        model.addAttribute("fullName", session.getAttribute("fullName"));
-//        return "enrollment-detail";
-//    }
 
     // AJAX API Endpoint for Modal Detail Box
     @GetMapping("/api/detail/{id}")
@@ -93,56 +83,7 @@ public class EnrollmentController {
         return "enrollment";
     }
 
-    // CREATE ENROLLMENT
-    @PostMapping("/create")
-    public String createEnrollment(
-            @ModelAttribute("enrollment") EnrollmentBean enrollment,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
-
-        if (!checkAdmin(session)) {
-            return "redirect:/login";
-        }
-
-        if (enrollment.getUser_id() <= 0 || enrollment.getBatch_id() <= 0) {
-            redirectAttributes.addFlashAttribute("error", "Please select a student and batch.");
-            return "redirect:/admin/enrollments";
-        }
-
-        if (enrollment.getOriginal_amount() == null || enrollment.getDiscount_amount() == null || enrollment.getScholarship_amount() == null) {
-            redirectAttributes.addFlashAttribute("error", "Please enter valid enrollment amounts.");
-            return "redirect:/admin/enrollments";
-        }
-
-        if (enrollment.getOriginal_amount().signum() < 0 || enrollment.getDiscount_amount().signum() < 0 || enrollment.getScholarship_amount().signum() < 0) {
-            redirectAttributes.addFlashAttribute("error", "Amounts cannot be negative.");
-            return "redirect:/admin/enrollments";
-        }
-
-        if (enrollment.getDiscount_amount().add(enrollment.getScholarship_amount()).compareTo(enrollment.getOriginal_amount()) > 0) {
-            redirectAttributes.addFlashAttribute("error", "Discount and scholarship cannot exceed the original amount.");
-            return "redirect:/admin/enrollments";
-        }
-
-        if (!isValidPaymentType(enrollment.getPayment_type()) || !isValidPaymentStatus(enrollment.getPayment_status()) || !isValidEnrollmentStatus(enrollment.getStatus())) {
-            redirectAttributes.addFlashAttribute("error", "Invalid inputs submitted.");
-            return "redirect:/admin/enrollments";
-        }
-
-        try {
-            int result = enrollmentService.createEnrollment(enrollment);
-            if (result > 0) {
-                redirectAttributes.addFlashAttribute("success", "Enrollment created successfully.");
-            } else {
-                redirectAttributes.addFlashAttribute("error", "Unable to create enrollment.");
-            }
-        } catch (DataAccessException e) {
-            redirectAttributes.addFlashAttribute("error", "Database error while creating enrollment.");
-        }
-
-        return "redirect:/admin/enrollments";
-    }
-
+  
     // CHANGE ENROLLMENT STATUS
     @PostMapping("/status")
     public String changeEnrollmentStatus(
