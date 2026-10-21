@@ -39,7 +39,7 @@
 
     <div class="flex min-h-screen">
         
-        <!-- Sidebar Navigation Menu -->
+         <!-- Sidebar Navigation Menu -->
         <aside class="w-64 bg-slate-900 text-slate-300 hidden md:flex flex-col justify-between shrink-0 sticky top-0 h-screen overflow-y-auto border-r border-slate-800">
             <div>
                 <!-- Logo -->
@@ -56,42 +56,29 @@
                 <!-- Navigation Links -->
                 <nav class="p-4 space-y-6">
                     <div>
-                        <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Learning</div>
+                        <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Menu</div>
                         <div class="space-y-1">
-                            <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                            <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
                                 <i class="fa-solid fa-border-all text-base"></i> Dashboard
                             </a>
-                            <a th:href="@{/student/my-courses}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                <i class="fa-solid fa-book-open text-base"></i> My Courses
-                            </a>
-                            <a th:href="@{/student/schedule}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                <i class="fa-regular fa-calendar text-base"></i> Schedule
-                            </a>
-                            <a th:href="@{/student/assignments}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                <i class="fa-solid fa-file-lines text-base"></i> Assignments
-                            </a>
-                            <a th:href="@{/student/exam-list}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                <i class="fa-solid fa-square-check text-base"></i> My Exams
-                            </a>
-                            <a th:href="@{/student/exam-results}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                <i class="fa-solid fa-chart-column text-base"></i> My Results
-                            </a>
-                            <!-- Active Page Highlight -->
-                            <a th:href="@{/student/certificate}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 shadow-sm transition">
-                                <i class="fa-solid fa-award text-base"></i> Certificates
-                            </a>
+                            
+							<a th:href="@{/student/awards}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600/90 shadow-sm transition">
+							    <i class="fa-solid fa-graduation-cap text-base"></i>
+							    <span>Grades & Certificates</span>
+							</a>
+
                         </div>
                     </div>
 
                     <div>
                         <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Account</div>
                         <div class="space-y-1">
-                            <a th:href="@{/student/scholarship}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                            
+                            <!-- Scholarships Menu Link (Corrected path: removed 's') -->
+                            <a th:href="@{/student/scholarship}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
                                 <i class="fa-solid fa-user-graduate text-base"></i> Scholarships
                             </a>
-                            <a th:href="@{/student/checkout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                <i class="fa-regular fa-credit-card text-base"></i> Payments
-                            </a>
+                           
                             <a th:href="@{/student/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
                                 <i class="fa-regular fa-user text-base"></i> My Profile
                             </a>
@@ -100,8 +87,8 @@
                 </nav>
             </div>
 
-            <!-- Logout -->
-            <div class="p-4 border-t border-slate-800">
+            <!-- Logout Link -->
+            <div class="p-4 border-t border-slate-800 space-y-3">
                 <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
                     <i class="fa-solid fa-right-from-bracket text-base"></i> Logout
                 </a>
