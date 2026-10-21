@@ -195,11 +195,14 @@
                             </div>
                         </div>
 
-                        <div th:if="${assignment.attachment != null}" class="px-5 pb-3">
-                            <a th:href="@{/student/assignments/view-file/{name}(name=${assignment.attachment})}" target="_blank" class="text-sky-600 bg-sky-50 border border-sky-100 px-3 py-1.5 rounded-lg font-bold text-[11px] inline-flex items-center gap-1.5">
-                                <i class="fa-solid fa-file-pdf"></i> View Reference Material
-                            </a>
-                        </div>
+<div th:if="${assignment.attachment != null}" style="margin-top: 12px; text-align: left;">
+    <a th:href="@{/student/assignments/view-file(fileName=${assignment.attachment})}" 
+       target="_blank" 
+       style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #0369a1; background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; text-decoration: none; transition: background-color 0.1s;">
+        <i class="fa-solid fa-file-pdf"></i> View Reference Material
+    </a>
+</div>
+
 
                         <div class="p-4 bg-slate-50 border-t border-slate-100">
                             <a th:href="@{/student/assignments/submit/{id}(id=${assignment.assignmentId})}"

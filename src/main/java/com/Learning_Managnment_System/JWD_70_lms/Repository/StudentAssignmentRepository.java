@@ -199,5 +199,13 @@ public class StudentAssignmentRepository {
         }
     }
 
+    public String findAttachmentPathByAssignmentId(int assignmentId) {
+        String sql = "SELECT attachment FROM learning_db.assignments WHERE assignment_id = ? LIMIT 1";
+        try {
+            return jdbcTemplate.queryForObject(sql, String.class, assignmentId);
+        } catch (Exception e) {
+            return null; // Graceful fallback if no file is linked to the task card
+        }
+    }
     
 }
