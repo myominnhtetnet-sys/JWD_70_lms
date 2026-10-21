@@ -204,10 +204,33 @@
 </div>
 
 
-                        <div class="p-4 bg-slate-50 border-t border-slate-100">
-                            <a th:href="@{/student/assignments/submit/{id}(id=${assignment.assignmentId})}"
-                               class="w-full block text-center py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition">View / Turn In Task</a>
-                        </div>
+                       <!-- ========================================================= -->
+<!-- 🎓 DYNAMIC WORKSPACE ACTION FOOTER ROW                    -->
+<!-- ========================================================= -->
+<div class="p-4 bg-slate-50 border-t border-slate-100" style="background-color: #f8fafc !important; border-top: 1px solid #f1f5f9 !important; padding: 16px !important; box-sizing: border-box;">
+    
+    <!-- 🟢 CASE 1: ASSIGNMENT IS ALREADY SUBMITTED -->
+    <!-- Checks your submitted array list map and switches to the Review Submission View path -->
+    <th:block th:if="${submittedAssignments != null and #lists.contains(submittedAssignments.![assignmentId], assignment.assignmentId)}">
+        <a th:href="@{/student/assignments/submission/{id}(id=${assignment.assignmentId})}"
+           class="w-full block text-center py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl transition"
+           style="width: 100% !important; display: block !important; text-align: center !important; padding: 10px 0 !important; background-color: #1e293b !important; color: white !important; font-weight: 700 !important; border-radius: 12px !important; text-decoration: none !important; font-size: 13.5px !important; transition: all 0.15s ease;">
+            <i class="fa-solid fa-file-invoice me-1"></i> View My Submission
+        </a>
+    </th:block>
+
+    <!-- 🔴 CASE 2: ASSIGNMENT HAS NOT BEEN SUBMITTED YET -->
+    <!-- Keeps the default workspace link active so the student can upload files -->
+    <th:block th:unless="${submittedAssignments != null and #lists.contains(submittedAssignments.![assignmentId], assignment.assignmentId)}">
+        <a th:href="@{/student/assignments/submit/{id}(id=${assignment.assignmentId})}"
+           class="w-full block text-center py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition"
+           style="width: 100% !important; display: block !important; text-align: center !important; padding: 10px 0 !important; background-color: #4f46e5 !important; color: white !important; font-weight: 700 !important; border-radius: 12px !important; text-decoration: none !important; font-size: 13.5px !important; transition: all 0.15s ease;">
+            <i class="fa-solid fa-cloud-arrow-up me-1"></i> View / Turn In Task
+        </a>
+    </th:block>
+
+</div>
+
 
                     </div>
 
