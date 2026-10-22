@@ -305,20 +305,33 @@ public class AssignmentController {
         return "/uploads/assignments/" + newFileName;
     }
 
-    private void loadDropdownData(Model model) {
-        String sql = """
-            SELECT batch_id, batch_code, title
-            FROM batches
-            ORDER BY batch_id DESC
-            """;
+	private void loadDropdownData(Model model) {
+		String sql = """
+				SELECT
+				    batch_id,
+				    batch_code,
+				    TRIM(
+				        CASE
+				            WHEN title LIKE CONCAT(batch_code, ' -%')
+				            THEN SUBSTRING(
+				                title,
+				                LENGTH(batch_code) + 3
+				            )
+				            ELSE title
+				        END
+				    ) AS title
+				FROM batches
+				ORDER BY batch_id DESC
+				""";
 
-        List<Map<String, Object>> batches = jdbcTemplate.queryForList(sql);
-        List<LessonBean> lessons = lessonRepository.findAll();
+		List<Map<String, Object>> batches = jdbcTemplate.queryForList(sql);
 
-        model.addAttribute("batches", batches);
-        model.addAttribute("lessons", lessons);
-    }
-    
+		List<LessonBean> lessons = lessonRepository.findAll();
+
+		model.addAttribute("batches", batches);
+		model.addAttribute("lessons", lessons);
+	}
+
     @GetMapping("/assignments/api/{id}")
     @ResponseBody
     public AssignmentBean getAssignmentApi(@PathVariable Integer id) {
