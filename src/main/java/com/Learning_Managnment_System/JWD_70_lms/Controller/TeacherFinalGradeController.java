@@ -38,8 +38,11 @@ public class TeacherFinalGradeController {
             return "redirect:/login";
         }
 
-//        model.addAttribute(
-//                "batches", service.getBatches(teacher.getUser_id()));
+        // Pass full name for header profile display
+        if (teacher.getFull_name() != null) {
+            model.addAttribute("fullName", teacher.getFull_name());
+        }
+
         int teacherId = teacher.getUser_id();
 
         List<Map<String, Object>> batches =
