@@ -14,7 +14,6 @@ public class CourseBuilderRepository {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-
     public List<CourseBuilderBean> findAllCourses() {
         String sql = """
             SELECT c.*, cat.name as category_name 
@@ -31,10 +30,10 @@ public class CourseBuilderRepository {
         return courses.isEmpty() ? null : courses.get(0);
     }
 
-    public void save(CourseBuilderBean course) {
+    public void save(CourseBuilderBean course, int currentUserId) {
         String sql = """
-            INSERT INTO courses (category_id, title, slug, short_description, description, thumbnail, level, language, price, duration_weeks, status, allow_discount, allow_installment, allow_scholarship, created_at, updated_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+            INSERT INTO courses (category_id, title, slug, short_description, description, thumbnail, level, language, price, duration_weeks, status, allow_discount, allow_installment, allow_scholarship, created_by, created_at, updated_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
         """;
         jdbcTemplate.update(sql, 
             course.getCategoryId(), course.getTitle(), course.getSlug(), 
@@ -43,7 +42,8 @@ public class CourseBuilderRepository {
             course.getDurationWeeks(), course.getStatus(), 
             course.getAllowDiscount() ? 1 : 0, 
             course.getAllowInstallment() ? 1 : 0, 
-            course.getAllowScholarship() ? 1 : 0
+            course.getAllowScholarship() ? 1 : 0,
+            currentUserId
         );
     }
 
@@ -65,8 +65,31 @@ public class CourseBuilderRepository {
     }
 
     public void delete(Long courseId) {
-        String sql = "DELETE FROM courses WHERE course_id = ?";
-        jdbcTemplate.update(sql, courseId);
+        // ၁။ ဤ Course နှင့် ချိတ်ဆက်ထားသော Batches များတွင် ကျောင်းသား တက်ရောက်မှု (Enrollment) ရှိမရှိ စစ်ဆေးမည်
+        String checkEnrollmentsSql = """
+            SELECT COUNT(*) 
+            FROM enrollments e 
+            JOIN batches b ON e.batch_id = b.batch_id 
+            WHERE b.course_id = ?
+        """;
+        
+        Integer enrollmentCount = jdbcTemplate.queryForObject(checkEnrollmentsSql, Integer.class, courseId);
+
+        // ၂။ ကျောင်းသား တက်ရောက်နေသည်ဆိုပါက ဖျက်ခွင့်မပြုဘဲ Error ထုတ်မည်
+        if (enrollmentCount != null && enrollmentCount > 0) {
+            throw new RuntimeException("Cannot delete this course because students are actively enrolled in it.");
+        }
+
+        // ၃။ ကျောင်းသား တက်ရောက်ခြင်းမရှိပါက ဆက်စပ်နေသော modules များနှင့် batches များကို အရင်ဖျက်မည်
+        String deleteModulesSql = "DELETE FROM modules WHERE course_id = ?";
+        jdbcTemplate.update(deleteModulesSql, courseId);
+
+        String deleteBatchesSql = "DELETE FROM batches WHERE course_id = ?";
+        jdbcTemplate.update(deleteBatchesSql, courseId);
+
+        // ၄။ နောက်ဆုံးတွင် Course ကို အောင်မြင်စွာ ဖျက်မည်
+        String deleteCourseSql = "DELETE FROM courses WHERE course_id = ?";
+        jdbcTemplate.update(deleteCourseSql, courseId);
     }
 
 }

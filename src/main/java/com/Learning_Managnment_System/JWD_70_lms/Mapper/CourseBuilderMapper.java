@@ -40,6 +40,6 @@ public class CourseBuilderMapper implements RowMapper<CourseBuilderBean> {
             course.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
         }
         return course;
-    }
+	}
 
 }

@@ -1,97 +1,28 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="~{head :: head}"></div>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduPulse LMS - Scholarship Management</title>
+<body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <div id="app" class="min-h-screen flex flex-col">
+        
+        <!-- TOP HEADER BAR -->
+        <div th:replace="~{header :: header}"></div>
 
-    <style>
-        body {
-            background-color: #f8fafc;
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-        }
-
-        .alert-bubble {
-            background-color: #d1e7dd;
-            color: #0f5132;
-            border-radius: 10px;
-            padding: 1rem 1.25rem;
-        }
-    </style>
-</head>
-
-<body class="bg-slate-50">
+        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- DYNAMIC SIDEBAR -->
+            <div th:replace="~{nav :: nav}"></div>
 
 <!-- =====================================================
      LAYOUT WRAPPER (SIDEBAR + MAIN CONTENT)
      ===================================================== -->
 <div class="flex min-h-screen">
 
-    <!-- ADMIN SIDEBAR -->
-    <aside class="w-64 bg-[#0f172a] text-slate-300 flex flex-col shrink-0 sticky top-0 h-screen text-sm font-medium">
-        <!-- Logo Area -->
-        <div class="h-20 flex items-center px-6 gap-3 border-b border-slate-800 shrink-0">
-            <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center font-bold justify-center">E</div>
-            <div>
-                <div class="font-bold text-white text-sm">EduPulse <span class="text-xs bg-indigo-600/30 text-indigo-400 px-1.5 py-0.5 rounded">LMS</span></div>
-            </div>
-        </div>
-
-        <!-- Menu Links -->
-        <div class="p-4 space-y-1 flex-1 overflow-y-auto">
-            <div class="px-3 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Admin Menu</div>
-            
-            <a href="/admin" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                <i class="fa-solid fa-house w-5"></i> Dashboard
-            </a>
-            <a href="/admin/categories/list" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                <i class="fa-solid fa-layer-group w-5"></i> Category
-            </a>
-            <a href="/api/v1/discounts/view" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                <i class="fa-solid fa-tags w-5"></i> Discounts
-            </a>
-            <a href="/admin/installments" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                <i class="fa-solid fa-file-invoice-dollar w-5"></i> Installment Rules
-            </a>
-            <!-- Active Scholarships Link -->
-            <a href="/admin/scholarships" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-lg shadow-indigo-600/30">
-                <i class="fa-solid fa-graduation-cap w-5"></i> Scholarships
-            </a>
-            <a href="/admin/scholarship-applications-review" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                <i class="fa-solid fa-file-lines w-5"></i> Scholarship Applications
-            </a>
-            <a href="/admin/Settings" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                <i class="fa-solid fa-gear w-5"></i> System Settings
-            </a>
-            <a href="/admin/reports" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                <i class="fa-solid fa-chart-pie w-5"></i> Reports
-            </a>
-        </div>
-    </aside>
 
     <!-- RIGHT CONTENT AREA -->
     <div class="flex-1 flex flex-col min-w-0">
-
-        <!-- TOP HEADER -->
-        <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-20">
-            <div class="text-xl font-bold text-slate-800">Scholarship Management</div>
-            <div class="flex items-center gap-4">
-                <img src="https://i.pravatar.cc/100?img=47" alt="Admin" class="w-10 h-10 rounded-full">
-                <div>
-                    <div class="font-bold text-sm">Sarah Jenkins</div>
-                    <div class="text-xs text-slate-500">Administrator</div>
-                </div>
-            </div>
-        </header>
-
         <!-- MAIN PAGE BODY -->
         <main class="p-8 flex-1">
             <div class="max-w-7xl mx-auto">

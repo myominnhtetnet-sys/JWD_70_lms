@@ -12,8 +12,6 @@ public class CourseBuilderService {
 	@Autowired
 	private CourseBuilderRepository courseRepository;
 
-
-
     public List<CourseBuilderBean> getAllCourses() {
         return courseRepository.findAllCourses();
     }
@@ -22,8 +20,9 @@ public class CourseBuilderService {
         return courseRepository.findById(courseId);
     }
 
-    public void createCourse(CourseBuilderBean course) {
-        courseRepository.save(course);
+    // 🟢 parameter တစ်ခုတိုးပေးလိုက်သည် (ဥပမာအားဖြင့် default 1 သို့မဟုတ် logged-in user id)
+    public void createCourse(CourseBuilderBean course, int currentUserId) {
+        courseRepository.save(course, currentUserId);
     }
 
     public void updateCourse(Long courseId, CourseBuilderBean course) {

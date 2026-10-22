@@ -29,10 +29,6 @@ public class AnnouncementController {
         return "Announcements_Management"; // src/main/resources/templates/Announcements_Management.html သို့ သွားမည်
     }
 
-    // ==========================================
-    // REST API ENDPOINTS (JSON Data Return)
-    // ==========================================
-
     @GetMapping("/api/announcements")
     @ResponseBody
     public ResponseEntity<List<AnnouncementBean>> getAll() {
