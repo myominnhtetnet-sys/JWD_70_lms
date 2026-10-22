@@ -37,10 +37,8 @@ public class AssignmentController {
 
 	private static final String UPLOAD_DIR = "uploads/assignments";
 
-	public AssignmentController(
-	        AssignmentService assignmentService,
-	        JdbcTemplate jdbcTemplate,
-	        LessonRepository lessonRepository) {
+	public AssignmentController( AssignmentService assignmentService,
+	        JdbcTemplate jdbcTemplate, LessonRepository lessonRepository) {
 
 	    this.assignmentService = assignmentService;
 	    this.jdbcTemplate = jdbcTemplate;
@@ -85,8 +83,7 @@ public class AssignmentController {
             @RequestParam(required = false) String status,
             Model model) {
 
-        List<AssignmentBean> assignments =
-        		assignmentService.searchAssignments( title,batchId,status);
+        List<AssignmentBean> assignments = assignmentService.searchAssignments( title,batchId,status);
 
         model.addAttribute("assignments", assignments);
         model.addAttribute("title", title);
@@ -102,7 +99,7 @@ public class AssignmentController {
 
     @GetMapping("/assignments/create")
     public String showCreateForm(Model model) {
-        model.addAttribute( "assignment",new AssignmentBean());
+        model.addAttribute("assignment",new AssignmentBean());
         loadDropdownData(model);
         return "assignment-form";
     }
@@ -122,8 +119,7 @@ public class AssignmentController {
             }
 
             int newId =assignmentService.createAssignment(assignment);
-            redirectAttributes.addFlashAttribute("successMessage",
-                    "Assignment created successfully! ID: " + newId );
+            redirectAttributes.addFlashAttribute("successMessage", "Assignment created successfully! ID: " + newId );
             
             return "redirect:/teacher/assignments";
 
@@ -162,10 +158,8 @@ public class AssignmentController {
 
         Map<String, Object> batch = batchList.get(0);
 
-        LessonBean lesson =
-                lessonRepository.findById( assignment.getLessonId()
-                ).orElseThrow(
-                        () -> new IllegalArgumentException("Lesson not found"));
+        LessonBean lesson =lessonRepository.findById( assignment.getLessonId()
+                ).orElseThrow(() -> new IllegalArgumentException("Lesson not found"));
 
         model.addAttribute( "assignment",assignment);
         model.addAttribute("batch",batch);
@@ -192,8 +186,7 @@ public class AssignmentController {
 
         try {
             AssignmentBean existingAssignment =
-                    assignmentService.getAssignmentById(
-                            assignment.getAssignmentId());
+                    assignmentService.getAssignmentById( assignment.getAssignmentId());
 
             if (attachmentFile != null && !attachmentFile.isEmpty()) {
                 String fileUrl = saveAttachmentFile(attachmentFile);
@@ -213,9 +206,7 @@ public class AssignmentController {
             return "assignment-form";
 
         } catch (IOException e) {
-            model.addAttribute( "errorMessage","File upload failed: "
-                            + e.getMessage());
-
+            model.addAttribute( "errorMessage","File upload failed: " + e.getMessage());
             loadDropdownData(model);
             return "assignment-form";
         }
@@ -227,15 +218,12 @@ public class AssignmentController {
             RedirectAttributes redirectAttributes) {
 
         try {
-
             assignmentService.deleteAssignment(id);
-            redirectAttributes.addFlashAttribute("successMessage",
-                    "Assignment deleted successfully!");
+            redirectAttributes.addFlashAttribute("successMessage","Assignment deleted successfully!");
 
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-
         return "redirect:/teacher/assignments";
     }
 
@@ -258,8 +246,7 @@ public class AssignmentController {
             extension = originalFileName.substring(dotIndex).toLowerCase();
         }
 
-        List<String> allowedExtensions =
-                List.of(".pdf",".zip",".doc",".docx" );
+        List<String> allowedExtensions = List.of(".pdf",".zip",".doc",".docx" );
 
         if (!allowedExtensions.contains(extension)) {
             throw new IllegalArgumentException( "Only PDF, ZIP, DOC and DOCX files are allowed.");
@@ -267,10 +254,7 @@ public class AssignmentController {
 
         String newFileName =UUID.randomUUID() .toString() + extension;
         Path filePath = uploadPath.resolve(newFileName);
-
-        Files.copy(file.getInputStream(),filePath,
-                StandardCopyOption.REPLACE_EXISTING);
-
+        Files.copy(file.getInputStream(),filePath, StandardCopyOption.REPLACE_EXISTING);
         return "/uploads/assignments/" + newFileName;
     }
 
@@ -283,7 +267,6 @@ public class AssignmentController {
 
         List<Map<String, Object>> batches = jdbcTemplate.queryForList(sql);
         List<LessonBean> lessons = lessonRepository.findAll();
-
         model.addAttribute("batches", batches);
         model.addAttribute("lessons", lessons);
     }

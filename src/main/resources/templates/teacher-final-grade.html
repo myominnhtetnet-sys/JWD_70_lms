@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,152 +8,43 @@
 
     <style>
         * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f7fb;
-            color: #1e293b;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 36px auto;
-            padding: 0 20px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
+        
+        body { margin: 0;font-family: Arial, sans-serif;background: #f5f7fb; color: #1e293b;}
+        .container { max-width: 1200px;margin: 36px auto;padding: 0 20px;}
+        .header {display: flex;justify-content: space-between;align-items: center;gap: 16px; margin-bottom: 24px;}
         h1 { margin: 0 0 8px; font-size: 26px; }
         p { margin: 0; color: #64748b; line-height: 1.6; }
-
-        .card {
-            background: white;
-            padding: 22px;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-
-        .toolbar, .actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
+        
+        .card { background: white;padding: 22px;border: 1px solid #e2e8f0;border-radius: 12px;margin-bottom: 20px;}
+        .toolbar, .actions {display: flex;align-items: center; gap: 12px;flex-wrap: wrap;}
         .toolbar { justify-content: space-between; }
 
-        label {
-            display: block;
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 7px;
-        }
-
-        select {
-            width: 100%;
-            min-width: 240px;
-            max-width: 100%;
-            padding: 11px;
-            border: 1px solid #cbd5e1;
-            border-radius: 7px;
-            background: white;
-        }
-
-        .filter {
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            flex-wrap: wrap;
-            max-width: 100%;
-        }
-
-        .button {
-            display: inline-block;
-            padding: 11px 16px;
-            border: 0;
-            border-radius: 7px;
-            background: #4f46e5;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-            text-decoration: none;
-            white-space: nowrap;
-        }
-
+        label {display: block;font-size: 13px; font-weight: bold; margin-bottom: 7px;}
+        select {width: 100%;min-width: 240px; max-width: 100%; padding: 11px; border: 1px solid #cbd5e1; border-radius: 7px; background: white;}
+        
+        .filter {display: flex;align-items: flex-end;gap: 10px;flex-wrap: wrap;max-width: 100%;}
+        .button { display: inline-block; padding: 11px 16px;border: 0; border-radius: 7px; background: #4f46e5;
+            color: white;cursor: pointer; font-size: 14px;text-decoration: none; white-space: nowrap;}
         .publish { background: #059669; }
-        .secondary { background: #e2e8f0; color: #334155; }
+        .secondary { background: #e2e8f0; color: #334155;}
 
-        button:disabled {
-            opacity: .45;
-            cursor: not-allowed;
-        }
+        button:disabled {opacity: .45; cursor: not-allowed;}
 
-        .policy {
-            margin-top: 18px;
-            padding: 12px;
-            border-radius: 7px;
-            background: #eef2ff;
-            color: #4338ca;
-            font-size: 13px;
-            line-height: 1.7;
-        }
-
-        .message {
-            padding: 14px 16px;
-            margin-bottom: 18px;
-            border-radius: 8px;
-            line-height: 1.6;
-        }
-
+        .policy {margin-top: 18px; padding: 12px;border-radius: 7px;background: #eef2ff;color: #4338ca;font-size: 13px;line-height: 1.7;}
+        .message { padding: 14px 16px;margin-bottom: 18px;border-radius: 8px;line-height: 1.6;}
         .success { background: #d1fae5; color: #065f46; }
         .error { background: #fee2e2; color: #991b1b; }
-
         .table-wrap { overflow-x: auto; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            white-space: nowrap;
-            font-size: 14px;
-        }
+        table { width: 100%; border-collapse: collapse;white-space: nowrap;font-size: 14px;}
+        th, td {padding: 15px 12px; text-align: left;border-bottom: 1px solid #e2e8f0;}
+        th {background: #f8fafc; color: #64748b;font-size: 12px;}
 
-        th, td {
-            padding: 15px 12px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        th {
-            background: #f8fafc;
-            color: #64748b;
-            font-size: 12px;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 5px 9px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-
+        .badge { display: inline-block;padding: 5px 9px;border-radius: 20px;font-size: 12px;}
         .green { background: #d1fae5; color: #047857; }
         .red { background: #fee2e2; color: #b91c1c; }
         .gray { background: #f1f5f9; color: #64748b; }
-
-        .empty {
-            text-align: center;
-            padding: 40px 15px;
-            color: #64748b;
-        }
-
+        .empty { text-align: center; padding: 40px 15px;color: #64748b;}
         .note { margin-top: 14px; font-size: 13px; }
 
         @media (max-width: 640px) {
@@ -175,33 +67,22 @@
         <a class="button secondary" th:href="@{/teacher}">Back</a>
     </div>
 
-    <div class="message success"
-         th:if="${successMessage != null}"
-         th:text="${successMessage}">
-    </div>
-
-    <div class="message error"
-         th:if="${errorMessage != null}"
-         th:text="${errorMessage}">
-    </div>
+    <div class="message success" th:if="${successMessage != null}" th:text="${successMessage}"></div>
+    <div class="message error" th:if="${errorMessage != null}" th:text="${errorMessage}"></div>
 
     <div class="card">
         <div class="toolbar">
 
-            <form class="filter" method="get"
-                  th:action="@{/teacher/final-grades}">
+            <form class="filter" method="get" th:action="@{/teacher/final-grades}">
 
                 <div>
                     <label for="batchId">Batch</label>
-
                     <select id="batchId" name="batchId" required>
                         <option value="">Select a batch</option>
-
                         <option th:each="batch : ${batches}"
                                 th:value="${batch.batchId}"
                                 th:text="${batch.batchCode + ' - ' + batch.title}"
-                                th:selected="${selectedBatchId != null
-                                    and selectedBatchId == batch.batchId}">
+                                th:selected="${selectedBatchId != null and selectedBatchId == batch.batchId}">
                         </option>
                     </select>
                 </div>
@@ -211,33 +92,19 @@
                 </button>
             </form>
 
-            <div class="actions"
-                 th:if="${selectedBatchId != null
-                     and not #lists.isEmpty(students)}">
+            <div class="actions" th:if="${selectedBatchId != null and not #lists.isEmpty(students)}">
 
-                <form method="post"
-                      th:action="@{/teacher/final-grades/calculate}">
-
-                    <input type="hidden" name="batchId"
-                           th:value="${selectedBatchId}">
-
+                <form method="post" th:action="@{/teacher/final-grades/calculate}">
+                    <input type="hidden" name="batchId" th:value="${selectedBatchId}">
                     <button class="button" type="submit">
                         Calculate
                     </button>
                 </form>
 
-                <form method="post"
-                      th:action="@{/teacher/final-grades/publish}"
-                      onsubmit="return confirm(
-                        'Publish all calculated draft grades in this batch?'
-                      )">
-
-                    <input type="hidden" name="batchId"
-                           th:value="${selectedBatchId}">
-
-                    <button class="button publish"
-                            type="submit"
-                            th:disabled="${not canPublish}">
+                <form method="post" th:action="@{/teacher/final-grades/publish}"
+                      onsubmit="return confirm('Publish all calculated draft grades in this batch?')">
+                    <input type="hidden" name="batchId" th:value="${selectedBatchId}">
+                    <button class="button publish" type="submit" th:disabled="${not canPublish}">
                         Publish
                     </button>
                 </form>
@@ -276,54 +143,33 @@
 
                 <tbody>
                 <tr th:each="student, row : ${students}">
+                
                     <td th:text="${row.count}"></td>
                     <td th:text="${student.studentName}"></td>
-
-                    <td th:text="${student.gradeId == null
-                        ? '—' : student.assignmentScore}"></td>
-
-                    <td th:text="${student.gradeId == null
-                        ? '—' : student.examScore}"></td>
-
-                    <td th:text="${student.gradeId == null
-                        ? '—' : student.attendancePercent}"></td>
+                    <td th:text="${student.gradeId == null ? '—' : student.assignmentScore}"></td>
+                    <td th:text="${student.gradeId == null ? '—' : student.examScore}"></td>
+                    <td th:text="${student.gradeId == null ? '—' : student.attendancePercent}"></td>
+                    <td><strong th:text="${student.gradeId == null ? '—' : student.totalScore}"></strong></td>
+                    <td th:text="${student.gradeId == null ? '—' : student.gradeLetter}"></td>
 
                     <td>
-                        <strong th:text="${student.gradeId == null
-                            ? '—' : student.totalScore}"></strong>
-                    </td>
-
-                    <td th:text="${student.gradeId == null
-                        ? '—' : student.gradeLetter}"></td>
-
-                    <td>
-                        <span th:if="${student.gradeId != null}"
-                              class="badge"
-                              th:classappend="${student.result == 'PASSED'
-                                ? 'green' : 'red'}"
-                              th:text="${student.result}">
+                        <span th:if="${student.gradeId != null}" class="badge"
+                              th:classappend="${student.result == 'PASSED' ? 'green' : 'red'}" th:text="${student.result}">
                         </span>
-
                         <span th:if="${student.gradeId == null}">—</span>
                     </td>
 
                     <td>
                         <span class="badge"
-                              th:classappend="${student.publishedAt != null
-                                ? 'green' : 'gray'}"
-                              th:text="${student.publishedAt != null
-                                ? 'Published'
-                                : (student.gradeId != null
-                                    ? 'Draft' : 'Not calculated')}">
+                              th:classappend="${student.publishedAt != null ? 'green' : 'gray'}"
+                              th:text="${student.publishedAt != null ? 'Published' : (student.gradeId != null ? 'Draft' : 'Not calculated')}">
                         </span>
                     </td>
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(students)}">
                     <td colspan="9" class="empty"
-                        th:text="${selectedBatchId == null
-                            ? 'Select a batch to view students.'
-                            : 'No ACTIVE or COMPLETED students in this batch.'}">
+                        th:text="${selectedBatchId == null ? 'Select a batch to view students.' : 'No ACTIVE or COMPLETED students in this batch.'}">
                     </td>
                 </tr>
                 </tbody>

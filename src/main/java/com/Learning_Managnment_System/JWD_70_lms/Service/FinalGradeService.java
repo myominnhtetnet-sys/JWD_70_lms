@@ -13,19 +13,11 @@ import com.Learning_Managnment_System.JWD_70_lms.Repository.FinalGradeRepository
 @Service
 public class FinalGradeService {
 
-    // အဖွဲ့သတ်မှတ်ချက်ရလာရင် ဒီတန်ဖိုးတွေကို ပြောင်းနိုင်ပါတယ်။
-    private static final BigDecimal ASSIGNMENT_WEIGHT =
-            new BigDecimal("0.30");
-
-    private static final BigDecimal EXAM_WEIGHT =
-            new BigDecimal("0.60");
-
-    private static final BigDecimal ATTENDANCE_WEIGHT =
-            new BigDecimal("0.10");
-
-    private static final BigDecimal PASS_MARK =
-            new BigDecimal("40");
-
+    // အဖွဲ့သတ်မှတ်ချက်ရလာရင် ဒီတန်ဖိုးတွေကို ပြောင်းနိုင်ပါတယ်
+    private static final BigDecimal ASSIGNMENT_WEIGHT = new BigDecimal("0.30");
+    private static final BigDecimal EXAM_WEIGHT = new BigDecimal("0.60");
+    private static final BigDecimal ATTENDANCE_WEIGHT = new BigDecimal("0.10");
+    private static final BigDecimal PASS_MARK = new BigDecimal("40");
     private final FinalGradeRepository repository;
 
     public FinalGradeService(FinalGradeRepository repository) {
@@ -37,29 +29,20 @@ public class FinalGradeService {
     }
 
     @Transactional(readOnly = true)
-    public List<Map<String, Object>> getStudents(
-            int batchId, int teacherId) {
-
+    public List<Map<String, Object>> getStudents( int batchId, int teacherId) {
         repository.requireBatch(batchId, teacherId, false);
         return repository.findStudents(batchId);
     }
 
     @Transactional
     public int calculate(int batchId, int teacherId) {
-        Map<String, Object> batch =
-                repository.requireBatch(batchId, teacherId, true);
-
-        List<Map<String, Object>> students =
-                repository.findStudents(batchId);
-
+    	
+        Map<String, Object> batch = repository.requireBatch(batchId, teacherId, true);
+        List<Map<String, Object>> students = repository.findStudents(batchId);
         requireStudents(students);
 
-        List<Map<String, Object>> assignments =
-                repository.findAssignments(batchId);
-
-        List<Map<String, Object>> exams =
-                repository.findExams(batchId, number(batch.get("courseId")));
-
+        List<Map<String, Object>> assignments = repository.findAssignments(batchId);
+        List<Map<String, Object>> exams = repository.findExams(batchId, number(batch.get("courseId")));
         checkAssessments(batchId, assignments, exams);
 
         int calculated = 0;
@@ -71,9 +54,7 @@ public class FinalGradeService {
             }
 
             int enrollmentId = number(student.get("enrollmentId"));
-
-            Scores scores = compute(
-                    batchId, enrollmentId, assignments, exams);
+            Scores scores = compute(batchId, enrollmentId, assignments, exams);
 
             repository.saveDraft(
                     enrollmentId,
@@ -89,29 +70,20 @@ public class FinalGradeService {
         }
 
         if (calculated == 0) {
-            throw new IllegalArgumentException(
-                    "All eligible students already have published grades.");
+            throw new IllegalArgumentException("All eligible students already have published grades.");
         }
-
         return calculated;
     }
 
     @Transactional
     public int publish(int batchId, int teacherId) {
-        Map<String, Object> batch =
-                repository.requireBatch(batchId, teacherId, true);
-
-        List<Map<String, Object>> students =
-                repository.findStudents(batchId);
-
+    	
+        Map<String, Object> batch =repository.requireBatch(batchId, teacherId, true);
+        List<Map<String, Object>> students = repository.findStudents(batchId);
         requireStudents(students);
 
-        List<Map<String, Object>> assignments =
-                repository.findAssignments(batchId);
-
-        List<Map<String, Object>> exams =
-                repository.findExams(batchId, number(batch.get("courseId")));
-
+        List<Map<String, Object>> assignments = repository.findAssignments(batchId);
+        List<Map<String, Object>> exams = repository.findExams(batchId, number(batch.get("courseId")));
         checkAssessments(batchId, assignments, exams);
 
         int published = 0;
@@ -122,15 +94,12 @@ public class FinalGradeService {
             }
 
             if (student.get("gradeId") == null) {
-                throw new IllegalArgumentException(
-                        "Please calculate all grades before publishing.");
+                throw new IllegalArgumentException("Please calculate all grades before publishing.");
             }
 
             int enrollmentId = number(student.get("enrollmentId"));
-
             // Calculate နောက်ပိုင်း အမှတ်ပြောင်းထားသလား ပြန်စစ်ပါ။
-            Scores current = compute(
-                    batchId, enrollmentId, assignments, exams);
+            Scores current = compute( batchId, enrollmentId, assignments, exams);
 
             boolean matches =
                     same(student.get("assignmentScore"), current.assignment())
@@ -141,29 +110,22 @@ public class FinalGradeService {
                     && current.result().equals(student.get("result"));
 
             if (!matches) {
-                throw new IllegalArgumentException(
-                        "Source marks changed. Calculate again, review, then publish.");
+                throw new IllegalArgumentException("Source marks changed. Calculate again, review, then publish.");
             }
 
             if (repository.publish(enrollmentId, teacherId) != 1) {
-                throw new IllegalArgumentException(
-                        "Unable to publish grade.");
+                throw new IllegalArgumentException( "Unable to publish grade.");
             }
-
             published++;
         }
 
         if (published == 0) {
-            throw new IllegalArgumentException(
-                    "No unpublished grades are available.");
+            throw new IllegalArgumentException( "No unpublished grades are available.");
         }
-
         return published;
     }
 
-    private Scores compute(
-            int batchId,
-            int enrollmentId,
+    private Scores compute( int batchId,int enrollmentId,
             List<Map<String, Object>> assignments,
             List<Map<String, Object>> exams) {
 
@@ -175,11 +137,8 @@ public class FinalGradeService {
             BigDecimal maximum = decimal(assignment.get("totalMark"));
 
             requirePositive(maximum, "Assignment total mark");
-
             assignmentMaximum = assignmentMaximum.add(maximum);
-
-            List<Map<String, Object>> submissions =
-                    repository.findSubmission(assignmentId, enrollmentId);
+            List<Map<String, Object>> submissions = repository.findSubmission(assignmentId, enrollmentId);
 
             // CLOSED assignment ကို မတင်ခဲ့ရင် 0 အမှတ်။
             if (submissions.isEmpty()) {
@@ -194,18 +153,14 @@ public class FinalGradeService {
                 continue;
             }
 
-            if (!"GRADED".equals(status)
-                    || submission.get("mark") == null) {
-
-                throw new IllegalArgumentException(
-                        "Enrollment " + enrollmentId
+            if (!"GRADED".equals(status) || submission.get("mark") == null) {
+                throw new IllegalArgumentException( "Enrollment " + enrollmentId
                         + ": assignment \"" + assignment.get("title")
                         + "\" is not fully graded.");
             }
 
             BigDecimal mark = decimal(submission.get("mark"));
             checkMark(mark, maximum, "Assignment mark");
-
             assignmentEarned = assignmentEarned.add(mark);
         }
 
@@ -217,13 +172,10 @@ public class FinalGradeService {
             BigDecimal maximum = decimal(exam.get("totalMark"));
 
             requirePositive(maximum, "Exam total mark");
-
             examMaximum = examMaximum.add(maximum);
             BigDecimal best = BigDecimal.ZERO;
 
-            for (Map<String, Object> attempt :
-                    repository.findAttempts(examId, enrollmentId)) {
-
+            for (Map<String, Object> attempt : repository.findAttempts(examId, enrollmentId)) {
                 String status = (String) attempt.get("status");
 
                 // ဒီ version မှာ EXPIRED ကို 0 အဖြစ်သတ်မှတ်ထားပါတယ်။
@@ -236,8 +188,7 @@ public class FinalGradeService {
                         || !List.of("PASSED", "FAILED")
                                 .contains(String.valueOf(attempt.get("result")))) {
 
-                    throw new IllegalArgumentException(
-                            "Enrollment " + enrollmentId
+                    throw new IllegalArgumentException("Enrollment " + enrollmentId
                             + ": exam \"" + exam.get("title")
                             + "\" has an unfinished or ungraded attempt.");
                 }
@@ -247,7 +198,6 @@ public class FinalGradeService {
 
                 best = best.max(score);
             }
-
             examEarned = examEarned.add(best);
         }
 
@@ -260,8 +210,7 @@ public class FinalGradeService {
             String status = (String) attendance.get("status");
 
             if (status == null) {
-                throw new IllegalArgumentException(
-                        "Enrollment " + enrollmentId
+                throw new IllegalArgumentException("Enrollment " + enrollmentId
                         + ": attendance is missing for session "
                         + attendance.get("sessionId") + ".");
             }
@@ -275,14 +224,12 @@ public class FinalGradeService {
                 case "EXCUSED" -> {
                     // Excused session ကို denominator မှ ဖယ်ပါ။
                 }
-                default -> throw new IllegalArgumentException(
-                        "Invalid attendance status.");
+                default -> throw new IllegalArgumentException("Invalid attendance status.");
             }
         }
 
         if (countedSessions == 0) {
-            throw new IllegalArgumentException(
-                    "Enrollment " + enrollmentId
+            throw new IllegalArgumentException("Enrollment " + enrollmentId
                     + ": no countable completed attendance sessions.");
         }
 
@@ -308,64 +255,49 @@ public class FinalGradeService {
                 .add(attendanceScore)
                 .setScale(2, RoundingMode.HALF_UP);
 
-        String result = total.compareTo(PASS_MARK) >= 0
-                ? "PASSED" : "FAILED";
+        String result = total.compareTo(PASS_MARK) >= 0 ? "PASSED" : "FAILED";
 
-        return new Scores(
-                assignmentScore,
-                examScore,
+        return new Scores(assignmentScore,examScore,
                 attendancePercent.setScale(2, RoundingMode.HALF_UP),
-                total,
-                gradeLetter(total),
-                result);
+                total,gradeLetter(total), result);
     }
 
-    private void checkAssessments(
-            int batchId,
+    private void checkAssessments(int batchId,
             List<Map<String, Object>> assignments,
             List<Map<String, Object>> exams) {
 
         if (assignments.isEmpty() || exams.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "This grading policy requires at least one assignment and one exam.");
+            throw new IllegalArgumentException( "This grading policy requires at least one assignment and one exam.");
         }
 
         for (Map<String, Object> assignment : assignments) {
             if (!"CLOSED".equals(assignment.get("status"))) {
                 throw new IllegalArgumentException(
-                        "Close assignment \"" + assignment.get("title")
-                        + "\" before calculating final grades.");
+                        "Close assignment \"" + assignment.get("title")+ "\" before calculating final grades.");
             }
         }
 
         for (Map<String, Object> exam : exams) {
             if (!"CLOSED".equals(exam.get("status"))) {
                 throw new IllegalArgumentException(
-                        "Close exam \"" + exam.get("title")
-                        + "\" before calculating final grades.");
+                        "Close exam \"" + exam.get("title") + "\" before calculating final grades.");
             }
         }
 
         if (repository.countScheduledSessions(batchId) > 0) {
-            throw new IllegalArgumentException(
-                    "Complete or cancel scheduled class sessions first.");
+            throw new IllegalArgumentException( "Complete or cancel scheduled class sessions first.");
         }
     }
 
     private void requireStudents(List<Map<String, Object>> students) {
         if (students.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "This batch has no ACTIVE or COMPLETED students.");
+            throw new IllegalArgumentException("This batch has no ACTIVE or COMPLETED students.");
         }
     }
 
-    private BigDecimal percentage(
-            BigDecimal earned, BigDecimal maximum) {
-
+    private BigDecimal percentage(BigDecimal earned, BigDecimal maximum) {
         requirePositive(maximum, "Maximum total");
-
-        return earned.multiply(new BigDecimal("100"))
-                .divide(maximum, 8, RoundingMode.HALF_UP);
+        return earned.multiply(new BigDecimal("100")).divide(maximum, 8, RoundingMode.HALF_UP);
     }
 
     private String gradeLetter(BigDecimal total) {
@@ -378,17 +310,14 @@ public class FinalGradeService {
 
     private void requirePositive(BigDecimal value, String label) {
         if (value == null || value.signum() <= 0) {
-            throw new IllegalArgumentException(
-                    label + " must be greater than 0.");
+            throw new IllegalArgumentException(label + " must be greater than 0.");
         }
     }
 
     private void checkMark(
             BigDecimal mark, BigDecimal maximum, String label) {
-
         if (mark.signum() < 0 || mark.compareTo(maximum) > 0) {
-            throw new IllegalArgumentException(
-                    label + " must be between 0 and " + maximum + ".");
+            throw new IllegalArgumentException(label + " must be between 0 and " + maximum + ".");
         }
     }
 
@@ -405,12 +334,9 @@ public class FinalGradeService {
         return ((Number) value).intValue();
     }
 
-    private record Scores(
-            BigDecimal assignment,
-            BigDecimal exam,
-            BigDecimal attendance,
+    private record Scores(BigDecimal assignment,
+            BigDecimal exam, BigDecimal attendance,
             BigDecimal total,
-            String letter,
-            String result) {
+            String letter,String result) {
     }
 }

@@ -20,8 +20,7 @@ public class TeacherGradingController {
 
     private final TeacherGradingService gradingService;
 
-    public TeacherGradingController(
-            TeacherGradingService gradingService) {
+    public TeacherGradingController( TeacherGradingService gradingService) {
         this.gradingService = gradingService;
     }
 
@@ -33,9 +32,7 @@ public class TeacherGradingController {
     }
 
     @GetMapping("/grade/{id}")
-    public String showGradePage(
-            @PathVariable Integer id,
-            Model model,
+    public String showGradePage( @PathVariable Integer id,Model model,
             RedirectAttributes redirectAttributes) {
 
         try {
@@ -57,7 +54,6 @@ public class TeacherGradingController {
             RedirectAttributes redirectAttributes) {
 
         try {
-
             gradingService.gradeSubmission( submissionId,score,feedback);
             redirectAttributes.addFlashAttribute("success","Submission graded successfully!" );
             return "redirect:/teacher/submissions";
