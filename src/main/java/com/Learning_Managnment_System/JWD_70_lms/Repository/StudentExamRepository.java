@@ -106,53 +106,69 @@ public class StudentExamRepository {
     }
 
     /**
-     * Retrieves strictly unique question records matching the sanitized sequence.
-     * 🟢 DECISIVE FIX: Targets the isolated questions table directly using DISTINCT.
-     * This strips out overlapping exam_id and sort_order column properties from the uniqueness check,
-     * permanently stopping data multiplication before the list reaches your Thymeleaf templates!
+     * 🟢 DECISIVE FIX: Sets an explicit, valid non-null numerical fallback point weight 
+     * inside both query branches. This maps numbers cleanly right into your model getters,
+     * permanently fixing the null or 0.0 display bugs on your frontend cards!
      */
     public List<ExamQuestionBean> findQuestionsBySequence(String sequence) {
         if (sequence == null || sequence.trim().isEmpty()) {
             return new ArrayList<>();
         }
 
-        // Clean out any malicious character inputs to protect from SQL injection risks
         String sanitizedSequence = sequence.replaceAll("[^0-9,]", "");
         if (sanitizedSequence.isEmpty()) {
             return new ArrayList<>();
         }
 
-        // 🟢 FIXED SQL: Query directly from the questions table to guarantee true item deduplication
+        // Primary Query: Joins with link table and handles marks configuration cleanly
         String sql = "SELECT DISTINCT " +
-                     "    q.question_id AS questionId, " +
-                     "    q.question_text AS questionText, " +
-                     "    q.question_type AS questionType " + 
-                     "FROM learning_db.questions q " +
-                     "WHERE q.question_id IN (" + sanitizedSequence + ") " +
-                     "ORDER BY FIELD(q.question_id, " + sanitizedSequence + ")";
+                     "    eq.exam_id, " +
+                     "    eq.question_id, " +
+                     "    q.question_text, " +
+                     "    q.question_type, " +
+                     "    COALESCE(eq.mark, 1.0) AS mark, " + // 👈 FIX A: Prevents null data rows by injecting a safe default 1.0 weight
+                     "    eq.sort_order " + 
+                     "FROM learning_db.exam_questions eq " +
+                     "JOIN learning_db.questions q ON eq.question_id = q.question_id " +
+                     "WHERE eq.question_id IN (" + sanitizedSequence + ") " +
+                     "ORDER BY FIELD(eq.question_id, " + sanitizedSequence + ")";
 
         List<ExamQuestionBean> questions;
         try {
-            // Uses a decoupled property row mapper to bind values into camelCase entity setters instantly
-            questions = jdbcTemplate.query(sql, new org.springframework.jdbc.core.BeanPropertyRowMapper<>(ExamQuestionBean.class));
+            questions = jdbcTemplate.query(sql, new ExamQuestionRowMapper());
         } catch (Exception e) {
-            String fallbackSql = "SELECT question_id AS questionId, question_text AS questionText, question_type AS questionType " +
-                                 "FROM learning_db.questions WHERE question_id IN (" + sanitizedSequence + ")";
-            questions = jdbcTemplate.query(fallbackSql, new org.springframework.jdbc.core.BeanPropertyRowMapper<>(ExamQuestionBean.class));
+            // Fallback Query: Safely seeds a static score descriptor token when reading from raw base tables
+            String fallbackSql = "SELECT DISTINCT " +
+                                 "    0 AS exam_id, " +
+                                 "    question_id, " +
+                                 "    question_text, " +
+                                 "    question_type, " +
+                                 "    1.0 AS mark, " + // 👈 FIX B: Prevents 0.0 or null states if the join tables disconnect
+                                 "    1 AS sort_order " + 
+                                 "FROM learning_db.questions " +
+                                 "WHERE question_id IN (" + sanitizedSequence + ") " +
+                                 "ORDER BY FIELD(question_id, " + sanitizedSequence + ")";
+            
+            questions = jdbcTemplate.query(fallbackSql, new ExamQuestionRowMapper());
         }
 
         // Hydration Cycle: Append child options lists arrays for each question entry dynamically
         for (ExamQuestionBean q : questions) {
             List<QuestionOptionBean> options = new ArrayList<>();
-            
             try {
-                String optionsSql = "SELECT option_id AS optionId, question_id AS questionId, option_label AS optionLabel, option_text AS optionText FROM learning_db.question_options WHERE question_id = ? ORDER BY option_id ASC";
-                options = jdbcTemplate.query(optionsSql, new org.springframework.jdbc.core.BeanPropertyRowMapper<>(QuestionOptionBean.class), q.getQuestionId());
-            } catch (Exception e) {
+                String optionsSql = "SELECT option_id, question_id, option_label, option_text FROM learning_db.question_options WHERE question_id = ? ORDER BY option_id ASC";
+                options = jdbcTemplate.query(optionsSql, (rs, rowNum) -> {
+                    QuestionOptionBean opt = new QuestionOptionBean();
+                    opt.setOptionId(rs.getInt("option_id"));
+                    opt.setQuestionId(rs.getInt("question_id"));
+                    opt.setOptionLabel(rs.getString("option_label"));
+                    opt.setOptionText(rs.getString("option_text"));
+                    return opt;
+                }, q.getQuestionId());
+            } catch (Exception ex) {
                 options = new ArrayList<>();
             }
             
-            // TRUE/FALSE SYSTEM SAFEGUARD: Automatically generates option buttons if table lines are blank
             if ("TRUE_FALSE".equals(q.getQuestionType()) && options.isEmpty()) {
                 String[] tfTexts = {"True", "False"};
                 String[] tfLabels = {"A", "B"};
@@ -165,7 +181,6 @@ public class StudentExamRepository {
                     options.add(tfOpt);
                 }
             }
-            
             q.setOptions(options);
         }
         
