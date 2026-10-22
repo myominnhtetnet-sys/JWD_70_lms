@@ -149,6 +149,7 @@
         window.addEventListener('blur', handleWindowBlurDisqualification);
         function handleWindowBlurDisqualification() {
             setTimeout(() => {
+                // Safe protection gate ignores focus loss while confirmation popups are active
                 if (!popupActive && document.activeElement && document.activeElement.tagName !== "IFRAME" && !document.hidden) {
                     clearProctorArmorListeners();
                     clearInterval(interval);
@@ -158,44 +159,51 @@
             }, 600);
         }
 
-        // Helper cleanup utility routine
+        // 🟢 FIXED HELPER CLEANUP UTILITY ROUTINE:
+        // Properly unbinds the window back-button listener alongside your blur functions.
+        // This ensures the page state is entirely cleared out before checking focus states!
         function clearProctorArmorListeners() {
+            if (typeof handlePopState === 'function') {
+                window.removeEventListener('popstate', handlePopState);
+            }
             window.removeEventListener('beforeunload', handlePageReloadWarning);
             document.removeEventListener('visibilitychange', handleTabSwitchDisqualification);
             window.removeEventListener('blur', handleWindowBlurDisqualification);
         }
 
+        // 6. Submit Handler Enforces Double-Verification Before Database Push
         if (form) {
             form.addEventListener('submit', function handleFormSubmit(event) {
-                // 1. Halt default native bubbling immediately to capture form control
                 event.preventDefault(); 
                 
-                // 2. Set the proctor flag true FIRST to protect the upcoming confirm modal box
+                // 1. Instantly shield the window from focus actions
                 popupActive = true; 
                 
-                // 3. Brief delay ensures the blur event handler reads the popupActive flag accurately
-                setTimeout(() => {
-                    const userConfirmed = confirm("Are you completely sure you want to hand in your paper? Unanswered slots will be marked as zero.");
-                    
-                    if (userConfirmed) {
-                        // 4. Detach security scanners cleanly to prevent submission interference loops
-                        clearProctorArmorListeners();
-                        clearInterval(interval);
-                        
-                        // 5. Wipes out this event listener instance context before triggering the push
-                        form.removeEventListener('submit', handleFormSubmit);
-                        form.submit();
-                    } else {
-                        // 6. Release the proctor shield gate if the student cancels the prompt
-                        popupActive = false; 
-                        
-                        // Force focus back onto the window workspace to avoid blur false-positives
-                        window.focus(); 
-                    }
-                }, 50);
+                // 2. Open your standard verification prompt dialog container box
+                const userConfirmed = confirm("Are you completely sure you want to hand in your paper? Unanswered slots will be marked as zero.");
+                
+                if (userConfirmed) {
+                    clearProctorArmorListeners();
+                    clearInterval(interval);
+                    form.removeEventListener('submit', handleFormSubmit);
+                    form.submit();
+                } else {
+                    // 3. 🟢 FIXED REJECTION TRACKING ROUTINE:
+                    // Keeps popupActive = true active for 1.5 seconds while window settles focus down.
+                    // This blocks background blur timeouts from triggering a false-positive force-submit when you click Cancel!
+                    window.focus();
+                    setTimeout(() => {
+                        popupActive = false;
+                    }, 1500);
+                }
             });
         }
+
     </script>
+
+
+
+
 
 
 </body>
