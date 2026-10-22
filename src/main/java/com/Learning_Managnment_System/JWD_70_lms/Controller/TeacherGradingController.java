@@ -26,8 +26,7 @@ public class TeacherGradingController {
 
     @GetMapping
     public String listSubmissions(Model model) {
-        model.addAttribute("submissions",
-                gradingService.getAllSubmissions());
+        model.addAttribute("submissions",gradingService.getAllSubmissions());
         return "teacher-submission-list";
     }
 
