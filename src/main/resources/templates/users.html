@@ -3,7 +3,6 @@
 
 <head th:replace="~{head :: head}"></head>
 
-<!-- 🟢 White / Light Theme Background သို့ ပြောင်းထားပါသည် -->
 <body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen">
 <div class="app min-h-screen flex flex-col">
 
@@ -49,13 +48,6 @@
 
                 <!-- Users Table Panel -->
                 <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-                    <!-- <div class="p-6 border-b border-slate-100 flex items-center justify-between">
-                        <div>
-                            <h2 class="text-base font-bold text-slate-900">All System Users</h2>
-                            <p class="text-xs text-slate-500 mt-0.5">List of all registered accounts and their current statuses.</p>
-                        </div>
-                    </div> -->
-
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
@@ -69,7 +61,6 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
-                                <!-- 🟢 th:each ထဲတွင် status stat ခေါ်ယူပြီး index.count ဖြင့် ၁ မှစတင်ရေတွက်စေသည် -->
                                 <tr th:each="u, index : ${users}" class="hover:bg-slate-50/80 transition">
                                     <td class="py-4 px-6 font-medium text-slate-900" th:text="${index.count}">1</td>
                                     <td class="py-4 px-6 font-semibold text-slate-900" th:text="${u.full_name}">Name</td>
@@ -175,15 +166,22 @@
 
     function openEditModal(id) {
         fetch('/admin/users/edit-json/' + id)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch user data.");
+                }
+                return response.json();
+            })
             .then(data => {
                 document.getElementById('modalTitle').innerText = 'Edit User';
                 document.getElementById('userForm').action = '/admin/users/update';
                 
+                // 🟢 Data များကို Form Input တွေထဲသို့ ထည့်သွင်းပေးခြင်း
                 document.getElementById('user_id').value = data.user_id || '';
                 document.getElementById('full_name').value = data.full_name || '';
                 document.getElementById('email').value = data.email || '';
                 
+                // Edit ပြုလုပ်စဉ် Password မလိုအပ်တော့သဖြင့် ပုန်းထားရန်
                 document.getElementById('password_hash').required = false;
                 document.getElementById('passwordGroup').style.display = 'none';
                 

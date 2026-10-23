@@ -58,17 +58,17 @@ public class Admin_Controller {
 
         if (user.getFull_name() == null || user.getFull_name().trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Full name is required.");
-            return "redirect:/admin/users/add";
+            return "redirect:/admin/users";
         }
 
         if (user.getPassword_hash() == null || user.getPassword_hash().trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Password is required.");
-            return "redirect:/admin/users/add";
+            return "redirect:/admin/users";
         }
 
         if (adminRepository.emailExists(user.getEmail())) {
             redirectAttributes.addFlashAttribute("error", "This email is already registered.");
-            return "redirect:/admin/users/add";
+            return "redirect:/admin/users";
         }
 
         if (user.getStatus() == null || user.getStatus().isBlank()) {
@@ -83,7 +83,7 @@ public class Admin_Controller {
             redirectAttributes.addFlashAttribute("error", "Unable to add user.");
         }
 
-        return "redirect:/admin/dashboard";
+        return "redirect:/admin/users";
     }
 
     @GetMapping("/users/view/{id}")
@@ -96,7 +96,7 @@ public class Admin_Controller {
 
         if (user == null) {
             redirectAttributes.addFlashAttribute("error", "User not found.");
-            return "redirect:/admin/dashboard";
+            return "redirect:/admin/users";
         }
 
         model.addAttribute("user", user);
@@ -113,11 +113,18 @@ public class Admin_Controller {
 
         if (user == null) {
             redirectAttributes.addFlashAttribute("error", "User not found.");
-            return "redirect:/admin/dashboard";
+            return "redirect:/admin/users";
         }
 
         model.addAttribute("user", user);
         return "admin/user_form";
+    }
+
+    // 🟢 MODAL မာ EDIT DATA ပေါ်လာစေရန် ထည့်သွင်းထားသော JSON ENDPOINT
+    @GetMapping("/users/edit-json/{id}")
+    @ResponseBody
+    public AdminUserBean getUserJson(@PathVariable("id") int id) {
+        return adminRepository.getUserById(id);
     }
 
     @PostMapping("/users/update")
@@ -127,17 +134,17 @@ public class Admin_Controller {
 
         if (user.getFull_name() == null || user.getFull_name().trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Full name is required.");
-            return "redirect:/admin/users/edit/" + user.getUser_id();
+            return "redirect:/admin/users";
         }
 
         if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Email is required.");
-            return "redirect:/admin/users/edit/" + user.getUser_id();
+            return "redirect:/admin/users";
         }
 
         if (adminRepository.emailExistsForOtherUser(user.getEmail(), user.getUser_id())) {
             redirectAttributes.addFlashAttribute("error", "This email is already used by another user.");
-            return "redirect:/admin/users/edit/" + user.getUser_id();
+            return "redirect:/admin/users";
         }
 
         int result = adminRepository.updateUser(user);
@@ -148,7 +155,7 @@ public class Admin_Controller {
             redirectAttributes.addFlashAttribute("error", "Unable to update user.");
         }
 
-        return "redirect:/admin/dashboard";
+        return "redirect:/admin/users";
     }
 
     @PostMapping("/users/suspend")
@@ -164,7 +171,7 @@ public class Admin_Controller {
             redirectAttributes.addFlashAttribute("error", "Unable to suspend user.");
         }
 
-        return "redirect:/admin/dashboard";
+        return "redirect:/admin/users";
     }
 
     @PostMapping("/users/activate")
@@ -180,7 +187,7 @@ public class Admin_Controller {
             redirectAttributes.addFlashAttribute("error", "Unable to activate user.");
         }
 
-        return "redirect:/admin/dashboard";
+        return "redirect:/admin/users";
     }
 
     @PostMapping("/users/delete")
@@ -196,6 +203,6 @@ public class Admin_Controller {
             redirectAttributes.addFlashAttribute("error", "Unable to delete user.");
         }
 
-        return "redirect:/admin/dashboard";
+        return "redirect:/admin/users";
     }
 }
