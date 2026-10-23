@@ -1,570 +1,444 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assignment Management</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assignment Management - Teacher Portal</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-
-html, body { margin: 0;padding: 0; width: 100%; min-height: 100%;}
-.question-sidebar {display: block; flex: 0 0 200px; width: 200px;min-width: 200px; min-height: 100vh;margin: 0; padding: 0;background-color: #0f172a; box-sizing: border-box;}
-.question-sidebar>div {width: 100%;margin: 0;padding: 0;}
-.question-sidebar aside {width: 100%;min-height: calc(100vh - 90px);box-sizing: border-box;}
-.question-sidebar nav {font-size: 13px !important;line-height: 1.4;}
-
-html, body {margin: 0 !important;padding: 0 !important;width: 100%;min-height: 100%;}
-.question-sidebar {display: block;flex: 0 0 200px;width: 200px;min-width: 200px;align-self: stretch;margin: 0 !important;padding: 0 !important;background: #0f172a;box-sizing: border-box;}
-.question-sidebar>div {width: 100%;margin: 0 !important;padding: 0 !important;}
-.question-sidebar aside {width: 100% !important;min-height: 100vh !important;height: 100% !important;margin: 0 !important;padding: 12px !important;border-radius: 0 !important;box-sizing: border-box;}
-.question-sidebar nav {font-size: 13px !important;line-height: 1.4 !important;}
-.question-sidebar nav a {display: flex !important;align-items: center !important;gap: 9px !important;padding: 9px 10px !important;font-size: 13px !important;line-height: 1.4 !important;white-space: nowrap;border-radius: 8px !important;box-sizing: border-box;
-}
-
-.question-sidebar nav a i {width: 18px !important;min-width: 18px !important;font-size: 15px !important;text-align: center;}
-@media ( max-width : 700px) {.question-sidebar {flex: 0 0 180px;width: 180px;min-width: 180px;}}
-</style>
-
-<style>
-    html, body {margin: 0 !important;padding: 0 !important;width: 100%;min-height: 100%;}
-    .question-sidebar {display: block;flex: 0 0 200px;width: 200px;min-width: 200px;align-self: stretch;
-        margin: 0 !important;padding: 0 !important;background-color: #0f172a;box-sizing: border-box;}
-    .question-sidebar > div { width: 100%; margin: 0 !important;padding: 0 !important;}
-    .question-sidebar aside {width: 100% !important; min-height: 100vh !important;height: 100% !important;
-        margin: 0 !important;padding: 12px !important;border-radius: 0 !important; box-sizing: border-box;}
-    .question-sidebar nav {font-size: 13px !important;line-height: 1.4 !important;}
-    .question-sidebar nav a { display: flex !important;align-items: center !important;gap: 9px !important;padding: 9px 10px !important;
-        font-size: 13px !important;line-height: 1.4 !important;white-space: nowrap;border-radius: 8px !important; box-sizing: border-box;}
-    .question-sidebar nav a i {width: 18px !important; min-width: 18px !important;font-size: 15px !important;text-align: center;}
-
-    main { flex: 1; min-width: 0;}
-
-    @media (max-width: 700px) {.question-sidebar { flex: 0 0 180px; width: 180px; min-width: 180px;}}
-            
-</style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.03);
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,0.15);
+        border-radius: 3px;
+    }
+    .fade-in {
+        animation: fadeIn 0.25s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
     
+</style>
 </head>
 
-<body class="bg-slate-100 text-slate-800">
+<body class="h-full font-sans text-slate-900 bg-slate-50 antialiased">
 
-    <div th:replace="~{header :: header}"></div>
-    <div class="flex items-stretch min-h-screen w-full">
-
-        <div class="question-sidebar shrink-0">
-            <div th:replace="~{teacher :: sidebar}"></div>
-        </div>
-
-        <main class="flex-1 min-w-0 px-4 sm:px-6 py-5">
-
-            <div class="container">
-
-                <div class="page-header">
-                    <div>
-                        <h1 class="page-title">Assignment Management</h1>
-                        <p class="page-subtitle">
-                            Manage your assignments easily.
-                        </p>
+    <div id="app" class="min-h-screen flex flex-col">
+        
+        <!-- TOP HEADER BAR -->
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+            <div class="px-6 py-3.5 flex items-center justify-between gap-4">
+                
+                <!-- Left: Branding & User Profile -->
+                <div class="flex items-center gap-6 flex-1 max-w-xl">
+                    <div class="flex items-center gap-3 cursor-pointer">
+                        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-100">
+                            <i class="fa-solid font-bold text-lg">E</i>
+                        </div>
+                        <div>
+                            <span class="font-extrabold text-base tracking-tight bg-gradient-to-r from-indigo-600 to-indigo-800 bg-clip-text text-transparent">EduPulse</span>
+                            <span class="text-xs px-2 py-0.5 ml-1 rounded-full bg-indigo-50 text-indigo-700 font-bold border border-indigo-200">LMS</span>
+                        </div>
                     </div>
 
-                    <a th:href="@{/teacher/assignments/create}" class="btn btn-primary">
-                        + Create Assignment
+                     <!-- User Profile Info -->
+                    <div class="flex items-center gap-3.5 pl-6 border-l border-slate-200">
+                        <div class="h-9 w-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-xs" th:text="${#strings.substring(fullName,0,2)}">TE</div>
+                        <div class="hidden sm:block text-left">
+                            <div class="text-xs font-bold text-slate-900" th:text="${fullName}">Teacher Name</div>
+                            <div class="text-xs font-medium text-slate-600">Instructor Account</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN LAYOUT WRAPPER -->
+        <div class="flex-1 flex">
+  
+            <!-- SIDEBAR -->
+            <aside th:fragment="sidebar" 
+            class="!w-52 !min-w-0 shrink-0 bg-white text-slate-700 flex flex-col p-3 border-r border-slate-200">
+                <nav class="space-y-1.5 text-xs font-medium">
+                    <div class="text-xs uppercase tracking-wider text-slate-600 font-bold px-3 mb-2">Teaching Portal</div>
+                    
+                    <a href="/teacher" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
+        <i class="fa-solid fa-house w-4"></i> Dashboard
+    </a>
+    <a href="/teacher/courses" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
+        <i class="fa-solid fa-book-open w-4"></i> My Courses
+    </a>
+    <a href="/teacher/batches" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
+        <i class="fa-solid fa-users w-4"></i> My Batches
+    </a>
+    <a href="/teacher/attendance" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
+        <i class="fa-solid fa-calendar-check w-4"></i> Check Attendance
+    </a>
+
+                    <!-- ASSESSMENTS PORTAL LINKS -->
+                    <div class="pt-3 pb-1 text-xs uppercase tracking-wider text-slate-600 font-bold px-3">Assessments</div>
+
+                    <a href="/questions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-database w-4"></i> Question Bank
+                    </a>
+                    <a href="/teacher/assignments" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-teal-600 text-white font-semibold transition shadow-xs">
+                        <i class="fa-solid fa-clipboard-list w-4"></i> Assignments
+                    </a>
+                    <a href="/teacher/submissions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-check-double w-4"></i> Grade Submissions
+                    </a>
+                    <a href="/teacher/exams" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-file-pen w-4"></i> Exams
+                    </a>
+                    <a href="/teacher/exam-results" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-square-poll-vertical w-4"></i> Exam Results
+                    </a>
+                    <a href="/teacher/final-grades" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-graduation-cap w-4"></i> Final Grades
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- MAIN CONTENT AREA -->
+            <main class="flex-1 min-w-0 px-6 py-6 bg-slate-50 overflow-y-auto">
+
+                <!-- Page Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+                    <div>
+                        <h1 class="text-xl font-bold text-slate-900">Assignment Management</h1>
+                        <p class="text-xs text-slate-600 mt-1">Manage your assignments easily.</p>
+                    </div>
+
+                    <a th:href="@{/teacher/assignments/create}" class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-xl shadow-xs transition cursor-pointer">
+                        <i class="fa-solid fa-plus text-xs"></i> Create Assignment
                     </a>
                 </div>
 
-                <div class="success" th:if="${successMessage}" th:text="${successMessage}"></div>
-                <div class="error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+                <!-- Messages -->
+                <div th:if="${successMessage}" class="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl" th:text="${successMessage}"></div>
+                <div th:if="${errorMessage}" class="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl" th:text="${errorMessage}"></div>
 
-                <div class="filter-card">
-                    <form th:action="@{/teacher/assignments/search}" method="get" class="search-form">
+                <!-- Search & Filter -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-6 shadow-xs">
+                    <form th:action="@{/teacher/assignments/search}" method="get" class="grid grid-cols-1 sm:grid-cols-4 gap-3 items-center">
+                        <input type="text" name="title" placeholder="Search assignment title..." th:value="${title}" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50">
 
-                        <input type="text" name="title" placeholder="Search assignment title..." th:value="${title}">
-
-                        <select name="batchId">
+                        <select name="batchId" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500">
                             <option value="">All Batches</option>
-                            <option th:each="batch : ${batches}"
-                                    th:value="${batch['batch_id']}"
-                                    th:text="${batch['title']}"
-                                    th:selected="${selectedBatchId != null and selectedBatchId == batch['batch_id']}">
-                            </option>
+                            <option th:each="batch : ${batches}" th:value="${batch['batch_id']}" th:text="${batch['title']}" th:selected="${selectedBatchId != null and selectedBatchId == batch['batch_id']}"></option>
                         </select>
 
-                        <select name="status">
+                        <select name="status" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500">
                             <option value="">All Status</option>
-                            <option value="DRAFT" th:selected="${selectedStatus == 'DRAFT'}"> DRAFT</option>
-                            <option value="PUBLISHED" th:selected="${selectedStatus == 'PUBLISHED'}"> PUBLISHED</option>
-                            <option value="CLOSED" th:selected="${selectedStatus == 'CLOSED'}"> CLOSED</option>
+                            <option value="DRAFT" th:selected="${selectedStatus == 'DRAFT'}">DRAFT</option>
+                            <option value="PUBLISHED" th:selected="${selectedStatus == 'PUBLISHED'}">PUBLISHED</option>
+                            <option value="CLOSED" th:selected="${selectedStatus == 'CLOSED'}">CLOSED</option>
                         </select>
 
-                        <button type="submit" class="btn btn-search">
-                            Search
-                        </button>
-
-                        <a th:href="@{/teacher/assignments}" class="btn btn-reset">
-                            Reset
-                        </a>
-
+                        <div class="flex items-center gap-2">
+                            <button type="submit" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition cursor-pointer shadow-xs">Search</button>
+                            <a th:href="@{/teacher/assignments}" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs py-2.5 px-4 rounded-xl transition cursor-pointer">Reset</a>
+                        </div>
                     </form>
                 </div>
 
                 <!-- Assignment Table -->
-                <div class="table-card">
-
-                    <div class="table-header">
-                        <h2>Assignment List</h2>
-
-                        <span class="total-count">
-                            Total:
-                            <strong th:text="${totalItems}">0</strong>
-                        </span>
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+                    <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-slate-100">
+                        <h2 class="font-bold text-sm uppercase text-slate-700">Assignment List</h2>
+                        <span class="text-xs font-bold text-slate-600">Total: <strong th:text="${totalItems}">0</strong></span>
                     </div>
 
-                    <div class="table-responsive">
-
-                        <table class="assignment-table">
-
-                            <thead>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-700 font-bold">
                                 <tr>
-                                    <th>No</th>
-                                    <th>Batch</th>
-                                    <th>Lesson</th>
-                                    <th>Title</th>
-                                    <th>Total Mark</th>
-                                    <th>Pass Mark</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th class="px-4 py-3">No</th>
+                                    <th class="px-4 py-3">Batch</th>
+                                    <th class="px-4 py-3">Lesson</th>
+                                    <th class="px-4 py-3">Title</th>
+                                    <th class="px-4 py-3">Total Mark</th>
+                                    <th class="px-4 py-3">Pass Mark</th>
+                                    <th class="px-4 py-3">Status</th>
+                                    <th class="px-4 py-3 text-center">Action</th>
                                 </tr>
                             </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr th:each="assignment, index : ${assignments}" th:attr="data-id=${assignment.assignmentId}, data-created-at=${assignment.createdAt}">
+                                    <td class="px-4 py-3 text-xs text-slate-500 font-medium" th:text="${index.count}">1</td>
 
-                            <tbody>
+									<td class="px-4 py-3 text-sm font-medium text-slate-800">
+										<span th:each="batch : ${batches}"
+										th:if="${batch['batch_id'] == assignment.batchId}"
+										th:text="${batch['title']}"> </span>
+									</td>
 
-                                <tr th:each="assignment, index : ${assignments}"
-                                    th:attr="data-id=${assignment.assignmentId},
-                                             data-created-at=${assignment.createdAt}">
-
-                                    <td th:text="${index.count}">1</td>
-
-                                    <td>
-                                        <span th:each="batch : ${batches}"
-                                              th:if="${batch['batch_id'] == assignment.batchId}"
-                                              th:text="${batch['batch_code'] + ' - ' + batch['title']}">
-                                        </span>
+									<td class="px-4 py-3 text-xs text-slate-600 font-medium">
+                                        <span th:each="lesson : ${lessons}" th:if="${lesson.lessonId == assignment.lessonId}" th:text="${lesson.title}"></span>
                                     </td>
-
-                                    <td>
-                                        <span th:each="lesson : ${lessons}"
-                                              th:if="${lesson.lessonId == assignment.lessonId}"
-                                              th:text="${lesson.title}">
-                                        </span>
-                                    </td>
-
-                                    <td class="assignment-title">
-                                        <div class="assignment-title-wrapper">
-                                            <span th:text="${assignment.title}">
-                                                Assignment Title
-                                            </span>
+                                    <td class="px-4 py-3 font-semibold text-slate-900 assignment-title">
+                                        <div class="assignment-title-wrapper flex items-center gap-2">
+                                            <span th:text="${assignment.title}">Assignment Title</span>
                                         </div>
                                     </td>
-
-                                    <td th:text="${assignment.totalMark}">100</td>
-                                    <td th:text="${assignment.passMark}">40</td>
-
-                                    <td>
-                                        <span class="status-badge"
-                                              th:classappend="${assignment.status == 'PUBLISHED'}
-                                                  ? ' status-published'
-                                                  : (${assignment.status == 'DRAFT'}
-                                                  ? ' status-draft'
-                                                  : (${assignment.status == 'CLOSED'}
-                                                  ? ' status-closed'
-                                                  : ' status-default'))"
-                                              th:text="${assignment.status}">
-                                            DRAFT
-                                        </span>
+                                    <td class="px-4 py-3 text-sm font-bold text-slate-800" th:text="${assignment.totalMark}">100</td>
+                                    <td class="px-4 py-3 text-sm font-bold text-slate-800" th:text="${assignment.passMark}">40</td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-bold border"
+                                              th:classappend="${assignment.status == 'PUBLISHED'} ? ' bg-emerald-50 text-emerald-700 border-emerald-200' : (${assignment.status == 'DRAFT'} ? ' bg-amber-50 text-amber-700 border-amber-200' : ' bg-rose-50 text-rose-700 border-rose-200')"
+                                              th:text="${assignment.status}">DRAFT</span>
                                     </td>
-
-                                    <!-- Actions -->
-                                    <td class="action-buttons">
-
-                                        <button type="button" class="btn btn-view"
-                                                th:attr="data-id=${assignment.assignmentId}" onclick="openAssignmentModal(this)">
-                                            View
-                                        </button>
-
-                                        <button type="button"
-                                                class="btn btn-edit"
-                                                th:attr="data-id=${assignment.assignmentId},
-                                                         data-batch=${assignment.batchId},
-                                                         data-lesson=${assignment.lessonId},
-                                                         data-title=${assignment.title},
-                                                         data-description=${assignment.description},
-                                                         data-start=${assignment.startAt},
-                                                         data-due=${assignment.dueAt},
-                                                         data-late=${assignment.allowLateSubmit},
-                                                         data-late-deadline=${assignment.lateDeadline},
-                                                         data-total-mark=${assignment.totalMark},
-                                                         data-pass-mark=${assignment.passMark},
-                                                         data-status=${assignment.status},
-                                                         data-created-by=${assignment.createdBy},
-                                                         data-attachment=${assignment.attachment}"
-                                                onclick="openEditModal(this)">
-                                            Edit
-                                        </button>
-
-                                        <form th:action="@{/teacher/assignments/delete/{id}(id=${assignment.assignmentId})}"
-                                              method="post" class="delete-form"
-                                              onsubmit="return confirm('Are you sure you want to delete this assignment?');">
-
-                                            <button type="submit" class="btn btn-delete">
-                                                Delete
+                                    <td class="px-4 py-3 text-center">
+                                        <div class="flex items-center justify-center gap-1">
+                                            <button type="button" class="w-8 h-8 rounded-lg text-blue-600 hover:bg-blue-50 cursor-pointer flex items-center justify-center transition" th:attr="data-id=${assignment.assignmentId}" onclick="openAssignmentModal(this)" title="View">
+                                                <i class="fa-solid fa-eye text-xs"></i>
                                             </button>
-                                        </form>
-
+                                            <button type="button" class="w-8 h-8 rounded-lg text-amber-600 hover:bg-amber-50 cursor-pointer flex items-center justify-center transition" th:attr="data-id=${assignment.assignmentId}, data-batch=${assignment.batchId}, data-lesson=${assignment.lessonId}, data-title=${assignment.title}, data-description=${assignment.description}, data-start=${assignment.startAt}, data-due=${assignment.dueAt}, data-late=${assignment.allowLateSubmit}, data-late-deadline=${assignment.lateDeadline}, data-total-mark=${assignment.totalMark}, data-pass-mark=${assignment.passMark}, data-status=${assignment.status}, data-created-by=${assignment.createdBy}, data-attachment=${assignment.attachment}" onclick="openEditModal(this)" title="Edit">
+                                                <i class="fa-solid fa-pen text-xs"></i>
+                                            </button>
+                                            <form th:action="@{/teacher/assignments/delete/{id}(id=${assignment.assignmentId})}" method="post" class="inline" onsubmit="return confirm('Are you sure you want to delete this assignment?');">
+                                                <button type="submit" class="w-8 h-8 rounded-lg text-rose-600 hover:bg-rose-50 cursor-pointer flex items-center justify-center transition" title="Delete">
+                                                    <i class="fa-solid fa-trash text-xs"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
-
-                                <!-- Empty State -->
                                 <tr th:if="${#lists.isEmpty(assignments)}">
-                                    <td colspan="8" class="empty-message">
-                                        No assignments found.
-                                    </td>
+                                    <td colspan="8" class="px-6 py-8 text-center text-slate-500 text-sm font-medium">No assignments found.</td>
                                 </tr>
-
                             </tbody>
                         </table>
-
                     </div>
 
-                    <div class="pagination">
-
-                        <a th:if="${currentPage > 1}" th:href="@{/teacher/assignments(page=${currentPage - 1})}">
-                            Previous
-                        </a>
-
+                    <!-- Pagination -->
+                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-center gap-2 text-xs font-bold">
+                        <a th:if="${currentPage > 1}" th:href="@{/teacher/assignments(page=${currentPage - 1})}" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 text-slate-700">Previous</a>
                         <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-                            <a th:href="@{/teacher/assignments(page=${i})}"
-                               th:text="${i}" th:classappend="${i == currentPage} ? 'active' : ''">
-                            </a>
+                            <a th:href="@{/teacher/assignments(page=${i})}" th:text="${i}" th:classappend="${i == currentPage} ? ' bg-teal-600 text-white border-teal-600' : ' bg-white border-slate-300 text-slate-700 hover:bg-slate-100'" class="px-3 py-1.5 border rounded-lg"></a>
                         </span>
-
-                        <a th:if="${currentPage < totalPages}" th:href="@{/teacher/assignments(page=${currentPage + 1})}">
-                            Next
-                        </a>
-
+                        <a th:if="${currentPage < totalPages}" th:href="@{/teacher/assignments(page=${currentPage + 1})}" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 text-slate-700">Next</a>
                     </div>
                 </div>
-            </div>
-        </main>
-    </div>
-
-    <div id="assignmentModal" class="assignment-modal">
-
-        <div class="assignment-modal-content">
-
-            <div class="assignment-modal-header">
-                <div>
-                    <h2>Assignment Details</h2>
-                    <p>View complete assignment information.</p>
-                </div>
-
-                <button type="button" class="modal-close" onclick="closeAssignmentModal()">
-                    &times;
-                </button>
-            </div>
-
-            <div class="assignment-modal-body">
-
-                <div class="modal-section">
-                    <h3>Basic Information</h3>
-
-                    <div class="modal-grid">
-
-                        <div class="modal-item">
-                            <span class="modal-label">Assignment ID</span>
-                            <strong id="detailAssignmentId">-</strong>
-                        </div>
-
-                        <div class="modal-item">
-                            <span class="modal-label">Title</span>
-                            <strong id="detailTitle">-</strong>
-                        </div>
-
-                        <div class="modal-item">
-                            <span class="modal-label">Batch</span>
-                            <strong id="detailBatch">-</strong>
-                        </div>
-
-                        <div class="modal-item">
-                            <span class="modal-label">Lesson</span>
-                            <strong id="detailLesson">-</strong>
-                        </div>
-
-                        <div class="modal-item modal-full">
-                            <span class="modal-label">Description</span>
-                            <div id="detailDescription">-</div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="modal-section">
-                    <h3>Assignment Schedule</h3>
-
-                    <div class="modal-grid">
-
-                        <div class="modal-item">
-                            <span class="modal-label">Start At</span>
-                            <strong id="detailStartAt">-</strong>
-                        </div>
-
-                        <div class="modal-item">
-                            <span class="modal-label">Due At</span>
-                            <strong id="detailDueAt">-</strong>
-                        </div>
-
-                        <div class="modal-item">
-                            <span class="modal-label">Allow Late Submit</span>
-                            <strong id="detailAllowLate">-</strong>
-                        </div>
-
-                        <div class="modal-item">
-                            <span class="modal-label">Late Deadline</span>
-                            <strong id="detailLateDeadline">-</strong>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="modal-section">
-                    <h3>Marking Information</h3>
-
-                    <div class="modal-grid">
-
-                        <div class="modal-item">
-                            <span class="modal-label">Total Mark</span>
-                            <strong id="detailTotalMark">-</strong>
-                        </div>
-
-                        <div class="modal-item">
-                            <span class="modal-label">Pass Mark</span>
-                            <strong id="detailPassMark">-</strong>
-                        </div>
-
-                        <div class="modal-item">
-                            <span class="modal-label">Status</span>
-                            <span id="detailStatus" class="status-badge"></span>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="modal-section">
-                    <h3>Attachment</h3>
-                    <div id="detailAttachment"></div>
-                </div>
-
-            </div>
-
-            <div class="assignment-modal-footer">
-                <button type="button" class="btn btn-reset" onclick="closeAssignmentModal()">
-                    Close
-                </button>
-            </div>
-
+            </main>
         </div>
     </div>
 
-    <div id="editAssignmentModal" class="assignment-modal">
-
-        <div class="assignment-modal-content edit-modal-content">
-
-            <div class="assignment-modal-header">
+    <!-- View Assignment Modal -->
+    <div id="assignmentModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200">
                 <div>
-                    <h2>Edit Assignment</h2>
-                    <p>Update assignment information.</p>
+                    <h2 class="text-base font-bold text-slate-900">Assignment Details</h2>
+                    <p class="text-xs text-slate-600">View complete assignment information.</p>
                 </div>
-
-                <button type="button"
-                        class="modal-close"
-                        onclick="closeEditModal()">
-                    &times;
-                </button>
+                <button type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 cursor-pointer flex items-center justify-center" onclick="closeAssignmentModal()">&times;</button>
             </div>
-
-            <div class="assignment-modal-body">
-
-                <form th:action="@{/teacher/assignments/update}" method="post" enctype="multipart/form-data">
-
-                    <input type="hidden" id="editAssignmentId" name="assignmentId">
-
-                    <div class="modal-section">
-                        <h3>Basic Information</h3>
-
-                        <div class="modal-grid">
-
-                            <div class="modal-item">
-                                <span class="modal-label">Batch</span>
-                                <select id="editBatchId" name="batchId" required>
-                                    <option value="">-- Select Batch --</option>
-                                    <option th:each="batch : ${batches}"
-                                            th:value="${batch['batch_id']}"
-                                            th:text="${batch['batch_code'] + ' - ' + batch['title']}">
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="modal-item">
-                                <span class="modal-label">Lesson</span>
-                                <select id="editLessonId" name="lessonId" required>
-                                    <option value="">-- Select Lesson --</option>
-                                    <option th:each="lesson : ${lessons}"
-                                            th:value="${lesson.lessonId}"
-                                            th:text="${lesson.title}">
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="modal-item modal-full">
-                                <span class="modal-label">Assignment Title</span>
-                                <input type="text" id="editTitle" name="title" required>
-                            </div>
-
-                            <div class="modal-item modal-full">
-                                <span class="modal-label">Description</span>
-                                <textarea id="editDescription" name="description" rows="3"></textarea>
-                            </div>
-
-                        </div>
+            <div class="p-5 space-y-4 text-sm">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                        <span class="text-xs font-bold uppercase text-slate-600">Assignment ID</span>
+                        <strong id="detailAssignmentId" class="block text-slate-900 mt-1">-</strong>
                     </div>
-
-                    <div class="modal-section">
-                        <h3>Assignment Schedule</h3>
-
-                        <div class="modal-grid">
-
-                            <div class="modal-item">
-                                <span class="modal-label">Start At</span>
-                                <input type="datetime-local" id="editStartAt" name="startAt" required>
-                            </div>
-
-                            <div class="modal-item">
-                                <span class="modal-label">Due At</span>
-                                <input type="datetime-local" id="editDueAt" name="dueAt" required>
-                            </div>
-
-                            <div class="modal-item modal-full">
-                                <label class="edit-checkbox">
-                                    <input type="hidden" name="_allowLateSubmit" value="on">
-                                    <input type="checkbox" id="editAllowLate" name="allowLateSubmit" value="true">
-                                    Allow Late Submit
-                                </label>
-                            </div>
-
-                            <div class="modal-item modal-full">
-                                <span class="modal-label">Late Deadline</span>
-                                <input type="datetime-local" id="editLateDeadline" name="lateDeadline">
-                            </div>
-
-                        </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                        <span class="text-xs font-bold uppercase text-slate-600">Title</span>
+                        <strong id="detailTitle" class="block text-slate-900 mt-1">-</strong>
                     </div>
-
-                    <div class="modal-section">
-                        <h3>Marking &amp; Status</h3>
-
-                        <div class="modal-grid">
-
-                            <div class="modal-item">
-                                <span class="modal-label">Total Mark</span>
-                                <input type="number" step="0.01" min="0" id="editTotalMark" name="totalMark" required>
-                            </div>
-
-                            <div class="modal-item">
-                                <span class="modal-label">Pass Mark</span>
-                                <input type="number" step="0.01" min="0" id="editPassMark" name="passMark" required>
-                            </div>
-
-                            <div class="modal-item">
-                                <span class="modal-label">Status</span>
-                                <select id="editStatus" name="status">
-                                    <option value="DRAFT">DRAFT</option>
-                                    <option value="PUBLISHED">PUBLISHED</option>
-                                    <option value="CLOSED">CLOSED</option>
-                                </select>
-                            </div>
-
-                            <div class="modal-item">
-                                <span class="modal-label">Created By</span>
-                                <input type="number" id="editCreatedBy" name="createdBy" required>
-                            </div>
-
-                        </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                        <span class="text-xs font-bold uppercase text-slate-600">Batch</span>
+                        <strong id="detailBatch" class="block text-slate-900 mt-1">-</strong>
                     </div>
-
-                    <div class="modal-section">
-                        <h3>Attachment</h3>
-                        <div class="modal-item">
-                            <input type="file" name="attachmentFile" accept=".pdf,.zip,.doc,.docx">
-                            <small>Allowed: PDF, ZIP, DOC, DOCX</small>
-                            <div id="editCurrentAttachment"></div>
-                        </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                        <span class="text-xs font-bold uppercase text-slate-600">Lesson</span>
+                        <strong id="detailLesson" class="block text-slate-900 mt-1">-</strong>
                     </div>
-
-                    <div class="assignment-modal-footer">
-                        <button type="button" class="btn btn-reset" onclick="closeEditModal()">
-                            Cancel
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            Update Assignment
-                        </button>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span class="text-xs font-bold uppercase text-slate-600">Description</span>
+                    <div id="detailDescription" class="text-slate-800 mt-1">-</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                        <span class="text-xs font-bold uppercase text-slate-600">Start At</span>
+                        <strong id="detailStartAt" class="block text-slate-900 mt-1">-</strong>
                     </div>
-
-                </form>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                        <span class="text-xs font-bold uppercase text-slate-600">Due At</span>
+                        <strong id="detailDueAt" class="block text-slate-900 mt-1">-</strong>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                        <span class="text-xs font-bold uppercase text-slate-600">Allow Late Submit</span>
+                        <strong id="detailAllowLate" class="block text-slate-900 mt-1">-</strong>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                        <span class="text-xs font-bold uppercase text-slate-600">Late Deadline</span>
+                        <strong id="detailLateDeadline" class="block text-slate-900 mt-1">-</strong>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                        <span class="text-xs font-bold uppercase text-slate-600">Total Mark</span>
+                        <strong id="detailTotalMark" class="block text-slate-900 mt-1">-</strong>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                        <span class="text-xs font-bold uppercase text-slate-600">Pass Mark</span>
+                        <strong id="detailPassMark" class="block text-slate-900 mt-1">-</strong>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                        <span class="text-xs font-bold uppercase text-slate-600">Status</span>
+                        <div class="mt-1"><span id="detailStatus" class="px-2.5 py-1 rounded-full text-xs font-bold border"></span></div>
+                    </div>
+                </div>
+                <div>
+                    <span class="text-xs font-bold uppercase text-slate-600 mb-1 block">Attachment</span>
+                    <div id="detailAttachment" class="flex gap-2"></div>
+                </div>
+            </div>
+            <div class="px-5 py-3 border-t border-slate-200 flex justify-end">
+                <button type="button" class="px-4 py-2 text-xs font-bold bg-slate-700 hover:bg-slate-800 text-white rounded-xl cursor-pointer" onclick="closeAssignmentModal()">Close</button>
             </div>
         </div>
     </div>
 
+    <!-- Edit Assignment Modal -->
+    <div id="editAssignmentModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[92vh] overflow-y-auto">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900">Edit Assignment</h2>
+                    <p class="text-xs text-slate-600">Update assignment information.</p>
+                </div>
+                <button type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 cursor-pointer flex items-center justify-center" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form th:action="@{/teacher/assignments/update}" method="post" enctype="multipart/form-data" class="p-5 space-y-4 text-sm">
+                <input type="hidden" id="editAssignmentId" name="assignmentId">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Batch</span>
+                        <select id="editBatchId" name="batchId" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                            <option value="">-- Select Batch --</option>
+							<option th:each="batch : ${batches}" th:value="${batch['batch_id']}" th:text="${batch['title']}"></option>
+						</select>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Lesson</span>
+                        <select id="editLessonId" name="lessonId" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                            <option value="">-- Select Lesson --</option>
+                            <option th:each="lesson : ${lessons}" th:value="${lesson.lessonId}" th:text="${lesson.title}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Assignment Title</span>
+                    <input type="text" id="editTitle" name="title" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                </div>
+                <div>
+                    <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Description</span>
+                    <textarea id="editDescription" name="description" rows="2" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Start At</span>
+                        <input type="datetime-local" id="editStartAt" name="startAt" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Due At</span>
+                        <input type="datetime-local" id="editDueAt" name="dueAt" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="hidden" name="_allowLateSubmit" value="on">
+                    <input type="checkbox" id="editAllowLate" name="allowLateSubmit" value="true" class="w-4 h-4 text-teal-600 focus:ring-teal-500 rounded cursor-pointer">
+                    <label for="editAllowLate" class="text-xs font-bold text-slate-700 cursor-pointer">Allow Late Submit</label>
+                </div>
+                <div>
+                    <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Late Deadline</span>
+                    <input type="datetime-local" id="editLateDeadline" name="lateDeadline" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Total Mark</span>
+                        <input type="number" step="0.01" min="0" id="editTotalMark" name="totalMark" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Pass Mark</span>
+                        <input type="number" step="0.01" min="0" id="editPassMark" name="passMark" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Status</span>
+                        <select id="editStatus" name="status" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                            <option value="DRAFT">DRAFT</option>
+                            <option value="PUBLISHED">PUBLISHED</option>
+                            <option value="CLOSED">CLOSED</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Created By</span>
+                        <input type="number" id="editCreatedBy" name="createdBy" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    </div>
+                </div>
+                <div>
+                    <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Attachment</span>
+                    <input type="file" name="attachmentFile" accept=".pdf,.zip,.doc,.docx" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 cursor-pointer">
+                    <div id="editCurrentAttachment" class="mt-1"></div>
+                </div>
+                <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
+                    <button type="button" class="px-4 py-2 text-xs font-bold border border-slate-300 rounded-xl hover:bg-slate-50 cursor-pointer" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="px-5 py-2 text-xs font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-xs cursor-pointer">Update Assignment</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
+    <!-- JavaScript -->
     <script>
         function openAssignmentModal(button) {
             const assignmentId = button.getAttribute("data-id");
 
             fetch("/teacher/assignments/api/" + assignmentId)
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Assignment not found");
-                    }
+                    if (!response.ok) throw new Error("Assignment not found");
                     return response.json();
                 })
                 .then(assignment => {
-                	
                     document.getElementById("detailAssignmentId").textContent = assignment.assignmentId ?? "-";
                     document.getElementById("detailTitle").textContent = assignment.title ?? "-";
                     document.getElementById("detailBatch").textContent = assignment.batchName ?? "-";
                     document.getElementById("detailLesson").textContent = assignment.lessonName ?? "-";
-
                     document.getElementById("detailDescription").textContent = assignment.description ?? "No description provided";
                     document.getElementById("detailStartAt").textContent = formatDateTime(assignment.startAt);
                     document.getElementById("detailDueAt").textContent = formatDateTime(assignment.dueAt);
                     document.getElementById("detailAllowLate").textContent = assignment.allowLateSubmit ? "Yes" : "No";
-
                     document.getElementById("detailLateDeadline").textContent = formatDateTime(assignment.lateDeadline);
                     document.getElementById("detailTotalMark").textContent = assignment.totalMark ?? "-";
                     document.getElementById("detailPassMark").textContent = assignment.passMark ?? "-";
 
                     const statusElement = document.getElementById("detailStatus");
-
                     statusElement.textContent = assignment.status ?? "-";
-                    statusElement.className = "status-badge";
+                    statusElement.className = "px-2.5 py-1 rounded-full text-xs font-bold border inline-block";
 
                     if (assignment.status === "PUBLISHED") {
-                        statusElement.classList.add("status-published");
+                        statusElement.classList.add("bg-emerald-50", "text-emerald-700", "border-emerald-200");
                     } else if (assignment.status === "DRAFT") {
-                        statusElement.classList.add("status-draft");
+                        statusElement.classList.add("bg-amber-50", "text-amber-700", "border-amber-200");
                     } else if (assignment.status === "CLOSED") {
-                        statusElement.classList.add("status-closed");
+                        statusElement.classList.add("bg-rose-50", "text-rose-700", "border-rose-200");
                     }
 
                     const attachmentElement = document.getElementById("detailAttachment");
@@ -575,22 +449,22 @@ html, body {margin: 0 !important;padding: 0 !important;width: 100%;min-height: 1
                         viewLink.href = assignment.attachment;
                         viewLink.target = "_blank";
                         viewLink.rel = "noopener noreferrer";
-                        viewLink.className = "btn btn-primary";
+                        viewLink.className = "px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition";
                         viewLink.textContent = "View Attachment";
 
                         const downloadLink = document.createElement("a");
                         downloadLink.href = assignment.attachment;
                         downloadLink.download = "";
-                        downloadLink.className = "btn btn-success";
+                        downloadLink.className = "px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg text-xs font-bold transition";
                         downloadLink.textContent = "Download";
 
                         attachmentElement.append(viewLink, downloadLink);
                     } else {
-                        attachmentElement.textContent =
-                            "No attachment available.";
+                        attachmentElement.textContent = "No attachment available.";
                     }
 
-                    document.getElementById("assignmentModal").classList.add("show");
+                    document.getElementById("assignmentModal").classList.remove("hidden");
+                    document.getElementById("assignmentModal").classList.add("flex");
                 })
                 .catch(error => {
                     alert("Unable to load assignment details.");
@@ -599,36 +473,30 @@ html, body {margin: 0 !important;padding: 0 !important;width: 100%;min-height: 1
         }
 
         function closeAssignmentModal() {
-            document.getElementById("assignmentModal").classList.remove("show");
+            const modal = document.getElementById("assignmentModal");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
         }
 
         function formatDateTime(value) {
-            if (!value || value === "null") {
-                return "Not set";
-            }
+            if (!value || value === "null") return "Not set";
             return String(value).replace("T", " ").substring(0, 16);
         }
 
         function formatInputDateTime(value) {
-            if (!value || value === "null") {
-                return "";
-            }
-
+            if (!value || value === "null") return "";
             return String(value).substring(0, 16);
         }
 
         function openEditModal(button) {
-        	
             document.getElementById("editAssignmentId").value = button.dataset.id || "";
             document.getElementById("editBatchId").value = button.dataset.batch || "";
             document.getElementById("editLessonId").value = button.dataset.lesson || "";
             document.getElementById("editTitle").value = button.dataset.title || "";
             document.getElementById("editDescription").value = button.dataset.description || "";
-
             document.getElementById("editStartAt").value = formatInputDateTime(button.dataset.start);
             document.getElementById("editDueAt").value = formatInputDateTime(button.dataset.due);
             document.getElementById("editAllowLate").checked = button.dataset.late === "true";
-            
             document.getElementById("editLateDeadline").value = formatInputDateTime(button.dataset.lateDeadline);
             document.getElementById("editTotalMark").value = button.dataset.totalMark || "";
             document.getElementById("editPassMark").value = button.dataset.passMark || "";
@@ -639,16 +507,17 @@ html, body {margin: 0 !important;padding: 0 !important;width: 100%;min-height: 1
             attachment.replaceChildren();
 
             if (button.dataset.attachment && button.dataset.attachment !== "null") {
-
                 const wrapper = document.createElement("div");
-                wrapper.style.marginTop = "6px";
+                wrapper.className = "mt-1";
                 const label = document.createElement("small");
+                label.className = "text-slate-500 font-medium";
                 label.textContent = "Current File: ";
 
                 const link = document.createElement("a");
                 link.href = button.dataset.attachment;
                 link.target = "_blank";
                 link.rel = "noopener noreferrer";
+                link.className = "text-teal-600 hover:underline font-semibold";
                 link.textContent = "View Current File";
 
                 wrapper.append(label, link);
@@ -657,27 +526,24 @@ html, body {margin: 0 !important;padding: 0 !important;width: 100%;min-height: 1
 
             updateLateDeadlineState();
 
-            document.getElementById("editAssignmentModal")
-                .classList.add("show");
+            const editModal = document.getElementById("editAssignmentModal");
+            editModal.classList.remove("hidden");
+            editModal.classList.add("flex");
         }
 
         function closeEditModal() {
-            document.getElementById("editAssignmentModal").classList.remove("show");
+            const modal = document.getElementById("editAssignmentModal");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
         }
 
-        // Close modals when clicking outside the modal content.
         document.getElementById("assignmentModal").addEventListener("click", function(event) {
-                if (event.target === this) {
-                    closeAssignmentModal();
-                }
-            });
+            if (event.target === this) closeAssignmentModal();
+        });
 
-        document.getElementById("editAssignmentModal")
-            .addEventListener("click", function(event) {
-                if (event.target === this) {
-                    closeEditModal();
-                }
-            });
+        document.getElementById("editAssignmentModal").addEventListener("click", function(event) {
+            if (event.target === this) closeEditModal();
+        });
 
         const editAllowLate = document.getElementById("editAllowLate");
         const editLateDeadline = document.getElementById("editLateDeadline");
@@ -686,18 +552,18 @@ html, body {margin: 0 !important;padding: 0 !important;width: 100%;min-height: 1
             if (!editAllowLate.checked) {
                 editLateDeadline.value = "";
                 editLateDeadline.disabled = true;
+                editLateDeadline.classList.add("bg-slate-100", "cursor-not-allowed");
             } else {
                 editLateDeadline.disabled = false;
+                editLateDeadline.classList.remove("bg-slate-100", "cursor-not-allowed");
             }
         }
 
-        editAllowLate.addEventListener("change",updateLateDeadlineState);
+        editAllowLate.addEventListener("change", updateLateDeadlineState);
 
         function setupEditTracking() {
             const editForm = document.querySelector('#editAssignmentModal form[action*="/update"]');
-            if (!editForm) {
-                return;
-            }
+            if (!editForm) return;
 
             editForm.addEventListener("submit", function() {
                 const assignmentId = document.getElementById("editAssignmentId").value;
@@ -709,9 +575,7 @@ html, body {margin: 0 !important;padding: 0 !important;width: 100%;min-height: 1
 
         function applyAssignmentStatus() {
             const tbody = document.querySelector(".assignment-table tbody");
-            if (!tbody) {
-                return;
-            }
+            if (!tbody) return;
 
             const now = new Date();
             const rows = Array.from(tbody.querySelectorAll("tr[data-id]"));
@@ -719,7 +583,6 @@ html, body {margin: 0 !important;padding: 0 !important;width: 100%;min-height: 1
             rows.forEach(function(row) {
                 const assignmentId = row.dataset.id;
                 const createdAt = row.dataset.createdAt;
-
                 let isNew = false;
                 let isEdited = false;
 
@@ -731,15 +594,13 @@ html, body {margin: 0 !important;padding: 0 !important;width: 100%;min-height: 1
                     }
                 }
 
-                const editedKey ="assignment_edited_" + assignmentId;
+                const editedKey = "assignment_edited_" + assignmentId;
                 const editedAt = localStorage.getItem(editedKey);
 
                 if (editedAt) {
                     const editedDate = new Date(editedAt);
-
                     if (!isNaN(editedDate.getTime())) {
-                        const diffHours =(now - editedDate) / (1000 * 60 * 60);
-
+                        const diffHours = (now - editedDate) / (1000 * 60 * 60);
                         if (diffHours >= 0 && diffHours <= 24) {
                             isEdited = true;
                         } else {
@@ -748,41 +609,25 @@ html, body {margin: 0 !important;padding: 0 !important;width: 100%;min-height: 1
                     }
                 }
 
-                row.classList.remove("assignment-new","assignment-edited" );
-                const titleWrapper =row.querySelector(".assignment-title-wrapper");
-
-                if (!titleWrapper) {
-                    return;
-                }
+                const titleWrapper = row.querySelector(".assignment-title-wrapper");
+                if (!titleWrapper) return;
 
                 const oldBadge = titleWrapper.querySelector(".assignment-status-badge");
-
-                if (oldBadge) {
-                    oldBadge.remove();
-                }
+                if (oldBadge) oldBadge.remove();
 
                 if (isEdited) {
-                    row.classList.add("assignment-edited");
-
                     const badge = document.createElement("span");
-                    badge.className ="assignment-status-badge edited-badge";
-
+                    badge.className = "inline-flex items-center px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold whitespace-nowrap assignment-status-badge mr-1.5";
                     const icon = document.createElement("i");
-                    icon.className = "fa-solid fa-pen";
-
-                    badge.append(icon, document.createTextNode(" EDITED"));
+                    icon.className = "fa-solid fa-pen mr-1";
+                    badge.append(icon, document.createTextNode("EDITED"));
                     titleWrapper.prepend(badge);
-
                 } else if (isNew) {
-                    row.classList.add("assignment-new");
-
                     const badge = document.createElement("span");
-                    badge.className ="assignment-status-badge new-badge";
-
+                    badge.className = "inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-[10px] font-bold whitespace-nowrap assignment-status-badge mr-1.5";
                     const icon = document.createElement("i");
-                    icon.className = "fa-solid fa-star";
-
-                    badge.append(icon, document.createTextNode(" NEW"));
+                    icon.className = "fa-solid fa-sparkles mr-1";
+                    badge.append(icon, document.createTextNode("NEW"));
                     titleWrapper.prepend(badge);
                 }
             });
@@ -791,37 +636,25 @@ html, body {margin: 0 !important;padding: 0 !important;width: 100%;min-height: 1
                 function getRecentTime(row) {
                     const createdAt = row.dataset.createdAt;
                     const createdDate = createdAt ? new Date(createdAt) : null;
-
                     let newTime = 0;
-
                     if (createdDate && !isNaN(createdDate.getTime())) {
-                        const hours =(now - createdDate) / (1000 * 60 * 60);
-                        if (hours >= 0 && hours <= 24) {
-                            newTime = createdDate.getTime();
-                        }
+                        const hours = (now - createdDate) / (1000 * 60 * 60);
+                        if (hours >= 0 && hours <= 24) newTime = createdDate.getTime();
                     }
 
                     const editedAt = localStorage.getItem("assignment_edited_" + row.dataset.id);
                     const editedDate = editedAt ? new Date(editedAt) : null;
                     let editTime = 0;
-
                     if (editedDate && !isNaN(editedDate.getTime())) {
-                        const hours =(now - editedDate) / (1000 * 60 * 60);
-                        if (hours >= 0 && hours <= 24) {
-                            editTime = editedDate.getTime();
-                        }
+                        const hours = (now - editedDate) / (1000 * 60 * 60);
+                        if (hours >= 0 && hours <= 24) editTime = editedDate.getTime();
                     }
-
                     return Math.max(newTime, editTime);
                 }
 
                 const aLatest = getRecentTime(a);
                 const bLatest = getRecentTime(b);
-
-                if (aLatest !== bLatest) {
-                    return bLatest - aLatest;
-                }
-
+                if (aLatest !== bLatest) return bLatest - aLatest;
                 return Number(b.dataset.id) - Number(a.dataset.id);
             });
 
@@ -831,9 +664,7 @@ html, body {margin: 0 !important;padding: 0 !important;width: 100%;min-height: 1
 
             rows.forEach(function(row, index) {
                 const numberCell = row.querySelector("td:first-child");
-                if (numberCell) {
-                    numberCell.textContent = index + 1;
-                }
+                if (numberCell) numberCell.textContent = index + 1;
             });
         }
 
@@ -843,6 +674,5 @@ html, body {margin: 0 !important;padding: 0 !important;width: 100%;min-height: 1
             applyAssignmentStatus();
         });
     </script>
-
 </body>
 </html>
