@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.Learning_Managnment_System.JWD_70_lms.Mapper.OverdueInstallmentRowMapper;
 import com.Learning_Managnment_System.JWD_70_lms.model.InstallmentBean;
 
 @Service
@@ -37,7 +38,7 @@ public class PaymentRefundService {
         return count != null ? count : 0;
     }
 
-    // Payment List with Student & Course Details (Null keyword safe ပြုလုပ်ထားသည်)
+    // Payment List with Student & Course Details
     public List<Map<String, Object>> getPayments(String keyword, String status) {
         String sql = "SELECT p.*, COALESCE(u.full_name, 'Unknown') AS student_name, " +
                      "COALESCE(u.email, '-') AS student_email, " +
@@ -55,14 +56,13 @@ public class PaymentRefundService {
         }
         sql += " ORDER BY p.payment_id DESC";
 
-        // Keyword null ဖြစ်နေပါက အလုပ်လုပ်စေရန် ကာကွယ်ခြင်း
         String searchKey = (keyword == null) ? "" : keyword;
         String search = "%" + searchKey + "%";
         
         return jdbcTemplate.queryForList(sql, search, search, search);
     }
 
-    // Refund List (Null keyword safe ပြုလုပ်ထားသည်)
+    // Refund List
     public List<Map<String, Object>> getRefunds(String keyword, String status) {
         String sql = "SELECT r.*, COALESCE(u.full_name, 'Unknown') AS student_name " +
                      "FROM refunds r " +
@@ -93,7 +93,6 @@ public class PaymentRefundService {
             newStatus, adminId, remark, paymentId
         );
 
-        // If verified, update installment schedule status if applicable
         if (count > 0 && "SUCCESS".equals(newStatus)) {
             jdbcTemplate.update(
                 "UPDATE installment_schedules SET status = 'PAID' WHERE schedule_id = " +
@@ -113,8 +112,7 @@ public class PaymentRefundService {
         return count > 0;
     }
     
-    
-    
+    // Overdue Installments using OverdueInstallmentRowMapper
     public List<InstallmentBean> getOverdueInstallments(String keyword, String statusFilter) {
         String sql = "SELECT s.*, " +
                      "DATEDIFF(CURDATE(), s.due_date) AS days_overdue, " +
@@ -140,24 +138,7 @@ public class PaymentRefundService {
         sql += " ORDER BY s.due_date ASC";
         String search = "%" + (keyword == null ? "" : keyword) + "%";
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            InstallmentBean bean = new InstallmentBean();
-            bean.setSchedule_id(rs.getInt("schedule_id"));
-            bean.setEnrollment_id(rs.getInt("enrollment_id"));
-            bean.setInstallment_number(rs.getInt("installment_number"));
-            bean.setDue_date(rs.getDate("due_date") != null ? rs.getDate("due_date").toLocalDate() : null);
-            bean.setAmount_due(rs.getBigDecimal("amount_due"));
-            bean.setPaid_amount(rs.getBigDecimal("paid_amount"));
-            bean.setStatus(rs.getString("status"));
-            bean.setReminder_sent_at(rs.getTimestamp("reminder_sent_at") != null ? rs.getTimestamp("reminder_sent_at").toLocalDateTime() : null);
-            bean.setDays_overdue(rs.getInt("days_overdue"));
-            bean.setOverdue_status(rs.getString("overdue_status"));
-            bean.setStudent_name(rs.getString("student_name"));
-            bean.setStudent_email(rs.getString("student_email"));
-            bean.setCourse_name(rs.getString("course_name"));
-            bean.setBatch_name(rs.getString("batch_name"));
-            return bean;
-        }, search, search, search);
+        return jdbcTemplate.query(sql, new OverdueInstallmentRowMapper(), search, search, search);
     }
 
     public int countOverdueInstallments() {
@@ -177,7 +158,8 @@ public class PaymentRefundService {
             "UPDATE installment_schedules SET reminder_sent_at = NOW() WHERE schedule_id = ?", scheduleId);
         return updated > 0;
     }
- // Verify နှိပ်လျှင် SUCCESS သို့ပြောင်းမည်
+
+    // Verify နှိပ်လျှင် SUCCESS သို့ပြောင်းမည်
     public void verifyPayment(Long paymentId, Long adminId) {
         String sql = "UPDATE payments SET status = 'SUCCESS', processed_by = ? WHERE payment_id = ?";
         jdbcTemplate.update(sql, adminId, paymentId);
