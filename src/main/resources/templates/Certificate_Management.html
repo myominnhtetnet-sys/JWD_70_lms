@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Head Fragment -->
+<div th:replace="~{head :: head}"></div>
+
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col">
+
+<!-- Header Fragment -->
+<div th:replace="~{header :: header}"></div>
+
+<!-- Main Body Wrapper -->
+<div class="flex-1 flex overflow-hidden">
+
+    <!-- Navigation / Sidebar Fragment -->
+    <div th:replace="~{nav :: nav}"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-6 space-y-6">
+        
+        <!-- Page Title & Header Action -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
+                    <i class="fa-solid fa-certificate text-indigo-500"></i>
+                    Certificate Management
+                </h1>
+                <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Issue new certificates to students, view active records, and manage revocations</p>
+            </div>
+            <button onclick="openIssueModal()" 
+                    class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs flex items-center gap-2 transition shadow-lg shadow-indigo-600/20">
+                <i class="fa-solid fa-plus"></i>
+                Issue New Certificate
+            </button>
+        </div>
+
+        <!-- Search & Filter Toolbar -->
+        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700/60 flex flex-wrap items-center justify-between gap-4 shadow-sm">
+            <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                <!-- Search Input -->
+                <div class="relative w-full sm:w-64">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="searchInput" onkeyup="filterCertificates()" placeholder="Search code, student, course..."
+                           class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+                </div>
+
+                <!-- Status Filter -->
+                <select id="statusFilter" onchange="filterCertificates()" class="bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-indigo-500">
+                    <option value="">All Statuses</option>
+                    <option value="ISSUED">ISSUED</option>
+                    <option value="REVOKED">REVOKED</option>
+                </select>
+            </div>
+
+            <!-- Total Counter -->
+            <div class="text-xs text-slate-500 dark:text-slate-400">
+                Total Certificates: <span class="font-bold text-slate-900 dark:text-white" th:text="${certificates != null ? certificates.size() : 0}">0</span>
+            </div>
+        </div>
+
+        <!-- Certificate Table -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700/60 overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-100 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[11px] border-b border-slate-200 dark:border-slate-700">
+                        <tr>
+                            <th class="p-4">Certificate Code</th>
+                            <th class="p-4">Student</th>
+                            <th class="p-4">Course / Batch</th>
+                            <th class="p-4">Issued At & By</th>
+                            <th class="p-4">Status</th>
+                            <th class="p-4 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700/50" id="certTableBody">
+                        <!-- Empty State -->
+                        <tr th:if="${certificates == null or #lists.isEmpty(certificates)}">
+                            <td colspan="6" class="p-8 text-center text-slate-400 dark:text-slate-500">
+                                <i class="fa-solid fa-file-circle-xmark text-4xl mb-3 block opacity-40"></i>
+                                No certificates found.
+                            </td>
+                        </tr>
+
+                        <!-- Table Rows with Search Data Attributes -->
+                        <tr th:each="cert : ${certificates}" 
+                            class="cert-row hover:bg-slate-50 dark:hover:bg-slate-700/30 transition"
+                            th:data-code="${cert.certificateCode}"
+                            th:data-name="${cert.studentName}"
+                            th:data-email="${cert.studentEmail}"
+                            th:data-course="${cert.courseTitle}"
+                            th:data-batch="${cert.batchCode}"
+                            th:data-status="${cert.status}">
+                            <!-- Code -->
+                            <td class="p-4">
+                                <span class="font-mono font-semibold text-indigo-600 dark:text-indigo-400" th:text="${cert.certificateCode}">CERT-2026-001</span>
+                            </td>
+
+                            <!-- Student Info -->
+                            <td class="p-4">
+                                <div class="font-semibold text-slate-900 dark:text-white" th:text="${cert.studentName}">Su Su</div>
+                                <div class="text-[11px] text-slate-500 dark:text-slate-400" th:text="${cert.studentEmail}">susu@example.com</div>
+                            </td>
+
+                            <!-- Course & Batch -->
+                            <td class="p-4">
+                                <div class="font-medium text-slate-800 dark:text-slate-200" th:text="${cert.courseTitle}">Web Development Bootcamp</div>
+                                <div class="text-[10px] text-indigo-500 dark:text-indigo-400/80 font-mono" th:text="${cert.batchCode}">BATCH-001</div>
+                            </td>
+
+                            <!-- Issued Date & Issuer -->
+                            <td class="p-4">
+                                <div class="text-slate-700 dark:text-slate-300" th:text="${cert.issuedAt != null ? #temporals.format(cert.issuedAt, 'yyyy-MM-dd HH:mm') : '-'}">2026-10-08 10:00</div>
+                                <div class="text-[10px] text-slate-500 dark:text-slate-400">By: <span class="text-slate-700 dark:text-slate-300" th:text="${cert.issuerName != null ? cert.issuerName : 'System'}">Admin</span></div>
+                            </td>
+
+                            <!-- Status Badge -->
+                            <td class="p-4">
+                                <span th:if="${cert.status == 'ISSUED'}" 
+                                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ISSUED
+                                </span>
+                                <div th:if="${cert.status == 'REVOKED'}" class="space-y-1">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> REVOKED
+                                    </span>
+                                    <p class="text-[10px] text-rose-500 dark:text-rose-400/80 italic max-w-[150px] truncate" 
+                                       th:title="${cert.revokedReason}" 
+                                       th:text="${'Reason: ' + cert.revokedReason}">Reason text</p>
+                                </div>
+                            </td>
+
+                            <!-- Actions -->
+                            <td class="p-4 text-center space-x-2">
+                                <a th:href="@{'/admin/certificates/view/' + ${cert.certificateId}}" target="_blank"
+                                   class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-amber-500/10 hover:bg-amber-600 text-amber-500 hover:text-white border border-amber-500/30 rounded-lg text-xs font-medium transition"
+                                   title="View & Download Certificate">
+                                    <i class="fa-solid fa-eye"></i> View & Download
+                                </a>
+
+                                <button th:if="${cert.status == 'ISSUED'}" 
+                                        th:data-id="${cert.certificateId}"
+                                        th:data-code="${cert.certificateCode}"
+                                        onclick="openRevokeModal(this)"
+                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-rose-500/10 hover:bg-rose-600 text-rose-600 dark:text-rose-400 hover:text-white border border-rose-500/30 rounded-lg text-xs font-medium transition">
+                                    <i class="fa-solid fa-ban"></i> Revoke
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+</div>
+
+<!-- ==================== ISSUE CERTIFICATE MODAL ==================== -->
+<div id="issueModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl transition-all">
+        <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-award text-indigo-500"></i> Issue Certificate to Student
+            </h3>
+            <button onclick="closeIssueModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+
+        <form th:action="@{/admin/certificates/issue}" method="post" class="p-6 space-y-4">
+            
+            <!-- 🟢 ကျောင်းသား၊ Course နှင့် Batch ကို ရွေးချယ်နိုင်သော Dropdown -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Select Student, Course & Batch <span class="text-rose-500">*</span></label>
+                <select name="enrollmentId" required
+                        class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500">
+                    <option value="">-- Choose Student & Course --</option>
+                    <th:block th:each="en : ${enrollments}">
+                        <option th:value="${en.enrollmentId}" 
+                                th:text="${en.studentName + ' (' + en.studentEmail + ') — ' + en.courseTitle + ' [' + en.batchCode + ']'}">
+                        </option>
+                    </th:block>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Certificate Code <span class="text-rose-500">*</span></label>
+                <input type="text" name="certificateCode" required placeholder="e.g., CERT-2026-005"
+                       class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">File Path / Document URL</label>
+                <input type="text" name="filePath" placeholder="e.g., certs/cert_2026_005.pdf"
+                       class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500">
+            </div>
+
+            <input type="hidden" name="issuedBy" value="1">
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700/60">
+                <button type="button" onclick="closeIssueModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-semibold transition">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition">Issue Certificate</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ==================== REVOKE CERTIFICATE MODAL ==================== -->
+<div id="revokeModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl transition-all">
+        <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+            <h3 class="text-lg font-bold text-rose-600 dark:text-rose-400 flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation"></i> Revoke Certificate
+            </h3>
+            <button onclick="closeRevokeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+
+        <form id="revokeForm" method="post" class="p-6 space-y-4">
+            <input type="hidden" id="revokeCertId" name="certificateId">
+
+            <p class="text-xs text-slate-600 dark:text-slate-300">
+                Are you sure you want to revoke certificate <span id="revokeCertCode" class="font-mono font-bold text-indigo-600 dark:text-indigo-400"></span>? This action cannot be undone.
+            </p>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Reason for Revocation <span class="text-rose-500">*</span></label>
+                <textarea name="reason" rows="3" required placeholder="Specify why this certificate is being revoked..."
+                          class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-rose-500 resize-none"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700/60">
+                <button type="button" onclick="closeRevokeModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-semibold transition">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-semibold transition">Confirm Revoke</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal & Search Control Scripts -->
+<script>
+    function openIssueModal() {
+        const modal = document.getElementById('issueModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeIssueModal() {
+        const modal = document.getElementById('issueModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function openRevokeModal(buttonElement) {
+        const certId = buttonElement.getAttribute('data-id');
+        const certCode = buttonElement.getAttribute('data-code');
+
+        document.getElementById('revokeCertId').value = certId;
+        document.getElementById('revokeCertCode').innerText = certCode;
+        document.getElementById('revokeForm').action = '/admin/certificates/revoke/' + certId;
+
+        const modal = document.getElementById('revokeModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeRevokeModal() {
+        const modal = document.getElementById('revokeModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    // Real-time Search and Status Filter
+    function filterCertificates() {
+        const searchText = document.getElementById('searchInput').value.toLowerCase();
+        const selectedStatus = document.getElementById('statusFilter').value;
+        const rows = document.querySelectorAll('.cert-row');
+
+        rows.forEach(row => {
+            const code = (row.getAttribute('data-code') || '').toLowerCase();
+            const name = (row.getAttribute('data-name') || '').toLowerCase();
+            const email = (row.getAttribute('data-email') || '').toLowerCase();
+            const course = (row.getAttribute('data-course') || '').toLowerCase();
+            const batch = (row.getAttribute('data-batch') || '').toLowerCase();
+            const status = row.getAttribute('data-status');
+
+            const matchesSearch = code.includes(searchText) || 
+                                  name.includes(searchText) || 
+                                  email.includes(searchText) || 
+                                  course.includes(searchText) || 
+                                  batch.includes(searchText);
+
+            const matchesStatus = selectedStatus === "" || status === selectedStatus;
+
+            if (matchesSearch && matchesStatus) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class AdminBean {
+public class CategoryBean {
 	
 	    private int totalUsers;
 	    private int totalStudents;
@@ -15,5 +15,9 @@ public class AdminBean {
 	    private int totalEnrollments;
 	    private int activeBatches;
 	    private int upcomingBatches;
+	private Integer category_id;
+    private String name;
+
+    public CategoryBean() {}
 
 }

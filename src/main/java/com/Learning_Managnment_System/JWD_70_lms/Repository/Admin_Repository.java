@@ -1,12 +1,13 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
-import java.sql.ResultSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.Learning_Managnment_System.JWD_70_lms.Mapper.AdminUserMapper;
 import com.Learning_Managnment_System.JWD_70_lms.model.AdminUserBean;
 
 @Repository
@@ -14,6 +15,8 @@ public class Admin_Repository {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    private final AdminUserMapper userMapper = new AdminUserMapper();
 
     // 1. GET ALL USERS
     public List<AdminUserBean> getAllUsers() {
@@ -28,7 +31,7 @@ public class Admin_Repository {
             ORDER BY u.user_id DESC
             """;
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> mapUser(rs));
+        return jdbcTemplate.query(sql, userMapper);
     }
 
     // 2. SEARCH USERS
@@ -49,7 +52,7 @@ public class Admin_Repository {
             """;
 
         String search = "%" + keyword.trim() + "%";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> mapUser(rs), search, search, search, search, search);
+        return jdbcTemplate.query(sql, userMapper, search, search, search, search, search);
     }
 
     // 3. GET USER BY ID
@@ -63,9 +66,11 @@ public class Admin_Repository {
             JOIN roles r ON u.role_id = r.role_id
             WHERE u.user_id = ? AND u.deleted_at IS NULL
             """;
-
-        List<AdminUserBean> users = jdbcTemplate.query(sql, (rs, rowNum) -> mapUser(rs), userId);
-        return users.isEmpty() ? null : users.get(0);
+        try {
+            return jdbcTemplate.queryForObject(sql, userMapper, userId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     // 4. CHECK EMAIL EXISTS
@@ -92,8 +97,8 @@ public class Admin_Repository {
 
         return jdbcTemplate.update(
             sql,
-            user.getRoleId(), user.getFullName(), user.getEmail(), user.getPhone(),
-            user.getPasswordHash(), user.getDob(), user.getGender(), user.getAddress(), user.getStatus()
+            user.getRole_id(), user.getFull_name(), user.getEmail(), user.getPhone(),
+            user.getPassword_hash(), user.getDob(), user.getGender(), user.getAddress(), user.getStatus()
         );
     }
 
@@ -104,11 +109,10 @@ public class Admin_Repository {
             SET role_id = ?, full_name = ?, email = ?, phone = ?, dob = ?, gender = ?, address = ?, status = ?, updated_at = NOW()
             WHERE user_id = ? AND deleted_at IS NULL
             """;
-
         return jdbcTemplate.update(
             sql,
-            user.getRoleId(), user.getFullName(), user.getEmail(), user.getPhone(),
-            user.getDob(), user.getGender(), user.getAddress(), user.getStatus(), user.getUserId()
+            user.getRole_id(), user.getFull_name(), user.getEmail(), user.getPhone(),
+            user.getDob(), user.getGender(), user.getAddress(), user.getStatus(), user.getUser_id()
         );
     }
 
@@ -181,31 +185,5 @@ public class Admin_Repository {
         String sql = "SELECT COUNT(*) FROM batches WHERE start_date > CURDATE()";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
         return count != null ? count : 0;
-    }
-
-    // COMMON ROW MAPPER
-    private AdminUserBean mapUser(ResultSet rs) throws java.sql.SQLException {
-        AdminUserBean user = new AdminUserBean();
-        user.setUserId(rs.getInt("user_id"));
-        user.setRoleId(rs.getInt("role_id"));
-        user.setFullName(rs.getString("full_name"));
-        user.setEmail(rs.getString("email"));
-        user.setPhone(rs.getString("phone"));
-        user.setPasswordHash(rs.getString("password_hash"));
-        user.setDob(rs.getDate("dob") != null ? rs.getDate("dob").toLocalDate() : null);
-        user.setGender(rs.getString("gender"));
-        user.setAddress(rs.getString("address"));
-        user.setRoleName(rs.getString("role_name"));
-        user.setStatus(rs.getString("status"));
-
-        if (rs.getTimestamp("created_at") != null) {
-            user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        }
-
-        if (rs.getTimestamp("updated_at") != null) {
-            user.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
-        }
-
-        return user;
     }
 }

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{head :: head}"></head>
+
+<!-- 🟢 Admin Dashboard ၏ Light/White Theme Background သို့ ပြောင်းထားပါသည် -->
+<body class="bg-slate-100 text-slate-800 font-sans antialiased h-screen flex flex-col overflow-hidden">
+
+    <!-- Top Header -->
+    <div th:replace="~{header :: header}"></div>
+
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <div th:replace="~{nav :: nav}"></div>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto p-6 bg-slate-50">
+            <div class="space-y-4 max-w-7xl mx-auto">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    
+                    <!-- Header Section -->
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-5 mb-6 border-b border-slate-100 gap-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2.5">
+                                <i class="fa-solid fa-book-open text-indigo-600"></i> Course Management
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-1">Manage and view all available courses in the system securely</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="openAddModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl flex items-center gap-2 shadow-sm transition cursor-pointer">
+                                <i class="fa-solid fa-plus text-xs"></i> Add Course
+                            </button>
+                            <span class="px-3 py-2 text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 rounded-xl shadow-sm">
+                                Total Courses: <span class="text-indigo-600 font-bold" id="totalCoursesBadge">0</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Alert Notification Section -->
+                    <div id="courseAlertContainer"></div>
+
+                    <!-- Table Responsive Wrapper -->
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold bg-slate-50">
+                                    <th class="py-3.5 px-4 w-12 text-center">#</th>
+                                    <th class="py-3.5 px-4 text-center">Thumbnail</th>
+                                    <th class="py-3.5 px-4">Course Title</th>
+                                    <th class="py-3.5 px-4">Category</th>
+                                    <th class="py-3.5 px-4">Level</th>
+                                    <th class="py-3.5 px-4">Duration</th>
+                                    <th class="py-3.5 px-4">Price</th>
+                                    <th class="py-3.5 px-4 text-center">Status</th>
+                                    <th class="py-3.5 px-4 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="courseTableBody" class="divide-y divide-slate-100 text-slate-600">
+                                <tr>
+                                    <td colspan="9" class="py-12 text-center text-slate-400">
+                                        <i class="fa-solid fa-spinner fa-spin fa-2x mb-2 text-indigo-600 block"></i>
+                                        <p class="text-xs">Loading courses...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Course Modal -->
+    <div id="addCourseModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 w-full max-w-xl shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3.5 border-b border-slate-100 mb-5">
+                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-plus text-indigo-600"></i> Add New Course
+                </h3>
+                <button type="button" onclick="closeModal('addCourseModal')" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <form id="addCourseForm" onsubmit="handleCourseCreate(event)" class="space-y-4" enctype="multipart/form-data">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Course Title</label>
+                    <input type="text" id="add_title" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 transition" placeholder="e.g. Web Development Bootcamp">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Course Thumbnail Image</label>
+                    <input type="file" id="add_image" accept="image/*" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer transition">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Category</label>
+                        <select id="add_category_id" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 transition"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Level</label>
+                        <select id="add_level" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 transition">
+                            <option value="BEGINNER">BEGINNER</option>
+                            <option value="INTERMEDIATE">INTERMEDIATE</option>
+                            <option value="ADVANCED">ADVANCED</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Language</label>
+                        <select id="add_language" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 transition">
+                            <option value="">-- Select Language --</option>
+                            <option value="Java">Java</option>
+                            <option value="Python">Python</option>
+                            <option value="JavaScript">JavaScript / TypeScript</option>
+                            <option value="C#">C# (.NET)</option>
+                            <option value="C++">C++</option>
+                            <option value="PHP">PHP</option>
+                            <option value="Go">Go (Golang)</option>
+                            <option value="Swift">Swift</option>
+                            <option value="Rust">Rust</option>
+                            <option value="Kotlin">Kotlin</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Status</label>
+                        <select id="add_status" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 transition">
+                            <option value="DRAFT">DRAFT</option>
+                            <option value="PUBLISHED">PUBLISHED</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Duration (Weeks)</label>
+                        <input type="number" id="add_duration" min="0" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 transition" placeholder="e.g. 12">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Price (MMK)</label>
+                        <input type="number" id="add_price" min="0" step="any" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 transition" placeholder="e.g. 150000">
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-6 pt-2">
+                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                        <input type="checkbox" id="add_allow_discount" class="rounded border-slate-300 text-indigo-600 focus:ring-0"> Allow Discount
+                    </label>
+                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                        <input type="checkbox" id="add_allow_installment" class="rounded border-slate-300 text-indigo-600 focus:ring-0"> Allow Installment
+                    </label>
+                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                        <input type="checkbox" id="add_allow_scholarship" class="rounded border-slate-300 text-indigo-600 focus:ring-0"> Allow Scholarship
+                    </label>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Short Description</label>
+                    <textarea id="add_short_description" rows="2" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 transition" placeholder="Brief summary of the course..."></textarea>
+                </div>
+
+                <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeModal('addCourseModal')" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition border border-slate-300">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-sm transition">Create Course</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Course Detail Modal -->
+    <div id="viewCourseModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 w-full max-w-lg shadow-2xl">
+            <div class="flex items-center justify-between pb-3.5 border-b border-slate-100 mb-4">
+                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-indigo-600"></i> Course Details
+                </h3>
+                <button onclick="closeModal('viewCourseModal')" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+            
+            <div id="viewCourseModalBody"></div>
+
+            <div class="mt-5 flex justify-end">
+                <button onclick="closeModal('viewCourseModal')" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs rounded-xl transition font-semibold border border-slate-300">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Course Modal -->
+    <div id="editCourseModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 w-full max-w-xl shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3.5 border-b border-slate-100 mb-5">
+                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-emerald-600"></i> Edit Course
+                </h3>
+                <button type="button" onclick="closeModal('editCourseModal')" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <form id="editCourseForm" onsubmit="handleCourseUpdate(event)" class="space-y-4" enctype="multipart/form-data">
+                <input type="hidden" id="edit_course_id" name="course_id">
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Course Title</label>
+                    <input type="text" id="edit_title" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-500 transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Change Thumbnail (Optional)</label>
+                    <div class="flex items-center gap-3">
+                        <img id="edit_thumbnail_preview" src="" alt="Thumbnail" class="w-12 h-12 object-cover rounded-xl border border-slate-200 hidden shadow-sm">
+                        <input type="file" id="edit_image" accept="image/*" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer transition">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Category</label>
+                        <select id="edit_category_id" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-500 transition"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Level</label>
+                        <select id="edit_level" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-500 transition">
+                            <option value="BEGINNER">BEGINNER</option>
+                            <option value="INTERMEDIATE">INTERMEDIATE</option>
+                            <option value="ADVANCED">ADVANCED</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Language</label>
+                        <select id="edit_language" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-500 transition">
+                            <option value="">-- Select Language --</option>
+                            <option value="Java">Java</option>
+                            <option value="Python">Python</option>
+                            <option value="JavaScript">JavaScript / TypeScript</option>
+                            <option value="C#">C# (.NET)</option>
+                            <option value="C++">C++</option>
+                            <option value="PHP">PHP</option>
+                            <option value="Go">Go (Golang)</option>
+                            <option value="Swift">Swift</option>
+                            <option value="Rust">Rust</option>
+                            <option value="Kotlin">Kotlin</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Status</label>
+                        <select id="edit_status" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-500 transition">
+                            <option value="DRAFT">DRAFT</option>
+                            <option value="PUBLISHED">PUBLISHED</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Duration (Weeks)</label>
+                        <input type="number" id="edit_duration" min="0" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Price (MMK)</label>
+                        <input type="number" id="edit_price" min="0" step="any" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-500 transition">
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-6 pt-2">
+                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                        <input type="checkbox" id="edit_allow_discount" class="rounded border-slate-300 text-emerald-600 focus:ring-0"> Allow Discount
+                    </label>
+                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                        <input type="checkbox" id="edit_allow_installment" class="rounded border-slate-300 text-emerald-600 focus:ring-0"> Allow Installment
+                    </label>
+                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                        <input type="checkbox" id="edit_allow_scholarship" class="rounded border-slate-300 text-emerald-600 focus:ring-0"> Allow Scholarship
+                    </label>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Short Description</label>
+                    <textarea id="edit_short_description" rows="2" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-500 transition"></textarea>
+                </div>
+
+                <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeModal('editCourseModal')" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition border border-slate-300">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-sm transition">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Functions -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            loadCategoriesFromDB();
+            loadCoursesFromDB();
+
+            const editImageInput = document.getElementById("edit_image");
+            const editPreviewImg = document.getElementById("edit_thumbnail_preview");
+
+            if (editImageInput && editPreviewImg) {
+                editImageInput.addEventListener("change", function (event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            editPreviewImg.src = e.target.result;
+                            editPreviewImg.classList.remove("hidden");
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function openModal(id) { 
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.remove('hidden'); 
+        }
+
+        function closeModal(id) { 
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.add('hidden'); 
+        }
+
+        function openAddModal() {
+            const form = document.getElementById("addCourseForm");
+            if (form) form.reset();
+            openModal('addCourseModal');
+        }
+
+        function loadCoursesFromDB() {
+            fetch('/admin/courses/api/list')
+                .then(res => res.json())
+                .then(courses => {
+                    const tbody = document.getElementById("courseTableBody");
+                    const countBadge = document.getElementById("totalCoursesBadge");
+                    
+                    if (!tbody) return;
+                    if (countBadge) countBadge.innerText = courses ? courses.length : 0;
+
+                    if (!courses || courses.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="9" class="py-10 text-center text-slate-400">No courses available in database.</td>
+                            </tr>`;
+                        return;
+                    }
+
+                    tbody.innerHTML = courses.map((course, index) => {
+                        const levelBadge = course.level === 'ADVANCED' 
+                            ? 'bg-emerald-50 text-emerald-600 border-emerald-200' 
+                            : course.level === 'INTERMEDIATE' 
+                            ? 'bg-purple-50 text-purple-600 border-purple-200' 
+                            : 'bg-blue-50 text-blue-600 border-blue-200';
+
+                        const statusBadge = course.status === 'PUBLISHED' 
+                            ? 'bg-emerald-50 text-emerald-600 border-emerald-200' 
+                            : 'bg-amber-50 text-amber-600 border-amber-200';
+
+                        const formattedPrice = (course.price !== null && course.price !== undefined && course.price > 0)
+                            ? `${Number(course.price).toLocaleString()} MMK` 
+                            : 'Free';
+
+                        const durationVal = course.duration_weeks || course.duration || '-';
+                        const durationDisplay = (typeof durationVal === 'number') ? `${durationVal} Weeks` : durationVal;
+
+                        const imgSrc = course.thumbnail ? `/uploads/${encodeURIComponent(course.thumbnail)}` : '';
+                        const imgHtml = course.thumbnail 
+                            ? `<img src="${imgSrc}" class="w-10 h-10 object-cover rounded-xl mx-auto border border-slate-200 shadow-sm" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" alt="thumb"/>
+                               <div class="hidden w-10 h-10 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center mx-auto text-slate-400">
+                                   <i class="fa-solid fa-image text-xs"></i>
+                               </div>`
+                            : `<div class="w-10 h-10 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center mx-auto text-slate-400">
+                                   <i class="fa-solid fa-image text-xs"></i>
+                               </div>`;
+
+                        return `
+                            <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
+                                <td class="py-3.5 px-4 text-center font-mono text-slate-400">${index + 1}</td>
+                                <td class="py-3.5 px-4 text-center">${imgHtml}</td>
+                                <td class="py-3.5 px-4 font-semibold text-slate-900">${escapeHtml(course.title)}</td>
+                                <td class="py-3.5 px-4 text-slate-600">${escapeHtml(course.category_name || 'Uncategorized')}</td>
+                                <td class="py-3.5 px-4">
+                                    <span class="px-2.5 py-1 text-[10px] font-semibold border rounded-lg uppercase tracking-wider ${levelBadge}">
+                                        ${escapeHtml(course.level || 'BEGINNER')}
+                                    </span>
+                                </td>
+                                <td class="py-3.5 px-4 text-slate-600">${escapeHtml(durationDisplay)}</td>
+                                <td class="py-3.5 px-4 font-medium text-emerald-600">${formattedPrice}</td>
+                                <td class="py-3.5 px-4 text-center">
+                                    <span class="px-2.5 py-1 text-[10px] font-semibold border rounded-lg uppercase tracking-wider ${statusBadge}">
+                                        ${escapeHtml(course.status || 'DRAFT')}
+                                    </span>
+                                </td>
+                                <td class="py-3.5 px-4 text-center">
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <button onclick="viewCourseDetail(${course.course_id})" title="View" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-xl transition">
+                                            <i class="fa-solid fa-eye text-xs"></i>
+                                        </button>
+                                        <button onclick="editCourse(${course.course_id})" title="Edit" class="p-2 text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
+                                            <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                        </button>
+                                        <button onclick="deleteCourse(${course.course_id})" title="Delete" class="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition">
+                                            <i class="fa-solid fa-trash-can text-xs"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                })
+                .catch(err => {
+                    console.error("Failed to load courses:", err);
+                    const tbody = document.getElementById("courseTableBody");
+                    if (tbody) {
+                        tbody.innerHTML = `<tr><td colspan="9" class="py-6 text-center text-rose-500">Failed to load courses data from server.</td></tr>`;
+                    }
+                });
+        }
+
+        function loadCategoriesFromDB() {
+            fetch('/admin/courses/api/categories')
+                .then(res => res.json())
+                .then(categories => {
+                    const editSelect = document.getElementById("edit_category_id");
+                    const addSelect = document.getElementById("add_category_id");
+
+                    let options = `<option value="">-- Select Category --</option>`;
+                    if (Array.isArray(categories)) {
+                        categories.forEach(cat => {
+                            options += `<option value="${cat.category_id}">${escapeHtml(cat.name)}</option>`;
+                        });
+                    }
+
+                    if (editSelect) editSelect.innerHTML = options;
+                    if (addSelect) addSelect.innerHTML = options;
+                })
+                .catch(err => console.error("Failed to load categories:", err));
+        }
+
+        function viewCourseDetail(courseId) {
+            fetch(`/admin/courses/api/${courseId}`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Course detail not found");
+                    return res.json();
+                })
+                .then(course => {
+                    const body = document.getElementById("viewCourseModalBody");
+                    if (!body) return;
+
+                    const formattedPrice = (course.price !== null && course.price !== undefined && course.price > 0) 
+                        ? `${Number(course.price).toLocaleString()} MMK` 
+                        : 'Free';
+                    const durationDisplay = course.duration_weeks ? `${course.duration_weeks} Weeks` : (course.duration || '-');
+                    
+                    const imgSrc = course.thumbnail ? `/uploads/${encodeURIComponent(course.thumbnail)}` : '';
+                    const imgHtml = course.thumbnail 
+                        ? `<img src="${imgSrc}" class="w-full h-44 object-cover rounded-xl mb-4 border border-slate-200 shadow-sm" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" alt="Thumbnail"/>
+                           <div class="hidden w-full h-32 bg-slate-100 border border-slate-200 rounded-xl flex flex-col items-center justify-center text-slate-400 mb-4">
+                               <i class="fa-solid fa-image text-2xl mb-1"></i>
+                               <span>Image Not Found</span>
+                           </div>`
+                        : `<div class="w-full h-32 bg-slate-100 border border-slate-200 rounded-xl flex flex-col items-center justify-center text-slate-400 mb-4">
+                               <i class="fa-solid fa-image text-2xl mb-1"></i>
+                               <span>No Thumbnail Image</span>
+                           </div>`;
+
+                    body.innerHTML = `
+                        ${imgHtml}
+                        <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
+                            <div class="col-span-2">
+                                <span class="text-slate-400 block">Course Title:</span>
+                                <strong class="text-slate-900 text-sm">${escapeHtml(course.title)}</strong>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block">Category:</span>
+                                <span class="text-slate-700 font-medium">${escapeHtml(course.category_name || 'Uncategorized')}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block">Level:</span>
+                                <span class="text-slate-700 font-medium">${escapeHtml(course.level || '-')}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block">Language:</span>
+                                <span class="text-slate-700 font-medium">${escapeHtml(course.language || 'Java')}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block">Duration:</span>
+                                <span class="text-slate-700 font-medium">${escapeHtml(durationDisplay)}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block">Price:</span>
+                                <span class="text-emerald-600 font-semibold">${formattedPrice}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block">Status:</span>
+                                <span class="text-indigo-600 font-medium">${escapeHtml(course.status || 'DRAFT')}</span>
+                            </div>
+                            <div class="col-span-2">
+                                <span class="text-slate-400 block mb-1">Short Description:</span>
+                                <p class="text-slate-600 leading-relaxed">${escapeHtml(course.short_description || 'N/A')}</p>
+                            </div>
+                        </div>
+                    `;
+                    openModal('viewCourseModal');
+                })
+                .catch(err => alert("Error fetching details: " + err.message));
+        }
+
+        function editCourse(courseId) {
+            fetch(`/admin/courses/api/${courseId}`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Could not fetch course data");
+                    return res.json();
+                })
+                .then(course => {
+                    const setVal = (id, val) => {
+                        const el = document.getElementById(id);
+                        if (el) el.value = (val !== null && val !== undefined) ? val : '';
+                    };
+
+                    const setChecked = (id, val) => {
+                        const el = document.getElementById(id);
+                        if (el) el.checked = !!val;
+                    };
+
+                    setVal("edit_course_id", course.course_id);
+                    setVal("edit_title", course.title);
+                    setVal("edit_category_id", course.category_id);
+                    setVal("edit_level", course.level || 'BEGINNER');
+                    setVal("edit_language", course.language || 'Java');
+                    setVal("edit_status", course.status || 'DRAFT');
+                    setVal("edit_price", course.price || 0);
+                    setVal("edit_short_description", course.short_description || '');
+
+                    const durationVal = course.duration_weeks !== undefined ? course.duration_weeks : (course.duration || 0);
+                    setVal("edit_duration", durationVal);
+
+                    setChecked("edit_allow_discount", course.allow_discount);
+                    setChecked("edit_allow_installment", course.allow_installment);
+                    setChecked("edit_allow_scholarship", course.allow_scholarship);
+
+                    const previewImg = document.getElementById("edit_thumbnail_preview");
+                    if (previewImg) {
+                        if (course.thumbnail) {
+                            previewImg.src = `/uploads/${encodeURIComponent(course.thumbnail)}`;
+                            previewImg.onerror = () => previewImg.classList.add("hidden");
+                            previewImg.classList.remove("hidden");
+                        } else {
+                            previewImg.classList.add("hidden");
+                        }
+                    }
+
+                    openModal('editCourseModal');
+                })
+                .catch(err => alert("Error loading course for edit: " + err.message));
+        }
+
+        function handleCourseCreate(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const durationVal = parseInt(document.getElementById("add_duration")?.value) || 0;
+
+            const courseData = {
+                title: document.getElementById("add_title")?.value || '',
+                category_id: parseInt(document.getElementById("add_category_id")?.value) || null,
+                level: document.getElementById("add_level")?.value || 'BEGINNER',
+                language: document.getElementById("add_language")?.value || 'Java',
+                status: document.getElementById("add_status")?.value || 'DRAFT',
+                price: parseFloat(document.getElementById("add_price")?.value) || 0,
+                duration_weeks: durationVal,
+                allow_discount: document.getElementById("add_allow_discount")?.checked ? 1 : 0,
+                allow_installment: document.getElementById("add_allow_installment")?.checked ? 1 : 0,
+                allow_scholarship: document.getElementById("add_allow_scholarship")?.checked ? 1 : 0,
+                short_description: document.getElementById("add_short_description")?.value || ''
+            };
+
+            formData.append("course", new Blob([JSON.stringify(courseData)], { type: "application/json" }));
+
+            const imageInput = document.getElementById("add_image");
+            if (imageInput && imageInput.files[0]) {
+                formData.append("image", imageInput.files[0]);
+            }
+
+            fetch('/admin/courses/api/create', {
+                method: 'POST',
+                body: formData
+            })
+            .then(async res => {
+                const resData = await res.json();
+                if (!res.ok) throw new Error(resData.message || resData.error || "Failed to create course");
+                return resData;
+            })
+            .then(() => {
+                closeModal('addCourseModal');
+                loadCoursesFromDB();
+            })
+            .catch(err => alert(err.message));
+        }
+
+        function handleCourseUpdate(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const durationVal = parseInt(document.getElementById("edit_duration")?.value) || 0;
+
+            const courseData = {
+                course_id: parseInt(document.getElementById("edit_course_id")?.value),
+                title: document.getElementById("edit_title")?.value || '',
+                category_id: parseInt(document.getElementById("edit_category_id")?.value) || null,
+                level: document.getElementById("edit_level")?.value || 'BEGINNER',
+                language: document.getElementById("edit_language")?.value || 'Java',
+                status: document.getElementById("edit_status")?.value || 'DRAFT',
+                price: parseFloat(document.getElementById("edit_price")?.value) || 0,
+                duration_weeks: durationVal,
+                allow_discount: document.getElementById("edit_allow_discount")?.checked ? 1 : 0,
+                allow_installment: document.getElementById("edit_allow_installment")?.checked ? 1 : 0,
+                allow_scholarship: document.getElementById("edit_allow_scholarship")?.checked ? 1 : 0,
+                short_description: document.getElementById("edit_short_description")?.value || ''
+            };
+
+            formData.append("course", new Blob([JSON.stringify(courseData)], { type: "application/json" }));
+
+            const imageInput = document.getElementById("edit_image");
+            if (imageInput && imageInput.files[0]) {
+                formData.append("image", imageInput.files[0]);
+            }
+
+            fetch('/admin/courses/api/update', {
+                method: 'PUT',
+                body: formData
+            })
+            .then(async res => {
+                const resData = await res.json();
+                if (!res.ok) throw new Error(resData.message || resData.error || "Failed to update course");
+                return resData;
+            })
+            .then(() => {
+                closeModal('editCourseModal');
+                loadCoursesFromDB();
+            })
+            .catch(err => alert(err.message));
+        }
+
+        function deleteCourse(courseId) {
+            if (!confirm("Are you sure you want to delete this course?")) return;
+
+            fetch(`/admin/courses/api/delete/${courseId}`, { method: 'DELETE' })
+                .then(async res => {
+                    if (!res.ok) throw new Error("Delete operation failed");
+                    return res.json();
+                })
+                .then(() => loadCoursesFromDB())
+                .catch(err => alert(err.message));
+        }
+    </script>
+</body>
+</html>

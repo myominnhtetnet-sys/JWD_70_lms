@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{head :: head}"></head>
+
+<body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
+
+    <div id="app" class="min-h-screen flex flex-col overflow-hidden">
+        
+        <!-- TOP HEADER BAR -->
+        <div th:replace="~{header :: header}"></div>
+
+        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- DYNAMIC SIDEBAR -->
+            <div th:replace="~{nav :: nav}"></div>
+
+            <!-- MAIN PAGE BODY (p-8 ထည့်သွင်းပေးထားပြီး အောက်ဖက် Space ရရှိစေရန် ပြင်ဆင်ထားသည်) -->
+            <main class="flex-1 overflow-y-auto p-8 bg-slate-50 dark:bg-slate-900">
+                <div class="max-w-7xl mx-auto space-y-6">
+
+                    <!-- MAIN CONTENT CARD CONTAINER (စိပ်နေမှုကို ဖယ်ရှားရန် Card ပုံစံ ထည့်သွင်းထားသည်) -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+                        
+                        <!-- HEADER SECTION -->
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pb-5 mb-6 border-b border-slate-100 dark:border-slate-700">
+                            <div>
+                                <h1 class="text-xl font-bold text-slate-900 dark:text-slate-100">Announcements Management</h1>
+                                <p class="text-xs text-slate-500 mt-1">Manage all class announcements and updates securely</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <!-- Modal ဖွင့်မည့် Button (အရင်ကကဲ့သို့ pill ပုံစံ လှပအောင် ပြင်ဆင်ထားသည်) -->
+                                <button onclick="openCreateModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-full font-medium text-sm flex items-center gap-2 transition shadow-sm cursor-pointer">
+                                    <i class="fa-solid fa-bullhorn text-xs"></i>
+                                    New Announcement
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Announcement Table -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300 border-collapse">
+                                <thead class="bg-slate-50 dark:bg-slate-700/50 uppercase text-[10px] text-slate-400 border-b border-slate-100 dark:border-slate-700">
+                                    <tr>
+                                        <th class="py-3 px-4">Title</th>
+                                        <th class="py-3 px-4">Message Body</th>
+                                        <th class="py-3 px-4">Target Batch</th>
+                                        <th class="py-3 px-4">Posted By</th>
+                                        <th class="py-3 px-4">Date</th>
+                                        <th class="py-3 px-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="announcement-table-body" class="divide-y divide-slate-100 dark:divide-slate-700">
+                                    <!-- JS မှ Dynamic Data လာရောက်ဖြည့်သွင်းမည် -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Announcement Form Modal (Create / Edit) -->
+    <div id="announcement-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
+            
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3 mb-4">
+                <h3 id="modal-title-text" class="text-lg font-bold text-slate-800 dark:text-slate-100">Create New Announcement</h3>
+                <button onclick="closeModal('announcement-modal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
+            </div>
+
+            <!-- Form -->
+            <form id="announcement-form" onsubmit="saveAnnouncement(event)" class="space-y-4">
+                <!-- Hidden ID for Edit Operation -->
+                <input type="hidden" id="modal-announcement-id" value="">
+
+                <!-- Target Batch -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Target Batch</label>
+                    <select id="modal-batch-id" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="">Select Target Batch</option>
+                    </select>
+                </div>
+
+                <!-- Title -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Title</label>
+                    <input type="text" id="modal-title" placeholder="Enter announcement title..." required 
+                        class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <!-- Message Body -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Message Body</label>
+                    <textarea id="modal-body" rows="4" placeholder="Write message details..." required 
+                        class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                </div>
+
+                <!-- Modal Actions -->
+                <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+                    <button type="button" onclick="closeModal('announcement-modal')" 
+                        class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition">
+                        Cancel
+                    </button>
+                    <button type="submit" id="submit-btn" 
+                        class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition shadow-md shadow-indigo-500/20 flex items-center gap-2">
+                        <span id="submit-btn-text">Publish</span>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        async function loadBatchesDropdown() {
+            const batchSelect = document.getElementById('modal-batch-id');
+            if (!batchSelect) return;
+
+            try {
+                const response = await fetch('/api/announcements/batches');
+                if (!response.ok) throw new Error('Failed to fetch batches');
+
+                const batches = await response.json();
+                batchSelect.innerHTML = '<option value="">-- Select Target Batch --</option>';
+
+                batches.forEach(batch => {
+                    const option = document.createElement('option');
+                    option.value = batch.batchId;
+                    option.textContent = `${batch.title || batch.batchCode} (${batch.courseTitle || ''})`;
+                    batchSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading batches:', error);
+            }
+        }
+
+        async function loadAnnouncementsTable() {
+            const tbody = document.getElementById('announcement-table-body');
+            if (!tbody) return;
+
+            try {
+                const response = await fetch('/api/announcements');
+                const data = await response.json();
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-slate-400">No announcements found.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.map(item => `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition">
+                        <td class="py-4 px-4 font-semibold text-slate-800 dark:text-slate-200">${escapeHtml(item.title)}</td>
+                        <td class="py-4 px-4 text-slate-500 max-w-xs truncate">${escapeHtml(item.body)}</td>
+                        <td class="py-4 px-4"><span class="bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-300 px-2 py-0.5 rounded text-[10px] font-semibold">${escapeHtml(item.batchTitle || '-')}</span></td>
+                        <td class="py-4 px-4 text-slate-500">${escapeHtml(item.postedByName || 'Admin')}</td>
+                        <td class="py-4 px-4 text-slate-500">${formatDate(item.createdAt)}</td>
+                        <td class="py-4 px-4 text-right space-x-2">
+                            <button onclick="openEditModal(${item.announcementId})" class="text-indigo-600 hover:text-indigo-800 font-semibold">Edit</button>
+                            <button onclick="deleteAnnouncement(${item.announcementId})" class="text-red-500 hover:text-red-700 font-semibold">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error:', error);
+                tbody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-red-500">Failed to load announcements.</td></tr>';
+            }
+        }
+
+        async function openCreateModal() {
+            document.getElementById('modal-announcement-id').value = '';
+            document.getElementById('modal-title-text').innerText = 'Create New Announcement';
+            document.getElementById('submit-btn-text').innerText = 'Publish';
+            document.getElementById('announcement-form').reset();
+
+            await loadBatchesDropdown();
+            openModal('announcement-modal');
+        }
+
+        async function openEditModal(id) {
+            try {
+                const response = await fetch(`/api/announcements/${id}`);
+                if (!response.ok) throw new Error('Failed to fetch item details');
+                
+                const data = await response.json();
+                await loadBatchesDropdown();
+
+                document.getElementById('modal-announcement-id').value = data.announcementId || '';
+                document.getElementById('modal-batch-id').value = data.batchId || '';
+                document.getElementById('modal-title').value = data.title || '';
+                document.getElementById('modal-body').value = data.body || '';
+
+                document.getElementById('modal-title-text').innerText = 'Edit Announcement';
+                document.getElementById('submit-btn-text').innerText = 'Update';
+
+                openModal('announcement-modal');
+            } catch (error) {
+                console.error('Error fetching announcement:', error);
+                alert('Could not load announcement data for editing.');
+            }
+        }
+
+        async function saveAnnouncement(event) {
+            event.preventDefault();
+
+            const id = document.getElementById('modal-announcement-id').value;
+            const batchId = document.getElementById('modal-batch-id').value;
+            const title = document.getElementById('modal-title').value.trim();
+            const body = document.getElementById('modal-body').value.trim();
+            const submitBtn = document.getElementById('submit-btn');
+
+            if (!batchId) {
+                alert('Please select a target batch.');
+                return;
+            }
+
+            const payload = {
+                batchId: parseInt(batchId),
+                title: title,
+                body: body,
+                postedBy: 1
+            };
+
+            const isEdit = Boolean(id);
+            const url = isEdit ? `/api/announcements/${id}` : '/api/announcements';
+            const method = isEdit ? 'PUT' : 'POST';
+
+            try {
+                submitBtn.disabled = true;
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    alert(isEdit ? 'Updated successfully!' : 'Created successfully!');
+                    closeModal('announcement-modal');
+                    loadAnnouncementsTable();
+                } else {
+                    alert('Failed to save announcement.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Server error occurred.');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function deleteAnnouncement(id) {
+            if (!confirm('Are you sure you want to delete this announcement?')) return;
+
+            try {
+                const response = await fetch(`/api/announcements/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    alert('Deleted successfully!');
+                    loadAnnouncementsTable();
+                } else {
+                    alert('Failed to delete announcement.');
+                }
+            } catch (error) {
+                console.error('Error deleting:', error);
+                alert('Server error occurred.');
+            }
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId)?.classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId)?.classList.add('hidden');
+            document.getElementById('announcement-form')?.reset();
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadAnnouncementsTable();
+            loadBatchesDropdown();
+        });
+    </script>
+
+</body>
+</html>

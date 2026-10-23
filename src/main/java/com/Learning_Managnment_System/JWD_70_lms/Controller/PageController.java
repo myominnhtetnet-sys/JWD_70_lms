@@ -10,11 +10,10 @@ public class PageController {
 	
 	@GetMapping("/")
 	public String show() {		
-		return "dashboard";		
+		return "index";		
 	}
 	@GetMapping("/question-list")
     public String questionList() {
         return "question-list";
-    }
-
+	}
 }

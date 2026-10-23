@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{head :: head}"></head>
+
+<body class="h-screen overflow-hidden font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
+
+    <div id="app" class="h-full flex flex-col overflow-hidden">
+        
+        <!-- TOP HEADER BAR -->
+        <div th:replace="~{header :: header}"></div>
+
+        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- DYNAMIC SIDEBAR -->
+            <div th:replace="~{nav :: nav}"></div>
+
+            <!-- MAIN SECTION -->
+            <main class="flex-1 overflow-y-auto p-6 lg:p-8 bg-slate-50 dark:bg-slate-900/50">
+                <div class="max-w-7xl mx-auto space-y-6">
+
+                    <!-- FLASH MESSAGES -->
+                    <div th:if="${success}" class="p-4 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-sm font-medium flex items-center gap-3 shadow-sm" th:text="${success}">Success</div>
+                    <div th:if="${error}" class="p-4 bg-rose-50 text-rose-700 border border-rose-200 rounded-xl text-sm font-medium flex items-center gap-3 shadow-sm" th:text="${error}">Error</div>
+
+                    <!-- STATISTICS -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 flex items-center justify-center text-lg font-bold">
+                                <i class="fa-solid fa-receipt"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Payments</div>
+                                <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" th:text="${totalPayments}">0</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 flex items-center justify-center text-lg font-bold">
+                                <i class="fa-solid fa-hourglass-half"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pending Verification</div>
+                                <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" th:text="${pendingPayments}">0</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center text-lg font-bold">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Verified Payments</div>
+                                <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" th:text="${verifiedPayments}">0</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-600 flex items-center justify-center text-lg font-bold">
+                                <i class="fa-solid fa-rotate-left"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pending Refunds</div>
+                                <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" th:text="${pendingRefunds}">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NAVIGATION TABS -->
+                    <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-3">
+                        <button type="button" id="btnTab1" onclick="switchTab('paymentTab', 'btnTab1')" class="px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-indigo-600 text-white shadow-sm">
+                            <i class="fa-solid fa-file-invoice-dollar"></i> Payment Verification
+                        </button>
+                        <button type="button" id="btnTab2" onclick="switchTab('refundTab', 'btnTab2')" class="px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700">
+                            <i class="fa-solid fa-hand-holding-dollar"></i> Refund Management
+                        </button>
+                    </div>
+
+                    <!-- TAB 1: PAYMENT VERIFICATION -->
+                    <section id="paymentTab" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 dark:border-slate-700">
+                            <h2 class="text-base font-bold text-slate-900 dark:text-white">Payment Verification Records</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Search, filter and verify student payment receipts.</p>
+                        </div>
+
+                        <!-- SEARCH / FILTER -->
+                        <form class="p-6 bg-slate-50/50 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-4 items-end" th:action="@{/admin/payments-refunds}" method="get">
+                            <input type="hidden" name="activeTab" value="payment">
+                            <div>
+                                <label for="payKeyword" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Search</label>
+                                <input type="search" id="payKeyword" name="payKeyword" th:value="${payKeyword}" placeholder="Student name, email, txn ID..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition">
+                            </div>
+                            <div>
+                                <label for="payStatus" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Payment Status</label>
+                                <select id="payStatus" name="payStatus" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition">
+                                    <option value="ALL" th:selected="${selectedPayStatus == 'ALL'}">All Statuses</option>
+                                    <option value="PENDING" th:selected="${selectedPayStatus == 'PENDING'}">PENDING</option>
+                                    <option value="SUCCESS" th:selected="${selectedPayStatus == 'SUCCESS'}">SUCCESS</option>
+                                    <option value="REJECTED" th:selected="${selectedPayStatus == 'REJECTED'}">REJECTED</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition shadow-sm flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-filter"></i> Filter
+                                </button>
+                                <a th:href="@{/admin/payments-refunds}" class="px-4 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-semibold transition">Reset</a>
+                            </div>
+                        </form>
+
+                        <!-- TABLE -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider bg-slate-50/70 dark:bg-slate-800/70">
+                                        <th class="py-4 px-6 font-semibold">No</th>
+                                        <th class="py-4 px-6 font-semibold">Student</th>
+                                        <th class="py-4 px-6 font-semibold">Course / Batch</th>
+                                        <th class="py-4 px-6 font-semibold">Amount</th>
+                                        <th class="py-4 px-6 font-semibold">Transaction No</th>
+                                        <th class="py-4 px-6 font-semibold">Payment Date</th>
+                                        <th class="py-4 px-6 font-semibold">Proof</th>
+                                        <th class="py-4 px-6 font-semibold">Status</th>
+                                        <th class="py-4 px-6 font-semibold text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/60 text-sm text-slate-600 dark:text-slate-300">
+                                    <tr th:each="p, i : ${payments}" th:if="${payments != null and !payments.isEmpty()}" class="hover:bg-slate-50/80 dark:hover:bg-slate-700/30 transition">
+                                        <!-- whitespace-nowrap ထည့်ထားသဖြင့် အောက်သို့မဆင်းတော့ပါ -->
+                                        <td class="py-4 px-6 font-bold text-slate-900 dark:text-white whitespace-nowrap" th:text="${'#PAY-' + i.count}">#1</td>
+                                        <td class="py-4 px-6">
+                                            <div class="font-bold text-slate-900 dark:text-white" th:text="${p.student_name}">Student Name</div>
+                                            <div class="text-xs text-slate-400" th:text="${p.student_email}">email@mail.com</div>
+                                        </td>
+                                        <td class="py-4 px-6">
+                                            <div class="font-medium text-slate-800 dark:text-slate-200" th:text="${p.course_name}">Course</div>
+                                            <div class="text-xs text-slate-400" th:text="${p.batch_name}">Batch</div>
+                                        </td>
+                                        <td class="py-4 px-6 font-bold text-slate-900 dark:text-white" th:text="${p.amount != null ? #numbers.formatDecimal(p.amount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
+                                        <td class="py-4 px-6 font-mono text-xs text-slate-500 dark:text-slate-400" th:text="${p.transaction_no}">TXN123456</td>
+                                        <td class="py-4 px-6 text-xs text-slate-500 dark:text-slate-400" th:text="${p.payment_date != null ? p.payment_date : '-'}">-</td>
+                                        <td class="py-4 px-6">
+                                            <a th:if="${p.proof_image != null}" th:href="@{'/uploads/' + ${p.proof_image}}" target="_blank" class="text-indigo-600 dark:text-indigo-400 text-xs font-semibold hover:underline flex items-center gap-1">
+                                                <i class="fa-solid fa-image"></i> View Slip
+                                            </a>
+                                            <span th:if="${p.proof_image == null}" class="text-slate-400 text-xs">-</span>
+                                        </td>
+                                        <td class="py-4 px-6">
+                                            <span th:text="${p.status}"
+                                                  class="px-3 py-1 text-xs font-bold rounded-full border inline-block"
+                                                  th:classappend="${#strings.equalsIgnoreCase(p.status, 'PENDING') ? 'bg-amber-50 text-amber-600 border-amber-200' : 
+                                                                    (#strings.equalsIgnoreCase(p.status, 'SUCCESS') or #strings.equalsIgnoreCase(p.status, 'VERIFIED') ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200')}">
+                                                STATUS
+                                            </span>
+                                        </td>
+                                        <td class="py-4 px-6 text-right">
+                                            <form th:action="@{/admin/payments-refunds/process-payment}" method="post" class="inline-flex gap-1.5 justify-end">
+                                                <input type="hidden" name="paymentId" th:value="${p.payment_id}">
+                                                <button type="submit" name="action" value="verify" class="bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-emerald-200 flex items-center gap-1">
+                                                    <i class="fa-solid fa-check"></i> Verify
+                                                </button>
+                                                <button type="submit" name="action" value="reject" class="bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-rose-200 flex items-center gap-1">
+                                                    <i class="fa-solid fa-xmark"></i> Reject
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${payments == null or payments.isEmpty()}">
+                                        <td colspan="9" class="text-center py-12 text-slate-400">
+                                            <i class="fa-solid fa-folder-open text-3xl mb-2 block"></i>
+                                            <p>No payment records found.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- TAB 2: REFUND MANAGEMENT -->
+                    <section id="refundTab" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden" style="display: none;">
+                        <div class="p-6 border-b border-slate-100 dark:border-slate-700">
+                            <h2 class="text-base font-bold text-slate-900 dark:text-white">Refund Requests</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Search, review and approve student refund applications.</p>
+                        </div>
+
+                        <!-- SEARCH / FILTER -->
+                        <form class="p-6 bg-slate-50/50 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-4 items-end" th:action="@{/admin/payments-refunds}" method="get">
+                            <input type="hidden" name="activeTab" value="refund">
+                            <div>
+                                <label for="refKeyword" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Search</label>
+                                <input type="search" id="refKeyword" name="refKeyword" th:value="${refKeyword}" placeholder="Student name, refund ID, reason..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition">
+                            </div>
+                            <div>
+                                <label for="refStatus" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Refund Status</label>
+                                <select id="refStatus" name="refStatus" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition">
+                                    <option value="ALL" th:selected="${selectedRefStatus == 'ALL'}">All Statuses</option>
+                                    <option value="PENDING" th:selected="${selectedRefStatus == 'PENDING'}">PENDING</option>
+                                    <option value="APPROVED" th:selected="${selectedRefStatus == 'APPROVED'}">APPROVED</option>
+                                    <option value="PAID" th:selected="${selectedRefStatus == 'PAID'}">REFUNDED</option>
+                                    <option value="REJECTED" th:selected="${selectedRefStatus == 'REJECTED'}">REJECTED</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition shadow-sm flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-filter"></i> Filter
+                                </button>
+                                <a th:href="@{/admin/payments-refunds?activeTab=refund}" class="px-4 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-semibold transition">Reset</a>
+                            </div>
+                        </form>
+
+                        <!-- TABLE -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider bg-slate-50/70 dark:bg-slate-800/70">
+                                        <th class="py-4 px-6 font-semibold">Refund ID</th>
+                                        <th class="py-4 px-6 font-semibold">Student</th>
+                                        <th class="py-4 px-6 font-semibold">Refund Amount</th>
+                                        <th class="py-4 px-6 font-semibold">Reason</th>
+                                        <th class="py-4 px-6 font-semibold">Request Date</th>
+                                        <th class="py-4 px-6 font-semibold">Status</th>
+                                        <th class="py-4 px-6 font-semibold text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/60 text-sm text-slate-600 dark:text-slate-300">
+                                    <tr th:each="r, i : ${refunds}" th:if="${refunds != null and !refunds.isEmpty()}" class="hover:bg-slate-50/80 dark:hover:bg-slate-700/30 transition">
+                                        <!-- whitespace-nowrap ထည့်ထားသဖြင့် Refund ID လည်း အောက်သို့မဆင်းပါ -->
+                                        <td class="py-4 px-6 font-bold text-slate-900 dark:text-white whitespace-nowrap" th:text="${'#REF-' + i.count}">#1</td>
+                                        <td class="py-4 px-6 font-bold text-slate-900 dark:text-white" th:text="${r.student_name}">Student Name</td>
+                                        <td class="py-4 px-6 font-bold text-amber-600" th:text="${r.amount != null ? #numbers.formatDecimal(r.amount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
+                                        <td class="py-4 px-6 text-slate-500 dark:text-slate-400" th:text="${r.reason}">Reason text</td>
+                                        <td class="py-4 px-6 text-xs text-slate-500 dark:text-slate-400" th:text="${r.created_at != null ? r.created_at : '-'}">-</td>
+                                        <td class="py-4 px-6">
+                                            <!-- PENDING အပါအဝင် အားလုံးအတွက် မှန်ကန်စွာ ပေါ်စေရန် #strings.equalsIgnoreCase သုံးထားသည် -->
+                                            <span th:text="${r.status}"
+                                                  class="px-3 py-1 text-xs font-bold rounded-full border inline-block"
+                                                  th:classappend="${#strings.equalsIgnoreCase(r.status, 'PENDING') ? 'bg-amber-50 text-amber-600 border-amber-200' : 
+                                                                    (#strings.equalsIgnoreCase(r.status, 'APPROVED') ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 
+                                                                    (#strings.equalsIgnoreCase(r.status, 'PAID') or #strings.equalsIgnoreCase(r.status, 'REFUNDED') ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200'))}">
+                                                STATUS
+                                            </span>
+                                        </td>
+                                        <td class="py-4 px-6 text-right">
+                                            <div class="inline-flex justify-end gap-1.5">
+                                                <form th:if="${#strings.equalsIgnoreCase(r.status, 'PENDING')}" th:action="@{/admin/payments-refunds/update-refund-status}" method="post" class="inline-flex gap-1.5">
+                                                    <input type="hidden" name="refundId" th:value="${r.refund_id}">
+                                                    <button type="submit" name="status" value="APPROVED" class="bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-indigo-200 flex items-center gap-1">
+                                                        <i class="fa-solid fa-thumbs-up"></i> Approve
+                                                    </button>
+                                                    <button type="submit" name="status" value="REJECTED" class="bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-rose-200 flex items-center gap-1">
+                                                        <i class="fa-solid fa-ban"></i> Reject
+                                                    </button>
+                                                </form>
+                                                <form th:if="${#strings.equalsIgnoreCase(r.status, 'APPROVED')}" th:action="@{/admin/payments-refunds/update-refund-status}" method="post">
+                                                    <input type="hidden" name="refundId" th:value="${r.refund_id}">
+                                                    <button type="submit" name="status" value="PAID" class="bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-emerald-200 flex items-center gap-1">
+                                                        <i class="fa-solid fa-money-bill-transfer"></i> Mark Refunded
+                                                    </button>
+                                                </form>
+                                                <span th:if="${#strings.equalsIgnoreCase(r.status, 'PAID') || #strings.equalsIgnoreCase(r.status, 'REFUNDED') || #strings.equalsIgnoreCase(r.status, 'REJECTED')}" class="text-slate-400 text-xs font-medium">Completed</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${refunds == null or refunds.isEmpty()}">
+                                        <td colspan="7" class="text-center py-12 text-slate-400">
+                                            <i class="fa-solid fa-folder-open text-3xl mb-2 block"></i>
+                                            <p>No refund requests found.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- TAB SWITCHING SCRIPT -->
+    <script th:inline="javascript">
+        function switchTab(tabId, btnId) {
+            document.getElementById('paymentTab').style.display = 'none';
+            document.getElementById('refundTab').style.display = 'none';
+            
+            const btn1 = document.getElementById('btnTab1');
+            const btn2 = document.getElementById('btnTab2');
+            
+            btn1.className = "px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700";
+            btn2.className = "px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700";
+
+            document.getElementById(tabId).style.display = 'block';
+            document.getElementById(btnId).className = "px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-indigo-600 text-white shadow-sm";
+            
+            const flashMsg = document.querySelector('.flash-message');
+            if (flashMsg) {
+                flashMsg.style.display = 'none';
+            }
+        }
+
+        /*[# th:if="${param.activeTab != null and param.activeTab[0] == 'refund'}"]*/
+        window.addEventListener('DOMContentLoaded', () => {
+            switchTab('refundTab', 'btnTab2');
+        });
+        /*[/]*/
+    </script>
+</body>
+</html>

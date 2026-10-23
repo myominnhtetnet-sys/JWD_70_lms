@@ -1,157 +1,140 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>User Details</title>
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <title>User Details | LMS</title>
 
     <style>
-
         * {
             box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            background: #f4e9ff;
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 800px;
-            margin: 40px auto;
+            padding: 35px 15px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f6fa;
+            color: #24243a;
         }
 
         .card {
-            background: white;
+            max-width: 650px;
+            margin: auto;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0,0,0,.08);
+            border: 1px solid #e9eaf2;
+            border-radius: 15px;
+            background: white;
         }
 
-        h2 {
-            color: #4b176b;
-            margin-bottom: 25px;
+        h1 {
+            margin-top: 0;
         }
 
         .row {
-            display: grid;
-            grid-template-columns: 180px 1fr;
-            padding: 13px 0;
-            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+            border-bottom: 1px solid #eeeef5;
         }
 
         .label {
-            font-weight: bold;
-            color: #555;
+            display: block;
+            margin-bottom: 7px;
+            color: #85859b;
+            font-size: 12px;
+        }
+
+        .value {
+            font-size: 14px;
+            overflow-wrap: anywhere;
         }
 
         .back {
             display: inline-block;
             margin-top: 25px;
-            padding: 10px 18px;
-            background: #8e44ad;
+            padding: 12px 18px;
+            border-radius: 8px;
+            background: #7565f5;
             color: white;
             text-decoration: none;
-            border-radius: 7px;
         }
-
     </style>
-
 </head>
 
 <body>
 
-<div class="container">
+<div class="card">
 
-    <div class="card">
+    <h1>User Details</h1>
 
-        <h2>
-            <i class="fa-solid fa-user"></i>
-            User Details
-        </h2>
-
-
-        <div class="row">
-            <div class="label">User ID</div>
-            <div th:text="${user.userId}"></div>
-        </div>
-
-
-        <div class="row">
-            <div class="label">Full Name</div>
-            <div th:text="${user.fullName}"></div>
-        </div>
-
-
-        <div class="row">
-            <div class="label">Email</div>
-            <div th:text="${user.email}"></div>
-        </div>
-
-
-        <div class="row">
-            <div class="label">Phone</div>
-            <div th:text="${user.phone}"></div>
-        </div>
-
-
-        <div class="row">
-            <div class="label">Role</div>
-            <div th:text="${user.roleName}"></div>
-        </div>
-
-
-        <div class="row">
-            <div class="label">Status</div>
-            <div th:text="${user.status}"></div>
-        </div>
-
-
-        <div class="row">
-            <div class="label">Date of Birth</div>
-            <div th:text="${user.dob}"></div>
-        </div>
-
-
-        <div class="row">
-            <div class="label">Gender</div>
-            <div th:text="${user.gender}"></div>
-        </div>
-
-
-        <div class="row">
-            <div class="label">Address</div>
-            <div th:text="${user.address}"></div>
-        </div>
-
-
-        <div class="row">
-            <div class="label">Created At</div>
-            <div th:text="${user.createdAt}"></div>
-        </div>
-
-
-        <a
-            href="/admin"
-            class="back">
-
-            <i class="fa-solid fa-arrow-left"></i>
-            Back to Users
-
-        </a>
-
+    <div class="row">
+        <span class="label">User ID</span>
+        <span class="value" th:text="${user.user_id}">1</span>
     </div>
+
+    <div class="row">
+        <span class="label">Full Name</span>
+        <span class="value" th:text="${user.full_name}">User</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Email</span>
+        <span class="value" th:text="${user.email}">user@example.com</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Phone</span>
+        <span class="value"
+              th:text="${user.phone != null ? user.phone : '-'}">-</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Role</span>
+        <span class="value" th:text="${user.role_name}">Student</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Status</span>
+        <span class="value" th:text="${user.status}">ACTIVE</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Date of Birth</span>
+        <span class="value"
+              th:text="${user.dob != null ? user.dob : '-'}">-</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Gender</span>
+        <span class="value"
+              th:text="${user.gender != null ? user.gender : '-'}">-</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Address</span>
+        <span class="value"
+              th:text="${user.address != null ? user.address : '-'}">-</span>
+    </div>
+
+    <div class="row">
+        <span class="label">Created At</span>
+
+        <span class="value"
+              th:if="${user.created_at != null}"
+              th:text="${#temporals.format(user.created_at, 'yyyy-MM-dd HH:mm')}">
+        </span>
+
+        <span class="value"
+              th:if="${user.created_at == null}">-</span>
+    </div>
+
+    <a th:href="@{/admin/users}" class="back">
+        Back to User Management
+    </a>
 
 </div>
 
 </body>
-
 </html>

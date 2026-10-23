@@ -5,21 +5,19 @@ import com.Learning_Managnment_System.JWD_70_lms.model.Review;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ReviewService {
+	
+	@Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    private final JdbcTemplate jdbcTemplate;
-
-    public ReviewService(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    // 🟢 FIXED: Added created_at column and populated it with NOW() to prevent null query drops
+    // 🟢 Review အသစ်သိမ်းဆည်းရန် (Controller မှ ပို့ပေးသော userId ကို သုံးသည်)
     public void saveReview(Review review, int userId) {
-        String sql = "INSERT INTO lms_db.course_reviews (course_id, user_id, rating, comment, is_visible, created_at) " +
+        String sql = "INSERT INTO learning_db.course_reviews (course_id, user_id, rating, comment, is_visible, created_at) " +
                      "VALUES (?, ?, ?, ?, 1, NOW())";
                      
         jdbcTemplate.update(sql, 
@@ -30,21 +28,22 @@ public class ReviewService {
         );
     }
 
+    // 🟢 အဆိုပါ User ဒီ Course ကို Review ပေးပြီးပြီလား စစ်ဆေးရန်
     public boolean hasUserReviewedCourse(int userId, int courseId) {
-        String sql = "SELECT COUNT(*) FROM lms_db.course_reviews WHERE user_id = ? AND course_id = ?";
+        String sql = "SELECT COUNT(*) FROM learning_db.course_reviews WHERE user_id = ? AND course_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, userId, courseId);
         return count != null && count > 0;
     }
     
+    // 🟢 Course ID အလိုက် Review များနှင့် User နာမည်များကို Join ၍ ယူရန်
     public List<Map<String, Object>> getReviewsByCourseId(int courseId) {
-        // 🟢 FIXED: Used explicit lowercase column aliases to force the map keys to stay predictable
         String sql = """
                 SELECT r.rating AS rating, 
                        r.comment AS comment, 
                        u.full_name AS full_name, 
                        r.created_at AS created_at
-                FROM lms_db.course_reviews r
-                JOIN lms_db.users u ON r.user_id = u.user_id
+                FROM learning_db.course_reviews r
+                JOIN learning_db.users u ON r.user_id = u.user_id
                 WHERE r.course_id = ? AND r.is_visible = 1
                 ORDER BY r.created_at DESC
                 """;

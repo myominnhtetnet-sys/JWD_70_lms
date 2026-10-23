@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{head :: head}"></head>
+
+<body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen">
+<div class="app min-h-screen flex flex-col">
+
+    <!-- TOP HEADER BAR -->
+    <div th:replace="~{header :: header}"></div>
+
+    <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- DYNAMIC SIDEBAR -->
+        <div th:replace="~{nav :: nav}"></div>
+
+        <!-- MAIN SECTION -->
+        <main class="main flex-1 overflow-y-auto p-6 lg:p-8 bg-slate-50">
+
+            <!-- PAGE CONTENT -->
+            <div class="max-w-7xl mx-auto">
+                <!-- Success / Error Alerts -->
+                <div th:if="${success}" class="p-4 mb-6 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-sm font-medium flex items-center gap-3 shadow-sm" th:text="${success}">Success message</div>
+                <div th:if="${error}" class="p-4 mb-6 bg-rose-50 text-rose-700 border border-rose-200 rounded-xl text-sm font-medium flex items-center gap-3 shadow-sm" th:text="${error}">Error message</div>
+
+                <!-- Page Header & Action Bar -->
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight text-slate-900 mb-1">User Management</h1>
+                        <p class="text-sm text-slate-500">Manage system users, roles and account statuses seamlessly.</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <!-- Search Form -->
+                        <form method="get" th:action="@{/admin/users/search}" class="flex items-center gap-2">
+                            <input type="text" name="keyword" th:value="${keyword}" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-indigo-500 w-60 sm:w-72 shadow-sm transition" placeholder="Search by name or email...">
+                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition flex items-center justify-center shadow-sm">
+                                <i class="fa-solid fa-search"></i>
+                            </button>
+                        </form>
+                        
+                        <button type="button" onclick="openAddModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition flex items-center gap-2 shadow-md shadow-indigo-600/20 whitespace-nowrap">
+                            <i class="fa-solid fa-plus"></i> Add User
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Users Table Panel -->
+                <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider bg-slate-50/70">
+                                    <th class="py-4 px-6 font-semibold">#</th>
+                                    <th class="py-4 px-6 font-semibold">Name</th>
+                                    <th class="py-4 px-6 font-semibold">Email</th>
+                                    <th class="py-4 px-6 font-semibold">Role</th>
+                                    <th class="py-4 px-6 font-semibold">Status</th>
+                                    <th class="py-4 px-6 font-semibold text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                                <tr th:each="u, index : ${users}" class="hover:bg-slate-50/80 transition">
+                                    <td class="py-4 px-6 font-medium text-slate-900" th:text="${index.count}">1</td>
+                                    <td class="py-4 px-6 font-semibold text-slate-900" th:text="${u.full_name}">Name</td>
+                                    <td class="py-4 px-6 text-slate-500" th:text="${u.email}">Email</td>
+                                    <td class="py-4 px-6">
+                                        <span class="px-2.5 py-1 bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-semibold rounded-md" th:text="${u.role_name}">Role</span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span th:text="${u.status}" 
+                                              th:classappend="${u.status == 'ACTIVE' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200'}"
+                                              class="px-3 py-1 text-xs font-bold rounded-full border inline-block">
+                                            ACTIVE
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6 text-right">
+                                        <div class="inline-flex items-center justify-end gap-2">
+                                            <button type="button" class="bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-blue-200" th:onclick="'openEditModal(' + ${u.user_id} + ')'">Edit</button>
+                                            
+                                            <form th:action="@{/admin/users/suspend}" method="post" class="inline" th:if="${u.status == 'ACTIVE'}">
+                                                <input type="hidden" name="userId" th:value="${u.user_id}">
+                                                <button type="submit" class="bg-amber-50 hover:bg-amber-500 text-amber-700 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition border border-amber-200">Suspend</button>
+                                            </form>
+                                            
+                                            <form th:action="@{/admin/users/activate}" method="post" class="inline" th:if="${u.status != 'ACTIVE'}">
+                                                <input type="hidden" name="userId" th:value="${u.user_id}">
+                                                <button type="submit" class="bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition border border-emerald-200">Activate</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- ADD/EDIT USER MODAL -->
+<div id="userModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-200">
+        <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+            <h3 id="modalTitle" class="text-lg font-bold text-slate-900">Add New User</h3>
+            <button type="button" onclick="closeUserModal()" class="text-slate-400 hover:text-slate-700 text-lg transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form id="userForm" th:action="@{/admin/users/add}" method="post" class="space-y-4">
+            <input type="hidden" id="user_id" name="user_id">
+            
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Full Name *</label>
+                <input type="text" id="full_name" name="full_name" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 transition" required placeholder="Enter full name">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Email Address *</label>
+                <input type="email" id="email" name="email" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 transition" required placeholder="Enter email address">
+            </div>
+
+            <div id="passwordGroup">
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Password * <span class="text-[10px] text-slate-400 normal-case">(At least 8 characters)</span></label>
+                <input type="password" id="password_hash" name="password_hash" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 transition" placeholder="Enter password">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Role *</label>
+                <select id="role_id" name="role_id" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 transition" required>
+                    <option value="">-- Select Role --</option>
+                    <option value="1">Admin</option>
+                    <option value="2">Teacher</option>
+                    <option value="3">Student</option>
+                </select>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
+                <button type="button" onclick="closeUserModal()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition border border-slate-300">Cancel</button>
+                <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition shadow-md shadow-indigo-600/20">Save User</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openAddModal() {
+        document.getElementById('modalTitle').innerText = 'Add New User';
+        document.getElementById('userForm').action = '/admin/users/add';
+        document.getElementById('user_id').value = '';
+        document.getElementById('full_name').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('password_hash').value = '';
+        document.getElementById('password_hash').required = true;
+        document.getElementById('passwordGroup').style.display = 'block';
+        document.getElementById('role_id').value = '';
+        
+        const modal = document.getElementById('userModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function openEditModal(id) {
+        fetch('/admin/users/edit-json/' + id)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch user data.");
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('modalTitle').innerText = 'Edit User';
+                document.getElementById('userForm').action = '/admin/users/update';
+                
+                // 🟢 Data များကို Form Input တွေထဲသို့ ထည့်သွင်းပေးခြင်း
+                document.getElementById('user_id').value = data.user_id || '';
+                document.getElementById('full_name').value = data.full_name || '';
+                document.getElementById('email').value = data.email || '';
+                
+                // Edit ပြုလုပ်စဉ် Password မလိုအပ်တော့သဖြင့် ပုန်းထားရန်
+                document.getElementById('password_hash').required = false;
+                document.getElementById('passwordGroup').style.display = 'none';
+                
+                document.getElementById('role_id').value = data.role_id || '';
+                
+                const modal = document.getElementById('userModal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            })
+            .catch(err => console.error("Error fetching user data:", err));
+    }
+
+    function closeUserModal() {
+        const modal = document.getElementById('userModal');
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+    }
+</script>
+</body>
+</html>
