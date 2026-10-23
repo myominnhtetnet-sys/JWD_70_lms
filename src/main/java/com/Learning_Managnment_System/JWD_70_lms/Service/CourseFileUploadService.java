@@ -20,13 +20,10 @@ public class CourseFileUploadService {
         if (file == null || file.isEmpty()) {
             return null;
         }
-
-        // 🟢 ၁. File Size Validation (2MB ထက် မကျော်ရ)
         if (file.getSize() > MAX_FILE_SIZE) {
             throw new IllegalArgumentException("File size exceeds 2MB limit. Please upload a smaller image.");
         }
 
-        // 🟢 ၂. Image File Validation (Content-Type စစ်ဆေးခြင်း)
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new IllegalArgumentException("Invalid file type. Only image files (JPG, PNG, WEBP, etc.) are allowed.");

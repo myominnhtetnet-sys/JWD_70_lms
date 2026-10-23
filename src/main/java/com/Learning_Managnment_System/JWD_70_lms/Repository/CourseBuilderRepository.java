@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import com.Learning_Managnment_System.JWD_70_lms.Mapper.CourseBuilderMapper;
 import com.Learning_Managnment_System.JWD_70_lms.model.CourseBuilderBean;
 
-
 @Repository
 public class CourseBuilderRepository {
 	
@@ -32,12 +31,12 @@ public class CourseBuilderRepository {
 
     public void save(CourseBuilderBean course, int currentUserId) {
         String sql = """
-            INSERT INTO courses (category_id, title, slug, short_description, description, thumbnail, level, language, price, duration_weeks, status, allow_discount, allow_installment, allow_scholarship, created_by, created_at, updated_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+            INSERT INTO courses (category_id, title, slug, short_description, description, level, language, price, duration_weeks, status, allow_discount, allow_installment, allow_scholarship, created_by, created_at, updated_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
         """;
         jdbcTemplate.update(sql, 
             course.getCategoryId(), course.getTitle(), course.getSlug(), 
-            course.getShortDescription(), course.getDescription(), course.getThumbnail(), 
+            course.getShortDescription(), course.getDescription(),  
             course.getLevel(), course.getLanguage(), course.getPrice(), 
             course.getDurationWeeks(), course.getStatus(), 
             course.getAllowDiscount() ? 1 : 0, 
@@ -49,12 +48,12 @@ public class CourseBuilderRepository {
 
     public void update(Long courseId, CourseBuilderBean course) {
         String sql = """
-            UPDATE courses SET category_id = ?, title = ?, slug = ?, short_description = ?, description = ?, thumbnail = ?, level = ?, language = ?, price = ?, duration_weeks = ?, status = ?, allow_discount = ?, allow_installment = ?, allow_scholarship = ?, updated_at = NOW() 
+            UPDATE courses SET category_id = ?, title = ?, slug = ?, short_description = ?, description = ?, level = ?, language = ?, price = ?, duration_weeks = ?, status = ?, allow_discount = ?, allow_installment = ?, allow_scholarship = ?, updated_at = NOW() 
             WHERE course_id = ?
         """;
         jdbcTemplate.update(sql, 
             course.getCategoryId(), course.getTitle(), course.getSlug(), 
-            course.getShortDescription(), course.getDescription(), course.getThumbnail(), 
+            course.getShortDescription(), course.getDescription(),  
             course.getLevel(), course.getLanguage(), course.getPrice(), 
             course.getDurationWeeks(), course.getStatus(), 
             course.getAllowDiscount() ? 1 : 0, 
@@ -65,7 +64,6 @@ public class CourseBuilderRepository {
     }
 
     public void delete(Long courseId) {
-        // ၁။ ဤ Course နှင့် ချိတ်ဆက်ထားသော Batches များတွင် ကျောင်းသား တက်ရောက်မှု (Enrollment) ရှိမရှိ စစ်ဆေးမည်
         String checkEnrollmentsSql = """
             SELECT COUNT(*) 
             FROM enrollments e 
@@ -75,21 +73,17 @@ public class CourseBuilderRepository {
         
         Integer enrollmentCount = jdbcTemplate.queryForObject(checkEnrollmentsSql, Integer.class, courseId);
 
-        // ၂။ ကျောင်းသား တက်ရောက်နေသည်ဆိုပါက ဖျက်ခွင့်မပြုဘဲ Error ထုတ်မည်
         if (enrollmentCount != null && enrollmentCount > 0) {
             throw new RuntimeException("Cannot delete this course because students are actively enrolled in it.");
         }
 
-        // ၃။ ကျောင်းသား တက်ရောက်ခြင်းမရှိပါက ဆက်စပ်နေသော modules များနှင့် batches များကို အရင်ဖျက်မည်
         String deleteModulesSql = "DELETE FROM modules WHERE course_id = ?";
         jdbcTemplate.update(deleteModulesSql, courseId);
 
         String deleteBatchesSql = "DELETE FROM batches WHERE course_id = ?";
         jdbcTemplate.update(deleteBatchesSql, courseId);
 
-        // ၄။ နောက်ဆုံးတွင် Course ကို အောင်မြင်စွာ ဖျက်မည်
         String deleteCourseSql = "DELETE FROM courses WHERE course_id = ?";
         jdbcTemplate.update(deleteCourseSql, courseId);
     }
-
 }

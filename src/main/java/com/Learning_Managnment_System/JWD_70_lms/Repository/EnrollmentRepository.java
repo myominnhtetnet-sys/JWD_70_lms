@@ -85,7 +85,7 @@ public class EnrollmentRepository {
     public EnrollmentDetailBean getEnrollmentById(int enrollmentId) {
         String sql = """
             SELECT e.enrollment_id, u.full_name AS student_name, u.email AS student_email,
-                   c.title AS course_title, b.batch_code, e.original_amount, e.discount_amount, 
+                   c.title AS course_title, b.title AS batch_code, e.original_amount, e.discount_amount, 
                    e.scholarship_amount, e.final_amount, e.payment_type, e.payment_status, 
                    e.status AS enrollment_status, e.enrolled_at
             FROM enrollments e

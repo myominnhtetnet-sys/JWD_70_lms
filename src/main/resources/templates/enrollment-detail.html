@@ -1,402 +1,163 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enrollment Detail | LearnHub LMS</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <style>
-        /* =====================================================
-           GLOBAL RESET & VARIABLES (Dashboard UI နှင့် အတူတူ)
-           ===================================================== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<head th:replace="~{head :: head}"></head>
 
-        :root {
-            --bg: #0f1118;
-            --sidebar: #181d28;
-            --card: #181d28;
-            --border: #293142;
-            --primary: #6c4ce5;
-            --text: #f1f3f9;
-            --muted: #929bb0;
-            --input: #202634;
-            --green: #36c995;
-            --yellow: #f4bd50;
-            --red: #ff7373;
-        }
+<body class="h-screen overflow-hidden font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
 
-        body.light-mode {
-            --bg: #f4f6fb;
-            --sidebar: #ffffff;
-            --card: #ffffff;
-            --border: #e2e6ef;
-            --text: #242938;
-            --muted: #727c91;
-            --input: #f5f6fa;
-        }
+    <div id="app" class="h-full flex flex-col overflow-hidden">
+        
+        <!-- TOP HEADER BAR -->
+        <div th:replace="~{header :: header}"></div>
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
+        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- DYNAMIC SIDEBAR -->
+            <div th:replace="~{nav :: nav}"></div>
 
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
+            <!-- MAIN SECTION -->
+            <main class="flex-1 overflow-y-auto p-6 lg:p-8 bg-slate-50 dark:bg-slate-900/50">
+                <div class="max-w-7xl mx-auto space-y-6">
 
-        /* =====================================================
-           LAYOUT STRUCTURE (Dashboard မျက်နှာပြင်နှင့် တစ်ထပ်တည်းဖြစ်စေရန်)
-           ===================================================== */
-        .app {
-            display: flex;
-            min-height: 100vh;
-        }
+                    <!-- BACK BUTTON -->
+                    <div>
+                        <a th:href="@{/admin/enrollments}" class="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-sm">
+                            <i class="fa-solid fa-arrow-left"></i> Back to List
+                        </a>
+                    </div>
 
-        /* Sidebar Fixed Layout */
-        .sidebar {
-            width: 260px;
-            position: fixed;
-            inset: 0 auto 0 0;
-            background: var(--sidebar);
-            border-right: 1px solid var(--border);
-            padding: 25px 18px;
-            overflow-y: auto;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-        }
+                    <!-- Student & Course Info -->
+                    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">Student & Course Information</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-slate-600 dark:text-slate-300">
+                            <div><strong class="text-slate-900 dark:text-white">Student Name:</strong> <span th:text="${detail.studentName}">-</span></div>
+                            <div><strong class="text-slate-900 dark:text-white">Email:</strong> <span th:text="${detail.studentEmail}">-</span></div>
+                            <div><strong class="text-slate-900 dark:text-white">Course:</strong> <span th:text="${detail.courseTitle}">-</span></div>
+                            <div><strong class="text-slate-900 dark:text-white">Batch Code:</strong> <span th:text="${detail.batchCode}">-</span></div>
+                        </div>
+                    </div>
 
-        .sidebar .brand {
-            display: flex;
-            align-items: center;
-            gap: 13px;
-            padding: 5px 10px 32px;
-        }
+                    <!-- Fee Breakdown Panel -->
+                    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">Fee Breakdown</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                                <div class="text-slate-500 dark:text-slate-400 text-xs mb-1">Total Fee</div>
+                                <div class="text-xl font-bold text-slate-900 dark:text-white" th:text="${detail.totalFee != null ? #numbers.formatDecimal(detail.totalFee, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</div>
+                            </div>
+                            <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                                <div class="text-slate-500 dark:text-slate-400 text-xs mb-1">Discount</div>
+                                <div class="text-xl font-bold text-amber-600" th:text="${detail.discountAmount != null ? #numbers.formatDecimal(detail.discountAmount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</div>
+                            </div>
+                            <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                                <div class="text-slate-500 dark:text-slate-400 text-xs mb-1">Scholarship</div>
+                                <div class="text-xl font-bold text-emerald-600" th:text="${detail.scholarshipAmount != null ? #numbers.formatDecimal(detail.scholarshipAmount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</div>
+                            </div>
+                            <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                                <div class="text-slate-500 dark:text-slate-400 text-xs mb-1">Final Net Amount</div>
+                                <div class="text-xl font-bold text-indigo-600 dark:text-indigo-400" th:text="${detail.finalAmount != null ? #numbers.formatDecimal(detail.finalAmount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</div>
+                            </div>
+                        </div>
+                    </div>
 
-        .sidebar .brand-icon {
-            width: 45px;
-            height: 45px;
-            background: #7895ff;
-            color: white;
-            border-radius: 13px;
-            display: grid;
-            place-items: center;
-            font-size: 21px;
-        }
+                    <!-- Installment Schedule Table -->
+                    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 dark:border-slate-700">
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white">Installment Schedule</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider bg-slate-50/70 dark:bg-slate-800/70">
+                                        <th class="py-4 px-6 font-semibold">No</th>
+                                        <th class="py-4 px-6 font-semibold">Due Date</th>
+                                        <th class="py-4 px-6 font-semibold">Amount Due</th>
+                                        <th class="py-4 px-6 font-semibold">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/60 text-sm text-slate-600 dark:text-slate-300">
+                                    <tr th:if="${detail.installments != null}" th:each="ins : ${detail.installments}" class="hover:bg-slate-50/80 dark:hover:bg-slate-700/30 transition">
+                                        <td class="py-4 px-6 font-bold text-slate-900 dark:text-white" th:text="${ins.installmentNumber}">1</td>
+                                        <td class="py-4 px-6 text-xs text-slate-500 dark:text-slate-400" th:text="${ins.dueDate}">2026-11-01</td>
+                                        <td class="py-4 px-6 font-bold text-slate-900 dark:text-white" th:text="${ins.amountDue != null ? #numbers.formatDecimal(ins.amountDue, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
+                                        <td class="py-4 px-6">
+                                            <span th:text="${ins.status}"
+                                                  class="px-3 py-1 text-xs font-bold rounded-full border inline-block"
+                                                  th:classappend="${ins.status == 'PAID' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-amber-50 text-amber-600 border-amber-200'}">
+                                                PENDING
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${detail.installments == null or #lists.isEmpty(detail.installments)}">
+                                        <td colspan="4" class="text-center py-12 text-slate-400">No installments found.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-        .sidebar .brand-name {
-            font-size: 20px;
-            font-weight: 700;
-        }
+                    <!-- Payment History Table -->
+                    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 dark:border-slate-700">
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white">Payment History</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider bg-slate-50/70 dark:bg-slate-800/70">
+                                        <th class="py-4 px-6 font-semibold">Payment ID</th>
+                                        <th class="py-4 px-6 font-semibold">Date</th>
+                                        <th class="py-4 px-6 font-semibold">Method</th>
+                                        <th class="py-4 px-6 font-semibold">Amount</th>
+                                        <th class="py-4 px-6 font-semibold">Reference / Slip</th>
+                                        <th class="py-4 px-6 font-semibold">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/60 text-sm text-slate-600 dark:text-slate-300">
+                                    <tr th:if="${detail.payments != null}" th:each="pay : ${detail.payments}" class="hover:bg-slate-50/80 dark:hover:bg-slate-700/30 transition">
+                                        <td class="py-4 px-6 font-bold text-slate-900 dark:text-white" th:text="${'#PAY-' + pay.paymentId}">1</td>
+                                        <td class="py-4 px-6 text-xs text-slate-500 dark:text-slate-400" th:text="${pay.paymentDate != null ? pay.paymentDate : '-'}">2026-10-15</td>
+                                        <!-- ပြင်ဆင်ပြီး: paymentMethodName ကို သုံးထားသည် -->
+                                        <td class="py-4 px-6" th:text="${pay.paymentMethodName != null ? pay.paymentMethodName : 'N/A'}">KBZ Pay</td>
+                                        <!-- ပြင်ဆင်ပြီး: amount ကို သုံးထားသည် -->
+                                        <td class="py-4 px-6 font-bold text-slate-900 dark:text-white" th:text="${pay.amount != null ? #numbers.formatDecimal(pay.amount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
+                                        <!-- ပြင်ဆင်ပြီး: transactionNo ကို သုံးထားသည် -->
+                                        <td class="py-4 px-6 font-mono text-xs text-slate-500 dark:text-slate-400" th:text="${pay.transactionNo != null ? pay.transactionNo : '-'}">123456</td>
+                                        <td class="py-4 px-6">
+                                            <span th:text="${pay.status}"
+                                                  class="px-3 py-1 text-xs font-bold rounded-full border inline-block"
+                                                  th:classappend="${pay.status == 'SUCCESS' or pay.status == 'VERIFIED' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : (pay.status == 'PENDING' ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-rose-50 text-rose-600 border-rose-200')}">
+                                                STATUS
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${detail.payments == null or #lists.isEmpty(detail.payments)}">
+                                        <td colspan="6" class="text-center py-12 text-slate-400">No payment history found.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-        .sidebar .brand-subtitle {
-            color: var(--muted);
-            font-size: 13px;
-            margin-top: 5px;
-        }
-
-        .sidebar .menu-heading {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--muted);
-            padding: 17px 12px 12px;
-        }
-
-        .sidebar .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 13px 14px;
-            margin-bottom: 5px;
-            border-radius: 10px;
-            color: var(--muted);
-            font-size: 14px;
-        }
-
-        .sidebar .nav-link i {
-            width: 20px;
-            text-align: center;
-        }
-
-        .sidebar .nav-link:hover, .sidebar .nav-link.active {
-            background: rgba(108, 76, 229, .19);
-            color: #9b8aff;
-            font-weight: 700;
-        }
-
-        .sidebar .sidebar-bottom {
-            margin-top: 30px;
-            border-top: 1px solid var(--border);
-            padding-top: 15px;
-        }
-
-        /* Main Content Container */
-        .main {
-            margin-left: 260px;
-            flex: 1;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: var(--bg);
-        }
-
-        /* Topbar Layout */
-        .topbar {
-            min-height: 88px;
-            padding: 18px 30px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            border-bottom: 1px solid var(--border);
-            background: var(--bg);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .page-heading h1 {
-            font-size: 23px;
-            margin-bottom: 7px;
-        }
-
-        .page-heading p {
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 13px;
-        }
-
-        .icon-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            color: var(--muted);
-            display: grid;
-            place-items: center;
-            cursor: pointer;
-        }
-
-        .profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-            background: var(--primary);
-            color: white;
-            font-weight: 700;
-        }
-
-        .profile-name {
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .profile-role {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 5px;
-        }
-
-        .content {
-            padding: 28px 30px 40px;
-            flex: 1;
-        }
-
-        .panel {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 15px;
-            padding: 23px;
-            margin-bottom: 20px;
-        }
-
-        .mini-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 14px;
-            background: var(--input);
-            border: 1px solid var(--border);
-            color: var(--text);
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            transition: 0.2s;
-            cursor: pointer;
-        }
-        .mini-btn:hover {
-            background: rgba(108, 76, 229, 0.2);
-            border-color: var(--primary);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            white-space: nowrap;
-        }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            font-size: 13px;
-        }
-        th {
-            color: var(--muted);
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.02);
-        }
-    </style>
-</head>
-<body>
-<div class="app">
-
-    <!-- SIDEBAR FRAGMENT (Dashboard ဖိုင်တွင် သုံးထားသည့်အတိုင်း အတိအကျခေါ်ရန်) -->
-    <div th:replace="~{fragments/admin-layout :: sidebar(activePage='enrollment_detail')}"></div>
-
-    <!-- MAIN CONTENT CONTAINER -->
-    <main class="main">
-        <!-- TOPBAR FRAGMENT (Light/Dark Mode နှင့် Profile ပါဝင်သော Topbar) -->
-        <div th:replace="~{fragments/admin-layout :: topbar('Enrollment Detail', 'View fee breakdown, installments and payments.')}"></div>
-
-        <div class="content">
-            <div style="margin-bottom: 20px;">
-                <a th:href="@{/admin/enrollments}" class="mini-btn">
-                    <i class="fa-solid fa-arrow-left"></i> Back to List
-                </a>
-            </div>
-
-            <!-- Student & Course Info -->
-            <div class="panel">
-                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px;">Student & Course Information</h3>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; font-size: 13px;">
-                    <div><strong>Student Name:</strong> <span th:text="${detail.studentName}">-</span></div>
-                    <div><strong>Email:</strong> <span th:text="${detail.studentEmail}">-</span></div>
-                    <div><strong>Course:</strong> <span th:text="${detail.courseTitle}">-</span></div>
-                    <div><strong>Batch Code:</strong> <span th:text="${detail.batchCode}">-</span></div>
                 </div>
-            </div>
-
-            <!-- Fee Breakdown Panel -->
-            <div class="panel">
-                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px;">Fee Breakdown</h3>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
-                    <div style="background: var(--input); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
-                        <div style="color: var(--muted); margin-bottom: 5px; font-size: 12px;">Total Fee</div>
-                        <div style="font-size: 18px; font-weight: 700;" th:text="${detail.totalFee}">0.00</div>
-                    </div>
-                    <div style="background: var(--input); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
-                        <div style="color: var(--muted); margin-bottom: 5px; font-size: 12px;">Discount</div>
-                        <div style="font-size: 18px; font-weight: 700; color: var(--yellow);" th:text="${detail.discountAmount}">0.00</div>
-                    </div>
-                    <div style="background: var(--input); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
-                        <div style="color: var(--muted); margin-bottom: 5px; font-size: 12px;">Scholarship</div>
-                        <div style="font-size: 18px; font-weight: 700; color: var(--green);" th:text="${detail.scholarshipAmount}">0.00</div>
-                    </div>
-                    <div style="background: var(--input); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
-                        <div style="color: var(--muted); margin-bottom: 5px; font-size: 12px;">Final Net Amount</div>
-                        <div style="font-size: 18px; font-weight: 700; color: var(--primary);" th:text="${detail.finalAmount}">0.00</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Installment Schedule Table -->
-            <div class="panel">
-                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px;">Installment Schedule</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Due Date</th>
-                            <th>Amount Due</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:if="${detail.installments != null}" th:each="ins : ${detail.installments}">
-                            <td th:text="${ins.installmentNumber}">1</td>
-                            <td th:text="${ins.dueDate}">2026-11-01</td>
-                            <td th:text="${ins.amountDue}">0.00</td>
-                            <td th:text="${ins.status}" th:style="${ins.status == 'PAID' ? 'color: var(--green);' : 'color: var(--yellow);'}">PENDING</td>
-                        </tr>
-                        <tr th:if="${detail.installments == null or #lists.isEmpty(detail.installments)}">
-                            <td colspan="4" style="text-align: center; color: var(--muted);">No installments found.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Payment History Table -->
-            <div class="panel">
-                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px;">Payment History</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Payment ID</th>
-                            <th>Date</th>
-                            <th>Method</th>
-                            <th>Amount</th>
-                            <th>Reference / Slip</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:if="${detail.payments != null}" th:each="pay : ${detail.payments}">
-                            <td th:text="${pay.paymentId}">1</td>
-                            <td th:text="${pay.paymentDate}">2026-10-15</td>
-                            <td th:text="${pay.paymentMethod}">KBZ Pay</td>
-                            <td th:text="${pay.paidAmount}">0.00</td>
-                            <td th:text="${pay.referenceNo}">123456</td>
-                            <td th:text="${pay.status}" th:style="${pay.status == 'APPROVED' ? 'color: var(--green);' : 'color: var(--red);'}">APPROVED</td>
-                        </tr>
-                        <tr th:if="${detail.payments == null or #lists.isEmpty(detail.payments)}">
-                            <td colspan="6" style="text-align: center; color: var(--muted);">No payment history found.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
+            </main>
         </div>
-    </main>
-</div>
+    </div>
 
-<!-- Theme Toggle Script (Dashboard မျက်နှာပြင်ကဲ့သို့ Light/Dark mode အလုပ်လုပ်စေရန်) -->
-<script>
-    const themeToggle = document.getElementById("themeToggle");
-    function applyTheme(isLight) {
-        document.body.classList.toggle("light-mode", isLight);
-        if (themeToggle) {
-            themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-regular fa-moon"></i>';
+    <!-- Theme Toggle Script -->
+    <script>
+        const themeToggle = document.getElementById("themeToggle");
+        function applyTheme(isLight) {
+            document.body.classList.toggle("light-mode", isLight);
+            if (themeToggle) {
+                themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-regular fa-moon"></i>';
+            }
+            localStorage.setItem("lmsTheme", isLight ? "light" : "dark");
         }
-        localStorage.setItem("lmsTheme", isLight ? "light" : "dark");
-    }
-    applyTheme(localStorage.getItem("lmsTheme") === "light");
-    if(themeToggle) {
-        themeToggle.addEventListener("click", () => applyTheme(!document.body.classList.contains("light-mode")));
-    }
-</script>
+        applyTheme(localStorage.getItem("lmsTheme") === "light");
+        if(themeToggle) {
+            themeToggle.addEventListener("click", () => applyTheme(!document.body.classList.contains("light-mode")));
+        }
+    </script>
 </body>
 </html>

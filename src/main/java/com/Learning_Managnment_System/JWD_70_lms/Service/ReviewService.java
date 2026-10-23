@@ -5,17 +5,15 @@ import com.Learning_Managnment_System.JWD_70_lms.model.Review;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ReviewService {
-
-    private final JdbcTemplate jdbcTemplate;
-
-    public ReviewService(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+	
+	@Autowired
+    private JdbcTemplate jdbcTemplate;
 
     // 🟢 Review အသစ်သိမ်းဆည်းရန် (Controller မှ ပို့ပေးသော userId ကို သုံးသည်)
     public void saveReview(Review review, int userId) {

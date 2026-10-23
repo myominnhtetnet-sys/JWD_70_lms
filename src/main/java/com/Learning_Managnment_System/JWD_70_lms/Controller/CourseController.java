@@ -65,7 +65,7 @@ public class CourseController {
         }
         
         model.addAttribute("list", courseList);            
-        model.addAttribute("currentPage", page);                                     
+        model.addAttribute("currentPage", page);                                           
         model.addAttribute("totalPages", totalPages);      
         model.addAttribute("courseBean", filters); 
         model.addAttribute("selectedBatchStatus", batchStatus); 
@@ -100,14 +100,30 @@ public class CourseController {
     @ResponseBody
     public ResponseEntity<?> apiCreateCourse(
             @RequestPart("course") CourseBean course,
-            @RequestPart(value = "image", required = false) MultipartFile image) {
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            HttpSession session) { // 🟢 HttpSession ထည့်သွင်းထားပါသည်
         try {
+            // 1️⃣ Session ရှိမရှိနှင့် User ဝင်ထားခြင်းရှိမရှိ တင်းကျပ်စွာ စစ်ဆေးခြင်း
+            LoginBean currentLogin = (LoginBean) session.getAttribute("currentUser");
+            
+            if (currentLogin == null || currentLogin.getUser_id() <= 0) {
+                return ResponseEntity.status(401)
+                        .body(Map.of("error", "Unauthorized: Please log in to create a course."));
+            }
+
+            // 2️⃣ created_by ကို Session ထဲမှ ID ဖြင့် အတင်းအကျပ် သတ်မှတ်ခြင်း (Null လုံးဝမဖြစ်စေရ)
+            course.setCreated_by(currentLogin.getUser_id());
+
+            // 3️⃣ ပုံ Upload စစ်ဆေးခြင်း
             if (image != null && !image.isEmpty()) {
                 String fileName = fileUploadService.saveFile(image);
                 course.setThumbnail(fileName);
             }
+
+            // 4️⃣ Database သို့ သိမ်းဆည်းခြင်း
             courseService.saveCourse(course);
             return ResponseEntity.ok(Map.of("message", "Course created successfully"));
+            
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

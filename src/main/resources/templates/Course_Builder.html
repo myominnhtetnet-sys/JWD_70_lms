@@ -52,7 +52,6 @@
                             <table class="w-full text-left border-collapse">
                                <thead>
                                     <tr class="bg-gray-50 border-b text-xs text-gray-500 uppercase tracking-wider">
-                                        <th class="p-4 text-center">Thumbnail</th> <!-- 🟢 ဓာတ်ပုံပြရန် Thumbnail ခေါင်းစဉ် အသစ်ထည့်ထားသည် -->
                                         <th class="p-4">Title (Click to Build)</th>
                                         <th class="p-4">Category</th>
                                         <th class="p-4">Level</th>
@@ -68,20 +67,6 @@
                                         th:data-category="${c.categoryName}"
                                         th:data-status="${c.status}">
                                         
-                                        <!-- 🟢 ဓာတ်ပုံအစစ်အမှန် ပေါ်လာစေရန် <img> tag ထည့်သွင်းထားသည် -->
- <td class="p-4 text-center">
-    <img th:if="${c.thumbnail != null and !#strings.isEmpty(c.thumbnail)}" 
-         th:src="@{'/uploads/' + ${c.thumbnail}}" 
-         alt="Thumbnail" 
-         class="w-12 h-12 object-cover rounded-lg border shadow-sm mx-auto"
-         onerror="this.onerror=null; this.src='/images/default.png';">
-         
-    <div th:if="${c.thumbnail == null || #strings.isEmpty(c.thumbnail)}" 
-         class="w-12 h-12 bg-gray-100 rounded-lg border flex items-center justify-center mx-auto text-gray-400 text-xs">
-        <i class="fa-solid fa-image"></i>
-    </div>
-</td>
-
                                         <!-- Title များကို နှိပ်လိုက်ပါက Tab ၅ ခုပါဝင်သည့် Builder Detail သို့ သွားမည် -->
                                         <td class="p-4 font-semibold text-indigo-600">
                                             <a th:href="@{/admin/course-builder/{id}/builder(id=${c.courseId})}" class="hover:underline flex items-center gap-2">
@@ -107,7 +92,7 @@
                                         </td>
                                     </tr>
                                     <tr th:if="${#lists.isEmpty(courses)}">
-                                        <td colspan="8" class="text-center p-6 text-gray-400">No courses found in database.</td>
+                                        <td colspan="7" class="text-center p-6 text-gray-400">No courses found in database.</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -120,10 +105,12 @@
 
     <!-- Create / Edit Course Modal -->
     <div id="courseModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-lg w-full max-w-2xl p-6 shadow-lg max-h-[90vh] overflow-y-auto">
-            <h3 id="modalTitle" class="text-lg font-bold text-gray-800 mb-4">Create New Course</h3>
+        <!-- 🟢 Modal အကျယ်ကို max-w-3xl သို့ ချဲ့ပေးထားပြီး စာရိုက်၍ကောင်းစေရန် ပြင်ဆင်ထားသည် -->
+        <div class="bg-white rounded-xl w-full max-w-3xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 id="modalTitle" class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b">Create New Course</h3>
             <form id="courseForm" onsubmit="submitCourseForm(event)">
                 <input type="hidden" id="courseId">
+                <input type="hidden" id="thumbnail">
                 <div class="grid grid-cols-2 gap-3 mb-3">
                     <div>
                         <label class="block text-xs font-semibold mb-1">Course Title</label>
@@ -152,7 +139,8 @@
                 </div>
                 <div class="mb-3">
                     <label class="block text-xs font-semibold mb-1">Full Description</label>
-                    <textarea id="description" rows="3" placeholder="Detailed curriculum description..." class="w-full border rounded p-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                    <!-- 🟢 rows ကို 5 သို့ တိုးမြှင့်ပေးထားပြီး အလွယ်တကူ စာအရှည်ကြီး ရိုက်နိုင်အောင် ပြင်ဆင်ထားသည် -->
+                    <textarea id="description" rows="5" placeholder="Detailed curriculum description..." class="w-full border rounded p-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
                 </div>
                 <div class="grid grid-cols-3 gap-3 mb-3">
                     <div>
@@ -185,21 +173,14 @@
                         <input type="number" id="durationWeeks" value="12" class="w-full border rounded p-2 text-sm">
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div>
-                        <label class="block text-xs font-semibold mb-1">Status</label>
-                        <select id="status" class="w-full border rounded p-2 text-sm bg-white">
-                            <option value="PUBLISHED">PUBLISHED</option>
-                            <option value="DRAFT">DRAFT</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold mb-1">Thumbnail Image</label>
-                        <input type="file" id="thumbnailFile" accept="image/*" class="w-full border rounded p-1 text-sm bg-white">
-                        <input type="hidden" id="thumbnail">
-                    </div>
+                <div class="mb-4">
+                    <label class="block text-xs font-semibold mb-1">Status</label>
+                    <select id="status" class="w-full border rounded p-2 text-sm bg-white">
+                        <option value="PUBLISHED">PUBLISHED</option>
+                        <option value="DRAFT">DRAFT</option>
+                    </select>
                 </div>
-                <div class="flex justify-end gap-2">
+                <div class="flex justify-end gap-2 pt-2 border-t">
                     <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200 cursor-pointer">Cancel</button>
                     <button type="submit" class="px-4 py-2 text-sm text-white bg-indigo-600 rounded hover:bg-indigo-700 cursor-pointer">Save Course</button>
                 </div>
@@ -237,7 +218,6 @@
             document.getElementById('courseForm').reset();
             document.getElementById('courseId').value = '';
             document.getElementById('thumbnail').value = '';
-            document.getElementById('thumbnailFile').value = '';
             
             await loadCategories();
             document.getElementById('courseModal').classList.remove('hidden');
@@ -246,7 +226,6 @@
         async function openEditModal(courseId) {
             document.getElementById('modalTitle').innerText = 'Edit Course';
             document.getElementById('courseForm').reset();
-            document.getElementById('thumbnailFile').value = '';
 
             const res = await fetch(`/admin/course-builder/api`);
             if (res.ok) {
@@ -303,26 +282,7 @@
         async function submitCourseForm(e) {
             e.preventDefault();
             const courseId = document.getElementById('courseId').value;
-            const fileInput = document.getElementById('thumbnailFile');
-            let thumbnailName = document.getElementById('thumbnail').value;
-
-            if (fileInput.files.length > 0) {
-                const formData = new FormData();
-                formData.append("file", fileInput.files[0]);
-
-                const uploadRes = await fetch('/admin/course-builder/api/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (uploadRes.ok) {
-                    thumbnailName = await uploadRes.text();
-                } else {
-                    const errText = await uploadRes.text();
-                    alert('Image upload failed: ' + errText);
-                    return;
-                }
-            }
+            const thumbnailName = document.getElementById('thumbnail').value;
 
             const payload = {
                 title: document.getElementById('title').value,

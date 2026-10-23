@@ -8,23 +8,22 @@ import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CourseService {
-
-    private final CourseRepository courseRepository;
-    private final JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+    private CourseRepository courseRepository;
+	@Autowired
+    private JdbcTemplate jdbcTemplate;
 
     // Shared SQL definition constant
     private static final String BASE_BATCH_SQL = "SELECT * FROM batches WHERE course_id = ? ORDER BY start_date ASC";
-
-    public CourseService(CourseRepository courseRepository, JdbcTemplate jdbcTemplate) {
-        this.courseRepository = courseRepository;
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     // 🟢 Fix: Return courses with batches attached
     public List<CourseBean> getAllCourses() {

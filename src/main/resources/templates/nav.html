@@ -3,7 +3,7 @@
 <body>
 
 <aside th:fragment="nav" id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex-shrink-0 border-r border-slate-800 flex flex-col justify-between transition-all duration-300">
-    <div class="p-4 space-y-6 overflow-y-auto">
+    <div id="sidebarScrollContainer" class="p-4 space-y-6 overflow-y-auto max-h-screen">
         
         <!-- ================= MAIN SECTION ================= -->
         <div>
@@ -139,29 +139,42 @@
             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2">Financial & Aid</div>
             <nav class="space-y-1">
                 <a th:href="@{/api/v1/discounts/view}"
-                th:classappend="${#execInfo.processedTemplateName == 'discount-list'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
-                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 text-xs font-semibold transition group">
+                   th:classappend="${#execInfo.processedTemplateName == 'discount-list'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
                     <i class="fa-solid fa-tags text-sm w-5 text-center group-hover:scale-110 transition-transform"></i>
                     <span>Discounts</span>
                 </a>
 
                 <a th:href="@{/admin/installments}"
-                th:classappend="${#execInfo.processedTemplateName == 'InstallmentRule-list'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
-                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 text-xs font-semibold transition group">
+                   th:classappend="${#execInfo.processedTemplateName == 'InstallmentRule-list'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
                     <i class="fa-solid fa-file-invoice-dollar text-sm w-5 text-center group-hover:scale-110 transition-transform"></i>
                     <span>Installment Rules</span>
                 </a>
+                
+<a th:href="@{/admin/overdue-installments}" 
+   th:classappend="${#execInfo.processedTemplateName == 'overdue-installments'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
+   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
+    <i class="fa-solid fa-triangle-exclamation text-sm w-5 text-center group-hover:scale-110 transition-transform"></i>
+    <span>Overdue Installments</span>
+</a>
 
+<a th:href="@{/admin/payments-refunds}" 
+   th:classappend="${#execInfo.processedTemplateName == 'payments-refunds'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
+   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
+    <i class="fa-solid fa-money-check-dollar text-sm w-5 text-center group-hover:scale-110 transition-transform"></i>
+    <span>Payments & Refunds</span>
+</a>
                 <a th:href="@{/admin/scholarships}"
-                th:classappend="${#execInfo.processedTemplateName == 'Scholarship-list'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
-                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 text-xs font-semibold transition group">
+                   th:classappend="${#execInfo.processedTemplateName == 'Scholarship-list'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
                     <i class="fa-solid fa-graduation-cap text-sm w-5 text-center group-hover:scale-110 transition-transform"></i>
                     <span>Scholarships</span>
                 </a>
 
                 <a th:href="@{/admin/scholarship-applications-review}"
-                th:classappend="${#execInfo.processedTemplateName == 'scholarship-applications-review'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
-                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 text-xs font-semibold transition group">
+                   th:classappend="${#execInfo.processedTemplateName == 'scholarship-applications-review'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
                     <i class="fa-solid fa-file-lines text-sm w-5 text-center group-hover:scale-110 transition-transform"></i>
                     <span>Scholarship Apps</span>
                 </a>
@@ -173,7 +186,7 @@
             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2">System & Operations</div>
             <nav class="space-y-1">
                 <a th:href="@{/admin/certificates}" 
-                   th:classappend="${#execInfo.processedTemplateName == 'certificates'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
+                   th:classappend="${#execInfo.processedTemplateName == 'Certificate_Management'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
                     <i class="fa-solid fa-certificate text-sm w-5 text-center group-hover:scale-110 transition-transform"></i>
                     <span>Certificates</span>
@@ -194,8 +207,8 @@
                 </a>
 
                 <a th:href="@{/admin/reports}"
-                th:classappend="${#execInfo.processedTemplateName == 'report'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
-                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 text-xs font-semibold transition group">
+                   th:classappend="${#execInfo.processedTemplateName == 'report'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
                     <i class="fa-solid fa-chart-pie text-sm w-5 text-center group-hover:scale-110 transition-transform"></i>
                     <span>Reports</span>
                 </a>
@@ -218,8 +231,77 @@
 
     </div>
 
-    <!-- Toggle Submenu Script -->
+    <!-- Smooth AJAX Navigation & Scroll Persistence Script -->
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebarContainer = document.getElementById('sidebarScrollContainer');
+            if (sidebarContainer) {
+                // Restore scroll position
+                const savedScrollPosition = localStorage.getItem('sidebarScrollPosition');
+                if (savedScrollPosition) {
+                    sidebarContainer.scrollTop = savedScrollPosition;
+                }
+                // Save scroll position on scroll
+                sidebarContainer.addEventListener('scroll', function () {
+                    localStorage.setItem('sidebarScrollPosition', sidebarContainer.scrollTop);
+                });
+            }
+
+            // AJAX Page Loading for Smooth Transition without Full Page Reload
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                sidebar.addEventListener('click', function (e) {
+                    const link = e.target.closest('a');
+                    if (!link || !link.href) return;
+
+                    // Skip deletes, external links, or special onclick actions
+                    if (link.getAttribute('target') === '_blank' || link.href.includes('/delete/') || link.getAttribute('onclick')) {
+                        return;
+                    }
+
+                    if (link.href.startsWith(window.location.origin)) {
+                        e.preventDefault();
+                        const url = link.href;
+
+                        fetch(url)
+                            .then(response => response.text())
+                            .then(html => {
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(html, 'text/html');
+                                const newMain = doc.querySelector('main');
+                                const currentMain = document.querySelector('main');
+
+                                if (newMain && currentMain) {
+                                    currentMain.innerHTML = newMain.innerHTML;
+                                    window.history.pushState({ path: url }, '', url);
+                                    updateActiveStates(url);
+                                } else {
+                                    window.location.href = url; // Fallback to normal reload if structure mismatches
+                                }
+                            })
+                            .catch(err => {
+                                console.error('Navigation error:', err);
+                                window.location.href = url;
+                            });
+                    }
+                });
+            }
+        });
+
+        window.addEventListener('popstate', function () {
+            location.reload();
+        });
+
+        function updateActiveStates(currentUrl) {
+            document.querySelectorAll("#sidebar a").forEach(el => {
+                if (el.href === currentUrl) {
+                    el.className = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold";
+                } else {
+                    el.className = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group text-slate-400 hover:bg-slate-800/80 hover:text-slate-200";
+                }
+            });
+        }
+
         function toggleBatchSubmenu() {
             const submenu = document.getElementById('batchSubmenu');
             const arrow = document.getElementById('batchSubmenuArrow');

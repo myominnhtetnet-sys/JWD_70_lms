@@ -22,10 +22,6 @@ public class InstallmentRuleController {
     @Autowired
     private InstallmentRuleItemRespority installmentRuleItemRepository;
 
-    // =========================================
-    // INSTALLMENT RULE LIST
-    // URL: /admin/installments, /admin/installments/list
-    // =========================================
     @GetMapping({"", "/", "/list"})
     public String listInstallmentRules(Model model) {
         List<AdminBeanInstallmentRule> rules = installmentRuleRepository.getAllInstallmentRules();
@@ -33,10 +29,6 @@ public class InstallmentRuleController {
         return "InstallmentRule-list";
     }
 
-    // =========================================
-    // ADD INSTALLMENT RULE FORM
-    // URL: /admin/installments/new
-    // =========================================
     @GetMapping("/new")
     public String showAddForm(Model model) {
         AdminBeanInstallmentRule rule = new AdminBeanInstallmentRule();
@@ -44,11 +36,7 @@ public class InstallmentRuleController {
         model.addAttribute("installmentRule", rule);
         return "InstallmentRule-form";
     }
-
-    // =========================================
-    // SAVE OR UPDATE INSTALLMENT RULE
-    // URL: POST /admin/installments/save
-    // =========================================
+    
     @PostMapping("/save")
     public String saveInstallmentRule(
             @ModelAttribute("installmentRule") AdminBeanInstallmentRule rule,
@@ -74,10 +62,6 @@ public class InstallmentRuleController {
         }
     }
 
-    // =========================================
-    // EDIT INSTALLMENT RULE
-    // URL: /admin/installments/edit/{id}
-    // =========================================
     @GetMapping("/edit/{id}")
     public String showEditForm(
             @PathVariable("id") Integer id,
@@ -95,10 +79,6 @@ public class InstallmentRuleController {
         return "InstallmentRule-form";
     }
 
-    // =========================================
-    // DELETE INSTALLMENT RULE
-    // URL: /admin/installments/delete/{id}
-    // =========================================
     @GetMapping("/delete/{id}")
     public String deleteInstallmentRule(
             @PathVariable("id") Integer id,
@@ -112,10 +92,6 @@ public class InstallmentRuleController {
         return "redirect:/admin/installments/list";
     }
 
-    // =========================================
-    // SAVE RULE ITEM (STEP BREAKDOWN)
-    // URL: POST /admin/installments/items/save
-    // =========================================
     @PostMapping("/items/save")
     public String saveInstallmentRuleItem(
             @ModelAttribute("ruleItem") AdminBeanInstallmentRuleItem item,
@@ -132,10 +108,6 @@ public class InstallmentRuleController {
         return "redirect:/admin/installments/edit/" + item.getRuleId();
     }
 
-    // =========================================
-    // DELETE RULE ITEM (STEP BREAKDOWN)
-    // URL: /admin/installments/items/delete/{id}?ruleId={ruleId}
-    // =========================================
     @GetMapping("/items/delete/{id}")
     public String deleteInstallmentRuleItem(
             @PathVariable("id") Integer id,

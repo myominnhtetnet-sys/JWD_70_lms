@@ -2,6 +2,8 @@ package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
 import com.Learning_Managnment_System.JWD_70_lms.Mapper.CourseMapper;
 import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -10,12 +12,9 @@ import java.util.Optional;
 
 @Repository
 public class CourseRepository {
-
-    private final JdbcTemplate jdbcTemplate;
-
-    public CourseRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+	
+	@Autowired
+    private JdbcTemplate jdbcTemplate;
 
     public List<CourseBean> findAll() {
         String sql = "SELECT c.*, cat.name AS category_name, u.full_name AS created_by_name " +

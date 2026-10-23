@@ -136,12 +136,12 @@
                                 <tbody class="divide-y divide-slate-100 dark:divide-slate-700/60 text-sm">
 
                                     <!-- Thymeleaf Iteration Loop -->
-                                    <tr th:each="app : ${applications}" 
+                                    <tr th:each="app,index : ${applications}" 
                                         class="hover:bg-slate-50/80 dark:hover:bg-slate-700/30 transition-colors application-row"
                                         th:data-status="${app.status != null ? app.status : 'PENDING'}"
                                         th:data-scholarship="${app.scholarshipName}">
                                         
-                                        <td class="py-4 px-6 font-bold text-indigo-600 dark:text-indigo-400 whitespace-nowrap" th:text="${'#APP-' + app.applicationId}">
+                                        <td class="py-4 px-6 font-bold text-indigo-600 dark:text-indigo-400 whitespace-nowrap" th:text="${'#APP-' + index.count}">
                                             #APP-101
                                         </td>
 

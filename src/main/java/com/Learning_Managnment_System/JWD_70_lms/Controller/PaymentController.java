@@ -1,5 +1,6 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -62,15 +63,18 @@ public class PaymentController {
         // Database ထဲမှ Valid ဖြစ်သော Enrollment ID ကို ရှာဖွေခြင်း
         Integer validEnrollmentId = paymentRepository.getEnrollmentIdByUserId(userId);
 
-        // System မှ Random Transaction Number အလိုအလျောက် ထုတ်ပေးခြင်း (ဥပမာ- TXN-A1B2C3D4)
+        // System မှ Random Transaction Number အလိုအလျောက် ထုတ်ပေးခြင်း
         String generatedTxnNo = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
         PaymentBean payment = new PaymentBean();
         payment.setEnrollmentId(validEnrollmentId);
         payment.setScheduleId(1);
         payment.setPaymentMethodId(paymentMethodId);
-        payment.setAmount(amount);
-        payment.setTransactionNo(generatedTxnNo); // Auto Generated Transaction No
+        
+        // 🟢 Fix: double မှ BigDecimal သို့ ပြောင်းလဲသတ်မှတ်ခြင်း
+        payment.setAmount(BigDecimal.valueOf(amount));
+        
+        payment.setTransactionNo(generatedTxnNo);
         payment.setPaymentType(paymentType);
         payment.setNote(note);
         payment.setProofImage(null);
@@ -79,7 +83,6 @@ public class PaymentController {
         int result = paymentRepository.savePayment(payment);
 
         if (result > 0) {
-            // Receipt Page တွင် Auto ထွက်လာသော Transaction No ကို ပြသရန် ထည့်ပေးလိုက်ပါသည်
             redirectAttributes.addFlashAttribute("amount", amount);
             redirectAttributes.addFlashAttribute("transactionNo", generatedTxnNo);
             redirectAttributes.addFlashAttribute("paymentType", paymentType);

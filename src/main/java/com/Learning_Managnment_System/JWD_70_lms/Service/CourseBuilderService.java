@@ -20,7 +20,6 @@ public class CourseBuilderService {
         return courseRepository.findById(courseId);
     }
 
-    // 🟢 parameter တစ်ခုတိုးပေးလိုက်သည် (ဥပမာအားဖြင့် default 1 သို့မဟုတ် logged-in user id)
     public void createCourse(CourseBuilderBean course, int currentUserId) {
         courseRepository.save(course, currentUserId);
     }
@@ -32,5 +31,4 @@ public class CourseBuilderService {
     public void deleteCourse(Long courseId) {
         courseRepository.delete(courseId);
     }
-
 }

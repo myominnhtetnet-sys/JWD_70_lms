@@ -27,13 +27,22 @@ public class EnrollmentController {
     @Autowired
     private EnrollmentRepository enrollmentRepo;
 
+    // =====================================================
+    // ENROLLMENT DETAIL VIEW
+    // GET /admin/enrollments/detail/{id}
+    // =====================================================
     @GetMapping("/detail/{id}")
-    public String viewEnrollmentDetail(@PathVariable int id, Model model) {
+    public String viewEnrollmentDetail(@PathVariable("id") int id, Model model, RedirectAttributes redirectAttributes) {
         EnrollmentDetailBean detail = enrollmentRepo.getEnrollmentById(id);
-        if (detail != null) {
-            detail.setInstallments(enrollmentRepo.getInstallmentsByEnrollmentId(id));
-            detail.setPayments(enrollmentRepo.getPaymentsByEnrollmentId(id));
+        
+        if (detail == null) {
+            redirectAttributes.addFlashAttribute("error", "Enrollment record not found.");
+            return "redirect:/admin/enrollments";
         }
+
+        // Installments နှင့် Payments များကို ထည့်သွင်းပေးခြင်း
+        detail.setInstallments(enrollmentRepo.getInstallmentsByEnrollmentId(id));
+        detail.setPayments(enrollmentRepo.getPaymentsByEnrollmentId(id));
 
         model.addAttribute("detail", detail);
         return "enrollment-detail";
@@ -43,7 +52,6 @@ public class EnrollmentController {
     // ENROLLMENT LIST
     // GET /admin/enrollments
     // =====================================================
-
     @GetMapping
     public String listEnrollments(
             @RequestParam(required = false, defaultValue = "") String keyword,
@@ -76,7 +84,6 @@ public class EnrollmentController {
     // CREATE ENROLLMENT
     // POST /admin/enrollments/create
     // =====================================================
-
     @PostMapping("/create")
     public String createEnrollment(
             @ModelAttribute("enrollment") EnrollmentBean enrollment,
@@ -147,7 +154,6 @@ public class EnrollmentController {
     // =====================================================
     // CHANGE ENROLLMENT STATUS
     // =====================================================
-
     @PostMapping("/status")
     public String changeEnrollmentStatus(
             @RequestParam int enrollmentId,
@@ -173,7 +179,6 @@ public class EnrollmentController {
     // =====================================================
     // CHANGE PAYMENT STATUS
     // =====================================================
-
     @PostMapping("/payment-status")
     public String changePaymentStatus(
             @RequestParam int enrollmentId,
