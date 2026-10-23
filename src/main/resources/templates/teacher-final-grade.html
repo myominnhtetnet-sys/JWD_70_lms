@@ -38,80 +38,14 @@
 
     <div id="app" class="min-h-screen flex flex-col">
         
-        <!-- TOP HEADER BAR -->
-        <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
-            <div class="px-6 py-3.5 flex items-center justify-between gap-4">
-                
-                <!-- Left: Branding & User Profile -->
-                <div class="flex items-center gap-6 flex-1 max-w-xl">
-                    <div class="flex items-center gap-3 cursor-pointer">
-                        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-100">
-                            <i class="fa-solid font-bold text-lg">E</i>
-                        </div>
-                        <div>
-                            <span class="font-extrabold text-base tracking-tight bg-gradient-to-r from-indigo-600 to-indigo-800 bg-clip-text text-transparent">EduPulse</span>
-                            <span class="text-xs px-2 py-0.5 ml-1 rounded-full bg-indigo-50 text-indigo-700 font-bold border border-indigo-200">LMS</span>
-                        </div>
-                    </div>
-
-                     <!-- User Profile Info -->
-                    <div class="flex items-center gap-3.5 pl-6 border-l border-slate-200">
-                        <div class="h-9 w-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-xs" th:text="${#strings.substring(fullName,0,2)}">TE</div>
-                        <div class="hidden sm:block text-left">
-                            <div class="text-xs font-bold text-slate-900" th:text="${fullName}">Teacher Name</div>
-                            <div class="text-xs font-medium text-slate-600">Instructor Account</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
+       <div th:replace="~{teacher :: header}"></div>
 
         <!-- MAIN LAYOUT WRAPPER -->
         <div class="flex-1 flex items-stretch">
   
             <!-- SIDEBAR -->
             <div class="exam-sidebar shrink-0">
-                <aside th:fragment="sidebar" 
-                class="!w-52 !min-w-0 shrink-0 bg-white text-slate-700 flex flex-col p-3 border-r border-slate-200">
-                    <nav class="space-y-1.5 text-xs font-medium">
-                        <div class="text-xs uppercase tracking-wider text-slate-600 font-bold px-3 mb-2">Teaching Portal</div>
-                        
-                        <a href="/teacher" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-        <i class="fa-solid fa-house w-4"></i> Dashboard
-    </a>
-    <a href="/teacher/courses" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-        <i class="fa-solid fa-book-open w-4"></i> My Courses
-    </a>
-    <a href="/teacher/batches" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-        <i class="fa-solid fa-users w-4"></i> My Batches
-    </a>
-    <a href="/teacher/attendance" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-        <i class="fa-solid fa-calendar-check w-4"></i> Check Attendance
-    </a>
-
-                        <!-- ASSESSMENTS PORTAL LINKS -->
-                        <div class="pt-3 pb-1 text-xs uppercase tracking-wider text-slate-600 font-bold px-3">Assessments</div>
-
-                        <a href="/questions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                            <i class="fa-solid fa-database w-4"></i> Question Bank
-                        </a>
-                        <a href="/teacher/assignments" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                            <i class="fa-solid fa-clipboard-list w-4"></i> Assignments
-                        </a>
-                        <a href="/teacher/submissions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                            <i class="fa-solid fa-check-double w-4"></i> Grade Submissions
-                        </a>
-                        <a href="/teacher/exams" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                            <i class="fa-solid fa-file-pen w-4"></i> Exams
-                        </a>
-                        <a href="/teacher/exam-results" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                            <i class="fa-solid fa-square-poll-vertical w-4"></i> Exam Results
-                        </a>
-                        <a href="/teacher/final-grades" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-teal-600 text-white font-semibold transition shadow-xs">
-                            <i class="fa-solid fa-graduation-cap w-4"></i> Final Grades
-                        </a>
-                    </nav>
-                </aside>
+               <div th:replace="~{teacher :: sidebar}"></div>
             </div>
 
             <!-- Main Content -->
