@@ -4,80 +4,47 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Assignment Management - Teacher Portal</title>
-<!-- Tailwind CSS CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<!-- FontAwesome Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- Google Fonts: Inter -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-        background: rgba(0,0,0,0.03);
-    }
-    ::-webkit-scrollbar-thumb {
-        background: rgba(0,0,0,0.15);
-        border-radius: 3px;
-    }
-    .fade-in {
-        animation: fadeIn 0.25s ease-in-out;
-    }
+    ::-webkit-scrollbar {width: 6px;height: 6px;}
+    ::-webkit-scrollbar-track {background: rgba(0,0,0,0.03);}
+    ::-webkit-scrollbar-thumb {background: rgba(0,0,0,0.15);border-radius: 3px; }
+    .fade-in {animation: fadeIn 0.25s ease-in-out;}
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(4px); }
         to { opacity: 1; transform: translateY(0); }
     }
-   .assignment-title-wrapper {
-    display: flex !important;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    width: 100%;
-}
+.assignment-title-wrapper { display: flex !important;align-items: center;justify-content: space-between;gap: 12px; width: 100%;}
 
-.assignment-title-text {
-    flex: 1;
-    min-width: 0;
-    overflow-wrap: anywhere;
-}
-
+.assignment-title-text {flex: 1;min-width: 0;overflow-wrap: anywhere;}
 .assignment-status-badge {
     display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    padding: 6px 12px;
-    border-radius: 9999px;
-    font-size: 12px;
-    font-weight: 700;
-    white-space: nowrap;
-    flex-shrink: 0;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    padding: 6px 12px !important;
+    border-radius: 9999px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
 }
 
-span.assignment-status-badge.edited {
-    display: inline-flex !important;
+.assignment-status-badge.edited {
+    background: #fef3c7 !important;
     background-color: #fef3c7 !important;
     color: #92400e !important;
     border: 1px solid #f59e0b !important;
-    padding: 6px 12px !important;
-    border-radius: 9999px !important;
-    font-size: 12px !important;
-    font-weight: 700 !important;
 }
 
-span.assignment-status-badge.new {
-    display: inline-flex !important;
+.assignment-status-badge.new {
+    background: #dcfce7 !important;
     background-color: #dcfce7 !important;
     color: #166534 !important;
     border: 1px solid #22c55e !important;
-    padding: 6px 12px !important;
-    border-radius: 9999px !important;
-    font-size: 12px !important;
-    font-weight: 700 !important;
 }
 </style>
 </head>
@@ -594,6 +561,7 @@ span.assignment-status-badge.new {
                 const oldBadge = titleWrapper.querySelector(".assignment-status-badge");
                 if (oldBadge) oldBadge.remove();
 
+
                 let badge = null;
 
                 if (isEdited) {
@@ -603,7 +571,14 @@ span.assignment-status-badge.new {
                     const icon = document.createElement("i");
                     icon.className = "fa-solid fa-pen";
 
-                    badge.append(icon, document.createTextNode("EDITED"));
+                    badge.append(icon, document.createTextNode(" EDITED"));
+
+                 // EDITED badge color
+                    badge.style.setProperty("background", "#fef3c7", "important");
+                    badge.style.setProperty("background-color", "#fef3c7", "important");
+                    badge.style.setProperty("color", "#92400e", "important");
+                    badge.style.setProperty("border", "1px solid #f59e0b", "important");
+                    badge.style.setProperty("border-radius", "9999px", "important");
 
                 } else if (isNew) {
                     badge = document.createElement("span");
@@ -612,54 +587,32 @@ span.assignment-status-badge.new {
                     const icon = document.createElement("i");
                     icon.className = "fa-solid fa-sparkles";
 
-                    badge.append(icon, document.createTextNode("NEW"));
+                    badge.append(icon, document.createTextNode(" NEW"));
+
+                 // NEW badge color
+                    badge.style.setProperty("background", "#dcfce7", "important");
+                    badge.style.setProperty("background-color", "#dcfce7", "important");
+                    badge.style.setProperty("color", "#166534", "important");
+                    badge.style.setProperty("border", "1px solid #22c55e", "important");
+                    badge.style.setProperty("border-radius", "9999px", "important");
                 }
 
                 if (badge) {
+                    badge.style.setProperty("display", "inline-flex", "important");
+                    badge.style.setProperty("align-items", "center", "important");
+                    badge.style.setProperty("gap", "5px", "important");
+                    badge.style.setProperty("padding", "6px 12px", "important");
+                    badge.style.setProperty("border-radius", "9999px", "important");
+                    badge.style.setProperty("font-size", "12px", "important");
+                    badge.style.setProperty("font-weight", "700", "important");
+                    badge.style.setProperty("white-space", "nowrap", "important");
+                    badge.style.setProperty("flex-shrink", "0", "important");
+
                     titleWrapper.appendChild(badge);
                 }
-              /*   const titleWrapper = row.querySelector(".assignment-title-wrapper");
-                if (!titleWrapper) return;
-
-                const oldBadge = titleWrapper.querySelector(".assignment-status-badge");
-                if (oldBadge) oldBadge.remove();
-
                 
-                if (isEdited) {
-                    const badge = document.createElement("span");
-                    badge.className = "assignment-status-badge edited";
 
-                    const icon = document.createElement("i");
-                    icon.className = "fa-solid fa-pen";
-
-                    badge.append(icon, document.createTextNode("EDITED"));
-                    titleWrapper.appendChild(badge);
-
-                } else if (isNew) {
-                    const badge = document.createElement("span");
-                    badge.className = "assignment-status-badge new";
-
-                    const icon = document.createElement("i");
-                    icon.className = "fa-solid fa-sparkles";
-
-                    badge.append(icon, document.createTextNode("NEW"));
-                    titleWrapper.appendChild(badge);
-                } */
-                /* if (isEdited) {
-                const badge = document.createElement("span");
-                badge.className = "inline-flex items-center px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold whitespace-nowrap assignment-status-badge mr-1.5";
-                const icon = document.createElement("i");
-                icon.className = "fa-solid fa-pen mr-1";
-                badge.append(icon, document.createTextNode("EDITED"));
-                titleWrapper.appendChild(badge);
-            } else if (isNew) {
-                const badge = document.createElement("span");
-                badge.className = "inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-[10px] font-bold whitespace-nowrap assignment-status-badge mr-1.5";
-                const icon = document.createElement("i");
-                icon.className = "fa-solid fa-sparkles mr-1";
-                badge.append(icon, document.createTextNode("NEW"));
-                titleWrapper.appendChild(badge);
-            } */
+              
             });
 
             rows.sort(function(a, b) {
