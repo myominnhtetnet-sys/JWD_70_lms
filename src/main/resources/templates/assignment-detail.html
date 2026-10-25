@@ -20,47 +20,7 @@
         <!-- MAIN LAYOUT WRAPPER -->
         <div class="flex-1 flex">
   
-            <!-- SIDEBAR -->
-            <aside th:fragment="sidebar" class="w-64 bg-white text-slate-700 flex flex-col p-4 border-r border-slate-200 shrink-0">
-                <nav class="space-y-1.5 text-xs font-medium">
-                    <div class="text-xs uppercase tracking-wider text-slate-600 font-bold px-3 mb-2">Teaching Portal</div>
-                    
-                    <a href="/teacher" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-house w-4"></i> Dashboard
-                    </a>
-                    <a href="/teacher" onclick="switchView('courses')" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-book-open w-4"></i> My Courses
-                    </a>
-                    <a href="/teacher" onclick="switchView('batches')" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-users w-4"></i> My Batches
-                    </a>
-                    <a href="/teacher" onclick="switchView('attendance')" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-calendar-check w-4"></i> Check Attendance
-                    </a>
-
-                    <!-- ASSESSMENTS PORTAL LINKS -->
-                    <div class="pt-3 pb-1 text-xs uppercase tracking-wider text-slate-600 font-bold px-3">Assessments</div>
-
-                    <a href="/questions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-database w-4"></i> Question Bank
-                    </a>
-                    <a href="/teacher/assignments" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-teal-600 text-white font-semibold transition shadow-xs">
-                        <i class="fa-solid fa-clipboard-list w-4"></i> Assignments
-                    </a>
-                    <a href="/teacher/submissions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-check-double w-4"></i> Grade Submissions
-                    </a>
-                    <a href="/teacher/exams" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-file-pen w-4"></i> Exams
-                    </a>
-                    <a href="/teacher/exam-results" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-square-poll-vertical w-4"></i> Exam Results
-                    </a>
-                    <a href="/teacher/final-grades" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-graduation-cap w-4"></i> Final Grades
-                    </a>
-                </nav>
-            </aside>
+           <div th:replace="~{teacher :: header}"></div>
 
             <!-- MAIN CONTENT AREA -->
             <main class="flex-1 min-w-0 px-6 py-6 bg-slate-50 overflow-y-auto">

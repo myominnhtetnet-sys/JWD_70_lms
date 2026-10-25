@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Result Details - Teacher Portal</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+    <style>
+     
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+}
+
+.exam-sidebar {
+    flex-shrink: 0;
+}
+
+/* Main content */
+.exam-detail-page {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 16px;
+}
+
+.exam-detail-page > div {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Reduce vertical spacing */
+.exam-detail-page .space-y-6 > :not(:first-child) {
+    margin-top: 14px;
+}
+
+.exam-detail-page .space-y-5 > :not(:first-child) {
+    margin-top: 10px;
+}
+
+.exam-detail-page .space-y-4 > :not(:first-child) {
+    margin-top: 8px;
+}
+
+/* Headings */
+.exam-detail-page h1 {
+    font-size: 19px !important;
+    line-height: 1.4;
+}
+
+.exam-detail-page h2 {
+    font-size: 14px !important;
+}
+
+.exam-detail-page h3 {
+    font-size: 12px !important;
+}
+
+.exam-detail-page p {
+    line-height: 1.5;
+}
+
+/* Information section */
+.exam-detail-page .info-card {
+    padding: 10px 12px;
+}
+
+.exam-detail-page .info-label {
+    font-size: 10px;
+}
+
+.exam-detail-page .info-value {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Question cards */
+.exam-detail-page .question-card {
+    padding: 12px !important;
+    margin-bottom: 10px;
+    border-radius: 9px;
+    box-shadow: none;
+}
+
+.exam-detail-page .question-card:hover {
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+}
+
+.exam-detail-page .question-text {
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* Student answer and explanation */
+.exam-detail-page .answer-box {
+    min-height: 35px;
+    padding: 8px 10px;
+    border-radius: 7px;
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* Inputs */
+.exam-detail-page input,
+.exam-detail-page select,
+.exam-detail-page textarea {
+    font-size: 12px !important;
+    padding: 7px 9px !important;
+}
+
+.exam-detail-page textarea {
+    min-height: 55px;
+}
+
+/* Buttons */
+.exam-detail-page button,
+.exam-detail-page a {
+    transition: background-color 0.15s ease;
+}
+
+.exam-detail-page button,
+.exam-detail-page a.inline-flex {
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+/* Section headings */
+.exam-detail-page .section-heading {
+    margin-bottom: 10px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .exam-detail-page {
+        padding: 10px;
+    }
+
+    .exam-detail-page h1 {
+        font-size: 17px !important;
+    }
+
+    .exam-detail-page .grid {
+        gap: 8px;
+    }
+}
+
+/* FORCE COMPACT UI - View and Grade */
+.exam-detail-page {
+    padding: 6px 10px !important;
+}
+
+.exam-detail-page > div {
+    max-width: 900px !important;
+}
+
+.exam-detail-page .space-y-6 > :not(:first-child),
+.exam-detail-page .space-y-5 > :not(:first-child),
+.exam-detail-page .space-y-4 > :not(:first-child),
+.exam-detail-page .space-y-3 > :not(:first-child) {
+    margin-top: 6px !important;
+}
+
+.exam-detail-page h1 {
+    font-size: 16px !important;
+}
+
+.exam-detail-page h2 {
+    font-size: 13px !important;
+}
+
+.exam-detail-page h3 {
+    font-size: 12px !important;
+}
+
+.exam-detail-page p,
+.exam-detail-page label,
+.exam-detail-page a,
+.exam-detail-page button {
+    font-size: 11px !important;
+}
+
+.exam-detail-page .question-card {
+    padding: 8px !important;
+    margin-bottom: 6px !important;
+    border-radius: 7px !important;
+}
+
+.exam-detail-page .answer-box {
+    min-height: 25px !important;
+    padding: 5px 7px !important;
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+}
+
+.exam-detail-page .rounded-2xl {
+    border-radius: 8px !important;
+}
+
+.exam-detail-page .p-5,
+.exam-detail-page .px-5,
+.exam-detail-page .py-4 {
+    padding: 8px !important;
+}
+
+.exam-detail-page .p-4 {
+    padding: 7px !important;
+}
+
+.exam-detail-page .gap-4 {
+    gap: 7px !important;
+}
+
+.exam-detail-page input,
+.exam-detail-page textarea,
+.exam-detail-page select {
+    font-size: 11px !important;
+    padding: 5px 7px !important;
+}
+
+.exam-detail-page textarea {
+    min-height: 45px !important;
+}
+
+.exam-detail-page button,
+.exam-detail-page a.inline-flex {
+    padding: 5px 9px !important;
+}
+
+@media (max-width: 768px) {
+    .exam-detail-page {
+        padding: 5px !important;
+    }
+}
+
+    </style>
+</head>
+
+<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+
+<div class="min-h-screen flex flex-col">
+
+ 
+
+    <div class="flex-1 flex items-stretch">
+
+        <!-- Existing Teacher Sidebar -->
+    
+
+        <!-- Main Page -->
+        <main class="exam-detail-page">
+
+            <div class="max-w-5xl mx-auto space-y-6">
+
+                <!-- Page Heading -->
+                <div class="flex flex-col sm:flex-row sm:items-center
+                            sm:justify-between gap-4">
+
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider
+                                  text-teal-600 mb-2">
+                            Teacher Portal / Exam Results
+                        </p>
+
+                        <h1 class="text-2xl font-extrabold text-slate-900"
+                            th:text="${mode == 'grade'
+                                ? 'Grade Exam Answers'
+                                : 'Exam Answer Details'}">
+                            Exam Answer Details
+                        </h1>
+
+                        <p class="text-sm text-slate-500 mt-2">
+                            Review student answers and manage exam grading.
+                        </p>
+                    </div>
+
+                    <a th:href="@{/teacher/exam-results}"
+                       class="inline-flex items-center justify-center gap-2
+                              px-4 py-2.5 bg-white border border-slate-300
+                              hover:bg-slate-100 text-slate-700 rounded-xl
+                              text-sm font-bold transition">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back to Results
+                    </a>
+                </div>
+
+                <!-- Success Message -->
+                <div th:if="${success}"
+                     class="p-4 bg-emerald-50 border border-emerald-200
+                            text-emerald-800 text-sm font-semibold rounded-xl"
+                     th:text="${success}">
+                </div>
+
+                <!-- Error Message -->
+                <div th:if="${error}"
+                     class="p-4 bg-rose-50 border border-rose-200
+                            text-rose-800 text-sm font-semibold rounded-xl"
+                     role="alert"
+                     th:text="${error}">
+                </div>
+
+                <!-- Student / Exam Information -->
+                <section class="bg-white border border-slate-200
+                                rounded-2xl shadow-sm overflow-hidden">
+
+                    <div class="px-5 py-4 border-b border-slate-200
+                                bg-slate-50">
+                        <h2 class="text-sm font-bold uppercase
+                                   tracking-wide text-slate-700">
+                            Attempt Information
+                        </h2>
+                    </div>
+
+                    <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                        <div class="info-card rounded-lg border border-slate-200">
+                            <p class="text-xs font-bold uppercase
+                                      tracking-wide text-slate-500 mb-2">
+                                Student
+                            </p>
+
+                            <p class="font-semibold text-slate-900"
+                               th:text="${attempt.studentName}">
+                                Student Name
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-200 p-4">
+                            <p class="text-xs font-bold uppercase
+                                      tracking-wide text-slate-500 mb-2">
+                                Exam
+                            </p>
+
+                            <p class="font-semibold text-slate-900"
+                               th:text="${attempt.examTitle}">
+                                Exam Title
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-200 p-4">
+                            <p class="text-xs font-bold uppercase
+                                      tracking-wide text-slate-500 mb-2">
+                                Attempt Number
+                            </p>
+
+                            <p class="font-semibold text-slate-900"
+                               th:text="${attempt.attemptNo}">
+                                1
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-200 p-4">
+                            <p class="text-xs font-bold uppercase
+                                      tracking-wide text-slate-500 mb-2">
+                                Pass Mark / Total Mark
+                            </p>
+
+                            <p class="font-semibold text-slate-900">
+                                <span th:text="${attempt.passMark}">40</span>
+                                /
+                                <span th:text="${attempt.totalMark}">100</span>
+                            </p>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- VIEW MODE -->
+                <section th:if="${mode == 'view'}" class="space-y-5">
+
+                    <div class="flex items-center justify-between gap-3">
+                        <h2 class="text-lg font-bold text-slate-900">
+                            Student Answers
+                        </h2>
+
+                        <a th:href="@{/teacher/exam-results(
+                                      attemptId=${attempt.attemptId},
+                                      mode='grade')}"
+                           class="inline-flex items-center gap-2 px-4 py-2.5
+                                  bg-teal-600 hover:bg-teal-700 text-white
+                                  rounded-xl text-sm font-bold transition">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            Grade Answers
+                        </a>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(examAnswers)}"
+                         class="bg-white border border-slate-200 rounded-2xl
+                                p-8 text-center text-slate-500">
+                        No answers found for this attempt.
+                    </div>
+
+                    <article th:each="answer, stat : ${examAnswers}"
+                             class="question-card bg-white border
+       border-slate-200 rounded-lg p-2 space-y-2">
+
+                        <div class="flex flex-wrap items-center
+                                    justify-between gap-2">
+
+                            <span class="text-xs font-bold uppercase
+                                         tracking-wide text-teal-700"
+                                  th:text="${'Question ' + stat.count
+                                      + ' · ' + answer.questionType}">
+                                Question 1
+                            </span>
+
+                            <span class="text-xs font-semibold
+                                         text-slate-500">
+                                Mark:
+                                <strong class="text-slate-900"
+                                        th:text="${answer.markAwarded != null
+                                            ? answer.markAwarded : 'Not graded'}">
+                                    Not graded
+                                </strong>
+                                /
+                                <span th:text="${answer.maxMark}">10</span>
+                            </span>
+                        </div>
+
+                        <h3 class="text-base font-bold text-slate-900"
+                            th:text="${answer.questionText}">
+                            Question text
+                        </h3>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase
+                                          tracking-wide text-slate-500 mb-2">
+                                Student Answer
+                            </label>
+
+                           <div class="answer-box text-sm text-slate-800"
+     th:text="${answer.answerText != null
+        and !#strings.isEmpty(answer.answerText)
+        ? answer.answerText
+        : (answer.selectedOptionText != null
+            ? answer.selectedOptionText
+            : (answer.selectedOptionId != null
+                ? 'Selected Option ID: ' + answer.selectedOptionId
+                : 'No answer provided.'))}">
+    Student answer
+</div>
+                        </div>
+
+                        <div th:if="${answer.explanation != null
+                                     and !#strings.isEmpty(answer.explanation)}">
+
+                            <label class="block text-xs font-bold uppercase
+                                          tracking-wide text-slate-500 mb-2">
+                                Question Explanation
+                            </label>
+
+                            <div class="answer-box text-sm text-slate-700"
+                                 th:text="${answer.explanation}">
+                                Explanation
+                            </div>
+                        </div>
+
+                    </article>
+
+                    <!-- Teacher Remark -->
+                    <section class="bg-white border border-slate-200
+                                    rounded-2xl p-5">
+
+                        <h3 class="text-sm font-bold uppercase
+                                   tracking-wide text-slate-700 mb-3">
+                            Teacher Remark
+                        </h3>
+
+                        <div class="answer-box text-sm text-slate-800"
+                             th:text="${attempt.remark != null
+                                and !#strings.isEmpty(attempt.remark)
+                                ? attempt.remark : 'No remark.'}">
+                            No remark.
+                        </div>
+                    </section>
+
+                </section>
+
+                <!-- GRADE MODE -->
+                <section th:if="${mode == 'grade'}" class="space-y-5">
+
+                    <div class="bg-teal-50 border border-teal-200
+                                rounded-xl p-4 flex gap-3">
+
+                        <i class="fa-solid fa-circle-info text-teal-700 mt-0.5"></i>
+
+                        <div class="text-sm text-teal-900">
+                            <p class="font-bold mb-1">Grading Instructions</p>
+                            <p>
+                                Enter the awarded mark for every short-answer
+                                question. MCQ and True/False questions are
+                                graded automatically when you save.
+                            </p>
+                        </div>
+                    </div>
+
+                    <form th:object="${gradingForm}"
+                          th:action="@{/teacher/exam-results/{id}/grade(
+                                      id=${attempt.attemptId})}"
+                          method="post"
+                          class="space-y-5">
+
+                        <article th:each="answer, stat : ${examAnswers}"
+                                 class="question-card bg-white border
+                                        border-slate-200 rounded-2xl p-5 space-y-4">
+
+                            <div class="flex flex-wrap items-center
+                                        justify-between gap-2">
+
+                                <span class="text-xs font-bold uppercase
+                                             tracking-wide text-teal-700"
+                                      th:text="${'Question ' + stat.count
+                                          + ' · ' + answer.questionType}">
+                                    Question 1
+                                </span>
+
+                                <span class="text-xs font-semibold
+                                             text-slate-500">
+                                    Maximum:
+                                    <strong th:text="${answer.maxMark}">10</strong>
+                                </span>
+                            </div>
+
+                            <h3 class="text-base font-bold text-slate-900"
+                                th:text="${answer.questionText}">
+                                Question text
+                            </h3>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase
+                                              tracking-wide text-slate-500 mb-2">
+                                    Student Answer
+                                </label>
+
+                                <div class="answer-box text-sm text-slate-800"
+                                     th:text="${answer.questionType == 'SHORT_ANSWER'
+                                        ? (answer.answerText != null
+                                            ? answer.answerText
+                                            : 'No answer provided.')
+                                        : (answer.selectedOptionText != null
+                                            ? answer.selectedOptionText
+                                            : 'No valid option selected.')}">
+                                    Student answer
+                                </div>
+                            </div>
+
+                            <!-- Only short answers need manual marks -->
+                            <th:block th:if="${answer.questionType == 'SHORT_ANSWER'}">
+
+                                <th:block th:each="entry, entryStat : *{answers}">
+
+                                    <div th:if="${entry.questionId == answer.questionId}"
+                                         class="pt-4 border-t border-slate-100 space-y-2">
+
+                                        <input type="hidden"
+                                               th:field="*{answers[__${entryStat.index}__].questionId}">
+
+                                        <label class="block text-xs font-bold
+                                                      uppercase tracking-wide
+                                                      text-slate-700"
+                                               th:for="${'answers' + entryStat.index + '.mark'}">
+                                            Awarded Mark
+                                        </label>
+
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               required
+                                               th:max="${answer.maxMark}"
+                                               th:field="*{answers[__${entryStat.index}__].mark}"
+                                              class="w-full max-w-[180px] border border-slate-300
+       rounded-lg bg-white font-semibold
+       focus:outline-none focus:ring-2 focus:ring-teal-500">
+
+                                        <p class="text-xs text-slate-500">
+                                            Enter a mark from 0 to
+                                            <span th:text="${answer.maxMark}">10</span>.
+                                        </p>
+
+                                    </div>
+
+                                </th:block>
+
+                                <div th:if="${answer.explanation != null
+                                             and !#strings.isEmpty(answer.explanation)}">
+
+                                    <label class="block text-xs font-bold
+                                                  uppercase tracking-wide
+                                                  text-slate-500 mb-2">
+                                        Question Explanation
+                                    </label>
+
+                                    <div class="answer-box text-sm text-slate-700"
+                                         th:text="${answer.explanation}">
+                                        Explanation
+                                    </div>
+                                </div>
+
+                            </th:block>
+
+                            <p th:if="${answer.questionType != 'SHORT_ANSWER'}"
+                               class="text-xs text-slate-500 italic">
+                                <i class="fa-solid fa-check-circle mr-1"></i>
+                                Automatically graded. Maximum:
+                                <span th:text="${answer.maxMark}">10</span>
+                            </p>
+
+                        </article>
+
+                        <!-- Teacher Remark -->
+                        <section class="bg-white border border-slate-200
+                                        rounded-2xl p-5 space-y-2">
+
+                            <label for="remark"
+                                   class="block text-sm font-bold
+                                          text-slate-800">
+                                Teacher Remark (Optional)
+                            </label>
+
+                            <textarea id="remark"
+                                      th:field="*{remark}"
+                                      rows="4"
+                                      placeholder="Write feedback for the student..."
+                                      class="w-full border border-slate-300
+                                             rounded-xl px-4 py-3 text-sm
+                                             resize-y focus:outline-none
+                                             focus:ring-2 focus:ring-teal-500"></textarea>
+                        </section>
+
+                        <!-- Form Actions -->
+                        <div class="flex flex-col-reverse sm:flex-row
+                                    justify-end gap-3 border-t border-slate-200
+                                    pt-5">
+
+                            <a th:href="@{/teacher/exam-results(
+                                          attemptId=${attempt.attemptId},
+                                          mode='view')}"
+                               class="inline-flex items-center justify-center
+                                      gap-2 px-5 py-3 bg-white border
+                                      border-slate-300 hover:bg-slate-100
+                                      text-slate-700 rounded-xl text-sm font-bold">
+                                Cancel
+                            </a>
+
+                            <button type="submit"
+                                    class="inline-flex items-center justify-center
+                                           gap-2 px-6 py-3 bg-teal-600
+                                           hover:bg-teal-700 text-white
+                                           rounded-xl text-sm font-bold
+                                           shadow-sm transition">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                Save Grades
+                            </button>
+
+                        </div>
+
+                    </form>
+                </section>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+</body>
+</html>

@@ -299,12 +299,11 @@
     </div>
 
 <script>
-    const rows = Array.from(document.querySelectorAll(".result-row"));
 
+    const rows = Array.from(document.querySelectorAll(".result-row"));
     const searchInput = document.getElementById("searchInput");
     const examFilter = document.getElementById("examFilter");
     const statusFilter = document.getElementById("statusFilter");
-
     const exams = new Map();
 
     rows.forEach(row => {
@@ -320,17 +319,11 @@
         let visible = 0;
 
         rows.forEach(row => {
-            const text = (
-                (row.dataset.student || "") + " " +
-                (row.dataset.exam || "")
-            ).toLowerCase();
+            const text = ((row.dataset.student || "") + " " +(row.dataset.exam || "") ).toLowerCase();
 
-            const matches =
-                text.includes(keyword) &&
-                (!examFilter.value ||
-                    row.dataset.examId === examFilter.value) &&
-                (!statusFilter.value ||
-                    row.dataset.status === statusFilter.value);
+            const matches =text.includes(keyword) &&
+                (!examFilter.value || row.dataset.examId === examFilter.value) &&
+                (!statusFilter.value || row.dataset.status === statusFilter.value);
 
             row.hidden = !matches;
 
@@ -362,9 +355,7 @@
         document.body.style.overflow = "hidden";
 
         const box = modal.querySelector(".modal-box");
-        const closeLink = modal.querySelector(
-            '[aria-label="Close modal"]'
-        );
+        const closeLink = modal.querySelector('[aria-label="Close modal"]');
 
         if (box) box.focus();
 
@@ -381,16 +372,13 @@
 
             if (event.key === "Tab" && box) {
                 const controls = Array.from(box.querySelectorAll(
-                    'a[href], button, input:not([type="hidden"]), ' +
-                    'select, textarea, [tabindex="0"]'
+                    'a[href], button, input:not([type="hidden"]), ' +'select, textarea, [tabindex="0"]'
                 )).filter(element => element.getClientRects().length);
 
                 const first = controls[0];
                 const last = controls[controls.length - 1];
 
-                if (event.shiftKey &&
-                    (document.activeElement === first ||
-                     document.activeElement === box)) {
+                if (event.shiftKey &&(document.activeElement === first || document.activeElement === box)) {
                     event.preventDefault();
                     last?.focus();
                 } else if (!event.shiftKey &&
