@@ -1,6 +1,7 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
 import java.util.List;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -213,8 +214,41 @@ public class StudentExamRepository {
         }
     }
 
-    public void saveSubmissionResponse(int examId, int attemptId, String answerText) {
-        String sql = "UPDATE learning_db.exam_attempts SET remark = ?, status = 'SUBMITTED', submitted_at = NOW() WHERE attempt_id = ?";
-        jdbcTemplate.update(sql, answerText, attemptId);
+    public void saveIndividualQuestionResponse(int attemptId, int questionId, Integer selectedOptionId, String answerText) {
+        // 1. Check if an entry already exists for this composite key match
+        String checkSql = "SELECT COUNT(*) FROM learning_db.attempt_answers WHERE attempt_id = ? AND question_id = ?";
+        Integer count = jdbcTemplate.queryForObject(checkSql, Integer.class, attemptId, questionId);
+        
+        if (count != null && count > 0) {
+            // 2. Row exists: Execute a direct, pure UPDATE statement
+            String updateSql = """
+                UPDATE learning_db.attempt_answers 
+                SET selected_option_id = ?, 
+                    answer_text = ?, 
+                    answered_at = NOW() 
+                WHERE attempt_id = ? AND question_id = ?
+                """;
+            jdbcTemplate.update(updateSql, selectedOptionId, answerText, attemptId, questionId);
+        } else {
+            // 3. Row is missing: Execute a clean, pure INSERT statement
+            String insertSql = """
+                INSERT INTO learning_db.attempt_answers 
+                (attempt_id, question_id, selected_option_id, answer_text, is_correct, mark_awarded, answered_at) 
+                VALUES (?, ?, ?, ?, ?, ?, NOW())
+                """;
+            
+            // Standard baseline placeholders
+            int isCorrect = 0; 
+            java.math.BigDecimal markAwarded = java.math.BigDecimal.ZERO;
+            
+            jdbcTemplate.update(insertSql, attemptId, questionId, selectedOptionId, answerText, isCorrect, markAwarded);
+        }
+    }
+    /**
+     * Updates the global wrapper attempt session state to mark it as complete.
+     */
+    public void finalizeAttemptStatus(int attemptId) {
+        String sql = "UPDATE learning_db.exam_attempts SET status = 'SUBMITTED', submitted_at = NOW() WHERE attempt_id = ?";
+        jdbcTemplate.update(sql, attemptId);
     }
 }
