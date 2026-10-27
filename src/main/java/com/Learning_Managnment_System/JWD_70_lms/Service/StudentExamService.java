@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,9 +100,43 @@ public class StudentExamService {
         return examRepository.findQuestionsBySequence(cleanDeduplicatedSequence);
     }
 
-    @Transactional
-    public void processSubmission(int examId, int attemptId, String answerText) {
-        examRepository.saveSubmissionResponse(examId, attemptId, answerText);
+    public void processDetailedStudentSubmission(int examId, int attemptId, String questionSequence, Function<String, String> parameterResolver) {
+        if (questionSequence == null || questionSequence.trim().isEmpty()) {
+            return;
+        }
+
+        String[] questionIds = questionSequence.split(",");
+        
+        for (String qIdStr : questionIds) {
+            String cleanQId = qIdStr.trim();
+            if (cleanQId.isEmpty()) continue;
+            
+            int questionId = Integer.parseInt(cleanQId);
+            
+            // Extract the user entry string corresponding to this item row
+            String studentResponse = parameterResolver.apply("question_" + cleanQId);
+            
+            Integer selectedOptionId = null;
+            String answerText = null;
+
+            if (studentResponse != null && !studentResponse.trim().isEmpty()) {
+                // 🟢 CONDITION CHECK: If the input parameter string is strictly a number, it maps to selected_option_id
+                if (studentResponse.trim().matches("\\d+")) {
+                    selectedOptionId = Integer.parseInt(studentResponse.trim());
+                } else {
+                    // Otherwise, map it safely to your answer_text column parameters
+                    answerText = studentResponse.trim();
+                }
+            } else {
+                answerText = "No submission response recorded.";
+            }
+
+            // Write the question response line immediately into your detailed history table
+            examRepository.saveIndividualQuestionResponse(attemptId, questionId, selectedOptionId, answerText);
+        }
+
+        // Finalize the overall wrapper exam attempt session row state cleanly
+        examRepository.finalizeAttemptStatus(attemptId);
     }
 
     public ExamAttemptBean getAttemptResultSummary(int attemptId) {

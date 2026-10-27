@@ -133,22 +133,28 @@ public class StudentExamController {
         int attemptId = Integer.parseInt(request.getParameter("attemptId"));
         int examId = Integer.parseInt(request.getParameter("examId"));
         
-        String fallIdStr = request.getParameter("questions.questionId") != null ? request.getParameter("questions.questionId") : "1";
-        String answerText = request.getParameter("question_" + fallIdStr);
-        if (answerText == null || answerText.trim().isEmpty()) {
-            answerText = "No submission response recorded.";
+        String userEmail = (String) session.getAttribute("email");
+        if (userEmail == null) {
+            return "redirect:/login";
         }
-
-        examService.processSubmission(examId, attemptId, answerText);
         
-        // Evict local cache key signature strings cleanly on completion
-        Integer enrollmentId = examService.resolveEnrollmentId((String) session.getAttribute("email"));
+        int enrollmentId = examService.resolveEnrollmentId(userEmail);
         String sessionCacheKey = "exam_" + examId + "_user_" + enrollmentId + "_questions";
+        String cachedSequence = (String) session.getAttribute(sessionCacheKey);
+        
+        // Fallback safety if the session cache context cleared prematurely
+        if (cachedSequence == null || cachedSequence.trim().isEmpty()) {
+            cachedSequence = examService.resolveQuestionSequence(examId);
+        }
+        
+        // Invoke the service tier to iterate and save detailed question rows safely
+        examService.processDetailedStudentSubmission(examId, attemptId, cachedSequence, request::getParameter);
+        
+        // Clean out your session cache memory cleanly on completion
         session.removeAttribute(sessionCacheKey);
         
         return "redirect:/student/exam-result/" + attemptId;
     }
-
     @GetMapping("/exam-result/{attemptId}")
     public String showExamResult(@PathVariable("attemptId") int attemptId, Model model, HttpSession session) {
         if (session.getAttribute("email") == null) return "redirect:/login";
