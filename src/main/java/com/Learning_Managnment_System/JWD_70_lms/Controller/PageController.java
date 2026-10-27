@@ -12,9 +12,5 @@ public class PageController {
 	public String show() {		
 		return "dashboard";		
 	}
-	@GetMapping("/question-list")
-    public String questionList() {
-        return "question-list";
-    }
 
 }

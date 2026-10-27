@@ -2,6 +2,8 @@ package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.math.BigDecimal;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.Learning_Managnment_System.JWD_70_lms.Service.TeacherGradingService;
+import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.SubmissionBean;
 
 @Controller
@@ -20,20 +23,36 @@ public class TeacherGradingController {
 
     private final TeacherGradingService gradingService;
 
-    public TeacherGradingController( TeacherGradingService gradingService) {
+    public TeacherGradingController(
+            TeacherGradingService gradingService) {
         this.gradingService = gradingService;
     }
 
+    private void addCommonAttributes(HttpSession session, Model model) {
+        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+        if (currentUser != null && currentUser.getFull_name() != null) {
+            model.addAttribute("fullName", currentUser.getFull_name());
+        } else if (session.getAttribute("fullName") != null) {
+            model.addAttribute("fullName", session.getAttribute("fullName"));
+        }
+    }
+
     @GetMapping
-    public String listSubmissions(Model model) {
-        model.addAttribute("submissions",gradingService.getAllSubmissions());
+    public String listSubmissions(Model model, HttpSession session) {
+        addCommonAttributes(session, model);
+        model.addAttribute("submissions",
+                gradingService.getAllSubmissions());
         return "teacher-submission-list";
     }
 
     @GetMapping("/grade/{id}")
-    public String showGradePage( @PathVariable Integer id,Model model,
-            RedirectAttributes redirectAttributes) {
+    public String showGradePage(
+            @PathVariable Integer id,
+            Model model,
+            RedirectAttributes redirectAttributes,
+            HttpSession session) {
 
+        addCommonAttributes(session, model);
         try {
             SubmissionBean submission = gradingService.getSubmissionById(id);
             model.addAttribute("submission", submission);
@@ -53,8 +72,9 @@ public class TeacherGradingController {
             RedirectAttributes redirectAttributes) {
 
         try {
-            gradingService.gradeSubmission( submissionId,score,feedback);
-            redirectAttributes.addFlashAttribute("success","Submission graded successfully!" );
+
+            gradingService.gradeSubmission(submissionId, score, feedback);
+            redirectAttributes.addFlashAttribute("success", "Submission graded successfully!");
             return "redirect:/teacher/submissions";
 
         } catch (IllegalArgumentException e) {

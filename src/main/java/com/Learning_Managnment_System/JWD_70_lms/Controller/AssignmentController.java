@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +28,7 @@ import com.Learning_Managnment_System.JWD_70_lms.Repository.LessonRepository;
 import com.Learning_Managnment_System.JWD_70_lms.Service.AssignmentService;
 import com.Learning_Managnment_System.JWD_70_lms.model.AssignmentBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.LessonBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 
 @Controller
 @RequestMapping("/teacher")
@@ -37,17 +40,32 @@ public class AssignmentController {
 
 	private static final String UPLOAD_DIR = "uploads/assignments";
 
-	public AssignmentController( AssignmentService assignmentService,
-	        JdbcTemplate jdbcTemplate, LessonRepository lessonRepository) {
+	public AssignmentController(
+	        AssignmentService assignmentService,
+	        JdbcTemplate jdbcTemplate,
+	        LessonRepository lessonRepository) {
 
 	    this.assignmentService = assignmentService;
 	    this.jdbcTemplate = jdbcTemplate;
 	    this.lessonRepository = lessonRepository;
 	}
 
-    @GetMapping("/assignments")
-    public String listAssignments(@RequestParam(defaultValue = "1") int page, Model model) {
+    private void addCommonAttributes(HttpSession session, Model model) {
+        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+        if (currentUser != null && currentUser.getFull_name() != null) {
+            model.addAttribute("fullName", currentUser.getFull_name());
+        } else if (session.getAttribute("fullName") != null) {
+            model.addAttribute("fullName", session.getAttribute("fullName"));
+        }
+    }
 
+    @GetMapping("/assignments")
+    public String listAssignments(
+            @RequestParam(defaultValue = "1") int page,
+            HttpSession session,
+            Model model) {
+
+        addCommonAttributes(session, model);
         int size = 10;
         int totalItems = assignmentService.getTotalAssignments();
         int totalPages = (int) Math.ceil((double) totalItems / size);
@@ -81,9 +99,12 @@ public class AssignmentController {
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Integer batchId,
             @RequestParam(required = false) String status,
+            HttpSession session,
             Model model) {
 
-        List<AssignmentBean> assignments = assignmentService.searchAssignments( title,batchId,status);
+        addCommonAttributes(session, model);
+        List<AssignmentBean> assignments =
+        		assignmentService.searchAssignments(title, batchId, status);
 
         model.addAttribute("assignments", assignments);
         model.addAttribute("title", title);
@@ -98,8 +119,9 @@ public class AssignmentController {
     }
 
     @GetMapping("/assignments/create")
-    public String showCreateForm(Model model) {
-        model.addAttribute("assignment",new AssignmentBean());
+    public String showCreateForm(HttpSession session, Model model) {
+        addCommonAttributes(session, model);
+        model.addAttribute("assignment", new AssignmentBean());
         loadDropdownData(model);
         return "assignment-form";
     }
@@ -109,22 +131,25 @@ public class AssignmentController {
             @ModelAttribute("assignment") AssignmentBean assignment,
             @RequestParam(value = "attachmentFile", required = false)
             MultipartFile attachmentFile,
+            HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
 
+        addCommonAttributes(session, model);
         try {
             if (attachmentFile != null && !attachmentFile.isEmpty()) {
                 String fileUrl = saveAttachmentFile(attachmentFile);
                 assignment.setAttachment(fileUrl);
             }
 
-            int newId =assignmentService.createAssignment(assignment);
-            redirectAttributes.addFlashAttribute("successMessage", "Assignment created successfully! ID: " + newId );
+            int newId = assignmentService.createAssignment(assignment);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Assignment created successfully! ID: " + newId);
             
             return "redirect:/teacher/assignments";
 
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errorMessage",e.getMessage());
+            model.addAttribute("errorMessage", e.getMessage());
             loadDropdownData(model);
             return "assignment-form";
 
@@ -138,8 +163,12 @@ public class AssignmentController {
     }
 
     @GetMapping("/assignments/{id}")
-    public String viewAssignment( @PathVariable Integer id, Model model) {
+    public String viewAssignment(
+            @PathVariable Integer id,
+            HttpSession session,
+            Model model) {
 
+        addCommonAttributes(session, model);
         AssignmentBean assignment = assignmentService.getAssignmentById(id);
 
         List<Map<String, Object>> batchList =
@@ -158,19 +187,26 @@ public class AssignmentController {
 
         Map<String, Object> batch = batchList.get(0);
 
-        LessonBean lesson =lessonRepository.findById( assignment.getLessonId()
-                ).orElseThrow(() -> new IllegalArgumentException("Lesson not found"));
+        LessonBean lesson =
+                lessonRepository.findById(assignment.getLessonId())
+                .orElseThrow(
+                        () -> new IllegalArgumentException("Lesson not found"));
 
-        model.addAttribute( "assignment",assignment);
-        model.addAttribute("batch",batch);
+        model.addAttribute("assignment", assignment);
+        model.addAttribute("batch", batch);
         model.addAttribute("lesson", lesson);
         return "assignment-detail";
     }
     
     @GetMapping("/assignments/edit/{id}")
-    public String showEditForm(@PathVariable Integer id, Model model) {
+    public String showEditForm(
+            @PathVariable Integer id,
+            HttpSession session,
+            Model model) {
+
+        addCommonAttributes(session, model);
         AssignmentBean assignment = assignmentService.getAssignmentById(id);
-        model.addAttribute("assignment",assignment);
+        model.addAttribute("assignment", assignment);
         loadDropdownData(model);
         
         return "assignment-form";
@@ -181,12 +217,15 @@ public class AssignmentController {
             @ModelAttribute("assignment") AssignmentBean assignment,
             @RequestParam(value = "attachmentFile", required = false)
             MultipartFile attachmentFile,
+            HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
 
+        addCommonAttributes(session, model);
         try {
             AssignmentBean existingAssignment =
-                    assignmentService.getAssignmentById( assignment.getAssignmentId());
+                    assignmentService.getAssignmentById(
+                            assignment.getAssignmentId());
 
             if (attachmentFile != null && !attachmentFile.isEmpty()) {
                 String fileUrl = saveAttachmentFile(attachmentFile);
@@ -195,18 +234,20 @@ public class AssignmentController {
             } else {
                 assignment.setAttachment(existingAssignment.getAttachment());
             }
-            assignmentService.updateAssignment( assignment);
-            redirectAttributes.addFlashAttribute( "successMessage","Assignment updated successfully!");
+            assignmentService.updateAssignment(assignment);
+            redirectAttributes.addFlashAttribute("successMessage", "Assignment updated successfully!");
 
             return "redirect:/teacher/assignments";
 
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errorMessage",e.getMessage());
+            model.addAttribute("errorMessage", e.getMessage());
             loadDropdownData(model);
             return "assignment-form";
 
         } catch (IOException e) {
-            model.addAttribute( "errorMessage","File upload failed: " + e.getMessage());
+            model.addAttribute("errorMessage", "File upload failed: "
+                            + e.getMessage());
+
             loadDropdownData(model);
             return "assignment-form";
         }
@@ -219,15 +260,17 @@ public class AssignmentController {
 
         try {
             assignmentService.deleteAssignment(id);
-            redirectAttributes.addFlashAttribute("successMessage","Assignment deleted successfully!");
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Assignment deleted successfully!");
 
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
+
         return "redirect:/teacher/assignments";
     }
 
-    private String saveAttachmentFile( MultipartFile file) throws IOException {
+    private String saveAttachmentFile(MultipartFile file) throws IOException {
         Path uploadPath = Paths.get(UPLOAD_DIR);
 
         if (!Files.exists(uploadPath)) {
@@ -237,7 +280,7 @@ public class AssignmentController {
         String originalFileName = file.getOriginalFilename();
 
         if (originalFileName == null || originalFileName.isBlank()) {
-            throw new IllegalArgumentException("Invalid file name" );
+            throw new IllegalArgumentException("Invalid file name");
         }
 
         String extension = "";
@@ -246,31 +289,49 @@ public class AssignmentController {
             extension = originalFileName.substring(dotIndex).toLowerCase();
         }
 
-        List<String> allowedExtensions = List.of(".pdf",".zip",".doc",".docx" );
+        List<String> allowedExtensions =
+                List.of(".pdf", ".zip", ".doc", ".docx");
 
         if (!allowedExtensions.contains(extension)) {
-            throw new IllegalArgumentException( "Only PDF, ZIP, DOC and DOCX files are allowed.");
+            throw new IllegalArgumentException("Only PDF, ZIP, DOC and DOCX files are allowed.");
         }
 
-        String newFileName =UUID.randomUUID() .toString() + extension;
+        String newFileName = UUID.randomUUID().toString() + extension;
         Path filePath = uploadPath.resolve(newFileName);
-        Files.copy(file.getInputStream(),filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        Files.copy(file.getInputStream(), filePath,
+                StandardCopyOption.REPLACE_EXISTING);
+
         return "/uploads/assignments/" + newFileName;
     }
 
-    private void loadDropdownData(Model model) {
-        String sql = """
-            SELECT batch_id, batch_code, title
-            FROM batches
-            ORDER BY batch_id DESC
-            """;
+	private void loadDropdownData(Model model) {
+		String sql = """
+				SELECT
+				    batch_id,
+				    batch_code,
+				    TRIM(
+				        CASE
+				            WHEN title LIKE CONCAT(batch_code, ' -%')
+				            THEN SUBSTRING(
+				                title,
+				                LENGTH(batch_code) + 3
+				            )
+				            ELSE title
+				        END
+				    ) AS title
+				FROM batches
+				ORDER BY batch_id DESC
+				""";
 
-        List<Map<String, Object>> batches = jdbcTemplate.queryForList(sql);
-        List<LessonBean> lessons = lessonRepository.findAll();
-        model.addAttribute("batches", batches);
-        model.addAttribute("lessons", lessons);
-    }
-    
+		List<Map<String, Object>> batches = jdbcTemplate.queryForList(sql);
+
+		List<LessonBean> lessons = lessonRepository.findAll();
+
+		model.addAttribute("batches", batches);
+		model.addAttribute("lessons", lessons);
+	}
+
     @GetMapping("/assignments/api/{id}")
     @ResponseBody
     public AssignmentBean getAssignmentApi(@PathVariable Integer id) {

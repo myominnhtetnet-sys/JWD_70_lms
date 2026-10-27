@@ -3,6 +3,8 @@ package com.Learning_Managnment_System.JWD_70_lms.Controller;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.Learning_Managnment_System.JWD_70_lms.Service.TeacherExamResultService;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamGradingForm;
+import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 
 @Controller
 @RequestMapping("/teacher/exam-results")
@@ -27,33 +30,59 @@ public class TeacherExamResultController {
     // Replace 1L with the created_by ID of the exam you want to test.
     private static final Long TEST_TEACHER_ID = 1L;
 
-    public TeacherExamResultController(TeacherExamResultService service) {
+    public TeacherExamResultController(
+            TeacherExamResultService service) {
         this.service = service;
     }
 
+    private void addCommonAttributes(HttpSession session, Model model) {
+        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+        if (currentUser != null && currentUser.getFull_name() != null) {
+            model.addAttribute("fullName", currentUser.getFull_name());
+        } else if (session.getAttribute("fullName") != null) {
+            model.addAttribute("fullName", session.getAttribute("fullName"));
+        }
+    }
+
     @GetMapping
-    public String listResults(@RequestParam(name = "attemptId", required = false)
+    public String listResults(
+            @RequestParam(name = "attemptId", required = false)
             Long attemptId,
             @RequestParam(name = "mode", defaultValue = "view")
             String mode,
+            HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
 
+        addCommonAttributes(session, model);
         Long teacherId = TEST_TEACHER_ID;
+
         loadList(model, teacherId);
 
         if (attemptId != null) {
             try {
-                Map<String, Object> attempt =service.getAttempt(attemptId, teacherId);
-                List<Map<String, Object>> answers = service.getAnswers(attempt);
+
+                Map<String, Object> attempt =
+                        service.getAttempt(attemptId, teacherId);
+
+                List<Map<String, Object>> answers =
+                        service.getAnswers(attempt);
 
                 model.addAttribute("attempt", attempt);
                 model.addAttribute("examAnswers", answers);
-                model.addAttribute("gradingForm",service.createForm(attempt, answers));
-                model.addAttribute("mode","grade".equals(mode) ? "grade" : "view");
+                model.addAttribute(
+                        "gradingForm",
+                        service.createForm(attempt, answers));
+
+                model.addAttribute(
+                        "mode",
+                        "grade".equals(mode) ? "grade" : "view");
 
             } catch (IllegalArgumentException e) {
-                redirectAttributes.addFlashAttribute("error", e.getMessage());
+
+                redirectAttributes.addFlashAttribute(
+                        "error", e.getMessage());
+
                 return "redirect:/teacher/exam-results";
             }
         }
@@ -66,29 +95,41 @@ public class TeacherExamResultController {
             @PathVariable("attemptId") Long attemptId,
             @ModelAttribute("gradingForm") ExamGradingForm form,
             BindingResult bindingResult,
+            HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
 
+        addCommonAttributes(session, model);
         Long teacherId = TEST_TEACHER_ID;
+
         Map<String, Object> attempt;
 
         try {
+
             attempt = service.getAttempt(attemptId, teacherId);
+
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute( "error", e.getMessage());
+
+            redirectAttributes.addFlashAttribute(
+                    "error", e.getMessage());
+
             return "redirect:/teacher/exam-results";
         }
 
-        List<Map<String, Object>> answers =service.getAnswers(attempt);
+        List<Map<String, Object>> answers =
+                service.getAnswers(attempt);
 
         try {
 
             if (bindingResult.hasErrors()) {
-                throw new IllegalArgumentException("Please enter valid numbers for the marks.");
+                throw new IllegalArgumentException(
+                        "Please enter valid numbers for the marks.");
             }
 
             service.gradeAttempt(attemptId, teacherId, form);
-            redirectAttributes.addFlashAttribute( "success", "Exam graded successfully!");
+
+            redirectAttributes.addFlashAttribute(
+                    "success", "Exam graded successfully!");
 
             return "redirect:/teacher/exam-results";
 
@@ -108,8 +149,12 @@ public class TeacherExamResultController {
 
     private void loadList(Model model, Long teacherId) {
 
-        List<Map<String, Object>> results =service.getResults(teacherId);
-        long graded = results.stream() .filter(row -> "GRADED".equals(row.get("status"))).count();
+        List<Map<String, Object>> results =
+                service.getResults(teacherId);
+
+        long graded = results.stream()
+                .filter(row -> "GRADED".equals(row.get("status")))
+                .count();
 
         model.addAttribute("results", results);
         model.addAttribute("totalCount", results.size());
