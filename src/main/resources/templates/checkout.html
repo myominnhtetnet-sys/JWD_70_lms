@@ -1,88 +1,172 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - Payment Method</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- FontAwesome 6 Web Icons Hook -->
+    <link rel="stylesheet" href="https://cloudflare.com">
     <style>
-        .payment-card {
-            max-width: 550px;
+        body {
+            background-color: #f8fafc !important;
+            color: #1e293b;
+        }
+        .checkout-wrapper {
+            max-width: 580px;
             margin: 40px auto;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .payment-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 32px;
             background: #ffffff;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
         }
         .method-option {
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
         .method-option:hover {
             border-color: #0d6efd;
             background-color: #f8f9fa;
         }
+        /* 🟢 INTERACTIVE STATUS SELECTOR INTERCEPTOR GRID */
+        /* Instantly paints a rich branding gradient layer backdrop over the active payment selector container */
+        .method-option:has(input:checked) {
+            border-color: #0d6efd;
+            background-color: #f0f7ff;
+            box-shadow: 0 0 0 1px #0d6efd;
+        }
+        .form-control, .form-select {
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 14.5px;
+            transition: all 0.15s ease-in-out;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+        }
+        .btn-submit {
+            background-color: #0d6efd;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            transition: all 0.15s ease;
+        }
+        .btn-submit:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+        }
+        .btn-dashboard-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: color 0.15s ease;
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+        .btn-dashboard-back:hover {
+            color: #1e293b;
+            background-color: #e2e8f0;
+        }
     </style>
 </head>
-<body class="bg-light">
+<body>
 
 <div class="container">
-    <div class="payment-card">
-        <h4 class="fw-bold mb-1">Select Payment Method</h4>
-        <p class="text-muted small">ကျေးဇူးပြု၍ မိမိပေးချေလိုသော App ကို ရွေးချယ်၍ ငွေလွှဲပေးပါရန်။</p>
+    <div class="checkout-wrapper">
+        
+        <!-- ========================================================= -->
+        <!-- 🧭 MODERN SYSTEM PRESENTATION BACK NAVIGATION BAR         -->
+        <!-- ========================================================= -->
+        <!-- Cleanly links straight back into your dashboard controller endpoint mapping -->
+        <a th:href="@{/student}" class="btn-dashboard-back">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Back to Dashboard</span>
+        </a>
 
-        <!-- Error Alert -->
-        <div th:if="${error}" class="alert alert-danger py-2 small mb-3" th:text="${error}"></div>
-
-        <form th:action="@{/student/process-payment}" method="post">
-            
-            <!-- Payment Methods List -->
-            <div class="mb-4">
-                <div th:each="method, iterStat : ${paymentMethods}" class="method-option d-flex align-items-center justify-content-between">
-                    <div>
-                        <input class="form-check-input me-2" type="radio" name="paymentMethodId" 
-                               th:id="'method-' + ${method['payment_method_id']}" 
-                               th:value="${method['payment_method_id']}" 
-                               th:checked="${iterStat.index == 0}" required>
-                        <label class="form-check-label fw-bold" 
-                               th:for="'method-' + ${method['payment_method_id']}" 
-                               th:text="${method['name']}"></label>
-                    </div>
-                    <div class="text-end text-muted small">
-                        <span th:text="${method['description']}"></span>
-                    </div>
+        <!-- Main Checkout Payment Sheet Box -->
+        <div class="payment-card">
+            <div class="d-flex align-items-start gap-3 mb-3">
+                
+                <div>
+                    <h4 class="fw-bold mb-1" style="letter-spacing: -0.01em;">Select Payment Method</h4>
+                    <p class="text-muted small mb-0">ကျေးဇူးပြု၍ မိမိပေးချေလိုသော App ကို ရွေးချယ်၍ ငွေလွှဲပေးပါရန်။</p>
                 </div>
             </div>
 
-            <!-- Total Amount -->
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Total Amount (MMK)</label>
-                <input type="number" name="amount" class="form-control" placeholder="75000" required>
-            </div>
+            <!-- Error Alert Notification Banner Row -->
+            <div th:if="${error}" class="alert alert-danger d-flex align-items-center gap-2 py-2.5 small mb-3 border-0 rounded-3 shadow-sm" th:text="${error}"></div>
 
-            <!-- Payment Purpose -->
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Payment Purpose</label>
-                <select name="paymentType" class="form-select">
-                    <option value="Full Course Fee">Full Course Fee</option>
-                    <option value="Installment">Installment</option>
-                    <option value="Exam Fee">Exam Fee</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
+            <form th:action="@{/student/process-payment}" method="post">
+                
+                <!-- Payment Methods Grid Iteration Collection List -->
+                <div class="mb-4">
+                    <div th:each="method, iterStat : ${paymentMethods}" class="method-option d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <input class="form-check-input me-3" type="radio" name="paymentMethodId" 
+                                   th:id="'method-' + ${method['payment_method_id']}" 
+                                   th:value="${method['payment_method_id']}" 
+                                   th:checked="${iterStat.index == 0}" required 
+                                   style="width: 18px; height: 18px; cursor: pointer;">
+                            <label class="form-check-label fw-bold" 
+                                   th:for="'method-' + ${method['payment_method_id']}" 
+                                   th:text="${method['name']}" style="cursor: pointer; font-size: 15px; color: #0f172a;"></label>
+                        </div>
+                        <div class="text-end text-muted small bg-light px-2.5 py-1 rounded-2 fw-medium" style="background-color: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 12.5px;">
+                            <span th:text="${method['description']}"></span>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Note / Remark -->
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Note / Remark <span class="text-muted fw-normal">(Optional)</span></label>
-                <textarea name="note" class="form-control" rows="2" placeholder="အကြောင်းအရာ သို့မဟုတ် မှတ်ချက်ရေးပါ..."></textarea>
-            </div>
+                <!-- Total Amount Input Field Card Row -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small text-uppercase tracking-wider" style="color: #64748b; font-size: 11px; letter-spacing: 0.05em;">Total Amount (MMK)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted border-end-0 fw-semibold" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px; font-size: 14.5px;">Ks</span>
+                        <input type="number" name="amount" class="form-control" placeholder="75000" min="1" required style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                    </div>
+                </div>
 
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Confirm & Submit Payment</button>
-        </form>
+                <!-- Payment Purpose Configuration Dropdown List -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small text-uppercase tracking-wider" style="color: #64748b; font-size: 11px; letter-spacing: 0.05em;">Payment Purpose</label>
+                    <select name="paymentType" class="form-select" style="cursor: pointer;">
+                        <option value="Full Course Fee">Full Course Fee</option>
+                        <option value="Installment">Installment</option>
+                        <option value="Exam Fee">Exam Fee</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Note / Remark Dynamic Message Textarea Input -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold small text-uppercase tracking-wider" style="color: #64748b; font-size: 11px; letter-spacing: 0.05em;">Note / Remark <span class="text-muted fw-normal lowercase">(optional)</span></label>
+                    <textarea name="note" class="form-control" rows="2" placeholder="အကြောင်းအရာ သို့မဟုတ် မှတ်ချက်ရေးပါ..."></textarea>
+                </div>
+
+                <!-- Core Form Submission Confirmation Action Trigger Button -->
+                <button type="submit" class="btn btn-primary btn-submit w-100 py-2.5">
+                    <i class="fa-solid fa-circle-check me-1"></i> Confirm & Submit Payment
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 

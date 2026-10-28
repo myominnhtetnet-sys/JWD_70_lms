@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Certificate Verification Portal</title>
+    
+    <!-- 🟢 FIXED CDN INTEGRATIONS: Fully resolved source directories to render styles and vector icons natively -->
+    <link rel="stylesheet" href="https://jsdelivr.net">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    
+    <style>
+        body { 
+            background-color: #f8fafc !important; 
+            color: #1e293b; 
+            font-family: system-ui, -apple-system, sans-serif; 
+        }
+        .verification-wrapper { 
+            max-width: 650px; 
+            margin: 60px auto; 
+            padding: 16px; 
+        }
+        
+        /* Bounded Premium Content Cards */
+        .search-card, .result-card { 
+            background: #ffffff !important; 
+            border: 1px solid #e2e8f0 !important; 
+            border-radius: 16px !important; 
+            padding: 32px !important; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 10px 15px -3px rgba(0,0,0,0.03) !important;
+            box-sizing: border-box !important;
+            margin-bottom: 24px !important;
+        }
+
+        /* Input Group Context Overrides */
+        .input-group, .input-group-text, .form-control {
+            background-color: #ffffff !important;
+            box-shadow: none !important;
+        }
+        .form-control {
+            border: 1px solid #cbd5e1 !important;
+            padding: 12px 16px !important;
+            font-size: 15px !important;
+            transition: all 0.15s ease-in-out !important;
+        }
+        .form-control:focus { 
+            border-color: #0d6efd !important; 
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15) !important; 
+        }
+        
+        .meta-label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+        .meta-value { font-size: 16px; font-weight: 600; color: #0f172a; margin-bottom: 18px; }
+        
+        /* Status badge styles */
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; }
+        .status-issued { background-color: #d1e7dd !important; color: #0a3622 !important; border: none !important; }
+        .status-revoked { background-color: #f8d7da !important; color: #58151c !important; border: none !important; }
+
+        /* 🟢 FLUID BOTTOM NAV BUTTON LINK STYLE */
+        .btn-dashboard-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #475569;
+            text-decoration: none;
+            font-size: 14.5px;
+            font-weight: 700;
+            padding: 12px;
+            border-radius: 12px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            transition: all 0.15s ease;
+            width: 100%;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .btn-dashboard-back:hover {
+            color: #0f172a;
+            background-color: #f1f5f9;
+            border-color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="verification-wrapper">
+        
+        <!-- Header Academy Underline Title Box -->
+        <div class="text-center mb-4">
+            <h3 class="fw-bold text-dark mb-2" style="letter-spacing: -0.02em; font-size: 26px; display: inline-block; border-bottom: 3px solid #0d6efd; padding-bottom: 8px; margin-bottom: 12px !important;">
+                Credential Verification
+            </h3>
+            <p class="text-muted small mx-auto" style="max-width: 480px; font-size: 14px; line-height: 1.5; margin-top: 4px;">
+                Verify the authenticity of graduation credentials issued by our academy portal.
+            </p>
+        </div>
+
+        <!-- 🔍 STEP 1: VERIFICATION LOOKUP CODE FIELD BOX -->
+        <div class="search-card">
+            <form th:action="@{/verify-certificate}" method="get">
+                <label class="form-label fw-semibold small text-muted text-uppercase mb-2" style="letter-spacing:0.02em;">Enter Certificate Code</label>
+                <div class="input-group">
+                    <input type="text" name="code" th:value="${searchedCode}" class="form-control" placeholder="e.g. CERT-2026-XXXX" required style="border-radius: 10px 0 0 10px !important;">
+                    <button type="submit" class="btn btn-primary px-4 fw-bold" style="border-radius: 0 10px 10px 0 !important;">
+                        <i class="fa-solid fa-magnifying-glass me-1"></i> Verify
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ❌ STEP 2A: RENDER ALERT ERROR ON NOT FOUND METRICS -->
+        <div th:if="${error}" class="alert alert-danger py-3 border-0 rounded-3 shadow-sm mb-4">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation fs-5"></i>
+                <span class="fw-semibold small" th:text="${error}">Error response details</span>
+            </div>
+        </div>
+
+        <!-- 🟩 STEP 2B: CERTIFICATE FOUND -> RENDER DATA SHEETS DISPLAY -->
+        <div th:if="${isValidated}" class="result-card">
+            
+            <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+                <div class="fw-bold fs-5 text-dark">Verification Status</div>
+                
+                <!-- Status Switch Case Displays -->
+                <span th:if="${cert['status'].toString() == 'ISSUED'}" class="status-badge status-issued">
+                    <i class="fa-solid fa-circle-check"></i> Verified Authentic
+                </span>
+                <span th:if="${cert['status'].toString() == 'REVOKED'}" class="status-badge status-revoked">
+                    <i class="fa-solid fa-circle-xmark"></i> Revoked / Expired
+                </span>
+            </div>
+
+            <!-- Profile Info Metrics Row Entries Grid Layout -->
+            <div>
+                <div class="meta-label">Graduate Student</div>
+                <div class="meta-value" th:text="${cert['student_name']}">Aung Aung</div>
+
+                <div class="meta-label">Course / Degree Title</div>
+                <div class="meta-value" th:text="${cert['course_title']}">Professional Course Studio</div>
+
+                <div class="meta-label">Unique Verification Key Code</div>
+                <div class="meta-value text-primary font-monospace" th:text="${cert['certificate_code']}">CERT-0000</div>
+
+                <div class="meta-label">Award Validation Issue Date</div>
+                <div class="meta-value" th:text="${cert['issued_at']}">2026-10-28</div>
+
+                <!-- Hidden Conditional Warning Node box visible exclusively on Status='REVOKED' states -->
+                <div th:if="${cert['status'].toString() == 'REVOKED' and cert['revoked_reason'] != null}" class="p-3 bg-danger-subtle text-danger-emphasis rounded-3 mb-3 small border-start border-danger border-3">
+                    <strong>Reason for Revocation:</strong> <span th:text="${cert['revoked_reason']}">Administrative cancellation details.</span>
+                </div>
+
+                <!-- 📄 Download Attached Digital PDF Copy Action Hook Link Button -->
+                <div th:if="${cert['status'].toString() == 'ISSUED' and cert['file_path'] != null}" class="mt-4 pt-2">
+                    <a th:href="${cert['file_path']}" target="_blank" class="btn btn-outline-primary w-100 py-2.5 fw-bold d-inline-flex align-items-center justify-content-center gap-2 rounded-3" style="border-radius: 10px !important;">
+                        <i class="fa-solid fa-file-arrow-down fs-5"></i> View / Download Digital Certificate Document
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 🧭 BOTTOM RETURN TO HOME ACTION SELECTION LINK            -->
+        <!-- ========================================================= -->
+        <div class="mt-4">
+            <a th:href="@{/}" class="btn-dashboard-back">
+                <i class="fa-solid fa-arrow-left-long"></i>
+                <span>Return to Home</span>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
