@@ -1,0 +1,129 @@
+package com.Learning_Managnment_System.JWD_70_lms.Controller;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.Learning_Managnment_System.JWD_70_lms.Repository.EnrollmentRepository;
+import com.Learning_Managnment_System.JWD_70_lms.Repository.PaymentRepository;
+import com.Learning_Managnment_System.JWD_70_lms.Repository.StudentRepository;
+import com.Learning_Managnment_System.JWD_70_lms.model.PaymentBean;
+
+import jakarta.servlet.http.HttpSession;
+
+@Controller
+public class CheckoutController {
+
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
+
+    @GetMapping("/student/checkout")
+    public String showCheckoutPage(@RequestParam(value = "courseId", required = false, defaultValue = "1") int courseId, HttpSession session, Model model) {
+        String email = (String) session.getAttribute("email");
+        if (email == null) {
+            return "redirect:/login";
+        }
+
+        Map<String, Object> student = studentRepository.findByEmail(email);
+        Map<String, Object> course = enrollmentRepository.getCourseById(courseId);
+        
+        if (course == null) {
+            course = enrollmentRepository.getCourseById(1);
+        }
+
+        List<Map<String, Object>> discounts = enrollmentRepository.getDiscountsByCourseId(courseId);
+        List<Map<String, Object>> installments = enrollmentRepository.getInstallmentRules(courseId);
+        List<Map<String, Object>> paymentMethods = paymentRepository.getActivePaymentMethods();
+
+        model.addAttribute("student", student);
+        model.addAttribute("course", course);
+        model.addAttribute("discounts", discounts);
+        model.addAttribute("installments", installments);
+        model.addAttribute("paymentMethods", paymentMethods);
+        model.addAttribute("fullName", student != null ? student.get("full_name") : "Student");
+
+        return "checkout"; 
+    }
+   
+    @PostMapping("/student/process-payment")
+    public String processPayment(@RequestParam(value = "paymentMethodId", defaultValue = "0") int paymentMethodId,
+                               @RequestParam("amount") double amount,
+                               @RequestParam(value = "paymentType", defaultValue = "Full Course Fee") String paymentType,
+                               @RequestParam(value = "note", required = false) String note,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
+
+        String email = (String) session.getAttribute("email");
+        Object studentIdObj = session.getAttribute("studentId");
+
+        if (email == null) {
+            return "redirect:/login";
+        }
+
+        if (paymentMethodId == 0) {
+            redirectAttributes.addFlashAttribute("error", "Please select a payment method.");
+            return "redirect:/student/checkout";
+        }
+
+        int userId = (studentIdObj != null) ? Integer.parseInt(studentIdObj.toString()) : 1;
+        
+        Integer validEnrollmentId = paymentRepository.getEnrollmentIdByUserId(userId);
+        String generatedTxnNo = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+
+        PaymentBean payment = new PaymentBean();
+        payment.setEnrollmentId(validEnrollmentId);
+        payment.setScheduleId(1);
+        payment.setPaymentMethodId(paymentMethodId);
+        payment.setAmount(amount);
+        payment.setTransactionNo(generatedTxnNo);
+        payment.setPaymentType(paymentType);
+        payment.setNote(note);
+        payment.setProofImage(null);
+        payment.setStatus("SUCCESS");
+
+        int result = paymentRepository.savePayment(payment);
+
+        if (result > 0) {
+            // ဒေတာများ Database ထဲ အောင်မြင်စွာဝင်ပြီးပါက Success စာမျက်နှာသို့ URL parameters များဖြင့် လုံခြုံစွာ ပို့ဆောင်ပေးခြင်း
+            return "redirect:/student/payment-success?amount=" + amount + 
+                   "&transactionNo=" + generatedTxnNo + 
+                   "&paymentType=" + java.net.URLEncoder.encode(paymentType, java.nio.charset.StandardCharsets.UTF_8) + 
+                   "&note=" + java.net.URLEncoder.encode(note != null ? note : "", java.nio.charset.StandardCharsets.UTF_8);
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Payment submission failed. Please try again.");
+            return "redirect:/student/checkout";
+        }
+    }
+
+    @GetMapping("/student/payment-success")
+    public String showSuccessPage(@RequestParam(value = "amount", required = false) Double amount,
+                                @RequestParam(value = "transactionNo", required = false) String transactionNo,
+                                @RequestParam(value = "paymentType", required = false) String paymentType,
+                                @RequestParam(value = "note", required = false) String note,
+                                HttpSession session, Model model) {
+        if (session.getAttribute("email") == null) {
+            return "redirect:/login";
+        }
+        
+        model.addAttribute("amount", amount);
+        model.addAttribute("transactionNo", transactionNo);
+        model.addAttribute("paymentType", paymentType);
+        model.addAttribute("note", note);
+
+        return "payment-success";
+    }
+}

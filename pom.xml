@@ -54,6 +54,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+		
+		<!-- 🟢 REQUIRED: Unlocks AntPathRequestMatcher and Security Configuration Layer Engines -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
 
 		<!-- 6. Project Lombok -->
 		<dependency>

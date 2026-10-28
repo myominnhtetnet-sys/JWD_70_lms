@@ -98,6 +98,4 @@ public class SubmissionRepository {
 	    return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("enrollment_id"), userId);
 	}
 
-
-
 }

@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.Learning_Managnment_System.JWD_70_lms.Service.ExamService;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean;
-import com.Learning_Managnment_System.JWD_70_lms.model.QuestionBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 
 @Controller
 @RequestMapping("/teacher/exams")
@@ -28,87 +30,101 @@ public class ExamController {
 	private final ExamService examService;
 	private final JdbcTemplate jdbcTemplate;
 
-	public ExamController(ExamService examService,JdbcTemplate jdbcTemplate) {
+	public ExamController(ExamService examService, JdbcTemplate jdbcTemplate) {
 		this.examService = examService;
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
+	private void addCommonAttributes(HttpSession session, Model model) {
+		LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+		if (currentUser != null && currentUser.getFull_name() != null) {
+			model.addAttribute("fullName", currentUser.getFull_name());
+		} else if (session.getAttribute("fullName") != null) {
+			model.addAttribute("fullName", session.getAttribute("fullName"));
+		}
+	}
+
 	@GetMapping
-	public String examList(Model model) {
-	    model.addAttribute("exams", examService.getAllExams());
-	    model.addAttribute("courses", getAllCourses());
-	    model.addAttribute("batches", getAllBatches());
-	    return "exam-list";
+	public String examList(Model model, HttpSession session) {
+		addCommonAttributes(session, model);
+		model.addAttribute("exams", examService.getAllExams());
+		model.addAttribute("courses", getAllCourses());
+		model.addAttribute("batches", getAllBatches());
+		return "exam-list";
 	}
 
 	private List<Map<String, Object>> getAllCourses() {
-	    String sql = """
-	        SELECT course_id, title
-	        FROM courses
-	        ORDER BY title
-	    """;
-	    return jdbcTemplate.queryForList(sql);
+		String sql = """
+			SELECT course_id, title
+			FROM courses
+			ORDER BY title
+		""";
+		return jdbcTemplate.queryForList(sql);
 	}
 	
 	private List<Map<String, Object>> getAllBatches() {
-	    String sql = """
-	        SELECT batch_id, batch_code, title
-	        FROM batches
-	        ORDER BY batch_id DESC
-	        """;
-	    return jdbcTemplate.queryForList(sql);
+		String sql = """
+			SELECT batch_id, batch_code, title
+			FROM batches
+			ORDER BY batch_id DESC
+			""";
+		return jdbcTemplate.queryForList(sql);
 	}
 	
 	@GetMapping("/create")
-	public String createForm(Model model) {
-	    model.addAttribute("exam", new ExamBean());
-	    model.addAttribute("batches", getAllBatches());
-	    model.addAttribute("courses", getAllCourses());
-	    return "exam-form";
+	public String createForm(Model model, HttpSession session) {
+		addCommonAttributes(session, model);
+		model.addAttribute("exam", new ExamBean());
+		model.addAttribute("batches", getAllBatches());
+		model.addAttribute("courses", getAllCourses());
+		return "exam-form";
 	}
 
 	@GetMapping("/edit/{id}")
 	public String editForm(
-	        @PathVariable("id") Long examId, Model model,
-	        RedirectAttributes redirectAttributes) {
+			@PathVariable("id") Long examId, Model model,
+			RedirectAttributes redirectAttributes, HttpSession session) {
 
-	    try {
-	        ExamBean exam = examService.getExamById(examId);
-	        model.addAttribute("exam", exam);
-	        model.addAttribute("batches", getAllBatches());
-	        model.addAttribute("courses", getAllCourses());
-	        return "exam-form";
+		addCommonAttributes(session, model);
+		try {
+			ExamBean exam = examService.getExamById(examId);
+			model.addAttribute("exam", exam);
+			model.addAttribute("batches", getAllBatches());
+			model.addAttribute("courses", getAllCourses());
+			return "exam-form";
 
-	    } catch (IllegalArgumentException e) {
-	       redirectAttributes.addFlashAttribute( "error", e.getMessage());
-	        return "redirect:/teacher/exams";
-	    }
+		} catch (IllegalArgumentException e) {
+			redirectAttributes.addFlashAttribute("error", e.getMessage());
+			return "redirect:/teacher/exams";
+		}
 	}
 
 	@GetMapping("/view/{id}")
-	public String viewExam( @PathVariable("id") Long examId, Model model,
-	        RedirectAttributes redirectAttributes) {
+	public String viewExam(
+			@PathVariable("id") Long examId, Model model,
+			RedirectAttributes redirectAttributes, HttpSession session) {
 
-	    try {
-	        ExamBean exam = examService.getExamById(examId);
-	        List<ExamQuestionBean> questions =examService.getSelectedQuestions(examId);
+		addCommonAttributes(session, model);
+		try {
+			ExamBean exam = examService.getExamById(examId);
+			List<ExamQuestionBean> questions = examService.getSelectedQuestions(examId);
 
-	        BigDecimal selectedTotalMark = questions.stream()
-	                .map(ExamQuestionBean::getMark)
-	                .filter(mark -> mark != null)
-	                .reduce(BigDecimal.ZERO, BigDecimal::add);
+			BigDecimal selectedTotalMark = questions.stream()
+					.map(ExamQuestionBean::getMark)
+					.filter(mark -> mark != null)
+					.reduce(BigDecimal.ZERO, BigDecimal::add);
 
-	        model.addAttribute("exam", exam);
-	        model.addAttribute("questions", questions);
-	        model.addAttribute("questionCount", questions.size());
-	        model.addAttribute("selectedTotalMark", selectedTotalMark);
+			model.addAttribute("exam", exam);
+			model.addAttribute("questions", questions);
+			model.addAttribute("questionCount", questions.size());
+			model.addAttribute("selectedTotalMark", selectedTotalMark);
 
-	        return "exam-detail";
+			return "exam-detail";
 
-	    } catch (IllegalArgumentException e) {
-	        redirectAttributes.addFlashAttribute( "error",e.getMessage());
-	        return "redirect:/teacher/exams";
-	    }
+		} catch (IllegalArgumentException e) {
+			redirectAttributes.addFlashAttribute("error", e.getMessage());
+			return "redirect:/teacher/exams";
+		}
 	}
 
 	@PostMapping("/save")
@@ -124,29 +140,29 @@ public class ExamController {
 		}
 	}
 
-
 	@PostMapping("/update")
 	public String updateExam(
-	        ExamBean exam,
-	        RedirectAttributes redirectAttributes) {
+			ExamBean exam,
+			RedirectAttributes redirectAttributes) {
 
-	    try {
-	        ExamBean existingExam = examService.getExamById(exam.getExamId());
+		try {
+			ExamBean existingExam = examService.getExamById(exam.getExamId());
 
-	        exam.setCourseId(existingExam.getCourseId());
-	        exam.setBatchId(existingExam.getBatchId());
-	        exam.setCreatedBy(existingExam.getCreatedBy());
-	        examService.updateExam(exam);
+			exam.setCourseId(existingExam.getCourseId());
+			exam.setBatchId(existingExam.getBatchId());
+			exam.setCreatedBy(existingExam.getCreatedBy());
+			examService.updateExam(exam);
 
-	        redirectAttributes.addFlashAttribute(
-	                "success","Exam updated successfully.");
+			redirectAttributes.addFlashAttribute(
+					"success", "Exam updated successfully.");
 
-	    } catch (IllegalArgumentException e) {
-	        redirectAttributes.addFlashAttribute("error",e.getMessage());
-	    }
+		} catch (IllegalArgumentException e) {
+			redirectAttributes.addFlashAttribute("error", e.getMessage());
+		}
 
-	    return "redirect:/teacher/exams";
+		return "redirect:/teacher/exams";
 	}
+
 	@PostMapping("/delete/{id}")
 	public String deleteExam(@PathVariable("id") Long examId, RedirectAttributes redirectAttributes) {
 		try {
@@ -171,17 +187,22 @@ public class ExamController {
 	}
 
 	@GetMapping("/{examId}/questions")
-	public String selectQuestions(@PathVariable("examId") Long examId, Model model,
-			RedirectAttributes redirectAttributes) {
+	public String selectQuestions(
+			@PathVariable("examId") Long examId, Model model,
+			RedirectAttributes redirectAttributes, HttpSession session) {
+
+		addCommonAttributes(session, model);
 		try {
 			ExamBean exam = examService.getExamById(examId);
-			List<QuestionBean> questions = examService.getQuestionBank();
 			List<ExamQuestionBean> selectedQuestions = examService.getSelectedQuestions(examId);
 			Set<Long> selectedQuestionIds = selectedQuestions.stream().map(ExamQuestionBean::getQuestionId)
 					.collect(Collectors.toSet());
 
 			model.addAttribute("exam", exam);
-			model.addAttribute("questions", questions);
+			model.addAttribute(
+					"questions",
+					examService.getQuestionBankByCourse(exam.getCourseId())
+			);
 			model.addAttribute("selectedQuestions", selectedQuestions);
 			model.addAttribute("selectedQuestionIds", selectedQuestionIds);
 			return "exam-select-questions";
@@ -230,51 +251,52 @@ public class ExamController {
 	
 	@PostMapping("/update/prepare")
 	public String prepareExamUpdate(
-	        ExamBean exam, Model model,
-	        RedirectAttributes redirectAttributes) {
+			ExamBean exam, Model model,
+			RedirectAttributes redirectAttributes, HttpSession session) {
 
-	    try {
-	        ExamBean existing = examService.getExamById(exam.getExamId());
+		addCommonAttributes(session, model);
+		try {
+			ExamBean existing = examService.getExamById(exam.getExamId());
 
-	        exam.setCourseId(existing.getCourseId());
-	        exam.setBatchId(existing.getBatchId());
-	        exam.setCreatedBy(existing.getCreatedBy());
+			exam.setCourseId(existing.getCourseId());
+			exam.setBatchId(existing.getBatchId());
+			exam.setCreatedBy(existing.getCreatedBy());
 
-	        List<ExamQuestionBean> selectedQuestions =
-	                examService.getSelectedQuestions(exam.getExamId());
+			List<ExamQuestionBean> selectedQuestions =
+					examService.getSelectedQuestions(exam.getExamId());
 
-	        Set<Long> selectedQuestionIds =
-	                selectedQuestions.stream()
-	                    .map(ExamQuestionBean::getQuestionId)
-	                    .collect(Collectors.toSet());
+			Set<Long> selectedQuestionIds =
+					selectedQuestions.stream()
+						.map(ExamQuestionBean::getQuestionId)
+						.collect(Collectors.toSet());
 
-	        model.addAttribute("exam", exam);
-	        model.addAttribute("questions", examService.getQuestionBank());
-	        model.addAttribute("selectedQuestions", selectedQuestions);
-	        model.addAttribute("selectedQuestionIds", selectedQuestionIds);
+			model.addAttribute("exam", exam);
+			model.addAttribute("questions", examService.getQuestionBank());
+			model.addAttribute("selectedQuestions", selectedQuestions);
+			model.addAttribute("selectedQuestionIds", selectedQuestionIds);
 
-	        return "exam-update-questions";
+			return "exam-update-questions";
 
-	    } catch (IllegalArgumentException e) {
-	        redirectAttributes.addFlashAttribute("error",e.getMessage());
-	        return "redirect:/teacher/exams";
-	    }
+		} catch (IllegalArgumentException e) {
+			redirectAttributes.addFlashAttribute("error", e.getMessage());
+			return "redirect:/teacher/exams";
+		}
 	}
 	
 	@PostMapping("/update/confirm")
-	public String confirmExamUpdate( ExamBean exam,
-	        @RequestParam(value = "questionIds",
-	            required = false ) List<Long> questionIds,
-	        RedirectAttributes redirectAttributes) {
+	public String confirmExamUpdate(
+			ExamBean exam,
+			@RequestParam(value = "questionIds", required = false) List<Long> questionIds,
+			RedirectAttributes redirectAttributes) {
 
-	    try {
-	        examService.updateExamWithQuestions(exam, questionIds);
-	        redirectAttributes.addFlashAttribute( "success","Exam and questions updated successfully.");
-	        return "redirect:/teacher/exams";
+		try {
+			examService.updateExamWithQuestions(exam, questionIds);
+			redirectAttributes.addFlashAttribute("success", "Exam and questions updated successfully.");
+			return "redirect:/teacher/exams";
 
-	    } catch (IllegalArgumentException e) {
-	        redirectAttributes.addFlashAttribute("error",e.getMessage() );
-	        return "redirect:/teacher/exams";
-	    }
+		} catch (IllegalArgumentException e) {
+			redirectAttributes.addFlashAttribute("error", e.getMessage());
+			return "redirect:/teacher/exams";
+		}
 	}
 }

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assignment Management - Teacher Portal</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {width: 6px;height: 6px;}
+    ::-webkit-scrollbar-track {background: rgba(0,0,0,0.03);}
+    ::-webkit-scrollbar-thumb {background: rgba(0,0,0,0.15);border-radius: 3px;}
+    .fade-in {animation: fadeIn 0.25s ease-in-out;}
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+</head>
+
+<body class="h-full font-sans text-slate-900 bg-slate-50 antialiased">
+
+    <div id="app" class="min-h-screen flex flex-col">
+        
+       <div th:replace="~{teacher :: header}"></div>
+
+        <!-- MAIN LAYOUT WRAPPER -->
+        <div class="flex-1 flex items-stretch">
+  
+            <div class="exam-sidebar shrink-0">
+               <div th:replace="~{teacher :: sidebar}"></div>
+            </div>
+
+            <!-- Main Content -->
+            <main class="flex-1 min-w-0 px-4 sm:px-8 py-6 bg-slate-50 overflow-y-auto">
+
+                <div class="w-full space-y-6">
+
+                    <!-- Page Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <h1 class="text-xl font-bold text-slate-900">Final Grades</h1>
+                            <p class="text-xs text-slate-600 mt-1">Calculate, review and publish student results.</p>
+                        </div>
+                    </div>
+
+                    <!-- Messages -->
+                    <div th:if="${successMessage}" class="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl" th:text="${successMessage}"></div>
+                    <div th:if="${errorMessage}" class="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl" th:text="${errorMessage}"></div>
+
+                    <!-- Toolbar / Batch Selection Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs w-full">
+                        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                            <form class="flex flex-col sm:flex-row items-end gap-3 flex-1" method="get" th:action="@{/teacher/final-grades}">
+                                <div class="space-y-1 flex-1 max-w-sm">
+                                    <label for="batchId" class="block text-xs font-bold uppercase text-slate-700">Batch</label>
+                                    <select id="batchId" name="batchId" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+                                        <option value="">Select a batch</option>
+                                        <option th:each="batch : ${batches}"
+                                                th:value="${batch.batchId}"
+                                                th:text="${batch.batchCode + ' - ' + batch.title}"
+                                                th:selected="${selectedBatchId != null and selectedBatchId == batch.batchId}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <button class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs py-3 px-4 rounded-xl transition cursor-pointer" type="submit">
+                                    Load Students
+                                </button>
+                            </form>
+
+                            <div class="flex items-center gap-2" th:if="${selectedBatchId != null and not #lists.isEmpty(students)}">
+                                <form method="post" th:action="@{/teacher/final-grades/calculate}">
+                                    <input type="hidden" name="batchId" th:value="${selectedBatchId}">
+                                    <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-3 px-4 rounded-xl transition cursor-pointer shadow-xs" type="submit">
+                                        Calculate
+                                    </button>
+                                </form>
+
+                                <form method="post" th:action="@{/teacher/final-grades/publish}" onsubmit="return confirm('Publish all calculated draft grades in this batch?')">
+                                    <input type="hidden" name="batchId" th:value="${selectedBatchId}">
+                                    <button class="bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs py-3 px-4 rounded-xl transition cursor-pointer shadow-xs disabled:opacity-40 disabled:cursor-not-allowed" type="submit" th:disabled="${not canPublish}">
+                                        Publish
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Policy Info Box -->
+                        <div class="mt-4 p-3 bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-semibold rounded-xl leading-relaxed">
+                            <i class="fa-solid fa-circle-info mr-1"></i> Assignment 30% · Exam 60% · Attendance 10% · Pass mark 40[cite: 6]
+                            <br>
+                            Close assessments and finish attendance before calculating. Published grades are locked on this page.[cite: 6]
+                        </div>
+
+                        <p class="text-xs text-slate-500 mt-3" th:if="${#lists.isEmpty(batches)}">
+                            No batches are assigned to your teacher account.[cite: 6]
+                        </p>
+                    </div>
+
+                    <!-- Students Table Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden w-full">
+                        <div class="px-6 py-4 border-b border-slate-200 bg-slate-100">
+                            <h2 class="font-bold text-sm uppercase text-slate-700">Student Final Grades</h2>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-700 font-bold">
+                                    <tr>
+                                        <th class="px-4 py-3">No.</th>
+                                        <th class="px-4 py-3">Student</th>
+                                        <th class="px-4 py-3">Assignment / 30</th>
+                                        <th class="px-4 py-3">Exam / 60</th>
+                                        <th class="px-4 py-3">Attendance %</th>
+                                        <th class="px-4 py-3">Final / 100</th>
+                                        <th class="px-4 py-3">Grade</th>
+                                        <th class="px-4 py-3">Result</th>
+                                        <th class="px-4 py-3">Status</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr th:each="student, row : ${students}" class="hover:bg-slate-50/80 transition">
+                                        <td class="px-4 py-3 text-xs text-slate-500 font-medium" th:text="${row.count}"></td>
+                                        <td class="px-4 py-3 font-semibold text-slate-900" th:text="${student.studentName}"></td>
+
+                                        <td class="px-4 py-3 text-xs text-slate-600 font-medium" th:text="${student.gradeId == null ? '—' : student.assignmentScore}"></td>
+                                        <td class="px-4 py-3 text-xs text-slate-600 font-medium" th:text="${student.gradeId == null ? '—' : student.examScore}"></td>
+                                        <td class="px-4 py-3 text-xs text-slate-600 font-medium" th:text="${student.gradeId == null ? '—' : student.attendancePercent}"></td>
+
+                                        <td class="px-4 py-3 text-sm font-bold text-slate-800">
+                                            <span th:text="${student.gradeId == null ? '—' : student.totalScore}"></span>
+                                        </td>
+
+                                        <td class="px-4 py-3 text-xs font-bold text-slate-800" th:text="${student.gradeId == null ? '—' : student.gradeLetter}"></td>
+
+                                        <td class="px-4 py-3">
+                                            <span th:if="${student.gradeId != null}"
+                                                  class="px-2.5 py-1 rounded-full text-[10px] font-bold border inline-block"
+                                                  th:classappend="${student.result == 'PASSED'} ? ' bg-emerald-50 text-emerald-700 border-emerald-200' : ' bg-rose-50 text-rose-700 border-rose-200'"
+                                                  th:text="${student.result}">
+                                            </span>
+                                            <span th:if="${student.gradeId == null}" class="text-xs text-slate-400">—</span>
+                                        </td>
+
+                                        <td class="px-4 py-3">
+                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border inline-block"
+                                                  th:classappend="${student.publishedAt != null} ? ' bg-emerald-50 text-emerald-700 border-emerald-200' : (${student.gradeId != null} ? ' bg-amber-50 text-amber-700 border-emerald-200' : ' bg-slate-100 text-slate-600 border-slate-200')"
+                                                  th:text="${student.publishedAt != null ? 'Published' : (student.gradeId != null ? 'Draft' : 'Not calculated')}">
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <tr th:if="${#lists.isEmpty(students)}">
+                                        <td colspan="9" class="px-6 py-12 text-center text-slate-500 text-sm font-medium"
+                                            th:text="${selectedBatchId == null ? 'Select a batch to view students.' : 'No ACTIVE or COMPLETED students in this batch.'}">[cite: 6]
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Footer Note -->
+                        <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 font-medium">
+                            <i class="fa-solid fa-circle-info mr-1"></i> Attendance contributes up to 10 points. For example, 90% attendance contributes 9 points.[cite: 6]
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+</body>
+</html>

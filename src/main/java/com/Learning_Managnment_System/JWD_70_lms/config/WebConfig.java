@@ -28,5 +28,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/assets/");
         registry.addResourceHandler("/webfonts/", "/student/webfonts/", "/student/exam-take/webfonts/", "/student/awards/webfonts/**")
                 .addResourceLocations("classpath:/static/webfonts/");
-	}
+        
+        // 🟢 FIXED: Removed the illegal '**/videos/**' wildcard. 
+        // Explicitly maps root video folders and multi-tier nested student routes to satisfy the PathPatternParser rules perfectly!
+        registry.addResourceHandler("/videos/**", "/student/videos/**", "/student/exam-take/videos/**", "/student/awards/videos/**")
+                .addResourceLocations("classpath:/static/videos/");
+        
+        
+    }
+    
 }

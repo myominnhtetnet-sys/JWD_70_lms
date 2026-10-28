@@ -46,6 +46,9 @@ public class CourseController {
         return "Course_Management";
     }
 
+    /**
+     * 🟢 1. FETCH AND FILTER CATALOG PROGRAM DASHBOARDS
+     */
     @GetMapping("/show")
     public String showAndFilterCourses(
             @ModelAttribute CourseBean filters, 
@@ -159,12 +162,21 @@ public class CourseController {
 
     // ==========================================
 
+    /**
+     * 🟢 2. DETAILED SINGLE VIEW VIA TEXT PATH SLUGS
+     */
+    /**
+     * 🟢 DETAILED SINGLE VIEW VIA LOOKUP SLUGS
+     */
     @GetMapping("/detail/{slug}")
     public String getCourseDetails(@PathVariable("slug") String slug, Model model) {
-        Optional<CourseBean> courseOpt = courseRepository.findBySlug(slug);
+        // Find the course in the database case-insensitively
+        Optional<CourseBean> courseOpt = courseRepository.findBySlug(slug.trim().toLowerCase());
         
         if (courseOpt.isEmpty()) {
-            return "error/404"; 
+            System.out.println("⚠️ NOTICE: Course slug not resolved: " + slug);
+            // Bypasses the missing error/404 template crash completely by returning to catalog safely
+            return "redirect:/courses/show"; 
         }
         
         CourseBean course = courseOpt.get();
@@ -175,8 +187,13 @@ public class CourseController {
         
         return "course-detail"; 
     }
+
     
     @PostMapping("/{id}/review") 
+    /**
+     * 🟢 3. PROCESS TRANS-SUBMISSION OF AN INDIVIDUAL USER COURSE EVALUATION REVIEW
+     */
+    @PostMapping("/{id}/review")
     public String saveCourseReview(
             @PathVariable("id") Long courseId,
             @RequestParam("rating") int rating,
@@ -200,6 +217,7 @@ public class CourseController {
             redirectAttributes.addFlashAttribute("errorMessage", "You have already submitted a review for this course.");
             CourseBean course = courseService.getCourseById(courseId.intValue());
             return "redirect:/admin/courses/detail/" + course.getSlug(); 
+            return "redirect:/courses/detail/" + course.getSlug();
         }
 
         CourseBean course = courseService.getCourseById(courseId.intValue());
@@ -210,5 +228,21 @@ public class CourseController {
 
         redirectAttributes.addFlashAttribute("successMessage", "Review submitted successfully.");
         return "redirect:/admin/courses/show";
+    }
+}
+        Review review = new Review();
+        review.setRating(rating);
+        review.setComment(comment);
+        review.setCourse(course);    
+
+        StudentBean studentUser = new StudentBean();
+        review.setUser(studentUser); 
+
+        reviewService.saveReview(review, realMasterUserId);
+
+        redirectAttributes.addFlashAttribute("reviewSubmitted", true); 
+        redirectAttributes.addFlashAttribute("successMessage", "Thank you! Your feedback has been published.");
+
+        return "redirect:/courses/show#detailModal-" + courseId;
     }
 }

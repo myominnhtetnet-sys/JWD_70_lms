@@ -50,15 +50,18 @@ public class BatchRepository {
         return b;
     };
 
-    public List<BatchInfo> findAllBatches() {
-        String sql = """
-            SELECT b.*, c.title as course_title 
-            FROM batches b 
-            LEFT JOIN courses c ON b.course_id = c.course_id 
-            ORDER BY b.batch_id DESC
-        """;
-        return jdbcTemplate.query(sql, batchInfoRowMapper);
+    public List<BatchBean> findAll() {
+
+        String sql = "SELECT * FROM learning_db.batches ORDER BY batch_id";
+           
+
+        List<BatchBean> batches =jdbcTemplate.query(sql,new BatchRowMapper());
+        System.out.println("Total Batches: " + batches.size());
+        return batches;
     }
+    
+    public Optional<BatchBean> findById(Integer id) {
+        String sql = "SELECT * FROM learning_db.batches where batch_id = ?";
 
     public BatchInfo findBatchById(Long batchId) {
         String sql = """

@@ -20,13 +20,11 @@ public class PaymentRepository {
         return jdbcTemplate.queryForList(sql);
     }
 
-   
     public Integer getEnrollmentIdByUserId(int userId) {
         String sql = "SELECT enrollment_id FROM enrollments WHERE user_id = ? LIMIT 1";
         try {
             return jdbcTemplate.queryForObject(sql, Integer.class, userId);
         } catch (Exception e) {
-            
             String defaultSql = "SELECT enrollment_id FROM enrollments LIMIT 1";
             try {
                 return jdbcTemplate.queryForObject(defaultSql, Integer.class);
@@ -37,10 +35,13 @@ public class PaymentRepository {
     }
 
     public int savePayment(PaymentBean payment) {
+        // Database ဇယားတွင် payment_type column မရှိပါက remark ထဲသို့ ပုံစံတကျ ထည့်သွင်းပေးခြင်း
         String sql = "INSERT INTO payments (enrollment_id, schedule_id, payment_method_id, amount, transaction_no, proof_image, status, remark) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
-        String combinedRemark = "[" + payment.getPaymentType() + "] " + (payment.getNote() != null ? payment.getNote() : "");
+        // Payment Type နှင့် Note ကို ပေါင်း၍ remark ထဲသို့ သိမ်းဆည်းခြင်း
+        String combinedRemark = "[" + (payment.getPaymentType() != null ? payment.getPaymentType() : "Full Course Fee") + "] " 
+                                + (payment.getNote() != null && !payment.getNote().isEmpty() ? payment.getNote() : "");
 
         return jdbcTemplate.update(sql, 
                 payment.getEnrollmentId(),

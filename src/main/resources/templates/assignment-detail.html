@@ -1,178 +1,149 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assignment Details</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assignment Details - Teacher Portal</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.03); }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+</style>
 </head>
 
-<body>
+        <!-- MAIN LAYOUT WRAPPER -->
+        <div class="flex-1 flex">
+  
+           <div th:replace="~{teacher :: header}"></div>
 
-<div class="container detail-container">
+            <!-- MAIN CONTENT AREA -->
+            <main class="flex-1 min-w-0 px-6 py-6 bg-slate-50 overflow-y-auto">
+                <div class="max-w-4xl mx-auto space-y-6">
 
-    <div class="detail-header">
-        <div>
-            <h2>Assignment Details</h2>
-            <p>View complete assignment information.</p>
-        </div>
+                    <!-- Header -->
+                    <div class="flex items-center justify-between bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
+                        <div>
+                            <h1 class="text-xl font-bold text-slate-900">Assignment Details</h1>
+                            <p class="text-xs text-slate-600 mt-1">View complete assignment information.</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold border"
+                              th:classappend="${assignment.status == 'PUBLISHED'} ? ' bg-emerald-50 text-emerald-700 border-emerald-200' : (${assignment.status == 'DRAFT'} ? ' bg-amber-50 text-amber-700 border-amber-200' : ' bg-rose-50 text-rose-700 border-rose-200')"
+                              th:text="${assignment.status}">DRAFT</span>
+                    </div>
 
-        <span class="status-badge"
-              th:classappend="${assignment.status == 'PUBLISHED'} ? 'status-published' :
-                              (${assignment.status == 'DRAFT'} ? 'status-draft' :
-                              (${assignment.status == 'CLOSED'} ? 'status-closed' : ''))"
-              th:text="${assignment.status}">
-            DRAFT
-        </span>
-    </div>
+                    <!-- Details Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-6">
+                        
+                        <!-- Basic Information -->
+                        <div>
+                            <h3 class="text-xs font-bold uppercase text-slate-700 mb-3 tracking-wider">Basic Information</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                                    <span class="text-xs font-bold uppercase text-slate-500 block mb-1">Assignment ID</span>
+                                    <strong class="text-slate-900" th:text="${assignment.assignmentId}">-</strong>
+                                </div>
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                                    <span class="text-xs font-bold uppercase text-slate-500 block mb-1">Title</span>
+                                    <strong class="text-slate-900" th:text="${assignment.title}">-</strong>
+                                </div>
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                                    <span class="text-xs font-bold uppercase text-slate-500 block mb-1">Batch</span>
+                                    <strong class="text-slate-900" th:text="${batch.batchCode + ' - ' + batch.title}">-</strong>
+                                </div>
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                                    <span class="text-xs font-bold uppercase text-slate-500 block mb-1">Lesson</span>
+                                    <strong class="text-slate-900" th:text="${lesson.title}">-</strong>
+                                </div>
+                                <div class="sm:col-span-2 bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                                    <span class="text-xs font-bold uppercase text-slate-500 block mb-1">Description</span>
+                                    <div class="text-slate-800 font-medium" th:text="${assignment.description ?: 'No description provided'}"></div>
+                                </div>
+                                <div class="sm:col-span-2 bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                                    <span class="text-xs font-bold uppercase text-slate-500 block mb-2">Attachment</span>
+                                    <div th:if="${assignment.attachment != null and !assignment.attachment.isBlank()}" class="flex items-center gap-3">
+                                        <a th:href="@{${assignment.attachment}}" target="_blank" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition shadow-xs">View Attachment</a>
+                                        <a th:href="@{${assignment.attachment}}" download class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold transition">Download</a>
+                                    </div>
+                                    <div th:unless="${assignment.attachment != null and !assignment.attachment.isBlank()}">
+                                        <p class="text-xs font-medium text-slate-500">No attachment available.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-    <div class="detail-card">
-        <div class="detail-section">
-            <h3>Basic Information</h3>
-            
-            <div class="detail-grid">
-                <div class="detail-item">
-                    <div class="detail-label">Assignment ID</div>
-                    <div class="detail-value"
-                         th:text="${assignment.assignmentId}"></div>
+                        <!-- Assignment Schedule -->
+                        <div>
+                            <h3 class="text-xs font-bold uppercase text-slate-700 mb-3 tracking-wider">Assignment Schedule</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                                    <span class="text-xs font-bold uppercase text-slate-500 block mb-1">Start At</span>
+                                    <strong class="text-slate-900" th:text="${assignment.startAt}">-</strong>
+                                </div>
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                                    <span class="text-xs font-bold uppercase text-slate-500 block mb-1">Due At</span>
+                                    <strong class="text-slate-900" th:text="${assignment.dueAt}">-</strong>
+                                </div>
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                                    <span class="text-xs font-bold uppercase text-slate-500 block mb-1">Allow Late Submit</span>
+                                    <strong class="text-slate-900" th:text="${assignment.allowLateSubmit ? 'Yes' : 'No'}">-</strong>
+                                </div>
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                                    <span class="text-xs font-bold uppercase text-slate-500 block mb-1">Late Deadline</span>
+                                    <strong class="text-slate-900" th:text="${assignment.lateDeadline ?: 'Not set'}">-</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Marking Information -->
+                        <div>
+                            <h3 class="text-xs font-bold uppercase text-slate-700 mb-3 tracking-wider">Marking Information</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                                    <span class="text-xs font-bold uppercase text-slate-500 block mb-1">Total Mark</span>
+                                    <strong class="text-slate-900" th:text="${assignment.totalMark}">-</strong>
+                                </div>
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                                    <span class="text-xs font-bold uppercase text-slate-500 block mb-1">Pass Mark</span>
+                                    <strong class="text-slate-900" th:text="${assignment.passMark}">-</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Other Information -->
+                        <div>
+                            <h3 class="text-xs font-bold uppercase text-slate-700 mb-3 tracking-wider">Other Information</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                                    <span class="text-xs font-bold uppercase text-slate-500 block mb-1">Created By</span>
+                                    <strong class="text-slate-900" th:text="${assignment.createdBy}">-</strong>
+                                </div>
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                                    <span class="text-xs font-bold uppercase text-slate-500 block mb-1">Created At</span>
+                                    <strong class="text-slate-900" th:text="${assignment.createdAt}">-</strong>
+                                </div>
+                                <div class="sm:col-span-2 bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                                    <span class="text-xs font-bold uppercase text-slate-500 block mb-1">Updated At</span>
+                                    <strong class="text-slate-900" th:text="${assignment.updatedAt}">-</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+                            <a th:href="@{/teacher/assignments}" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold transition">Back to List</a>
+                            <a th:href="@{/teacher/assignments/edit/{id}(id=${assignment.assignmentId})}" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition shadow-xs">Edit Assignment</a>
+                        </div>
+                    </div>
+
                 </div>
-
-                <div class="detail-item">
-                    <div class="detail-label">Title</div>
-                    <div class="detail-value"
-                         th:text="${assignment.title}"></div>
-                </div>
-
-                <div class="detail-item">
-                    <div class="detail-label">Batch</div>
-                    <div class="detail-value"
-                         th:text="${batch.batchCode + ' - ' + batch.title}"></div>
-                </div>
-
-                <div class="detail-item">
-                    <div class="detail-label">Lesson</div>
-                    <div class="detail-value"
-                         th:text="${lesson.title}"></div>
-                </div>
-
-                <div class="detail-item full">
-                    <div class="detail-label">Description</div>
-                    <div class="detail-value"
-                         th:text="${assignment.description ?: 'No description provided'}"></div>
-                </div>
-
-					<div th:if="${assignment.attachment != null and !assignment.attachment.isBlank()}">
-					
-						<label><strong>Attachment</strong></label>
-
-						<div style="margin-top: 8px;">
-							<a th:href="@{${assignment.attachment}}" target="_blank"
-								class="btn btn-primary"> View Attachment </a>
-
-							<a th:href="@{${assignment.attachment}}" download
-								class="btn btn-success"> Download </a>
-						</div>
-					</div>
-
-					<div th:unless="${assignment.attachment != null 
-                 					and !assignment.attachment.isBlank()}">
-						<p>No attachment available.</p>
-					</div>
-				</div>
-        </div>
-
-        <div class="detail-section">
-            <h3>Assignment Schedule</h3>
-
-            <div class="detail-grid">
-
-                <div class="detail-item">
-                    <div class="detail-label">Start At</div>
-                    <div class="detail-value"
-                         th:text="${assignment.startAt}"></div>
-                </div>
-
-                <div class="detail-item">
-                    <div class="detail-label">Due At</div>
-                    <div class="detail-value"
-                         th:text="${assignment.dueAt}"></div>
-                </div>
-
-                <div class="detail-item">
-                    <div class="detail-label">Allow Late Submit</div>
-                    <div class="detail-value"
-                         th:text="${assignment.allowLateSubmit ? 'Yes' : 'No'}"></div>
-                </div>
-
-                <div class="detail-item">
-                    <div class="detail-label">Late Deadline</div>
-                    <div class="detail-value"
-                         th:text="${assignment.lateDeadline ?: 'Not set'}"></div>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="detail-section">
-            <h3>Marking Information</h3>
-
-            <div class="detail-grid">
-
-                <div class="detail-item">
-                    <div class="detail-label">Total Mark</div>
-                    <div class="detail-value"
-                         th:text="${assignment.totalMark}"></div>
-                </div>
-
-                <div class="detail-item">
-                    <div class="detail-label">Pass Mark</div>
-                    <div class="detail-value"
-                         th:text="${assignment.passMark}"></div>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="detail-section">
-            <h3>Other Information</h3>
-
-            <div class="detail-grid">
-
-                <div class="detail-item">
-                    <div class="detail-label">Created By</div>
-                    <div class="detail-value"
-                         th:text="${assignment.createdBy}"></div>
-                </div>
-
-                <div class="detail-item">
-                    <div class="detail-label">Created At</div>
-                    <div class="detail-value"
-                         th:text="${assignment.createdAt}"></div>
-                </div>
-
-                <div class="detail-item full">
-                    <div class="detail-label">Updated At</div>
-                    <div class="detail-value"
-                         th:text="${assignment.updatedAt}"></div>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="detail-actions">
-            <a class="btn-back"th:href="@{/teacher/assignments}">
-                Back to List
-            </a>
-
-            <a class="btn-edit"
-               th:href="@{/teacher/assignments/edit/{id}(id=${assignment.assignmentId})}">
-                Edit Assignment
-            </a>
-
+            </main>
         </div>
     </div>
-</div>
-
 </body>
 </html>
