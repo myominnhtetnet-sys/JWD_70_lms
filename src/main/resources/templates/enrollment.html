@@ -395,29 +395,49 @@ td {
 	font-size: 13px;
 }
 
+/* Enrollment status controls */
 .inline-form {
-	display: flex;
-	align-items: center;
-	gap: 6px;
+    display: grid;
+    grid-template-columns:
+        minmax(110px, 1fr)
+        minmax(120px, 1fr)
+        auto;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
 }
 
 .inline-form select {
-	padding: 6px;
-	background: var(--input);
-	border: 1px solid var(--border);
-	border-radius: 7px;
-	color: var(--text);
-	font-size: 11px;
+    width: 100%;
+    min-width: 0;
+    height: 34px;
+    padding: 6px 10px;
+    background: var(--input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 12px;
+    outline: none;
 }
 
-.mini-btn {
-	padding: 6px 10px;
-	border: none;
-	border-radius: 7px;
-	background: var(--primary);
-	color: white;
-	font-size: 11px;
+.inline-form select:focus {
+    border-color: var(--primary);
 }
+
+.inline-form .mini-btn {
+    height: 34px;
+    min-width: 50px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
 </style>
 </head>
 
@@ -565,8 +585,8 @@ td {
 							</thead>
 							<tbody>
     <!-- th:each ထဲတွင် , iterStat ကို ထည့်ပေးပါ -->
-    <tr th:each="e, iterStat : ${enrollments}">
-        <!-- e.enrollment_id အစား iterStat.count ကို သုံးပါ -->
+<!--     <tr th:each="e, iterStat : ${enrollments}">
+        e.enrollment_id အစား iterStat.count ကို သုံးပါ
         <td th:text="${iterStat.count}">1</td>
         
         <td>
@@ -608,7 +628,73 @@ td {
             <span th:if="${e.enrolled_at == null}">-</span>
         </td>
 
-        <!-- DETAIL MODAL ဖွင့်မည့် ခလုတ် -->
+        DETAIL MODAL ဖွင့်မည့် ခလုတ်
+        <td>
+            <button type="button" class="mini-btn"
+                style="background: var(--primary); color: white; display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 7px; border: none;"
+                th:onclick="'openDetailModal(' + ${e.enrollment_id} + ')'">
+                <i class="fa-solid fa-eye"></i> Detail
+            </button>
+        </td>
+    </tr>
+</tbody> -->
+
+<tbody>
+    <tr th:each="e, iterStat : ${enrollments}">
+        <!-- No -->
+        <td th:text="${iterStat.count}">1</td>
+        
+        <!-- Student -->
+        <td>
+            <div class="student-name" th:text="${e.student_name}">Student Name</div>
+        </td>
+        
+        <!-- Course / Batch -->
+        <td>
+            <div th:text="${e.course_name}">Course</div>
+            <div class="student-email" th:text="${e.batch_name}">Batch</div>
+        </td>
+        
+        <!-- Amount -->
+        <td th:text="${e.final_amount != null ? #numbers.formatDecimal(e.final_amount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
+        
+        <!-- Payment Type -->
+        <td th:text="${e.payment_type}">FULL</td>
+        
+        <!-- Payment Status & Enrollment Status ကို Form တစ်ခုတည်းအတွင်း ပေါင်းထည့်ခြင်း -->
+        <td colspan="2">
+            <form th:action="@{/admin/enrollments/update-both-status}" method="post" class="inline-form" style="display: flex; align-items: center; gap: 8px;">
+                <input type="hidden" name="enrollmentId" th:value="${e.enrollment_id}">
+                
+                <!-- Payment Status Dropdown -->
+                <select name="paymentStatus">
+                    <option value="UNPAID" th:selected="${e.payment_status == 'UNPAID'}">UNPAID</option>
+                    <option value="PARTIAL" th:selected="${e.payment_status == 'PARTIAL'}">PARTIAL</option>
+                    <option value="PAID" th:selected="${e.payment_status == 'PAID'}">PAID</option>
+                    <option value="REFUNDED" th:selected="${e.payment_status == 'REFUNDED'}">REFUNDED</option>
+                </select>
+                
+                <!-- Enrollment Status Dropdown -->
+                <select name="status">
+                    <option value="PENDING" th:selected="${e.status == 'PENDING'}">PENDING</option>
+                    <option value="ACTIVE" th:selected="${e.status == 'ACTIVE'}">ACTIVE</option>
+                    <option value="COMPLETED" th:selected="${e.status == 'COMPLETED'}">COMPLETED</option>
+                    <option value="DROPPED" th:selected="${e.status == 'DROPPED'}">DROPPED</option>
+                    <option value="CANCELLED" th:selected="${e.status == 'CANCELLED'}">CANCELLED</option>
+                </select>
+                
+                <!-- Single Save Button -->
+                <button type="submit" class="mini-btn">Save</button>
+            </form>
+        </td>
+
+        <!-- Enrolled At -->
+        <td>
+            <span th:if="${e.enrolled_at != null}" th:text="${#temporals.format(e.enrolled_at, 'yyyy-MM-dd HH:mm')}">2026-01-01</span>
+            <span th:if="${e.enrolled_at == null}">-</span>
+        </td>
+
+        <!-- Detail Button -->
         <td>
             <button type="button" class="mini-btn"
                 style="background: var(--primary); color: white; display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 7px; border: none;"
