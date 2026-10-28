@@ -147,20 +147,23 @@
                                                   th:text="${item.status == 'GRADED' ? item.result : 'PENDING'}"></span>
                                         </td>
 
-                                        <td class="px-4 py-3 text-center">
-                                            <div class="flex items-center justify-center gap-1.5">
-                                                <a class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition cursor-pointer"
-                                                   th:href="@{/teacher/exam-results(attemptId=${item.attemptId}, mode='view')}">
-                                                    View
-                                                </a>
+<td class="px-4 py-3 text-center">
+    <div class="flex items-center justify-center gap-1.5">
 
-                                                <a class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition cursor-pointer shadow-xs"
-                                                   th:href="@{/teacher/exam-results(attemptId=${item.attemptId}, mode='grade')}"
-                                                   th:text="${item.status == 'GRADED' ? 'Regrade' : 'Grade'}">
-                                                    Grade
-                                                </a>
-                                            </div>
-                                        </td>
+        <a class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold"
+           th:href="@{/teacher/exam-results/view/{id}(id=${item.attemptId})}">
+            View
+        </a>
+
+        <a class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold"
+           th:href="@{/teacher/exam-results/grade/{id}(id=${item.attemptId})}"
+           th:text="${item.status == 'GRADED' ? 'Regrade' : 'Grade'}">
+            Grade
+        </a>
+
+    </div>
+</td>
+
                                     </tr>
 
                                     <tr id="emptyRow" hidden>
