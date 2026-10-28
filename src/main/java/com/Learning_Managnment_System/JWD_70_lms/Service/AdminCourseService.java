@@ -57,6 +57,7 @@ public class AdminCourseService {
     }
 
     // 5. Course အသစ် သိမ်းဆည်းရန် (Create)
+ // 5. Course အသစ် သိမ်းဆည်းရန် (Create)
     public void saveCourse(AdminCourseBean course) {
         String generatedSlug = course.getTitle() != null 
                 ? course.getTitle().toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("^-|-$", "") 
@@ -66,9 +67,10 @@ public class AdminCourseService {
                 ? course.getLanguage() 
                 : "Java";
 
+        // created_by ပါ ထည့်သွင်းရန် (Database table တွင် created_by column ပါရှိသဖြင့်)
         String sql = "INSERT INTO courses (title, slug, category_id, level, language, duration_weeks, price, " +
-                     "allow_discount, allow_installment, allow_scholarship, status, short_description, thumbnail, created_at, updated_at) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+                     "allow_discount, allow_installment, allow_scholarship, status, short_description, thumbnail, created_by, created_at, updated_at) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
         jdbcTemplate.update(sql,
             course.getTitle(),
@@ -83,7 +85,8 @@ public class AdminCourseService {
             course.getAllowScholarship() != null ? course.getAllowScholarship() : false,
             course.getStatus(),
             course.getShortDescription(),
-            course.getThumbnail()
+            course.getThumbnail(),
+            1 // 👈 created_by အတွက် Admin ID (သို့မဟုတ် လိုအပ်သော တန်ဖိုး) ထည့်ရန်
         );
     }
 

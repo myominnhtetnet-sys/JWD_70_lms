@@ -651,6 +651,74 @@ function deleteCourse(courseId) {
         .then(() => loadCoursesFromDB())
         .catch(err => alert(err.message));
 }
+
+function handleCourseCreate(e) {
+    e.preventDefault();
+    
+    const catSelect = document.getElementById("add_category_id");
+    const categoryIdVal = catSelect ? catSelect.value : null;
+
+    if (!categoryIdVal) {
+        alert("Please select a category!");
+        return;
+    }
+
+    const durationVal = parseInt(document.getElementById("add_duration")?.value) || 0;
+
+    const courseData = {
+        title: document.getElementById("add_title")?.value || '',
+        categoryId: parseInt(categoryIdVal),
+        level: document.getElementById("add_level")?.value || 'BEGINNER',
+        language: document.getElementById("add_language")?.value || 'Java',
+        status: document.getElementById("add_status")?.value || 'DRAFT', // Draft ဖြစ်စေ, Published ဖြစ်စေ
+        price: parseFloat(document.getElementById("add_price")?.value) || 0,
+        durationWeeks: durationVal,
+        allowDiscount: document.getElementById("add_allow_discount")?.checked,
+        allowInstallment: document.getElementById("add_allow_installment")?.checked,
+        allowScholarship: document.getElementById("add_allow_scholarship")?.checked,
+        shortDescription: document.getElementById("add_short_description")?.value || ''
+    };
+
+    const formData = new FormData();
+    formData.append("course", new Blob([JSON.stringify(courseData)], { type: "application/json" }));
+
+    const imageInput = document.getElementById("add_image");
+    if (imageInput && imageInput.files[0]) {
+        formData.append("image", imageInput.files[0]);
+    }
+
+    // Backend API သို့ ပို့ခြင်း
+    fetch('/admin/courses/api/create', {
+        method: 'POST',
+        body: formData
+    })
+    .then(async res => {
+        const text = await res.text();
+        let resData;
+        try {
+            resData = JSON.parse(text);
+        } catch (err) {
+            resData = { message: text };
+        }
+
+        if (!res.ok) throw new Error(resData.error || resData.message || "Failed to create course");
+        return resData;
+    })
+    .then(() => {
+        // ၁. Modal ကို ပိတ်မည်
+        closeModal('addCourseModal');
+        
+        // ၂. Form ကို Clear လုပ်မည်
+        const form = document.getElementById("addCourseForm");
+        if (form) form.reset();
+        
+        // ၃. ဇယား (Table) ပေါ်တွင် အချက်အလက်အသစ်များ ချက်ချင်းပေါ်လာစေရန် Data ကို ပြန်ခေါ်မည်
+        loadCoursesFromDB(); 
+        
+        alert("Course created successfully!");
+    })
+    .catch(err => alert("Create Error: " + err.message));
+}
     </script>
 </body>
 </html>
