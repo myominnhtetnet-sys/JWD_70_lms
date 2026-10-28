@@ -1,5 +1,6 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,29 +22,22 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin/courses")
-public class CourseController {
+public class Course_Controller {
+	
+	@Autowired
+    private CourseRepository courseRepository;
+	@Autowired
+    private CategoryService categoryService;
+	@Autowired
+    private CourseFileUploadService fileUploadService;
+	@Autowired
+    private CourseService courseService;
+	@Autowired
+    private ReviewService reviewService;
 
-    private final CourseRepository courseRepository;
-    private final CategoryService categoryService;
-    private final CourseFileUploadService fileUploadService;
-    private final CourseService courseService;
-    private final ReviewService reviewService;
-
-    public CourseController(CourseRepository courseRepository, 
-                            CategoryService categoryService, 
-                            CourseFileUploadService fileUploadService,
-                            CourseService courseService,
-                            ReviewService reviewService) {
-        this.courseRepository = courseRepository;
-        this.categoryService = categoryService;
-        this.fileUploadService = fileUploadService;
-        this.courseService = courseService;
-        this.reviewService = reviewService;
-    }
-
-    @GetMapping({"", "/"})
+    @GetMapping
     public String adminCoursesRoot() {
-        return "Course_Management";
+    	return "redirect:/admin/courses/show";
     }
 
     @GetMapping("/show")
@@ -74,9 +68,7 @@ public class CourseController {
         return "Course_Management"; 
     }
 
-    // ==========================================
-    // 🟢 AJAX REST API ENDPOINTS FOR FRONTEND JS
-    // ==========================================
+    // ================= REST APIs =================
 
     @GetMapping("/api/list")
     @ResponseBody
@@ -90,7 +82,8 @@ public class CourseController {
         return categoryService.getAllCategories();
     }
     
-    @GetMapping("/api/{id}")
+    // 🟢 Regex constraint {id:\d+} ထည့်ထားသဖြင့် ဂဏန်းမှလွဲ၍ အခြားစာသားများ ဝင်မလာနိုင်ပါ (Conflict လုံးဝ ကင်းစင်သည်)
+    @GetMapping("/api/{id:\\d+}")
     @ResponseBody
     public CourseBean apiGetCourseById(@PathVariable("id") int id) {
         return courseService.getCourseById(id);
@@ -101,9 +94,9 @@ public class CourseController {
     public ResponseEntity<?> apiCreateCourse(
             @RequestPart("course") CourseBean course,
             @RequestPart(value = "image", required = false) MultipartFile image,
-            HttpSession session) { // 🟢 HttpSession ထည့်သွင်းထားပါသည်
+            HttpSession session) {
         try {
-            // 1️⃣ Session ရှိမရှိနှင့် User ဝင်ထားခြင်းရှိမရှိ တင်းကျပ်စွာ စစ်ဆေးခြင်း
+            // 1️⃣ Session စစ်ဆေးခြင်း
             LoginBean currentLogin = (LoginBean) session.getAttribute("currentUser");
             
             if (currentLogin == null || currentLogin.getUser_id() <= 0) {
@@ -111,7 +104,7 @@ public class CourseController {
                         .body(Map.of("error", "Unauthorized: Please log in to create a course."));
             }
 
-            // 2️⃣ created_by ကို Session ထဲမှ ID ဖြင့် အတင်းအကျပ် သတ်မှတ်ခြင်း (Null လုံးဝမဖြစ်စေရ)
+            // 2️⃣ created_by သတ်မှတ်ခြင်း
             course.setCreated_by(currentLogin.getUser_id());
 
             // 3️⃣ ပုံ Upload စစ်ဆေးခြင်း
@@ -146,7 +139,7 @@ public class CourseController {
         }
     }
 
-    @DeleteMapping("/api/delete/{id}")
+    @DeleteMapping("/api/delete/{id:\\d+}")
     @ResponseBody
     public ResponseEntity<?> apiDeleteCourse(@PathVariable("id") int id) {
         try {
@@ -157,7 +150,7 @@ public class CourseController {
         }
     }
 
-    // ==========================================
+    // ================= Views & Reviews =================
 
     @GetMapping("/detail/{slug}")
     public String getCourseDetails(@PathVariable("slug") String slug, Model model) {

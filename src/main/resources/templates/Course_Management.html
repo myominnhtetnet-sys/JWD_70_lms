@@ -1,25 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head th:replace="~{head :: head}"></head>
-
-<!-- 🟢 Admin Dashboard ၏ Light/White Theme Background သို့ ပြောင်းထားပါသည် -->
 <body class="bg-slate-100 text-slate-800 font-sans antialiased h-screen flex flex-col overflow-hidden">
-
-    <!-- Top Header -->
     <div th:replace="~{header :: header}"></div>
-
     <div class="flex-1 flex overflow-hidden">
-        
-        <!-- Sidebar Navigation -->
         <div th:replace="~{nav :: nav}"></div>
-
-        <!-- Main Content Area -->
         <main class="flex-1 overflow-y-auto p-6 bg-slate-50">
             <div class="space-y-4 max-w-7xl mx-auto">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    
-                    <!-- Header Section -->
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-5 mb-6 border-b border-slate-100 gap-4">
                         <div>
                             <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2.5">
@@ -39,8 +27,6 @@
 
                     <!-- Alert Notification Section -->
                     <div id="courseAlertContainer"></div>
-
-                    <!-- Table Responsive Wrapper -->
                     <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
                         <table class="w-full text-left text-xs border-collapse">
                             <thead>
@@ -296,8 +282,6 @@
             </form>
         </div>
     </div>
-
-    <!-- JavaScript Functions -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             loadCategoriesFromDB();
