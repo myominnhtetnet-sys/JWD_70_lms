@@ -17,9 +17,6 @@ public class ScholarshipApplicationController {
     @Autowired
     private ScholarshipApplicationsRespority applicationsRepository;
 
-    // =========================================
-    // SCHOLARSHIP APPLICATIONS REVIEW QUEUE
-    // =========================================
     @GetMapping({"", "/", "/list"})
     public String listApplications(Model model) {
         List<ScholarshipApplicationsBean> applications = applicationsRepository.getAllApplications();
@@ -27,16 +24,12 @@ public class ScholarshipApplicationController {
         return "scholarship-applications-review";
     }
 
-    // =========================================
-    // REVIEW / UPDATE SCHOLARSHIP APPLICATION
-    // =========================================
     @PostMapping("/review")
     public String reviewApplication(
             @ModelAttribute("application") ScholarshipApplicationsBean application,
             RedirectAttributes redirectAttributes) {
 
         try {
-            // NOTE: Change '1' to your logged-in admin's user ID dynamically if you have Spring Security session handling
             int reviewedByAdminId = 1; 
 
             applicationsRepository.reviewApplication(
@@ -53,5 +46,18 @@ public class ScholarshipApplicationController {
         }
 
         return "redirect:/admin/scholarship-applications-review";
+    }
+
+    // Loads the ornate certificate review page (view-document.html)
+    @GetMapping("/download/{id}")
+    public String downloadDocument(@PathVariable("id") Long id, Model model) {
+        ScholarshipApplicationsBean app = applicationsRepository.findById(id);
+        
+        if (app == null) {
+            return "redirect:/admin/scholarship-applications-review";
+        }
+
+        model.addAttribute("application", app);
+        return "view-document";
     }
 }

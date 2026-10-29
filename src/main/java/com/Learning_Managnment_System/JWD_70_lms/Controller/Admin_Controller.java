@@ -1,6 +1,7 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
-import com.Learning_Managnment_System.JWD_70_lms.Repository.Admin_Repository;
+
+import com.Learning_Managnment_System.JWD_70_lms.Repository.Admin_Respority;
 import com.Learning_Managnment_System.JWD_70_lms.model.AdminBean_category;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import java.util.List;
 public class Admin_Controller {
 
     @Autowired
-    private Admin_Repository adminRepository;
+    private Admin_Respority adminRepository;
 
    
     @GetMapping({"", "/", "/dashboard"})
@@ -58,10 +59,7 @@ public class Admin_Controller {
         return "redirect:/admin/categories/list";
     }
 
-    // =========================================
-    // SAVE OR UPDATE CATEGORY
-    // URL: POST /admin/categories/save
-    // =========================================
+
     @PostMapping("/categories/save")
     public String saveCategory(
             @ModelAttribute("category")
@@ -130,10 +128,7 @@ public class Admin_Controller {
         }
     }
 
-    // =========================================
-    // EDIT CATEGORY
-    // URL: /admin/categories/edit/{id}
-    // =========================================
+  
     @GetMapping("/categories/edit/{id}")
     public String showEditForm(
             @PathVariable("id") Integer id,

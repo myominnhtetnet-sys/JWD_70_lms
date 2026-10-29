@@ -14,7 +14,7 @@ import java.sql.Statement;
 import java.util.List;
 
 @Repository
-public class Admin_Repository {
+public class Admin_Respority {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

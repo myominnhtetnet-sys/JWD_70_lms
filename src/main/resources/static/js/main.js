@@ -195,8 +195,8 @@ const navMenus = {
 		{
 		    icon: 'fa-file-lines',
 		    label: 'Reports',
-		    url: '/admin/report'
-		},
+		    url: '/admin/report' // Changed from /admin/reports to /admin/report
+		}
 
     ],
 	

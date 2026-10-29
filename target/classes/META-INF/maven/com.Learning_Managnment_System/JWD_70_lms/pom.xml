@@ -42,9 +42,9 @@
         </dependency>
         
         <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-validation</artifactId>
-</dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
    
         <!-- 4. Thymeleaf (for admin.html and dashboard.html rendering) -->
         <dependency>
@@ -59,26 +59,27 @@
             <optional>true</optional>
         </dependency>
         
-          <dependency>
-    <groupId>org.mybatis.spring.boot</groupId>
-    <artifactId>mybatis-spring-boot-starter</artifactId>
-    <version>3.0.3</version>
-</dependency>
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>3.0.3</version>
+        </dependency>
 
-<!-- 🟢 SPRING SECURITY: Adds authorization, form controls, and unblocks secure frame options -->
-<dependency>
-<groupId>org.springframework.boot</groupId>
-<artifactId>spring-boot-starter-security</artifactId>
-</dependency>
+        <!-- SPRING SECURITY: Adds authorization, form controls, and unblocks secure frame options -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
 
-
-        <!-- 6. Spring Boot DevTools (for automatic restarts during development) -->
+        <!-- 6. Spring Boot DevTools (DISABLED to prevent CGLIB Java 21 crash) -->
+        <!--
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+        -->
 
         <!-- 7. Spring Boot Test -->
         <dependency>
@@ -88,8 +89,6 @@
         </dependency>
     </dependencies>
     
-  
-
     <build>
         <plugins>
             <plugin>
