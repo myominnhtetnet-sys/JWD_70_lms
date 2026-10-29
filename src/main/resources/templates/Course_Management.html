@@ -333,7 +333,7 @@ function openAddModal() {
 
 // 1. Categories များကို Database မှ ယူ၍ Dropdown ထဲသို့ ဖြည့်ခြင်း
 function loadCategoriesFromDB() {
-    return fetch('/admin/courses/api/categories')
+    return fetch('/courses/api/categories')
         .then(res => res.json())
         .then(categories => {
             const editSelect = document.getElementById("edit_category_id");
@@ -342,7 +342,6 @@ function loadCategoriesFromDB() {
             let options = `<option value="">-- Select Category --</option>`;
             if (Array.isArray(categories)) {
                 categories.forEach(cat => {
-                    // CategoryBean ရဲ့ category_id သို့မဟုတ် categoryId ကို စစ်ဆေးယူခြင်း
                     const catId = cat.category_id !== undefined ? cat.category_id : cat.categoryId;
                     options += `<option value="${catId}">${escapeHtml(cat.name)}</option>`;
                 });
@@ -356,7 +355,7 @@ function loadCategoriesFromDB() {
 
 // 2. Course Table Data များ ယူခြင်း
 function loadCoursesFromDB() {
-    fetch('/admin/courses/api/list')
+    fetch('/courses/api/list')
         .then(res => res.json())
         .then(courses => {
             const tbody = document.getElementById("courseTableBody");
@@ -450,9 +449,8 @@ function loadCoursesFromDB() {
 
 // 3. Edit Modal ကို ဖွင့်ပြီး Data ဖြည့်ခြင်း
 function editCourse(courseId) {
-    // Categories များကို အရင် သေချာ load လုပ်ပြီးမှ Course Data ဖြည့်မည်
     loadCategoriesFromDB().then(() => {
-        fetch(`/admin/courses/api/${courseId}`)
+        fetch(`/courses/api/${courseId}`)
             .then(res => {
                 if (!res.ok) throw new Error("Could not fetch course data");
                 return res.json();
@@ -475,7 +473,7 @@ function editCourse(courseId) {
 
                 setVal("edit_course_id", currentCourseId);
                 setVal("edit_title", course.title);
-                setVal("edit_category_id", currentCategoryId); // Dropdown value assign
+                setVal("edit_category_id", currentCategoryId);
                 setVal("edit_level", course.level || 'BEGINNER');
                 setVal("edit_language", course.language || 'Java');
                 setVal("edit_status", course.status || 'DRAFT');
@@ -541,7 +539,7 @@ function handleCourseUpdate(e) {
         formData.append("image", imageInput.files[0]);
     }
 
-    fetch('/admin/courses/api/update', {
+    fetch('/courses/api/update', {
         method: 'PUT',
         body: formData
     })
@@ -567,7 +565,7 @@ function handleCourseUpdate(e) {
 
 // 5. Course Detail ကြည့်ခြင်း
 function viewCourseDetail(courseId) {
-    fetch(`/admin/courses/api/${courseId}`)
+    fetch(`/courses/api/${courseId}`)
         .then(res => {
             if (!res.ok) throw new Error("Course detail not found");
             return res.json();
@@ -643,7 +641,7 @@ function viewCourseDetail(courseId) {
 function deleteCourse(courseId) {
     if (!confirm("Are you sure you want to delete this course?")) return;
 
-    fetch(`/admin/courses/api/delete/${courseId}`, { method: 'DELETE' })
+    fetch(`/courses/api/delete/${courseId}`, { method: 'DELETE' })
         .then(async res => {
             if (!res.ok) throw new Error("Delete operation failed");
             return res.json();
@@ -670,7 +668,7 @@ function handleCourseCreate(e) {
         categoryId: parseInt(categoryIdVal),
         level: document.getElementById("add_level")?.value || 'BEGINNER',
         language: document.getElementById("add_language")?.value || 'Java',
-        status: document.getElementById("add_status")?.value || 'DRAFT', // Draft ဖြစ်စေ, Published ဖြစ်စေ
+        status: document.getElementById("add_status")?.value || 'DRAFT',
         price: parseFloat(document.getElementById("add_price")?.value) || 0,
         durationWeeks: durationVal,
         allowDiscount: document.getElementById("add_allow_discount")?.checked,
@@ -687,8 +685,7 @@ function handleCourseCreate(e) {
         formData.append("image", imageInput.files[0]);
     }
 
-    // Backend API သို့ ပို့ခြင်း
-    fetch('/admin/courses/api/create', {
+    fetch('/courses/api/create', {
         method: 'POST',
         body: formData
     })
@@ -705,14 +702,11 @@ function handleCourseCreate(e) {
         return resData;
     })
     .then(() => {
-        // ၁. Modal ကို ပိတ်မည်
         closeModal('addCourseModal');
         
-        // ၂. Form ကို Clear လုပ်မည်
         const form = document.getElementById("addCourseForm");
         if (form) form.reset();
         
-        // ၃. ဇယား (Table) ပေါ်တွင် အချက်အလက်အသစ်များ ချက်ချင်းပေါ်လာစေရန် Data ကို ပြန်ခေါ်မည်
         loadCoursesFromDB(); 
         
         alert("Course created successfully!");

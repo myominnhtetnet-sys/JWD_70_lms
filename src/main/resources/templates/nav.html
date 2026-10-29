@@ -2,8 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<aside th:fragment="nav" id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex-shrink-0 border-r border-slate-800 flex flex-col justify-between transition-all duration-300">
-    <div id="sidebarScrollContainer" class="p-4 space-y-6 overflow-y-auto max-h-screen">
+<aside th:fragment="nav" id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex-shrink-0 border-r border-slate-800 flex flex-col justify-between transition-all duration-300 h-screen sticky top-0 left-0 z-30">
+    <div id="sidebarScrollContainer" class="p-4 space-y-6 overflow-y-auto h-full scrollbar-thin scrollbar-thumb-slate-700">
         
         <!-- ================= MAIN SECTION ================= -->
         <div>
@@ -40,56 +40,14 @@
             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2">Batch Management</div>
             <nav class="space-y-1">
                 <!-- Batch Management Sub-menu -->
-                <div th:with="isBatchActive=${#execInfo.processedTemplateName == 'Batch_Detail'}">
-                    <button type="button" 
-                            onclick="toggleBatchSubmenu()"
-                            th:classappend="${isBatchActive} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
-                            class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition cursor-pointer select-none">
-                        
-                        <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-layer-group text-sm w-5 text-center"></i>
-                            <span>Batches Overview</span>
-                        </div>
-
-                        <i id="batchSubmenuArrow" 
-                           th:classappend="${isBatchActive} ? 'rotate-180' : ''"
-                           class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
-                    </button>
-
-                    <div id="batchSubmenu" 
-                         th:classappend="${isBatchActive} ? '' : 'hidden'"
-                         class="pl-8 pr-2 py-1 space-y-1 mt-1 transition-all border-l border-slate-800 ml-4">
-
-                        <a th:href="@{/admin/batches/{id}/students(id=${batchId != null ? batchId : 1})}" 
-                           th:classappend="${activeTab == 'students'} ? 'text-indigo-400 font-bold bg-indigo-500/10' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'"
-                           class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-medium transition">
-                            <i class="fa-solid fa-users text-xs w-4 text-center"></i>
-                            <span>Students</span>
-                        </a>
-
-                        <a th:href="@{/admin/batches/{id}/sessions(id=${batchId != null ? batchId : 1})}" 
-                           th:classappend="${activeTab == 'sessions'} ? 'text-indigo-400 font-bold bg-indigo-500/10' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'"
-                           class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-medium transition">
-                            <i class="fa-solid fa-chalkboard-user text-xs w-4 text-center"></i>
-                            <span>Class Sessions</span>
-                        </a>
-
-                        <a th:href="@{/admin/batches/{id}/progress(id=${batchId != null ? batchId : 1})}" 
-                           th:classappend="${activeTab == 'progress'} ? 'text-indigo-400 font-bold bg-indigo-500/10' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'"
-                           class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-medium transition">
-                            <i class="fa-solid fa-chart-line text-xs w-4 text-center"></i>
-                            <span>Progress</span>
-                        </a>
-
-                        <a th:href="@{/admin/batches/{id}/announcements(id=${batchId != null ? batchId : 1})}" 
-                           th:classappend="${activeTab == 'announcements'} ? 'text-indigo-400 font-bold bg-indigo-500/10' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'"
-                           class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-medium transition">
-                            <i class="fa-solid fa-bullhorn text-xs w-4 text-center"></i>
-                            <span>Announcements</span>
-                        </a>
-                    </div>
-                </div>
                 
+<a th:href="@{/admin/batches/1/students}" 
+   th:classappend="${#execInfo.processedTemplateName == 'Batch_Detail'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
+   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
+    <i class="fa-solid fa-layer-group text-sm w-5 text-center group-hover:scale-110 transition-transform"></i>
+    <span>Batches Overview</span>
+</a>
+               
                 <!-- Create Batch -->   
                 <a th:href="@{/admin/batches-manage}" 
                    th:classappend="${#execInfo.processedTemplateName == 'Batch_Create'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
@@ -104,7 +62,7 @@
         <div>
             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2">Academics & Courses</div>
             <nav class="space-y-1">
-                <a th:href="@{/admin/courses}" 
+                <a th:href="@{/courses}" 
                    th:classappend="${#execInfo.processedTemplateName == 'Course_Management'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
                     <i class="fa-solid fa-book-open text-sm w-5 text-center group-hover:scale-110 transition-transform"></i>
@@ -152,19 +110,20 @@
                     <span>Installment Rules</span>
                 </a>
                 
-<a th:href="@{/admin/overdue-installments}" 
-   th:classappend="${#execInfo.processedTemplateName == 'overdue-installments'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
-   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
-    <i class="fa-solid fa-triangle-exclamation text-sm w-5 text-center group-hover:scale-110 transition-transform"></i>
-    <span>Overdue Installments</span>
-</a>
+                <a th:href="@{/admin/overdue-installments}" 
+                   th:classappend="${#execInfo.processedTemplateName == 'overdue-installments'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
+                    <i class="fa-solid fa-triangle-exclamation text-sm w-5 text-center group-hover:scale-110 transition-transform"></i>
+                    <span>Overdue Installments</span>
+                </a>
 
-<a th:href="@{/admin/payments-refunds}" 
-   th:classappend="${#execInfo.processedTemplateName == 'payments-refunds'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
-   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
-    <i class="fa-solid fa-money-check-dollar text-sm w-5 text-center group-hover:scale-110 transition-transform"></i>
-    <span>Payments & Refunds</span>
-</a>
+                <a th:href="@{/admin/payments-refunds}" 
+                   th:classappend="${#execInfo.processedTemplateName == 'payments-refunds'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
+                    <i class="fa-solid fa-money-check-dollar text-sm w-5 text-center group-hover:scale-110 transition-transform"></i>
+                    <span>Payments & Refunds</span>
+                </a>
+                
                 <a th:href="@{/admin/scholarships}"
                    th:classappend="${#execInfo.processedTemplateName == 'Scholarship-list'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
@@ -292,8 +251,10 @@
             location.reload();
         });
 
+        // Click လုပ်လိုက်တဲ့ မီနူးအသစ်ကို Active ဖြစ်စေရန် Class များကို အလိုအလျောက် ပြောင်းလဲပေးသည့် function
         function updateActiveStates(currentUrl) {
             document.querySelectorAll("#sidebar a").forEach(el => {
+                // URL တူညီသည့် link ကို active ဖြစ်စေရန်
                 if (el.href === currentUrl) {
                     el.className = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold";
                 } else {

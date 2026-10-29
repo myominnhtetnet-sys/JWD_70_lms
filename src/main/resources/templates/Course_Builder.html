@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<div th:replace="~{head :: head}"></div>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+<div id="app" class="min-h-screen flex flex-col">
+        
+        <!-- TOP HEADER BAR -->
+        <div th:replace="~{header :: header}"></div>
+
+        <!-- MAIN APP CONTENT AREA -->
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- DYNAMIC SIDEBAR -->
+            <div th:replace="~{nav :: nav}"></div>
+
+            <!-- MAIN CONTENT -->
+            <main class="flex-1 overflow-y-auto p-6 space-y-6">
+                
+                <!-- Page Header -->
+                <div class="bg-white rounded-lg shadow-sm p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                            <i class="fa-solid fa-screwdriver-wrench text-indigo-600"></i>
+                            Course Builder Management
+                        </h1>
+                        <p class="text-xs text-gray-500 mt-1">Select a course to configure its curriculum, modules, lessons, instructors, and materials.</p>
+                    </div>
+                </div>
+
+                <!-- Course List Table Card -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider mb-4">Available Courses</h3>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 border-b text-gray-500 uppercase">
+                                    <th class="p-3">Course Title</th>
+                                    <th class="p-3">Category ID</th>
+                                    <th class="p-3">Price (MMK)</th>
+                                    <th class="p-3">Status</th>
+                                    <th class="p-3 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                <!-- Thymeleaf loop for courses list -->
+                                <tr th:if="${courses != null}" th:each="c : ${courses}" class="hover:bg-gray-50">
+                                    <td class="p-3 font-medium text-gray-800" th:text="${c.title}">Sample Course</td>
+                                    <td class="p-3 text-gray-600" th:text="${c.categoryId}">1</td>
+                                    <td class="p-3 text-gray-600" th:text="${c.price}">0.00</td>
+                                    <td class="p-3">
+                                        <span class="px-2 py-1 rounded-full font-semibold text-[10px]"
+                                              th:classappend="${c.status == 'PUBLISHED'} ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'"
+                                              th:text="${c.status}">DRAFT</span>
+                                    </td>
+                                    <td class="p-3 text-center space-x-3">
+                                        <!-- View / Build Course Icon Link -->
+                                        <a th:href="@{/admin/course-builder/{id}/builder(id=${c.courseId})}" 
+                                           class="text-indigo-600 hover:text-indigo-900 transition" title="Build Course">
+                                            <i class="fa-solid fa-eye text-sm"><span>Build Course</span></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <!-- Fallback if no courses -->
+                                <tr th:if="${courses == null or courses.empty}">
+                                    <td colspan="5" class="p-6 text-center text-gray-400">No courses available. Please create a course first.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+</div>
+
+</body>
+</html>

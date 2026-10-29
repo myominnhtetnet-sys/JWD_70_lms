@@ -27,14 +27,22 @@ public class CourseBuilderController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    // Course List Page
+ // Course List Page
     @GetMapping
     public String showCourseListPage(Model model) {
-        model.addAttribute("courses", courseService.getAllCourses());
+        List<CourseBuilderBean> courses = courseService.getAllCourses();
+        model.addAttribute("courses", courses);
+        
+        // 👈 Error မတက်စေရန် course တစ်ခုခု (သို့မဟုတ် empty object) ကို model သို့ ထည့်ပေးခြင်း
+        if (courses != null && !courses.isEmpty()) {
+            model.addAttribute("course", courses.get(0)); // ပထမဆုံး course ကို ယာယီပြရန်
+        } else {
+            model.addAttribute("course", new CourseBuilderBean()); // လုံးဝမရှိသေးရင် empty object ထည့်ရန်
+        }
+
         model.addAttribute("activeTab", "course-biulder"); 
         return "Course_Builder"; 
     }
-
     // Course Builder Detail Page
     @GetMapping("/{id}/builder")
     public String showCourseBuilderDetail(@PathVariable Long id, Model model) {
