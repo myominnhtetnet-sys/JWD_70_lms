@@ -5,9 +5,6 @@ import com.Learning_Managnment_System.JWD_70_lms.Service.StudentDashboardService
 import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 
 import jakarta.servlet.http.HttpSession;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
