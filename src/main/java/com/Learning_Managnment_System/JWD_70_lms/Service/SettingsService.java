@@ -1,5 +1,6 @@
 package com.Learning_Managnment_System.JWD_70_lms.Service;
 
+
 import com.Learning_Managnment_System.JWD_70_lms.Repository.SettingsRespority;
 import com.Learning_Managnment_System.JWD_70_lms.model.SettingsBean.DiscountRuleTypeBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.SettingsBean.DiscountTypeBean;
