@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.StudentRepository;
 import com.Learning_Managnment_System.JWD_70_lms.Service.StudentService;
@@ -21,16 +20,13 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/student")
 public class StudentController {
-
-    private final StudentService studentService;
+	 @Autowired
+    private StudentService studentService;
 
     @Autowired
     private StudentRepository studentRepository;
 
-    @Autowired
-    public StudentController(StudentService studentService) {
-        this.studentService = studentService;
-    }
+   
 
     @GetMapping("/home")
     public String show() {        

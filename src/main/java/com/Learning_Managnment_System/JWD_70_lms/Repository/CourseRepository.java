@@ -1,8 +1,5 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
-import com.Learning_Managnment_System.JWD_70_lms.Mapper.CourseMapper;
-import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
-
 import com.Learning_Managnment_System.JWD_70_lms.Mapper.CourseRowMapper;
 import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +24,7 @@ public class CourseRepository {
                      "LEFT JOIN users u ON c.created_by = u.user_id " +
                      "WHERE c.deleted_at IS NULL " +
                      "ORDER BY c.course_id DESC";
-        return jdbcTemplate.query(sql, new CourseMapper());
+        return jdbcTemplate.query(sql, new CourseRowMapper());
     }
 
     public CourseBean findById(Integer id) {
@@ -36,7 +33,7 @@ public class CourseRepository {
                      "LEFT JOIN categories cat ON c.category_id = cat.category_id " +
                      "LEFT JOIN users u ON c.created_by = u.user_id " +
                      "WHERE c.course_id = ? AND c.deleted_at IS NULL";
-        List<CourseBean> list = jdbcTemplate.query(sql, new CourseMapper(), id);
+        List<CourseBean> list = jdbcTemplate.query(sql, new CourseRowMapper(), id);
         return list.isEmpty() ? null : list.get(0);
     }
 
@@ -72,16 +69,17 @@ public class CourseRepository {
         );
     }
     
- // 🟢 Added missing findBySlug method
-    public Optional<CourseBean> findBySlug(String slug) {
-        String sql = "SELECT c.*, cat.name AS category_name, u.full_name AS created_by_name " +
-                     "FROM courses c " +
-                     "LEFT JOIN categories cat ON c.category_id = cat.category_id " +
-                     "LEFT JOIN users u ON c.created_by = u.user_id " +
-                     "WHERE c.slug = ? AND c.deleted_at IS NULL";
-        List<CourseBean> list = jdbcTemplate.query(sql, new CourseMapper(), slug);
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
-    }
+	/*
+	 * // 🟢 Added missing findBySlug method public Optional<CourseBean>
+	 * findBySlug(String slug) { String sql =
+	 * "SELECT c.*, cat.name AS category_name, u.full_name AS created_by_name " +
+	 * "FROM courses c " +
+	 * "LEFT JOIN categories cat ON c.category_id = cat.category_id " +
+	 * "LEFT JOIN users u ON c.created_by = u.user_id " +
+	 * "WHERE c.slug = ? AND c.deleted_at IS NULL"; List<CourseBean> list =
+	 * jdbcTemplate.query(sql, new CourseMapper(), slug); return list.isEmpty() ?
+	 * Optional.empty() : Optional.of(list.get(0)); }
+	 */
 
     public void update(CourseBean course) {
         String language = (course.getLanguage() != null && !course.getLanguage().trim().isEmpty()) 
@@ -139,17 +137,9 @@ public class CourseRepository {
         String sql = "UPDATE courses SET deleted_at = NOW() WHERE course_id = ?";
         jdbcTemplate.update(sql, id);
     }
-}
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
-    /**
-     * Finds a unique course matching a unique text URL slug string.
-     */
-    /**
-     * Finds a unique course matching a unique text URL slug string case-insensitively.
-     */
+    
     public Optional<CourseBean> findBySlug(String slug) {
         if (slug == null) return Optional.empty();
         String cleanSlug = slug.trim().toLowerCase();

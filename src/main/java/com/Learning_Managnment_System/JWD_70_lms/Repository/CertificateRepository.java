@@ -1,6 +1,10 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import com.Learning_Managnment_System.JWD_70_lms.Mapper.CertificateRowMapper;
@@ -78,7 +82,7 @@ public class CertificateRepository {
         
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             CertificateBean bean = new CertificateBean();
-            bean.setEnrollmentId(rs.getLong("enrollment_id"));
+            bean.setEnrollmentId(rs.getInt("enrollment_id"));
             bean.setStudentName(rs.getString("student_name"));
             bean.setStudentEmail(rs.getString("student_email"));
             bean.setBatchCode(rs.getString("batch_code"));
@@ -87,19 +91,6 @@ public class CertificateRepository {
         });
     }
 
-import java.util.Map;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
-
-@Repository
-public class CertificateRepository {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     public Map<String, Object> getCertificateByCode(String certificateCode) {
         String sql = """

@@ -6,13 +6,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-
 import com.Learning_Managnment_System.JWD_70_lms.model.EnrollmentBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.EnrollmentDetailBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.InstallmentBean;
@@ -471,16 +469,7 @@ public class EnrollmentRepository {
                 ? BigDecimal.ZERO
                 : total;
     }
-}
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
-
-@Repository
-public class EnrollmentRepository {
-	@Autowired
-    private JdbcTemplate jdbcTemplate;
-
-   
+    
     public Map<String, Object> getCourseById(int courseId) {
         String sql = "SELECT course_id, title, price, allow_discount, allow_installment, allow_scholarship FROM courses WHERE course_id = ?";
         try {

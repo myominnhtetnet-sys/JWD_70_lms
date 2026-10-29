@@ -1,52 +1,63 @@
 package com.Learning_Managnment_System.JWD_70_lms.Service;
 
-import com.Learning_Managnment_System.JWD_70_lms.Repository.AwardRepository;
-import com.Learning_Managnment_System.JWD_70_lms.model.StudentGradeBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.Learning_Managnment_System.JWD_70_lms.Repository.AwardRepository;
+import com.Learning_Managnment_System.JWD_70_lms.model.CertificateBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.StudentGradeBean;
 
 @Service
 public class AwardService {
 
-    @Autowired
-    private AwardRepository awardRepository;
+    private final AwardRepository awardRepository;
+
+    public AwardService(AwardRepository awardRepository) {
+        this.awardRepository = awardRepository;
+    }
+
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     /**
-     * Cleans up and trims date timestamps for the student awards list.
+     * Get student awards and grades for dashboard.
      */
     public List<StudentGradeBean> getStudentAwardsDashboard(String email) {
-        List<StudentGradeBean> awardsList = awardRepository.findAwardsAndGradesByEmail(email);
 
-        // Service layer isolates post-mapping formatting modifications cleanly
-        for (StudentGradeBean grade : awardsList) {
-            if (grade.getCertificate() != null) {
-                String rawDate = grade.getCertificate().getIssuedAt();
-                if (rawDate != null && rawDate.length() >= 10) {
-                    grade.getCertificate().setIssuedAt(rawDate.substring(0, 10));
-                }
-            }
-        }
-        return awardsList;
+        return awardRepository.findAwardsAndGradesByEmail(email);
     }
 
     /**
-     * Cleans up and validates dates for a single specific certificate diploma.
+     * Get details for a single printable certificate.
      */
-    public StudentGradeBean getPrintableCertificate(int certificateId, String email) {
-        List<StudentGradeBean> matches = awardRepository.findCertificateDetailsByIdAndEmail(certificateId, email);
+    public StudentGradeBean getPrintableCertificate(
+            int certificateId, String email) {
+
+        List<StudentGradeBean> matches =
+                awardRepository.findCertificateDetailsByIdAndEmail(
+                        certificateId, email);
+
         if (matches.isEmpty()) {
             return null;
         }
 
-        StudentGradeBean grade = matches.get(0);
-        if (grade.getCertificate() != null) {
-            String rawDate = grade.getCertificate().getIssuedAt();
-            if (rawDate != null && rawDate.length() >= 10) {
-                grade.getCertificate().setIssuedAt(rawDate.substring(0, 10));
-            }
+        return matches.get(0);
+    }
+
+    /**
+     * Format LocalDateTime as yyyy-MM-dd for display.
+     */
+    public String formatIssuedDate(CertificateBean certificate) {
+
+        if (certificate == null || certificate.getIssuedAt() == null) {
+            return "";
         }
-        return grade;
+
+        LocalDateTime issuedAt = certificate.getIssuedAt();
+
+        return issuedAt.format(DATE_FORMATTER);
     }
 }

@@ -12,8 +12,8 @@ public class CertificateRowMapper implements RowMapper<CertificateBean> {
     public CertificateBean mapRow(ResultSet rs, int rowNum) throws SQLException {
         CertificateBean cert = new CertificateBean();
         
-        cert.setCertificateId(rs.getLong("certificate_id"));
-        cert.setEnrollmentId(rs.getLong("enrollment_id"));
+        cert.setCertificateId(rs.getInt("certificate_id"));
+        cert.setEnrollmentId(rs.getInt("enrollment_id"));
         cert.setCertificateCode(rs.getString("certificate_code"));
         cert.setFilePath(rs.getString("file_path"));
         
@@ -22,7 +22,7 @@ public class CertificateRowMapper implements RowMapper<CertificateBean> {
             cert.setIssuedAt(issuedAt.toLocalDateTime());
         }
         
-        cert.setIssuedBy(rs.getLong("issued_by"));
+        cert.setIssuedBy(rs.getInt("issued_by"));
         cert.setStatus(rs.getString("status"));
         cert.setRevokedReason(rs.getString("revoked_reason"));
         
