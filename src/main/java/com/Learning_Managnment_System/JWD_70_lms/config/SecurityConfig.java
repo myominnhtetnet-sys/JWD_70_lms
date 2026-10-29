@@ -20,7 +20,8 @@ public class SecurityConfig {
                 // Flat, standard root-relative strings allow the modern parser to boot successfully!
                 .requestMatchers(
                     "/css/**", "/js/**", "/images/**", "/assets/**", 
-                    "/webfonts/**", "/uploads/**", "/favicon.ico"
+                    "/webfonts/**", "/uploads/**", "/favicon.ico",
+                    "/student/awards/download/**", "/verify-certificate", "/css/**", "/js/**"
                 ).permitAll()
                 .anyRequest().permitAll()
             )

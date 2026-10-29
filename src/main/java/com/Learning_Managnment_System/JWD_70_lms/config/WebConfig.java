@@ -19,6 +19,9 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:/" + uploadPath + "/");
         
+        registry.addResourceHandler("/certs/**")
+        .addResourceLocations("file:certs/");
+        
         // Explicitly handle root paths AND nested paths separately for CSS assets
         registry.addResourceHandler("/css/**", "/student/css/**", "/student/exam-take/css/**", "/student/awards/css/**")
                 .addResourceLocations("classpath:/static/css/");
