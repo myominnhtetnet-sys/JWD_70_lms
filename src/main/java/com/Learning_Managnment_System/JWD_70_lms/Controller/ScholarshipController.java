@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.Learning_Managnment_System.JWD_70_lms.Repository.ScholarshipRespority;
+import com.Learning_Managnment_System.JWD_70_lms.Repository.ScholarshipRepository;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.StudentRepository;
 import com.Learning_Managnment_System.JWD_70_lms.model.ScholarshipApplicationBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.ScholarshipBean;
@@ -28,13 +28,10 @@ public class ScholarshipController {
 
 	 @Autowired
 	    StudentRepository studentRepository;
-	
-    private final ScholarshipRespority scholarshipRepository;   
+	 
+	 @Autowired
+	 ScholarshipRepository scholarshipRepository;
 
-    public ScholarshipController(
-            ScholarshipRespority scholarshipRepository) {
-        this.scholarshipRepository = scholarshipRepository;
-    }
 
     // Scholarship list
     @GetMapping({"", "/", "/list"})

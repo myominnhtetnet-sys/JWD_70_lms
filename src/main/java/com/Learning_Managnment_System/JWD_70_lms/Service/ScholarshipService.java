@@ -1,10 +1,11 @@
 package com.Learning_Managnment_System.JWD_70_lms.Service;
 
 
-import com.Learning_Managnment_System.JWD_70_lms.Repository.ScholarshipRespority;
 
+import com.Learning_Managnment_System.JWD_70_lms.Repository.ScholarshipRepository;
 import com.Learning_Managnment_System.JWD_70_lms.model.ScholarshipBean;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,11 +13,9 @@ import java.util.List;
 @Service
 public class ScholarshipService {
 
-    private final ScholarshipRespority scholarshipRepository;
+	@Autowired
+     ScholarshipRepository scholarshipRepository;
 
-    public ScholarshipService(ScholarshipRespority scholarshipRepository) {
-        this.scholarshipRepository = scholarshipRepository;
-    }
 
     // ==========================================
     // SCHOLARSHIP METHODS
