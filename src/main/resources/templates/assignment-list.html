@@ -60,12 +60,14 @@
                 <div th:if="${successMessage}" class="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl" th:text="${successMessage}"></div>
                 <div th:if="${errorMessage}" class="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl" th:text="${errorMessage}"></div>
 
-                <!-- Search & Filter -->
                 <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-6 shadow-xs">
                     <form th:action="@{/teacher/assignments/search}" method="get" class="grid grid-cols-1 sm:grid-cols-4 gap-3 items-center">
-                        <input type="text" name="title" placeholder="Search assignment title..." th:value="${title}" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50">
-
-                        <select name="batchId" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500">
+<!--                         <input type="text" name="title" placeholder="Search assignment title..." th:value="${title}" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50">-->
+						<input type="text" id="searchTitle" name="title"
+							placeholder="Search assignment title..." th:value="${title}"
+							oninput="liveSearch()"
+							class="w-full rounded-lg border border-slate-300 px-4 py-2" />
+						<select name="batchId" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500">
                             <option value="">All Batches</option>
                             <option th:each="batch : ${batches}" th:value="${batch['batch_id']}" th:text="${batch['title']}" th:selected="${selectedBatchId != null and selectedBatchId == batch['batch_id']}"></option>
                         </select>
@@ -637,6 +639,42 @@
             updateLateDeadlineState();
             applyAssignmentStatus();
         });
+        
+       
+        let searchTimer;
+
+        function liveSearch() {
+            clearTimeout(searchTimer);
+
+            searchTimer = setTimeout(function () {
+                const title = document.getElementById("searchTitle").value;
+                const batchId = document.querySelector(
+                    'select[name="batchId"]'
+                ).value;
+                const status = document.querySelector(
+                    'select[name="status"]'
+                ).value;
+
+                const params = new URLSearchParams();
+
+                if (title.trim() !== "") {
+                    params.set("title", title.trim());
+                }
+
+                if (batchId !== "") {
+                    params.set("batchId", batchId);
+                }
+
+                if (status !== "") {
+                    params.set("status", status);
+                }
+
+                const url = "/teacher/assignments/search?" + params.toString();
+
+                window.location.href = url;
+            }, 400);
+        }
+    
     </script>
 </body>
 </html>

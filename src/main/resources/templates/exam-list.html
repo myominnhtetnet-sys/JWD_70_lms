@@ -258,7 +258,8 @@
             </div>
 
             <form id="editExamForm" method="post" th:action="@{/teacher/exams/update/prepare}" class="space-y-4 text-sm">
-                <input type="hidden" id="editExamId" name="examId">
+               <input type="hidden" id="editExamId" name="examId">
+<input type="hidden" id="originalTotalMark" name="originalTotalMark">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                 <div class="grid grid-cols-2 gap-3">
@@ -347,8 +348,12 @@
 
                 <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
                     <button type="button" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold cursor-pointer" onclick="closeEditModal()">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs">Next: Manage Questions</button>
-                </div>
+<button type="submit"
+    id="editExamSubmitBtn"
+    class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs">
+    Save
+</button>
+              </div>
             </form>
         </div>
     </div>
@@ -380,29 +385,40 @@
 
         function openEditModal(button) {
             const d = button.dataset;
+
             document.getElementById("editExamId").value = d.id || "";
             document.getElementById("editCourse").value = d.course || "";
             document.getElementById("editBatch").value = d.batch || "";
             document.getElementById("editTitle").value = d.title || "";
             document.getElementById("editType").value = d.type || "";
             document.getElementById("editDuration").value = d.duration || "";
-            document.getElementById("editTotal").value = d.total || "";
+
+            const totalInput = document.getElementById("editTotal");
+            const originalTotal = d.total || "";
+
+            totalInput.value = originalTotal;
+            totalInput.dataset.originalTotal = originalTotal;
+
+            document.getElementById("originalTotalMark").value = originalTotal;
             document.getElementById("editPass").value = d.pass || "";
             document.getElementById("editStart").value = d.start || "";
             document.getElementById("editEnd").value = d.end || "";
             document.getElementById("editAttempts").value = d.attempts || "";
             document.getElementById("editStatus").value = d.status || "";
-            document.getElementById("editShuffle").checked = d.shuffle === "true";
+            document.getElementById("editShuffle").checked =
+                d.shuffle === "true";
 
             document.getElementById("editPass").setCustomValidity("");
             document.getElementById("editEnd").setCustomValidity("");
 
+            updateEditExamButton();
+
             const modal = document.getElementById("editModal");
             modal.classList.remove("hidden");
             modal.classList.add("flex");
+
             document.body.style.overflow = "hidden";
         }
-
         function closeEditModal() {
             const modal = document.getElementById("editModal");
             modal.classList.add("hidden");
@@ -438,9 +454,7 @@
             }
         });
 
-        document.getElementById("editPass").addEventListener("input", function() {
-            this.setCustomValidity("");
-        });
+      
 
         document.getElementById("editTotal").addEventListener("input", function() {
             document.getElementById("editPass").setCustomValidity("");
@@ -636,6 +650,26 @@
             document.getElementById("examTypeFilter").value = "";
             document.getElementById("examStatusFilter").value = "";
             filterExams();
+        }
+        
+        function updateEditExamButton() {
+            const totalInput = document.getElementById("editTotal");
+            const submitButton = document.getElementById("editExamSubmitBtn");
+
+            if (!totalInput || !submitButton) return;
+
+            const originalTotal = Number(totalInput.dataset.originalTotal);
+            const currentTotal = Number(totalInput.value);
+
+            const changed =
+                totalInput.value.trim() !== "" &&
+                Number.isFinite(currentTotal) &&
+                Number.isFinite(originalTotal) &&
+                currentTotal !== originalTotal;
+
+            submitButton.textContent = changed
+                ? "Next: Manage Questions"
+                : "Save";
         }
     </script>
 </body>

@@ -332,9 +332,48 @@ public class AssignmentController {
 		model.addAttribute("lessons", lessons);
 	}
 
-    @GetMapping("/assignments/api/{id}")
-    @ResponseBody
-    public AssignmentBean getAssignmentApi(@PathVariable Integer id) {
-        return assignmentService.getAssignmentById(id);
-    }
+	@GetMapping("/assignments/api/{id}")
+	@ResponseBody
+	public AssignmentBean getAssignmentApi(@PathVariable Integer id) {
+
+	    AssignmentBean assignment =
+	            assignmentService.getAssignmentById(id);
+
+	    // Get Batch Name
+	    List<Map<String, Object>> batches =
+	            jdbcTemplate.queryForList(
+	                """
+	                SELECT TRIM(
+	                    CASE
+	                        WHEN title LIKE CONCAT(batch_code, ' -%')
+	                        THEN SUBSTRING(
+	                            title,
+	                            LENGTH(batch_code) + 3
+	                        )
+	                        ELSE title
+	                    END
+	                ) AS title
+	                FROM batches
+	                WHERE batch_id = ?
+	                """,
+	                assignment.getBatchId()
+	            );
+
+	    if (!batches.isEmpty()) {
+	        assignment.setBatchName(
+	            String.valueOf(batches.get(0).get("title"))
+	        );
+	    }
+
+	    // Get Lesson Name
+	    LessonBean lesson = lessonRepository
+	            .findById(assignment.getLessonId())
+	            .orElse(null);
+
+	    if (lesson != null) {
+	        assignment.setLessonName(lesson.getTitle());
+	    }
+
+	    return assignment;
+	}
 }

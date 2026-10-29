@@ -250,28 +250,42 @@ public class ExamController {
 	}
 	
 	@PostMapping("/update/prepare")
-	public String prepareExamUpdate(
-			ExamBean exam, Model model,
-			RedirectAttributes redirectAttributes, HttpSession session) {
+	public String prepareExamUpdate(ExamBean exam, Model model, RedirectAttributes redirectAttributes,
+			HttpSession session) {
 
 		addCommonAttributes(session, model);
+
 		try {
+			// 1. Database ထဲက မူလ Exam ကို ယူမယ်
 			ExamBean existing = examService.getExamById(exam.getExamId());
 
+			// 2. မပြောင်းသင့်တဲ့ fields တွေကို မူလအတိုင်းထားမယ်
 			exam.setCourseId(existing.getCourseId());
 			exam.setBatchId(existing.getBatchId());
 			exam.setCreatedBy(existing.getCreatedBy());
 
-			List<ExamQuestionBean> selectedQuestions =
-					examService.getSelectedQuestions(exam.getExamId());
+			// 3. Total Mark ပြောင်းထားလား စစ်မယ်
+			boolean totalMarkChanged = existing.getTotalMark() == null || exam.getTotalMark() == null
+					|| existing.getTotalMark().compareTo(exam.getTotalMark()) != 0;
 
-			Set<Long> selectedQuestionIds =
-					selectedQuestions.stream()
-						.map(ExamQuestionBean::getQuestionId)
-						.collect(Collectors.toSet());
+			// 4. Total Mark မပြောင်းရင် ပုံမှန် Save လုပ်မယ်
+			if (!totalMarkChanged) {
+				examService.updateExam(exam);
+				redirectAttributes.addFlashAttribute("success", "Exam updated successfully!");
+				return "redirect:/teacher/exams";
+			}
+
+			// 5. Total Mark ပြောင်းထားမှ Manage Questions ကို သွားမယ်
+			List<ExamQuestionBean> selectedQuestions = examService.getSelectedQuestions(exam.getExamId());
+
+			Set<Long> selectedQuestionIds = selectedQuestions.stream().map(ExamQuestionBean::getQuestionId)
+					.collect(Collectors.toSet());
 
 			model.addAttribute("exam", exam);
-			model.addAttribute("questions", examService.getQuestionBank());
+
+			// Course နဲ့သက်ဆိုင်တဲ့ Question တွေကိုပဲ ပြမယ်
+			model.addAttribute("questions", examService.getQuestionBankByCourse(existing.getCourseId()));
+
 			model.addAttribute("selectedQuestions", selectedQuestions);
 			model.addAttribute("selectedQuestionIds", selectedQuestionIds);
 
@@ -282,7 +296,6 @@ public class ExamController {
 			return "redirect:/teacher/exams";
 		}
 	}
-	
 	@PostMapping("/update/confirm")
 	public String confirmExamUpdate(
 			ExamBean exam,
