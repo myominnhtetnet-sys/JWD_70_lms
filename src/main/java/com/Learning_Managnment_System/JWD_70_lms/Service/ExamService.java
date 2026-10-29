@@ -153,17 +153,14 @@ public class ExamService {
 	}
 
 	public List<QuestionBean> getQuestionBankByCourse(Long courseId) {
-
 	    if (courseId == null) {
 	        throw new IllegalArgumentException("Course ID is required.");
 	    }
-
 	    return questionRepository.findActiveByCourseId(courseId);
 	}
+	
 	@Transactional
-	public void saveSelectedQuestions(Long examId,
-	        List<Long> questionIds, List<String> marks) {
-
+	public void saveSelectedQuestions(Long examId, List<Long> questionIds, List<String> marks) {
 	    getExamById(examId);
 
 	    if (questionIds == null || questionIds.isEmpty()) {
@@ -248,21 +245,26 @@ public class ExamService {
 	    BigDecimal selectedTotal = BigDecimal.ZERO;
 
 	    for (Long questionId : uniqueIds) {
+
 	        if (questionId == null) {
-	            throw new IllegalArgumentException( "Invalid question ID.");
+	            throw new IllegalArgumentException("Invalid question ID.");
 	        }
-        	validateQuestionBelongsToExam(exam.getExamId(), questionId);
+
+	        // Question သည် Exam ၏ Course ထဲက Active Question ဖြစ်ကြောင်း စစ်မည်
+	        BigDecimal defaultMark = examRepository.getDefaultMark(
+	                questionId, exam.getCourseId());
 
 	        BigDecimal mark;
 
 	        if (existingMarks.containsKey(questionId)) {
 	            mark = existingMarks.get(questionId);
 	        } else {
-	            mark = examRepository.getDefaultMark( questionId, exam.getCourseId());
+	            mark = defaultMark;
 	        }
 
 	        if (mark == null || mark.signum() <= 0) {
-	            throw new IllegalArgumentException("Invalid mark for question " + questionId);
+	            throw new IllegalArgumentException(
+	                    "Invalid mark for question " + questionId);
 	        }
 
 	        selectedTotal = selectedTotal.add(mark);
@@ -315,4 +317,16 @@ public class ExamService {
 	        throw new IllegalArgumentException("This question is inactive.");
 	    }
 	}
+	private void validateQuestionBelongsToCourse(
+	        Long questionId, Long courseId) {
+
+	    BigDecimal defaultMark =
+	            examRepository.getDefaultMark(questionId, courseId);
+
+	    if (defaultMark == null) {
+	        throw new IllegalArgumentException(
+	                "Selected question does not belong to this exam's course.");
+	    }
+	}
+	
 }

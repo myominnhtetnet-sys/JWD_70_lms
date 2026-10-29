@@ -157,11 +157,26 @@
 
                                         <td class="px-4 py-3 text-center">
                                             <div class="flex items-center justify-center gap-1.5">
-                                                <button type="button" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition cursor-pointer" title="View"
-                                                        th:attr="data-id=${exam.examId}, data-title=${exam.title}, data-type=${exam.examType}, data-duration=${exam.durationMin}, data-total=${exam.totalMark}, data-pass=${exam.passMark}, data-attempts=${exam.maxAttempts}, data-status=${exam.status}"
-                                                        onclick="openViewModal(this)">
-                                                    View
-                                                </button>
+                                              
+
+<button type="button"
+    class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition cursor-pointer"
+    title="View"
+    th:attr="
+        data-id=${exam.examId},
+        data-course=${exam.courseId},
+        data-batch=${exam.batchId},
+        data-title=${exam.title},
+        data-type=${exam.examType},
+        data-duration=${exam.durationMin},
+        data-total=${exam.totalMark},
+        data-pass=${exam.passMark},
+        data-attempts=${exam.maxAttempts},
+        data-status=${exam.status}"
+    onclick="openViewModal(this)">
+    View
+</button>
+
 
                                                 <button type="button" class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition cursor-pointer shadow-xs" title="Edit"
                                                         th:attr="data-id=${exam.examId}, data-course=${exam.courseId}, data-batch=${exam.batchId}, data-title=${exam.title}, data-type=${exam.examType}, data-duration=${exam.durationMin}, data-total=${exam.totalMark}, data-pass=${exam.passMark}, data-start=${exam.startAt != null ? #temporals.format(exam.startAt, 'yyyy-MM-dd''T''HH:mm') : ''}, data-end=${exam.endAt != null ? #temporals.format(exam.endAt, 'yyyy-MM-dd''T''HH:mm') : ''}, data-attempts=${exam.maxAttempts}, data-shuffle=${exam.shuffleQuestions}, data-status=${exam.status}"
@@ -214,6 +229,28 @@
                     <span class="text-slate-500 uppercase block mb-1 text-xs">Status</span>
                     <span id="viewStatus" class="text-slate-900 font-normal"></span>
                 </div>
+
+<!-- Course -->
+<div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+    <span class="text-slate-500 uppercase block mb-1 text-xs">
+        Course
+    </span>
+    <span id="viewCourse" class="text-slate-900 font-semibold">
+        -
+    </span>
+</div>
+
+<!-- Batch -->
+<div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+    <span class="text-slate-500 uppercase block mb-1 text-xs">
+        Batch
+    </span>
+    <span id="viewBatch" class="text-slate-900 font-semibold">
+        -
+    </span>
+</div>
+
+                
                 <div class="sm:col-span-2 bg-slate-50 border border-slate-200 rounded-xl p-3">
                     <span class="text-slate-500 uppercase block mb-1 text-xs">Title</span>
                     <span id="viewTitle" class="text-slate-900 font-normal"></span>
@@ -360,21 +397,44 @@
 
     <!-- JavaScript -->
     <script>
-        function openViewModal(button) {
-            document.getElementById("viewExamId").textContent = button.dataset.id || "-";
-            document.getElementById("viewTitle").textContent = button.dataset.title || "-";
-            document.getElementById("viewType").textContent = button.dataset.type || "-";
-            document.getElementById("viewDuration").textContent = (button.dataset.duration || "0") + " minutes";
-            document.getElementById("viewTotal").textContent = button.dataset.total || "-";
-            document.getElementById("viewPass").textContent = button.dataset.pass || "-";
-            document.getElementById("viewAttempts").textContent = button.dataset.attempts || "-";
-            document.getElementById("viewStatus").textContent = button.dataset.status || "-";
 
-            const modal = document.getElementById("viewModal");
-            modal.classList.remove("hidden");
-            modal.classList.add("flex");
-            document.body.style.overflow = "hidden";
-        }
+
+    function openViewModal(button) {
+        const d = button.dataset;
+
+        document.getElementById("viewExamId").textContent =
+            d.id || "-";
+
+        // Course ID ကို Course Name အဖြစ် ပြောင်းမယ်
+        const courseSelect = document.getElementById("editCourse");
+        const courseOption = Array.from(courseSelect.options)
+            .find(option => option.value === d.course);
+
+        document.getElementById("viewCourse").textContent =
+            courseOption ? courseOption.textContent.trim() : "-";
+
+        // Batch ID ကို Batch Name အဖြစ် ပြောင်းမယ်
+        const batchSelect = document.getElementById("editBatch");
+        const batchOption = Array.from(batchSelect.options)
+            .find(option => option.value === d.batch);
+
+        document.getElementById("viewBatch").textContent = batchOption ? batchOption.textContent.trim() : "-";
+        document.getElementById("viewTitle").textContent = d.title || "-";
+        document.getElementById("viewType").textContent = d.type || "-";
+        document.getElementById("viewDuration").textContent =(d.duration || "0") + " minutes";
+        document.getElementById("viewTotal").textContent = d.total || "-";
+        document.getElementById("viewPass").textContent = d.pass || "-";
+        document.getElementById("viewAttempts").textContent = d.attempts || "-";
+        document.getElementById("viewStatus").textContent =d.status || "-";
+
+        const modal = document.getElementById("viewModal");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+
+        document.body.style.overflow = "hidden";
+    }
+
+
 
         function closeViewModal() {
             const modal = document.getElementById("viewModal");
@@ -456,8 +516,10 @@
 
       
 
+
         document.getElementById("editTotal").addEventListener("input", function() {
             document.getElementById("editPass").setCustomValidity("");
+            updateEditExamButton();
         });
 
         ["editStart", "editEnd"].forEach(function(id) {
@@ -652,25 +714,36 @@
             filterExams();
         }
         
+
         function updateEditExamButton() {
             const totalInput = document.getElementById("editTotal");
             const submitButton = document.getElementById("editExamSubmitBtn");
 
             if (!totalInput || !submitButton) return;
 
-            const originalTotal = Number(totalInput.dataset.originalTotal);
+            const originalValue = totalInput.dataset.originalTotal;
+
+            // Original Total Mark မရှိသေးရင် Save ပဲပြမယ်
+            if (originalValue === undefined || originalValue.trim() === "") {
+                submitButton.textContent = "Save";
+                return;
+            }
+
+            const originalTotal = Number(originalValue);
             const currentTotal = Number(totalInput.value);
 
             const changed =
                 totalInput.value.trim() !== "" &&
                 Number.isFinite(currentTotal) &&
-                Number.isFinite(originalTotal) &&
                 currentTotal !== originalTotal;
 
             submitButton.textContent = changed
                 ? "Next: Manage Questions"
                 : "Save";
         }
+
+
+
     </script>
 </body>
 </html>
