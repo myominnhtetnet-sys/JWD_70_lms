@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-full bg-slate-50">
+<div th:replace="~{head :: head}"></div>
+
+<body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
+
+    <div id="app" class="min-h-screen flex flex-col">
+        
+        <!-- TOP HEADER BAR -->
+        <div th:replace="~{header :: header}"></div>
+
+        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- DYNAMIC SIDEBAR -->
+            <div th:replace="~{nav :: nav}"></div>
+            
+            <!-- MAIN DYNAMIC CONTENT CONTAINER -->
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-slate-900">
+                <div id="view-admin" class="role-view space-y-6">
+                    <!-- Title & Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Admin Dashboard</h1>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Overview of platform metrics, global users, and institution performance.</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // State Management
+        let currentRole = 'admin';
+
+        window.onload = function() {
+            if (typeof switchRole === 'function') switchRole('admin');
+            renderUserTable();
+            renderTeacherGradingQueue();
+            renderStudentViews();
+            initCharts();
+        };
+
+        // Role Switching Logic
+        function switchRole(role) {
+            currentRole = role;
+
+            // Update role toggle buttons visually
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.className = "role-btn text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-600";
+            });
+            const activeBtn = document.getElementById(`role-btn-${role}`);
+            if (activeBtn) {
+                activeBtn.className = "role-btn text-xs font-bold px-3 sm:px-4 py-1.5 rounded-lg flex items-center gap-2 transition-all bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm border border-slate-200/50 dark:border-slate-700";
+            }
+
+            // Update Header User Profile Info (Ensure 'profiles' object is globally defined)
+            if (typeof profiles !== 'undefined' && profiles[role]) {
+                const p = profiles[role];
+                const userNameEl = document.getElementById('user-name');
+                const userRoleEl = document.getElementById('user-role-label');
+                const userAvatarEl = document.getElementById('user-avatar');
+
+                if (userNameEl) userNameEl.innerText = p.name;
+                if (userRoleEl) userRoleEl.innerText = p.role;
+                if (userAvatarEl) userAvatarEl.src = p.avatar;
+            }
+
+            // Update Sidebar Navigation
+            if (typeof renderSidebar === 'function') {
+                renderSidebar(role);
+            }
+
+            // Hide all view containers & show target
+            document.querySelectorAll('.role-view').forEach(v => v.classList.add('hidden'));
+            const targetView = document.getElementById(`view-${role}`);
+            if (targetView) {
+                targetView.classList.remove('hidden');
+                targetView.classList.add('fade-in');
+            }
+
+            showToast(`Switched to ${role.toUpperCase()} View`);
+        }
+
+        // Render Dynamic Sidebar Menu Connected to Backend
+        function renderSidebar(role) {
+            const menuContainer = document.getElementById('sidebar-menu');
+            const categoryLabel = document.getElementById('sidebar-category');
+            
+            if (!menuContainer || !categoryLabel || typeof navMenus === 'undefined' || !navMenus[role]) return;
+
+            categoryLabel.innerText = `${role.toUpperCase()} MENU`;
+            menuContainer.innerHTML = '';
+
+            const currentPath = window.location.pathname;
+
+            navMenus[role].forEach(item => {
+                const navItem = document.createElement('a');
+                navItem.href = item.path || '#'; 
+                
+                const isCurrentPage = currentPath === item.path;
+                const baseClasses = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all";
+                const activeClasses = isCurrentPage 
+                    ? "bg-indigo-600 text-white font-semibold shadow-md shadow-indigo-600/30" 
+                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/80";
+
+                navItem.className = `${baseClasses} ${activeClasses}`;
+                navItem.innerHTML = `<i class="fa-solid ${item.icon} w-4 text-center"></i> <span>${item.label}</span>`;
+                
+                menuContainer.appendChild(navItem);
+            });
+        }
+
+        // Render Admin User Management Table
+        function renderUserTable(filteredData = (typeof usersData !== 'undefined' ? usersData : [])) {
+            const tbody = document.getElementById('userTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            filteredData.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-700/30 transition";
+
+                const roleColor = user.role === 'Admin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' :
+                                  user.role === 'Teacher' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' :
+                                  'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
+
+                const statusColor = user.status === 'Active' ? 'bg-emerald-500' : 'bg-rose-500';
+
+                tr.innerHTML = `
+                    <td class="px-6 py-4 flex items-center gap-3">
+                        <img src="${user.avatar}" class="w-8 h-8 rounded-full object-cover">
+                        <div>
+                            <div class="font-bold text-slate-900 dark:text-white">${user.name}</div>
+                            <div class="text-xs text-slate-400">${user.email}</div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-[10px] font-bold px-2.5 py-1 rounded-full ${roleColor}">${user.role}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="flex items-center gap-1.5 text-xs">
+                            <span class="w-1.5 h-1.5 rounded-full ${statusColor}"></span> ${user.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-xs text-slate-400">${user.joined}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="deleteUser(${user.id})" class="text-slate-400 hover:text-rose-500 transition p-1"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterUserTable() {
+            const searchInput = document.getElementById('userTableSearch');
+            const roleFilter = document.getElementById('roleFilter');
+            if (!searchInput || !roleFilter || typeof usersData === 'undefined') return;
+
+            const searchVal = searchInput.value.toLowerCase();
+            const roleVal = roleFilter.value;
+
+            const filtered = usersData.filter(user => {
+                const matchesSearch = user.name.toLowerCase().includes(searchVal) || user.email.toLowerCase().includes(searchVal);
+                const matchesRole = (roleVal === 'all') || (user.role === roleVal);
+                return matchesSearch && matchesRole;
+            });
+
+            renderUserTable(filtered);
+        }
+
+        function deleteUser(userId) {
+            if (typeof usersData !== 'undefined') {
+                usersData = usersData.filter(u => u.id !== userId);
+                renderUserTable();
+                showToast('User removed successfully');
+            }
+        }
+
+        // Render Teacher Submissions
+        function renderTeacherGradingQueue() {
+            const list = document.getElementById('grading-queue-list');
+            if (!list || typeof teacherGradingQueue === 'undefined') return;
+            list.innerHTML = '';
+
+            teacherGradingQueue.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl flex items-center justify-between border border-slate-100 dark:border-slate-700";
+                div.innerHTML = `
+                    <div>
+                        <div class="text-xs font-bold text-slate-900 dark:text-white">${item.student}</div>
+                        <div class="text-[11px] text-slate-500">${item.course}: ${item.title}</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">${item.submitted}</div>
+                    </div>
+                    <button onclick="gradeSubmission(${item.id})" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition">
+                        Grade
+                    </button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function gradeSubmission(id) {
+            showToast('Grade submitted for assignment #' + id);
+        }
+
+        // Render Student Views
+        function renderStudentViews() {
+            const coursesContainer = document.getElementById('student-courses-container');
+            if (coursesContainer && typeof studentCourses !== 'undefined') {
+                coursesContainer.innerHTML = '';
+                studentCourses.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = "bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between";
+                    div.innerHTML = `
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">${c.id}</span>
+                                <span class="text-xs font-bold text-indigo-600">${c.progress}%</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 dark:text-white text-base">${c.title}</h4>
+                            <p class="text-xs text-slate-400 mt-1">${c.instructor}</p>
+                        </div>
+                        <div class="mt-6">
+                            <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-3">
+                                <div class="h-full bg-indigo-600 rounded-full" style="width: ${c.progress}%"></div>
+                            </div>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3"><i class="fa-solid fa-play-circle text-indigo-500 mr-1"></i> Next: ${c.nextLesson}</p>
+                            <button onclick="showToast('Resuming lesson: ${c.nextLesson}')" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition shadow-sm">
+                                Resume Learning
+                            </button>
+                        </div>
+                    `;
+                    coursesContainer.appendChild(div);
+                });
+            }
+
+            const deadlinesList = document.getElementById('student-deadlines-list');
+            if (deadlinesList && typeof studentDeadlines !== 'undefined') {
+                deadlinesList.innerHTML = '';
+                studentDeadlines.forEach(d => {
+                    const div = document.createElement('div');
+                    div.className = "p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl flex items-center justify-between";
+                    div.innerHTML = `
+                        <div>
+                            <div class="text-xs font-bold text-slate-900 dark:text-white">${d.title}</div>
+                            <div class="text-[11px] text-slate-500">${d.course}</div>
+                        </div>
+                        <span class="text-[10px] font-bold px-2 py-1 rounded ${d.badgeBg}">${d.due}</span>
+                    `;
+                    deadlinesList.appendChild(div);
+                });
+            }
+        }
+
+        // Modal Helpers (Optimized to single version)
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('hidden');
+                const form = modal.querySelector('form');
+                if (form) form.reset();
+            }
+        }
+
+        // Action Handlers
+        function handleAddUser(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-user-name').value;
+            const email = document.getElementById('new-user-email').value;
+            const role = document.getElementById('new-user-role').value;
+
+            if (typeof usersData !== 'undefined') {
+                usersData.unshift({
+                    id: Date.now(),
+                    name,
+                    email,
+                    role,
+                    status: 'Active',
+                    joined: 'Just now',
+                    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120'
+                });
+                renderUserTable();
+            }
+
+            closeModal('user-modal');
+            showToast(`User ${name} created as ${role}!`);
+            e.target.reset();
+        }
+
+        function handleCreateAssignment(e) {
+            e.preventDefault();
+            closeModal('assignment-modal');
+            showToast('Assignment successfully published to students!');
+        }
+
+        function handleSubmitAssignment(e) {
+            e.preventDefault();
+            closeModal('submit-work-modal');
+            showToast('Homework file uploaded successfully!');
+        }
+
+        // Spring Boot Backend Announcements Submission
+        async function submitAnnouncement(event) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById('submit-btn');
+            const batchId = document.getElementById('modal-batch-id').value;
+            const title = document.getElementById('modal-title').value.trim();
+            const body = document.getElementById('modal-body').value.trim();
+
+            const payload = {
+                batchId: parseInt(batchId),
+                title: title,
+                body: body,
+                postedBy: 1 // Admin User ID
+            };
+
+            try {
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = `<span>Publishing...</span>`;
+                }
+
+                const response = await fetch('/api/announcements', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    showToast('Announcement published successfully!');
+                    closeModal('announcement-modal');
+                    
+                    if (typeof loadAnnouncements === 'function') {
+                        loadAnnouncements();
+                    }
+                } else {
+                    const errorText = await response.text();
+                    alert('Failed to publish: ' + errorText);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Server error occurred.');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `<span>Publish</span>`;
+                }
+            }
+        }
+
+        // Toast Helper
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            if (!toast || !toastMsg) return;
+
+            toastMsg.innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Toggle Utilities
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notif-dropdown');
+            if (dropdown) dropdown.classList.toggle('hidden');
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const themeIcon = document.getElementById('theme-icon');
+            if (themeIcon) {
+                if (document.documentElement.classList.contains('dark')) {
+                    themeIcon.className = "fa-solid fa-sun text-amber-400 text-lg";
+                } else {
+                    themeIcon.className = "fa-solid fa-moon text-lg";
+                }
+            }
+        }
+
+        // Initialize Admin Enrollment Chart
+        function initCharts() {
+            const chartCanvas = document.getElementById('adminEnrollmentChart');
+            if (!chartCanvas || typeof Chart === 'undefined') return;
+
+            const ctx = chartCanvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Student Registrations',
+                        data: [650, 720, 800, 890, 960, 1050],
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
