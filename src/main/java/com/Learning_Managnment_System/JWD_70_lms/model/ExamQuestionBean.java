@@ -1,6 +1,7 @@
 package com.Learning_Managnment_System.JWD_70_lms.model;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,8 +14,10 @@ public class ExamQuestionBean {
     private Long questionId;
     private String questionText;
     private String questionType;
+    private double questionMark;
     private BigDecimal mark;
     private Integer sortOrder;
-    
-   
+     private List<QuestionOptionBean> options;
 }
+   
+

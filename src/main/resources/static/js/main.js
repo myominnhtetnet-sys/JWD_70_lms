@@ -1,10 +1,6 @@
 /*<![CDATA[*/
-
-// ============================================================
-// STATE MANAGEMENT
-// ============================================================
-
-let currentRole = 'admin';
+// State Management
+let currentRole = 'teacher';
 
 
 // ============================================================
@@ -140,151 +136,45 @@ const studentDeadlines = [
 // ============================================================
 
 const navMenus = {
-
-    admin: [
-
-        {
-            icon: 'fa-chart-pie',
-            label: 'Dashboard',
-            url: '/admin',
-            active: true
-        },
-
-
-        {
-            icon: 'fa-layer-group',
-            label: 'Category',
-            url: '/admin/categories/new'
-        },
-		{
-		            icon: 'fa-tags',
-		            label: 'Discounts',
-		            url: '/api/v1/discounts/view'
-		        },
-
-       
-		{
-		    icon: 'fa-file-invoice-dollar',
-		    label: 'Installment Rules',
-		    url: '/admin/installments'
-		},
-		
-		{
-		    icon: 'fa-graduation-cap',
-		    label: 'Scholarships',
-		    url: '/admin/scholarships/list'
-		},
-		
-		{
-		    icon: 'fa-graduation-cap',
-		    label: 'Scholarship Applications',
-		    url: '/admin/scholarship-applications-review'
-		},
-		
-
-       
-
-      
-
-        {
-            icon: 'fa-gear',
-            label: 'System Settings',
-            url: '/admin/Settings'
-        },
-		
-		{
-		    icon: 'fa-file-lines',
-		    label: 'Reports',
-		    url: '/admin/report'
-		},
-
-    ],
+	admin: [
+		{ icon: 'fa-chart-pie', label: 'Dashboard', active: true },
+		{ icon: 'fa-users', label: 'Users & Roles' },
+		{ icon: 'fa-book-open', label: 'Global Courses' },
+		{ icon: 'fa-chart-line', label: 'Analytics' },
+		{ icon: 'fa-file-invoice-dollar', label: 'Financials' },
+		{ icon: 'fa-gear', label: 'System Settings' }
+	],
+	/*teacher: [
+		{ icon: 'fa-house', label: 'Overview', active: true },
+		{ icon: 'fa-chalkboard', label: 'My Classes' },
+		{ icon: 'fa-list-check', label: 'Grading Queue' },
+		{ icon: 'fa-graduation-cap', label: 'Student Performance' },
+		{ icon: 'fa-folder-tree', label: 'Curriculum Builder' },
+		{ icon: 'fa-database', label: 'Question Bank' },
+		{ icon: 'fa-clipboard-list', label: 'Assignments' },
+		{ icon: 'fa-comments', label: 'Messages' }
+	],*/
+	teacher: [
+	    { icon: 'fa-house', label: 'Dashboard', path: '/teacher/dashboard' },
+	    { icon: 'fa-book-open', label: 'My Courses', path: '/teacher/courses' },
+	    { icon: 'fa-users', label: 'My Batches', path: '/teacher/batches' },
+	    { icon: 'fa-calendar-check', label: 'Take Attendance', path: '/teacher/attendance' },
+		{ icon: 'fa-database', label: 'Question Bank', path: '/teacher/question-list' },
+		{ icon: 'fa-clipboard-list', label: 'Assignments', path: '/teacher/assignments' },
+		{ icon: 'fa-file-pen', label: 'Grade Submissions', path: '/teacher/submissions' },
+		{ icon: 'fa-file-circle-question', label: 'Exams', path: '/teacher/exams' },
+		{ icon: 'fa-square-poll-vertical', label: 'Exam Results', path: '/teacher/exam-results' },
+		{ icon: 'fa-award', label: 'Final Grades', path: '/teacher/final-grade' }	
+	],
 	
-
-
-    teacher: [
-
-        {
-            icon: 'fa-house',
-            label: 'Overview',
-            url: '/teacher',
-            active: true
-        },
-
-        {
-            icon: 'fa-chalkboard',
-            label: 'My Classes',
-            url: '/teacher/classes'
-        },
-
-        {
-            icon: 'fa-list-check',
-            label: 'Grading Queue',
-            url: '/teacher/grading'
-        },
-
-        {
-            icon: 'fa-graduation-cap',
-            label: 'Student Performance',
-            url: '/teacher/students'
-        },
-
-        {
-            icon: 'fa-folder-tree',
-            label: 'Curriculum Builder',
-            url: '/teacher/curriculum'
-        },
-
-        {
-            icon: 'fa-comments',
-            label: 'Messages',
-            url: '/teacher/messages'
-        }
-
-    ],
-
-
-    student: [
-
-        {
-            icon: 'fa-compass',
-            label: 'Dashboard',
-            url: '/student',
-            active: true
-        },
-
-        {
-            icon: 'fa-book-bookmark',
-            label: 'My Courses',
-            url: '/student/courses'
-        },
-
-        {
-            icon: 'fa-pencil',
-            label: 'Assignments',
-            url: '/student/assignments'
-        },
-
-        {
-            icon: 'fa-trophy',
-            label: 'Grades & Certificates',
-            url: '/student/grades'
-        },
-
-        {
-            icon: 'fa-box-archive',
-            label: 'Resources',
-            url: '/student/resources'
-        },
-
-        {
-            icon: 'fa-calendar',
-            label: 'Schedule',
-            url: '/student/schedule'
-        }
-
-    ]
-
+	student: [
+		{ icon: 'fa-compass', label: 'Dashboard', active: true },
+		{ icon: 'fa-book-bookmark', label: 'My Courses' },
+		{ icon: 'fa-pencil', label: 'Assignments' },
+		{ icon: 'fa-trophy', label: 'Grades & Certificates' },
+		{ icon: 'fa-box-archive', label: 'Resources' },
+		{ icon: 'fa-calendar', label: 'Schedule' }
+	]
 };
 
 
@@ -314,23 +204,13 @@ const profiles = {
 
 };
 
-
-// ============================================================
-// INITIALIZE APP
-// ============================================================
-
-window.onload = function () {
-
-    switchRole('admin');
-
-    renderUserTable();
-
-    renderTeacherGradingQueue();
-
-    renderStudentViews();
-
-    initCharts();
-
+// Initialize App
+window.onload = function() {
+	switchRole('teacher');
+	renderUserTable();
+	renderTeacherGradingQueue();
+	renderStudentViews();
+	initCharts();
 };
 
 
@@ -461,8 +341,31 @@ function renderSidebar(role) {
     const categoryLabel =
         document.getElementById('sidebar-category');
 
+			    // Assignment
+			    if (item.label === 'Assignments') {
+			        window.location.href = '/teacher/assignments';
+			        return;
+			    }
+				// Exams
+				   if (item.label === 'Exams') {
+				       window.location.href = '/teacher/exams';
+				       return;
+				}
+				  
+				   if (item.path) {
+				           window.location.href = item.path;
+				           return;
+				   }
+				//
+				if(item.label == "Grade Submissions"){
+					window.location.href = '/teacher/submissions';
+					return;
+				}
 
-    if (categoryLabel) {
+				   
+			    setActiveNavItem(navItem);
+			    showToast(`Navigated to ${item.label}`);
+			};
 
         categoryLabel.innerText =
             `${role.toUpperCase()} MENU`;

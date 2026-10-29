@@ -1,5 +1,5 @@
 package com.Learning_Managnment_System.JWD_70_lms.Service;
-
+import com.Learning_Managnment_System.JWD_70_lms.Repository.ReviewRepository;
 import com.Learning_Managnment_System.JWD_70_lms.model.Review;
 
 import java.util.List;
@@ -26,12 +26,21 @@ public class ReviewService {
             review.getRating(),
             review.getComment()
         );
+@Autowired
+ ReviewRepository reviewRepository;
+
+    
+
+    public void saveReview(Review review, int userId) {
+        // Business Rule: Ensure validation steps can safely execute here before calling DB persistence bounds
+        reviewRepository.save(review, userId);
     }
 
     // 🟢 အဆိုပါ User ဒီ Course ကို Review ပေးပြီးပြီလား စစ်ဆေးရန်
     public boolean hasUserReviewedCourse(int userId, int courseId) {
         String sql = "SELECT COUNT(*) FROM learning_db.course_reviews WHERE user_id = ? AND course_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, userId, courseId);
+        Integer count = reviewRepository.countReviewsByUserAndCourse(userId, courseId);
         return count != null && count > 0;
     }
     
@@ -48,5 +57,6 @@ public class ReviewService {
                 ORDER BY r.created_at DESC
                 """;
         return jdbcTemplate.queryForList(sql, courseId);
+        return reviewRepository.findReviewsByCourseId(courseId);
     }
 }

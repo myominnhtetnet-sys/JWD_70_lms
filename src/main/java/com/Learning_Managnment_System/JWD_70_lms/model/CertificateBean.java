@@ -18,7 +18,6 @@ public class CertificateBean {
     private String revokedReason;
     private LocalDateTime createdAt;
 
-    // Join Query မှ ရလာမည့် Extra Fields
     private String studentName;
     private String studentEmail;
     private String batchCode;

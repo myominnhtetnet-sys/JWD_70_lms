@@ -1,9 +1,14 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import com.Learning_Managnment_System.JWD_70_lms.Repository.LoginRepository;
+import com.Learning_Managnment_System.JWD_70_lms.Service.StudentDashboardService;
 import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 
 import jakarta.servlet.http.HttpSession;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,6 +23,9 @@ public class LoginController {
 
     @Autowired
     private LoginRepository loginRepo;
+    
+    @Autowired
+    StudentDashboardService dashboardService;
 
     @GetMapping("/login")
     public String showLogin(Model model) {
@@ -57,26 +65,37 @@ public class LoginController {
     }
 
 
-    @GetMapping("/teacher")
-    public String teacherPage(HttpSession session) {
-        if (session.getAttribute("roleId") == null || (int) session.getAttribute("roleId") != 2) {
-            return "redirect:/login";
-        }
-        return "dashboard";
-    }
+	/*
+	 * @GetMapping("/teacher") public String teacherPage(HttpSession session) { if
+	 * (session.getAttribute("roleId") == null || (int)
+	 * session.getAttribute("roleId") != 2) { return "redirect:/login"; } return
+	 * "redirect:/teacher/dashboard"; }
+	 */
+
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate; // 👈 1. Ensure JdbcTemplate is autowired at the top of LoginController
 
     @GetMapping("/student")
     public String studentPage(HttpSession session, Model model) {
+        // Enforce Session Security Guard Boundaries
         if (session.getAttribute("roleId") == null || (int) session.getAttribute("roleId") != 3) {
             return "redirect:/login";
         }
 
-        model.addAttribute("fullName", session.getAttribute("fullName"));
-        Object studentId = session.getAttribute("studentId");
-        model.addAttribute("studentId", studentId != null ? "STU-" + studentId : "STU-2026-0042");
+        String email = (String) session.getAttribute("email");
+        
+        // Fetch aggregated transactional model map metrics out of business service
+        Map<String, Object> dashboardData = dashboardService.getStudentDashboardData(email);
+        
+        // Populate Thymeleaf UI scope variables natively
+        model.addAllAttributes(dashboardData);
+        
+        // Active link tracking token state for sidebar component highlighting
+        model.addAttribute("activeLink", "dashboard");
 
-        return "studentdashboard"; 
+        return "studentdashboard";
     }
+
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Report & Certificates - LearnHub LMS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        .award-card { 
+            background: #ffffff; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 16px; 
+            padding: 24px; 
+            margin-bottom: 16px; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+            text-align: left; 
+            transition: all 0.2s ease;
+        }
+        .award-card:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        .score-row-grid { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .metric-pill { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; text-align: center; flex: 1; min-width: 90px; }
+        .metric-num { font-size: 16px; font-weight: 800; color: #0f172a; }
+        .metric-label { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 700; margin-top: 2px; }
+        .badge-passed { background: #dcfce7; color: #166534; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+        .badge-failed { background: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+        .action-cert-bar { background: #faf5ff; border: 1px dashed #d8b4fe; border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .print-btn-link { display: inline-flex; align-items: center; gap: 8px; background: #6b21a8; color: #ffffff; font-size: 12.5px; font-weight: 700; text-decoration: none; padding: 8px 16px; border-radius: 10px; transition: background 0.15s ease; }
+        .print-btn-link:hover { background: #581c87; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased font-sans">
+
+    <div class="flex min-h-screen">
+        
+              <!-- Sidebar Navigation Menu (Collapsible Framework via Pure-CSS Animation) -->
+        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar">
+            
+            <!-- 🟢 Pure CSS Toggle Checkbox Engine -->
+            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+            
+            <!-- 🟢 Error-Free Scoped Structural Layout Adjustments -->
+            <style>
+                #sidebar-content-box { width: 256px; }
+                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+            </style>
+
+            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden">
+                <div>
+                    <!-- Logo & Collapse Button Trigger -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+                        <!-- 🟢 Centered uncollapse bars icon (visible strictly when collapsed) -->
+                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </label>
+
+                        <div class="flex items-center gap-3 hidden-on-collapse">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
+                                <i class="fa-solid fa-graduation-cap text-lg"></i>
+                            </div>
+                            <div>
+                                <span class="text-base font-bold text-white tracking-wide block leading-none">LearnHub</span>
+                                <small class="text-[11px] font-medium text-slate-400">Student Portal</small>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Collapse Arrow Button (visible on hover) -->
+                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+                        </label>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-6">
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Menu</div>
+                            <div class="space-y-1">
+                                <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                                    <i class="fa-solid fa-border-all text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                                </a>
+                               
+                                <a th:href="@{/student/awards}"  class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600/90 shadow-sm transition">
+                                    <i class="fa-solid fa-graduation-cap text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Grades & Certificates</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Account</div>
+                            <div class="space-y-1">
+                                <!-- Scholarships Menu Link -->
+                                
+                                <a th:href="@{/student/scholarship}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-user-graduate text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Scholarships</span>
+                                </a>
+                                <!-- Active Profile Menu Link -->
+                                <a th:href="@{/student/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                                    <i class="fa-regular fa-user text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">My Profile</span>
+                                </a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+
+                <!-- Logout Action Panel Area -->
+                <div class="p-4 border-t border-slate-800 space-y-3">
+                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+            
+            <!-- Top Header -->
+            <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 leading-tight">Grades & Certificates</h2>
+                    <p class="text-xs text-slate-400 font-medium">Monitor your finalized course report cards and download verified reward credentials.</p>
+                </div>
+
+                <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
+                    <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+                        <span th:text="${fullName != null ? #strings.substring(fullName,0,2) : 'ST'}">ST</span>
+                    </div>
+                    <div class="hidden lg:block">
+                        <b class="block text-xs font-bold text-slate-800 leading-none" th:text="${fullName != null ? fullName : 'Student'}">Student</b>
+                        <small class="text-[11px] text-slate-400 font-medium">Student Portal</small>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Body Content -->
+            <main class="p-6 lg:p-8 space-y-6 max-w-[1000px] mx-auto w-full text-xs">
+
+                <!-- Empty State -->
+                <div th:if="${#lists.isEmpty(awards)}" class="bg-white p-12 rounded-2xl border border-dashed border-slate-300 text-center shadow-sm">
+                    <div class="text-3xl mb-2">🏆</div>
+                    <h3 class="font-bold text-slate-900 text-sm mb-1">No Academic Awards Released</h3>
+                    <p class="text-slate-400">Your course marks haven't been published to your transcript wallet yet.</p>
+                </div>
+
+                <!-- Active Transcripts List -->
+                <div th:unless="${#lists.isEmpty(awards)}" class="space-y-4">
+                    <div th:each="row : ${awards}" class="award-card space-y-4">
+                        
+                        <!-- Row Header -->
+                        <div class="flex justify-between items-start border-b border-slate-100 pb-3">
+                            <h2 class="text-base font-bold text-slate-900" th:text="${row.courseTitle}">Java Web Architecture</h2>
+                            <div>
+                                <span th:if="${#strings.equals(row.result, 'PASSED')}" class="badge-passed">✓ PASSED</span>
+                                <span th:unless="${#strings.equals(row.result, 'PASSED')}" class="badge-failed">✕ FAILED</span>
+                            </div>
+                        </div>
+
+                        <!-- Score Cards Row Grid -->
+                        <div class="score-row-grid">
+                            <div class="metric-pill">
+                                <div class="metric-num" th:text="${row.assignmentScore}">0.0</div>
+                                <div class="metric-label">Assignments</div>
+                            </div>
+                            <div class="metric-pill">
+                                <div class="metric-num" th:text="${row.examScore}">0.0</div>
+                                <div class="metric-label">Exams</div>
+                            </div>
+                            <div class="metric-pill">
+                                <div class="metric-num" th:text="${row.attendancePercent} + '%'">0.0</div>
+                                <div class="metric-label">Attendance</div>
+                            </div>
+                            <div class="metric-pill" style="background: #f0fdf4; border-color: #bbf7d0;">
+                                <div class="metric-num text-emerald-700" th:text="${row.totalScore}">0.0</div>
+                                <div class="metric-label text-emerald-700">Final Score</div>
+                            </div>
+                            <div class="metric-pill" style="background: #eff6ff; border-color: #bfdbfe; max-width: 80px;">
+                                <div class="metric-num text-blue-700" th:text="${row.gradeLetter}">F</div>
+                                <div class="metric-label text-blue-700">Grade</div>
+                            </div>
+                        </div>
+
+                        <!-- UNLOCKED CERTIFICATE WALLET CONTAINER MODULE -->
+                        <div th:if="${row.certificate != null and #strings.equals(row.certificate.certStatus, 'ISSUED')}" class="action-cert-bar">
+                            <div class="flex items-center gap-3 text-left">
+                                <span class="text-2xl">📜</span>
+                                <div>
+                                    <h4 class="font-bold text-purple-900 text-sm" th:text="'Official Certificate Unlocked (' + ${row.certificate.certificateCode} + ')'">Certificate Unlocked</h4>
+                                    <p class="text-purple-700 text-[11px] mt-0.5" th:text="'Graduation credentials generated securely on ' + ${row.certificate.issuedAt}"></p>
+                                </div>
+                            </div>
+                            <a th:href="@{/student/awards/certificate/{id}(id=${row.certificate.certificateId})}" target="_blank" class="print-btn-link">
+                                View Diploma <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+</body>
+</html>

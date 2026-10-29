@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class MyCourseBean {
     private int courseId;
+    private int batchId; 
     private String courseTitle;
     private String batchCode;
     private String batchStatus;

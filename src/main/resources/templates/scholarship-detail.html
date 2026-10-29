@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholarship Details - LearnHub LMS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased font-sans">
+
+    <div class="min-h-screen flex items-center justify-center p-6">
+        <div class="max-w-2xl w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-8 space-y-6">
+            
+            <!-- Header -->
+            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-indigo-600"></i> Scholarship Application Details
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Review your submitted scholarship information</p>
+                </div>
+                <a th:href="@{/student/scholarship}" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-left"></i> Back
+                </a>
+            </div>
+
+            <!-- Details Content -->
+            <div class="space-y-4" th:if="${detail != null}">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                    
+                    <div class="bg-slate-50 p-4 rounded-xl space-y-1">
+                        <span class="text-slate-400 font-medium uppercase tracking-wider block text-[10px]">Program Name</span>
+                        <span class="font-bold text-slate-800 text-sm" th:text="${detail['program_name']}">-</span>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl space-y-1">
+                        <span class="text-slate-400 font-medium uppercase tracking-wider block text-[10px]">Sponsor</span>
+                        <span class="font-bold text-slate-800 text-sm" th:text="${detail['sponsor']}">-</span>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl space-y-1">
+                        <span class="text-slate-400 font-medium uppercase tracking-wider block text-[10px]">Status</span>
+                        <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700 uppercase" th:text="${detail['status']}">-</span>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl space-y-1">
+                        <span class="text-slate-400 font-medium uppercase tracking-wider block text-[10px]">Approved Amount</span>
+                        <span class="font-bold text-indigo-600 text-sm" th:text="${detail['approved_amount'] != null ? detail['approved_amount'] + ' MMK' : 'Pending Review'}">-</span>
+                    </div>
+
+                    <div class="col-span-2 bg-slate-50 p-4 rounded-xl space-y-1">
+                        <span class="text-slate-400 font-medium uppercase tracking-wider block text-[10px]">Reason / Note</span>
+                        <p class="text-slate-700 text-xs leading-relaxed" th:text="${detail['reason']}">-</p>
+                    </div>
+
+                    <div class="col-span-2 bg-slate-50 p-4 rounded-xl space-y-1">
+                        <span class="text-slate-400 font-medium uppercase tracking-wider block text-[10px]">Supporting Document</span>
+                        <div class="flex items-center gap-2 mt-1">
+                            <i class="fa-regular fa-file-pdf text-rose-500 text-base"></i>
+                            <span class="text-indigo-600 font-semibold text-xs" th:text="${detail['supporting_document']}">document.pdf</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Empty State if not found -->
+            <div th:if="${detail == null}" class="text-center py-12 text-slate-400">
+                <p class="font-semibold text-slate-700 text-sm">Application details not found.</p>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

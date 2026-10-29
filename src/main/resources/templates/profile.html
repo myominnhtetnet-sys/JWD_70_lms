@@ -15,59 +15,93 @@
 
     <div class="flex min-h-screen">
         
-        <!-- Sidebar Navigation Menu -->
-        <aside class="w-64 bg-slate-900 text-slate-300 hidden md:flex flex-col justify-between shrink-0 sticky top-0 h-screen overflow-y-auto border-r border-slate-800">
-            <div>
-                <!-- Logo -->
-                <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
-                        <i class="fa-solid fa-graduation-cap text-lg"></i>
+               <!-- Sidebar Navigation Menu (Collapsible Framework via Pure-CSS Animation) -->
+        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar">
+            
+            <!-- 🟢 Pure CSS Toggle Checkbox Engine -->
+            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+            
+            <!-- 🟢 Error-Free Scoped Structural Layout Adjustments -->
+            <style>
+                #sidebar-content-box { width: 256px; }
+                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+            </style>
+
+            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden">
+                <div>
+                    <!-- Logo & Collapse Button Trigger -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+                        <!-- 🟢 Centered uncollapse bars icon (visible strictly when collapsed) -->
+                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </label>
+
+                        <div class="flex items-center gap-3 hidden-on-collapse">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
+                                <i class="fa-solid fa-graduation-cap text-lg"></i>
+                            </div>
+                            <div>
+                                <span class="text-base font-bold text-white tracking-wide block leading-none">LearnHub</span>
+                                <small class="text-[11px] font-medium text-slate-400">Student Portal</small>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Collapse Arrow Button (visible on hover) -->
+                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+                        </label>
                     </div>
-                    <div>
-                        <span class="text-base font-bold text-white tracking-wide block leading-none">LearnHub</span>
-                        <small class="text-[11px] font-medium text-slate-400">Student Portal</small>
-                    </div>
+
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-6">
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Menu</div>
+                            <div class="space-y-1">
+                                <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                                    <i class="fa-solid fa-border-all text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                                </a>
+                                
+                                <a th:href="@{/student/awards}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-graduation-cap text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Grades & Certificates</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Account</div>
+                            <div class="space-y-1">
+                                <!-- Scholarships Menu Link -->
+                                <a th:href="@{/student/scholarship}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                                    <i class="fa-solid fa-user-graduate text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Scholarships</span>
+                                </a>
+                                <!-- Active Profile Menu Link -->
+                                <a th:href="@{/student/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600/90 shadow-sm transition">
+                                    <i class="fa-regular fa-user text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">My Profile</span>
+                                </a>
+                            </div>
+                        </div>
+                    </nav>
                 </div>
 
-                <!-- Navigation Links -->
-                <nav class="p-4 space-y-6">
-                    <div>
-                        <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Menu</div>
-                        <div class="space-y-1">
-                            <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
-                                <i class="fa-solid fa-border-all text-base"></i> Dashboard
-                            </a>
-                            <!-- Certificates Link (Corrected path) -->
-                            <a th:href="@{/student/certificate}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
-                                <i class="fa-solid fa-award text-base"></i> Certificates
-                            </a>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Account</div>
-                        <div class="space-y-1">
-                            
-                            <!-- Scholarships Menu Link (Corrected path: removed 's') -->
-                            <a th:href="@{/student/scholarship}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
-                                <i class="fa-solid fa-user-graduate text-base"></i> Scholarships
-                            </a>
-                            <!-- Active Profile Menu Link -->
-                            <a th:href="@{/student/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600/90 shadow-sm transition">
-                                <i class="fa-regular fa-user text-base"></i> My Profile
-                            </a>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-
-            <!-- Logout Link -->
-            <div class="p-4 border-t border-slate-800 space-y-3">
-                <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
-                    <i class="fa-solid fa-right-from-bracket text-base"></i> Logout
-                </a>
+                <!-- Logout Action Panel Area -->
+                <div class="p-4 border-t border-slate-800 space-y-3">
+                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
+                    </a>
+                </div>
             </div>
         </aside>
+
 
         <!-- Main Content Area -->
         <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
