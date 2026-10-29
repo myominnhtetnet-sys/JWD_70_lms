@@ -212,4 +212,32 @@ public class EnrollmentController {
     private boolean isValidPaymentType(String type) {
         return type != null && List.of("FULL", "INSTALLMENT", "FREE").contains(type);
     }
+    
+ // =====================================================
+    // UPDATE BOTH PAYMENT STATUS & ENROLLMENT STATUS TOGETHER
+    // =====================================================
+    @PostMapping("/update-status")
+    public String updateBothStatuses(
+            @RequestParam int enrollmentId,
+            @RequestParam String paymentStatus,
+            @RequestParam String status,
+            RedirectAttributes redirectAttributes) {
+
+        if (enrollmentId <= 0 || !isValidPaymentStatus(paymentStatus) || !isValidEnrollmentStatus(status)) {
+            redirectAttributes.addFlashAttribute("error", "Invalid status values provided.");
+            return "redirect:/admin/enrollments";
+        }
+
+        // Repository ထဲတွင် ဤနည်းလမ်းနှစ်ခုစလုံး (သို့မဟုတ် တစ်ခုချင်းစီ) ကို Update လုပ်ပေးရန် လိုအပ်ပါမည်
+        int paymentResult = enrollmentRepo.updatePaymentStatus(enrollmentId, paymentStatus);
+        int statusResult = enrollmentRepo.updateEnrollmentStatus(enrollmentId, status);
+
+        if (paymentResult > 0 || statusResult > 0) {
+            redirectAttributes.addFlashAttribute("success", "Enrollment statuses updated successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Enrollment record not found.");
+        }
+
+        return "redirect:/admin/enrollments";
+    }
 }

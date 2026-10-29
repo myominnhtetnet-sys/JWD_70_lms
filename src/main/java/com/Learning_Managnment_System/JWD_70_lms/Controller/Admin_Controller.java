@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.Admin_Repository;
+import com.Learning_Managnment_System.JWD_70_lms.Repository.PaymentRepository;
 import com.Learning_Managnment_System.JWD_70_lms.model.AdminUserBean;
 
 @Controller
@@ -18,7 +19,8 @@ public class Admin_Controller {
 
     @GetMapping({"", "/"})
     public String show() {
-        return "admin";
+
+        return "redirect:/admin/dashboard";
     }
 
     @GetMapping("/dashboard")
@@ -27,6 +29,7 @@ public class Admin_Controller {
         model.addAttribute("users", users);
         return "dashboard";
     }
+ 
 
     @GetMapping("/users")
     public String listUsers(Model model) {
