@@ -139,8 +139,7 @@ public class LoginController {
 
         Map<String, Object> dashboardData = dashboardService.getStudentDashboardData(email);
         model.addAllAttributes(dashboardData);
-        Map<String, Object> dashboardData = dashboardService.getStudentDashboardData(email);
-        model.addAllAttributes(dashboardData);
+     
         
         // 1. Fetch only the 2 latest items for the quick dashboard card feed view
         List<AnnouncementBean> recentAnnouncements = announcementService.getLatestAnnouncements(2);
