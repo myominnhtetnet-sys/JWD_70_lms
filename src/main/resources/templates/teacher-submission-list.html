@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submission Management - Teacher Portal</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- FontAwesome Icons -->
+    <title>Teacher Dashboard - LearnHub LMS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> 
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -24,17 +25,118 @@
 </style>
 </head>
 
-<body class="h-full font-sans text-slate-900 bg-slate-50 antialiased">
+<body class="bg-slate-50 text-slate-800 antialiased font-sans">
 
-    <div id="app" class="min-h-screen flex flex-col">
+    <div class="flex min-h-screen">
         
-       <div th:replace="~{teacher :: header}"></div>
+        <!-- SIDEBAR NAVIGATION MENU (Collapsible Dark Theme) -->
+        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar z-30">
+            
+            <!-- 🟢 Pure CSS Toggle Checkbox Engine -->
+            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+            
+            <!-- 🟢 Error-Free Scoped Structural Animation Layout Adjustments -->
+            <style>
+                #sidebar-content-box { width: 256px; }
+                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+            </style>
 
-        <!-- MAIN LAYOUT WRAPPER -->
-        <div class="flex-1 flex">
-  
-          <div th:replace="~{teacher :: sidebar}"></div>
-          
+            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden overflow-y-auto">
+                <div>
+                    <!-- Logo & Collapse Button Trigger -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+                        <!-- 🟢 Centered uncollapse bars icon inside 72px header -->
+                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </label>
+
+                        <div class="flex items-center gap-3 hidden-on-collapse">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
+                                <i class="fa-solid fa-chalkboard-user text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-base font-bold text-white tracking-wide block leading-none">EduPulse</span>
+                                <small class="text-[11px] font-medium text-slate-400">Teacher Portal</small>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Collapse Arrow Button (visible on hover) -->
+                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+                        </label>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-6">
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Teaching Portal</div>
+                            <div class="space-y-1">
+                                <a href="/teacher" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-house text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                                </a>
+                                <a href="/teacher/courses" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-book-open text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Courses</span>
+                                </a>
+                                <a href="/teacher/batches" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-users text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Batches</span>
+                                </a>
+                                <a href="/teacher/attendance" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-calendar-check text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Check Attendance</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Assessments</div>
+                            <div class="space-y-1">
+                                <a href="/teacher/question-list" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-database text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Question Bank</span>
+                                </a>
+                                <a href="/teacher/assignments" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-clipboard-list text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Assignments</span>
+                                </a>
+                                <!-- Active Grade Submissions Link -->
+                                <a href="/teacher/submissions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 shadow-sm transition">
+                                    <i class="fa-solid fa-check-double text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Grade Submissions</span>
+                                </a>
+                                <a href="/teacher/exams" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-file-pen text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exams</span>
+                                </a>
+                                <a href="/teacher/exam-results" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-square-poll-vertical text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exam Results</span>
+                                </a>
+                                <a href="/teacher/final-grades" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-graduation-cap text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Final Grades</span>
+                                </a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+
+                <div class="p-4 border-t border-slate-800">
+                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA WRAPPER -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+            
+            <!-- HEADER FRAGMENT -->
+            <div th:replace="~{teacher :: header}"></div>
+
             <!-- Main Content -->
             <main class="flex-1 min-w-0 px-4 sm:px-8 py-6 bg-slate-50 overflow-y-auto">
 
@@ -44,25 +146,25 @@
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                         <div>
                             <h1 class="text-xl font-bold text-slate-900">Submission Management</h1>
-                            <p class="text-xs text-slate-600 mt-1">Review and grade student assignment submissions</p>
+                            <p class="text-xs text-slate-500 mt-1">Review and grade student assignment submissions</p>
                         </div>
                     </div>
 
                     <div th:if="${success}" class="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl" th:text="${success}"></div>
                     <div th:if="${error}" class="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl" th:text="${error}"></div>
 
-                    <!-- Summary Cards Grid (Expanded, Equalized & Spaced Across Page) -->
+                    <!-- Summary Cards Grid -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full">
                         <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs flex flex-col justify-center">
-                            <p class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Total Submissions</p>
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Total Submissions</p>
                             <h2 id="totalCount" class="text-3xl font-extrabold text-slate-900">0</h2>
                         </div>
                         <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs flex flex-col justify-center">
-                            <p class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Pending Grading</p>
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Pending Grading</p>
                             <h2 id="pendingCount" class="text-3xl font-extrabold text-amber-600">0</h2>
                         </div>
                         <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs flex flex-col justify-center">
-                            <p class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Graded Submissions</p>
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Graded Submissions</p>
                             <h2 id="gradedCount" class="text-3xl font-extrabold text-emerald-600">0</h2>
                         </div>
                     </div>
@@ -72,19 +174,19 @@
                         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
                             <div class="space-y-1">
                                 <label class="block text-xs font-bold uppercase text-slate-700">Search</label>
-                                <input type="text" id="searchInput" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Student or assignment..." oninput="filterSubmissions()">
+                                <input type="text" id="searchInput" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Student or assignment..." oninput="filterSubmissions()">
                             </div>
 
                             <div class="space-y-1">
                                 <label class="block text-xs font-bold uppercase text-slate-700">Assignment</label>
-                                <select id="assignmentFilter" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500" onchange="filterSubmissions()">
+                                <select id="assignmentFilter" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="filterSubmissions()">
                                     <option value="">All Assignments</option>
                                 </select>
                             </div>
 
                             <div class="space-y-1">
                                 <label class="block text-xs font-bold uppercase text-slate-700">Status</label>
-                                <select id="statusFilter" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500" onchange="filterSubmissions()">
+                                <select id="statusFilter" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="filterSubmissions()">
                                     <option value="">All Status</option>
                                     <option value="SUBMITTED">Submitted</option>
                                     <option value="GRADED">Graded</option>
@@ -147,7 +249,7 @@
                                         <td class="px-4 py-3 text-center">
                                             <div class="flex items-center justify-center gap-1.5">
                                                 <button type="button"
-                                                        class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition cursor-pointer"
+                                                        class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold transition cursor-pointer"
                                                         th:attr="data-id=${item.submissionId},
                                                                  data-student=${item.studentName},
                                                                  data-assignment=${item.assignmentTitle},
@@ -165,7 +267,7 @@
                                                 </button>
 
                                                 <button type="button"
-                                                        class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition cursor-pointer shadow-xs"
+                                                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition cursor-pointer shadow-xs"
                                                         th:attr="data-id=${item.submissionId},
                                                                  data-student=${item.studentName},
                                                                  data-assignment=${item.assignmentTitle},
@@ -204,32 +306,32 @@
 
             <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 uppercase block mb-1 text-xs">Student</span>
-                    <span id="viewStudent" class="text-slate-900 font-normal"></span>
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Student</span>
+                    <span id="viewStudent" class="text-slate-900 font-medium"></span>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 uppercase block mb-1 text-xs">Assignment</span>
-                    <span id="viewAssignment" class="text-slate-900 font-normal"></span>
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Assignment</span>
+                    <span id="viewAssignment" class="text-slate-900 font-medium"></span>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 uppercase block mb-1 text-xs">Submitted At</span>
-                    <span id="viewDate" class="text-slate-900 font-normal"></span>
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Submitted At</span>
+                    <span id="viewDate" class="text-slate-900 font-medium"></span>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 uppercase block mb-1 text-xs">Status</span>
-                    <span id="viewStatus" class="text-slate-900 font-normal"></span>
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Status</span>
+                    <span id="viewStatus" class="text-slate-900 font-medium"></span>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 uppercase block mb-1 text-xs">Submission Timing</span>
-                    <span id="viewLate" class="text-slate-900 font-normal"></span>
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Submission Timing</span>
+                    <span id="viewLate" class="text-slate-900 font-medium"></span>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 uppercase block mb-1 text-xs">Mark</span>
-                    <span id="viewMark" class="text-slate-900 font-normal"></span>
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Mark</span>
+                    <span id="viewMark" class="text-slate-900 font-medium"></span>
                 </div>
                 <div class="sm:col-span-2 bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 uppercase block mb-1 text-xs">Graded At</span>
-                    <span id="viewGradedAt" class="text-slate-900 font-normal">Not Graded Yet</span>
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Graded At</span>
+                    <span id="viewGradedAt" class="text-slate-900 font-medium">Not Graded Yet</span>
                 </div>
             </div>
 
@@ -241,7 +343,7 @@
 
                 <div>
                     <h3 class="uppercase text-slate-700 mb-1.5 text-xs font-semibold">Attachment</h3>
-                    <div id="viewAttachment" class="text-teal-600 font-normal"></div>
+                    <div id="viewAttachment" class="text-blue-600 font-normal"></div>
                 </div>
 
                 <div>
@@ -252,7 +354,7 @@
 
             <div class="flex justify-end gap-2 pt-4 mt-6 border-t border-slate-200">
                 <button type="button" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold cursor-pointer" onclick="closeModal('viewModal')">Close</button>
-                <button type="button" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs" onclick="gradeFromView()">Grade Submission</button>
+                <button type="button" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs" onclick="gradeFromView()">Grade Submission</button>
             </div>
         </div>
     </div>
@@ -267,11 +369,11 @@
 
             <div class="grid grid-cols-2 gap-4 mb-4 text-xs">
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 font-bold uppercase block mb-1">Student</span>
+                    <span class="text-slate-400 font-bold uppercase block mb-1">Student</span>
                     <strong id="gradeStudent" class="text-slate-900 text-sm"></strong>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 font-bold uppercase block mb-1">Assignment</span>
+                    <span class="text-slate-400 font-bold uppercase block mb-1">Assignment</span>
                     <strong id="gradeAssignment" class="text-slate-900 text-sm"></strong>
                 </div>
             </div>
@@ -281,18 +383,18 @@
 
                 <div>
                     <label for="gradeScore" class="block text-xs font-bold uppercase text-slate-700 mb-1">Mark</label>
-                    <input type="number" id="gradeScore" name="score" min="0" step="0.01" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+                    <input type="number" id="gradeScore" name="score" min="0" step="0.01" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     <small id="gradeTotalText" class="text-xs text-slate-500 mt-1 block font-semibold"></small>
                 </div>
 
                 <div>
                     <label for="gradeFeedback" class="block text-xs font-bold uppercase text-slate-700 mb-1">Teacher Feedback</label>
-                    <textarea id="gradeFeedback" name="feedback" rows="4" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white resize-none focus:outline-none focus:ring-2 focus:ring-teal-500" required></textarea>
+                    <textarea id="gradeFeedback" name="feedback" rows="4" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
                 </div>
 
                 <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
                     <button type="button" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold cursor-pointer" onclick="closeModal('gradeModal')">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs">Save Grade</button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs">Save Grade</button>
                 </div>
             </form>
         </div>
@@ -429,7 +531,7 @@
             link.textContent = "View Attachment File";
             link.target = "_blank";
             link.rel = "noopener noreferrer";
-            link.className = "text-teal-600 hover:underline font-normal";
+            link.className = "text-blue-600 hover:underline font-normal";
             attachment.appendChild(link);
         } else {
             attachment.textContent = "No attachment.";
