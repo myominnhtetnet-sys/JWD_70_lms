@@ -125,142 +125,170 @@ public class FinalGradeService {
         return published;
     }
 
-    private Scores compute( int batchId,int enrollmentId,
-            List<Map<String, Object>> assignments,
-            List<Map<String, Object>> exams) {
 
-        BigDecimal assignmentEarned = BigDecimal.ZERO;
-        BigDecimal assignmentMaximum = BigDecimal.ZERO;
+private Scores compute(
+        int batchId,
+        int enrollmentId,
+        List<Map<String, Object>> assignments,
+        List<Map<String, Object>> exams) {
 
-        for (Map<String, Object> assignment : assignments) {
-            int assignmentId = number(assignment.get("assignmentId"));
-            BigDecimal maximum = decimal(assignment.get("totalMark"));
+    // =========================================
+    // 1. ASSIGNMENT SCORE
+    // =========================================
+    BigDecimal assignmentEarned = BigDecimal.ZERO;
+    BigDecimal assignmentMaximum = BigDecimal.ZERO;
 
-            requirePositive(maximum, "Assignment total mark");
-            assignmentMaximum = assignmentMaximum.add(maximum);
-            List<Map<String, Object>> submissions = repository.findSubmission(assignmentId, enrollmentId);
+    for (Map<String, Object> assignment : assignments) {
 
-            // CLOSED assignment ကို မတင်ခဲ့ရင် 0 အမှတ်။
-            if (submissions.isEmpty()) {
-                continue;
-            }
+        int assignmentId = number(assignment.get("assignmentId"));
+        BigDecimal maximum = decimal(assignment.get("totalMark"));
 
-            Map<String, Object> submission = submissions.get(0);
-            String status = (String) submission.get("status");
+        requirePositive(maximum, "Assignment total mark");
+        assignmentMaximum = assignmentMaximum.add(maximum);
 
-            // Draft ဟာ တင်ပြီးသား submission မဟုတ်ပါ။
-            if ("DRAFT".equals(status)) {
-                continue;
-            }
+        List<Map<String, Object>> submissions =
+                repository.findSubmission(assignmentId, enrollmentId);
 
-            if (!"GRADED".equals(status) || submission.get("mark") == null) {
-                throw new IllegalArgumentException( "Enrollment " + enrollmentId
-                        + ": assignment \"" + assignment.get("title")
-                        + "\" is not fully graded.");
-            }
-
-            BigDecimal mark = decimal(submission.get("mark"));
-            checkMark(mark, maximum, "Assignment mark");
-            assignmentEarned = assignmentEarned.add(mark);
+        // Submission မရှိလျှင် 0 mark
+        if (submissions.isEmpty()) {
+            continue;
         }
 
-        BigDecimal examEarned = BigDecimal.ZERO;
-        BigDecimal examMaximum = BigDecimal.ZERO;
+        Map<String, Object> submission = submissions.get(0);
+        String status = String.valueOf(submission.get("status"));
 
-        for (Map<String, Object> exam : exams) {
-            int examId = number(exam.get("examId"));
-            BigDecimal maximum = decimal(exam.get("totalMark"));
-
-            requirePositive(maximum, "Exam total mark");
-            examMaximum = examMaximum.add(maximum);
-            BigDecimal best = BigDecimal.ZERO;
-
-            for (Map<String, Object> attempt : repository.findAttempts(examId, enrollmentId)) {
-                String status = (String) attempt.get("status");
-
-                // ဒီ version မှာ EXPIRED ကို 0 အဖြစ်သတ်မှတ်ထားပါတယ်။
-                if ("EXPIRED".equals(status)) {
-                    continue;
-                }
-
-                if (!"GRADED".equals(status)
-                        || attempt.get("score") == null
-                        || !List.of("PASSED", "FAILED")
-                                .contains(String.valueOf(attempt.get("result")))) {
-
-                    throw new IllegalArgumentException("Enrollment " + enrollmentId
-                            + ": exam \"" + exam.get("title")
-                            + "\" has an unfinished or ungraded attempt.");
-                }
-
-                BigDecimal score = decimal(attempt.get("score"));
-                checkMark(score, maximum, "Exam score");
-
-                best = best.max(score);
-            }
-            examEarned = examEarned.add(best);
+        // Draft submission ကို မတွက်ပါ
+        if ("DRAFT".equals(status)) {
+            continue;
         }
 
-        int attended = 0;
-        int countedSessions = 0;
-
-        for (Map<String, Object> attendance :
-                repository.findAttendance(batchId, enrollmentId)) {
-
-            String status = (String) attendance.get("status");
-
-            if (status == null) {
-                throw new IllegalArgumentException("Enrollment " + enrollmentId
-                        + ": attendance is missing for session "
-                        + attendance.get("sessionId") + ".");
-            }
-
-            switch (status) {
-                case "PRESENT", "LATE" -> {
-                    attended++;
-                    countedSessions++;
-                }
-                case "ABSENT" -> countedSessions++;
-                case "EXCUSED" -> {
-                    // Excused session ကို denominator မှ ဖယ်ပါ။
-                }
-                default -> throw new IllegalArgumentException("Invalid attendance status.");
-            }
+        if (!"GRADED".equals(status) || submission.get("mark") == null) {
+            throw new IllegalArgumentException(
+                    "Enrollment " + enrollmentId
+                    + ": assignment \"" + assignment.get("title")
+                    + "\" is not fully graded.");
         }
 
-        if (countedSessions == 0) {
-            throw new IllegalArgumentException("Enrollment " + enrollmentId
-                    + ": no countable completed attendance sessions.");
-        }
+        BigDecimal mark = decimal(submission.get("mark"));
+        checkMark(mark, maximum, "Assignment mark");
 
-        BigDecimal assignmentScore = percentage(
-                assignmentEarned, assignmentMaximum)
-                .multiply(ASSIGNMENT_WEIGHT)
-                .setScale(2, RoundingMode.HALF_UP);
-
-        BigDecimal examScore = percentage(examEarned, examMaximum)
-                .multiply(EXAM_WEIGHT)
-                .setScale(2, RoundingMode.HALF_UP);
-
-        BigDecimal attendancePercent = percentage(
-                BigDecimal.valueOf(attended),
-                BigDecimal.valueOf(countedSessions));
-
-        BigDecimal attendanceScore = attendancePercent
-                .multiply(ATTENDANCE_WEIGHT)
-                .setScale(2, RoundingMode.HALF_UP);
-
-        BigDecimal total = assignmentScore
-                .add(examScore)
-                .add(attendanceScore)
-                .setScale(2, RoundingMode.HALF_UP);
-
-        String result = total.compareTo(PASS_MARK) >= 0 ? "PASSED" : "FAILED";
-
-        return new Scores(assignmentScore,examScore,
-                attendancePercent.setScale(2, RoundingMode.HALF_UP),
-                total,gradeLetter(total), result);
+        assignmentEarned = assignmentEarned.add(mark);
     }
+
+    // =========================================
+    // 2. EXAM SCORE - LATEST ATTEMPT ONLY
+    // =========================================
+    BigDecimal examEarned = BigDecimal.ZERO;
+    BigDecimal examMaximum = BigDecimal.ZERO;
+
+    for (Map<String, Object> exam : exams) {
+
+        int examId = number(exam.get("examId"));
+        BigDecimal maximum = decimal(exam.get("totalMark"));
+
+        requirePositive(maximum, "Exam total mark");
+        examMaximum = examMaximum.add(maximum);
+
+		// Exam တစ်ခုစီအတွက် နောက်ဆုံး attempt တစ်ခုတည်းကိုယူပါ
+		List<Map<String, Object>> attempts = repository.findLatestAttempt(examId, enrollmentId);
+
+		// Attempt မရှိလျှင် 0 mark
+		if (attempts.isEmpty()) {
+			continue;
+		}
+
+		Map<String, Object> latestAttempt = attempts.get(0);
+        String status = String.valueOf(latestAttempt.get("status"));
+
+        // နောက်ဆုံး attempt က EXPIRED ဖြစ်လျှင် 0 mark
+        // အရင် attempt ရမှတ်ကို ပြန်မယူပါ
+        if ("EXPIRED".equals(status)) {
+            continue;
+        }
+
+		// နောက်ဆုံး attempt ကို grade မပြီးသေးလျှင် မတွက်ပါ
+		if (!"GRADED".equals(status) || latestAttempt.get("score") == null
+				|| !List.of("PASSED", "FAILED").contains(String.valueOf(latestAttempt.get("result")))) {
+
+			throw new IllegalArgumentException("Enrollment " + enrollmentId + ": latest attempt for exam \""
+					+ exam.get("title") + "\" is not fully graded.");
+		}
+
+        BigDecimal latestScore = decimal(latestAttempt.get("score"));
+        checkMark(latestScore, maximum, "Exam score");
+
+        examEarned = examEarned.add(latestScore);
+    }
+
+    // =========================================
+    // 3. ATTENDANCE SCORE
+    // =========================================
+    int attended = 0;
+    int countedSessions = 0;
+
+	for (Map<String, Object> attendance : repository.findAttendance(batchId, enrollmentId)) {
+
+        String status = (String) attendance.get("status");
+
+		if (status == null) {
+			throw new IllegalArgumentException("Enrollment " + enrollmentId + ": attendance is missing for session "
+					+ attendance.get("sessionId") + ".");
+		}
+
+		switch (status) {
+		case "PRESENT", "LATE" -> {
+			attended++;
+			countedSessions++;
+		}
+
+            case "ABSENT" -> countedSessions++;
+
+            // Excused session ကို denominator မှ ဖယ်ပါ
+            case "EXCUSED" -> {
+            }
+
+            default -> throw new IllegalArgumentException(
+                    "Invalid attendance status: " + status);
+        }
+    }
+
+	if (countedSessions == 0) {
+		throw new IllegalArgumentException(
+				"Enrollment " + enrollmentId + ": no countable completed attendance sessions.");
+	}
+
+    // =========================================
+    // 4. RAW PERCENTAGES
+    // =========================================
+	BigDecimal assignmentPercent = percentage(assignmentEarned, assignmentMaximum);
+	BigDecimal examPercent = percentage(examEarned, examMaximum);
+	BigDecimal attendancePercent = percentage(BigDecimal.valueOf(attended), BigDecimal.valueOf(countedSessions));
+
+    // =========================================
+    // 5. APPLY WEIGHTS
+    // Assignment 30%, Exam 60%, Attendance 10%
+    // =========================================
+	BigDecimal assignmentContribution = assignmentPercent.multiply(ASSIGNMENT_WEIGHT);
+	BigDecimal examContribution = examPercent.multiply(EXAM_WEIGHT);
+	BigDecimal attendanceContribution = attendancePercent.multiply(ATTENDANCE_WEIGHT);
+
+    BigDecimal total = assignmentContribution
+            .add(examContribution)
+            .add(attendanceContribution)
+            .setScale(2, RoundingMode.HALF_UP);
+
+    // =========================================
+    // 6. FINAL RESULT
+    // =========================================
+    String result = total.compareTo(PASS_MARK) >= 0
+            ? "PASSED"
+            : "FAILED";
+
+	return new Scores(assignmentPercent.setScale(2, RoundingMode.HALF_UP),
+			examPercent.setScale(2, RoundingMode.HALF_UP), attendancePercent.setScale(2, RoundingMode.HALF_UP), total,
+			gradeLetter(total), result);
+}
+
 
     private void checkAssessments(int batchId,
             List<Map<String, Object>> assignments,
@@ -314,12 +342,12 @@ public class FinalGradeService {
         }
     }
 
-    private void checkMark(
-            BigDecimal mark, BigDecimal maximum, String label) {
-        if (mark.signum() < 0 || mark.compareTo(maximum) > 0) {
-            throw new IllegalArgumentException(label + " must be between 0 and " + maximum + ".");
-        }
-    }
+	private void checkMark(BigDecimal mark, BigDecimal maximum, String label) {
+		if (mark == null || maximum == null || mark.signum() < 0 || mark.compareTo(maximum) > 0) {
+			throw new IllegalArgumentException(label + " must be between 0 and " + maximum + ".");
+		}
+	}
+
 
     private boolean same(Object saved, BigDecimal current) {
         return saved != null

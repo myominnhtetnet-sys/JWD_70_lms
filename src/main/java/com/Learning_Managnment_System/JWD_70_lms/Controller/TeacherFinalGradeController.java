@@ -25,54 +25,72 @@ public class TeacherFinalGradeController {
         this.service = service;
     }
 
-    @GetMapping
-    public String list( @RequestParam(required = false) Integer batchId,
-            HttpSession session, Model model) {
 
-        LoginBean teacher = teacher(session);
-        if (teacher == null) {
-            return "redirect:/login";
-        }
+@GetMapping
+public String list(
+        @RequestParam(required = false) Integer batchId,
+        HttpSession session,
+        Model model) {
 
-        // Pass full name for header profile display
-        if (teacher.getFull_name() != null) {
-            model.addAttribute("fullName", teacher.getFull_name());
-        }
+    // Debug: Check session when opening Final Grades
+    System.out.println("===== FINAL GRADES DEBUG =====");
+    System.out.println("Session ID = " + session.getId());
+    System.out.println("Session is New = " + session.isNew());
+    System.out.println("Current User = " + session.getAttribute("currentUser"));
+    System.out.println("Role ID = " + session.getAttribute("roleId"));
 
-        int teacherId = teacher.getUser_id();
+    LoginBean teacher = teacher(session);
 
-        List<Map<String, Object>> batches = service.getBatches(teacherId);
-        System.out.println("Final Grade Teacher ID = " + teacherId);
-        System.out.println("Final Grade Teacher Email = " + teacher.getEmail());
-        System.out.println("Final Grade Batch Count = " + batches.size());
-
-        model.addAttribute("batches", batches);
-        model.addAttribute("selectedBatchId", batchId);
-        model.addAttribute("students", List.of());
-        model.addAttribute("canPublish", false);
-
-        if (batchId != null) {
-            try {
-                List<Map<String, Object>> students = service.getStudents(batchId, teacher.getUser_id());
-
-                model.addAttribute("students", students);
-
-                boolean hasDraft = students.stream().anyMatch(
-                        row -> row.get("publishedAt") == null);
-
-                boolean allCalculated = !students.isEmpty()
-                        && students.stream().allMatch( row -> row.get("gradeId") != null);
-
-                model.addAttribute( "canPublish", hasDraft && allCalculated);
-
-            } catch (IllegalArgumentException ex) {
-                model.addAttribute("errorMessage", ex.getMessage());
-                model.addAttribute("selectedBatchId", null);
-            }
-        }
-
-        return "teacher-final-grade";
+    if (teacher == null) {
+        System.out.println("Teacher is NULL. Redirecting to login.");
+        return "redirect:/login";
     }
+
+    System.out.println("Teacher ID = " + teacher.getUser_id());
+    System.out.println("Teacher Role ID = " + teacher.getRole_id());
+
+    // Pass full name for header profile display
+    if (teacher.getFull_name() != null) {
+        model.addAttribute("fullName", teacher.getFull_name());
+    }
+
+    int teacherId = teacher.getUser_id();
+
+    List<Map<String, Object>> batches = service.getBatches(teacherId);
+
+    System.out.println("Final Grade Teacher ID = " + teacherId);
+    System.out.println("Final Grade Teacher Email = " + teacher.getEmail());
+    System.out.println("Final Grade Batch Count = " + batches.size());
+
+    model.addAttribute("batches", batches);
+    model.addAttribute("selectedBatchId", batchId);
+    model.addAttribute("students", List.of());
+    model.addAttribute("canPublish", false);
+
+    if (batchId != null) {
+        try {
+			List<Map<String, Object>> students = service.getStudents(batchId, teacherId);
+
+			model.addAttribute("students", students);
+
+			boolean hasDraft = students.stream().anyMatch(row -> row.get("publishedAt") == null);
+
+			boolean allCalculated = !students.isEmpty()
+					&& students.stream().allMatch(row -> row.get("gradeId") != null);
+
+            model.addAttribute("canPublish", hasDraft && allCalculated);
+
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("selectedBatchId", null);
+        }
+    }
+
+    System.out.println("Final Grades page loaded successfully.");
+    System.out.println("==============================");
+
+    return "teacher-final-grade";
+}
 
     @PostMapping("/calculate")
     public String calculate(
