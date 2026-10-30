@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Assignment Management - Teacher Portal</title>
-<!-- Tailwind CSS CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<!-- FontAwesome Icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- Google Fonts: Inter -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - LearnHub LMS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
     /* Custom Scrollbar */
     ::-webkit-scrollbar {width: 6px;height: 6px;}
@@ -24,16 +24,117 @@
 </style>
 </head>
 
-<body class="h-full font-sans text-slate-900 bg-slate-50 antialiased">
+<body class="bg-slate-50 text-slate-800 antialiased font-sans">
 
-    <div id="app" class="min-h-screen flex flex-col">
+    <div class="flex min-h-screen">
         
-        <div th:replace="~{teacher :: header}"></div>
-        <div class="flex-1 flex items-stretch">
-  
-            <div class="exam-sidebar shrink-0">
-                <div th:replace="~{teacher :: sidebar}"></div>
+        <!-- SIDEBAR NAVIGATION MENU (Collapsible Dark Theme) -->
+        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar z-30">
+            
+            <!-- 🟢 Pure CSS Toggle Checkbox Engine -->
+            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+            
+            <!-- 🟢 Error-Free Scoped Structural Animation Layout Adjustments -->
+            <style>
+                #sidebar-content-box { width: 256px; }
+                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+            </style>
+
+            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden overflow-y-auto">
+                <div>
+                    <!-- Logo & Collapse Button Trigger -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+                        <!-- 🟢 Centered uncollapse bars icon inside 72px header -->
+                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </label>
+
+                        <div class="flex items-center gap-3 hidden-on-collapse">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
+                                <i class="fa-solid fa-chalkboard-user text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-base font-bold text-white tracking-wide block leading-none">EduPulse</span>
+                                <small class="text-[11px] font-medium text-slate-400">Teacher Portal</small>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Collapse Arrow Button (visible on hover) -->
+                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+                        </label>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-6">
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Teaching Portal</div>
+                            <div class="space-y-1">
+                                <a href="/teacher" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-house text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                                </a>
+                                <a href="/teacher/courses" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-book-open text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Courses</span>
+                                </a>
+                                <a href="/teacher/batches" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-users text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Batches</span>
+                                </a>
+                                <a href="/teacher/attendance" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-calendar-check text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Check Attendance</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Assessments</div>
+                            <div class="space-y-1">
+                                <a href="/teacher/question-list" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-database text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Question Bank</span>
+                                </a>
+                                <a href="/teacher/assignments" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-clipboard-list text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Assignments</span>
+                                </a>
+                                <a href="/teacher/submissions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-check-double text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Grade Submissions</span>
+                                </a>
+                                <!-- Active Exams Link -->
+                                <a href="/teacher/exams" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 shadow-sm transition">
+                                    <i class="fa-solid fa-file-pen text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exams</span>
+                                </a>
+                                <a href="/teacher/exam-results" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-square-poll-vertical text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exam Results</span>
+                                </a>
+                                <a href="/teacher/final-grades" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-graduation-cap text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Final Grades</span>
+                                </a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+
+                <div class="p-4 border-t border-slate-800">
+                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
+                    </a>
+                </div>
             </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA WRAPPER -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+            
+            <!-- HEADER FRAGMENT -->
+            <div th:replace="~{teacher :: header}"></div>
 
             <!-- Main Content -->
             <main class="flex-1 min-w-0 px-4 sm:px-8 py-6 bg-slate-50 overflow-y-auto">
@@ -44,12 +145,12 @@
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
                             <h1 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                <i class="fa-solid fa-file-circle-check text-indigo-600"></i> Exam Management
+                                <i class="fa-solid fa-file-circle-check text-blue-600"></i> Exam Management
                             </h1>
-                            <p class="text-xs text-slate-600 mt-1">Create and manage teacher exams</p>
+                            <p class="text-xs text-slate-500 mt-1">Create and manage teacher exams</p>
                         </div>
 
-                        <a th:href="@{/teacher/exams/create}" class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-xl shadow-xs transition cursor-pointer">
+                        <a th:href="@{/teacher/exams/create}" class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-xl shadow-xs transition cursor-pointer">
                             <i class="fa-solid fa-plus text-xs"></i> Create Exam
                         </a>
                     </div>
@@ -64,13 +165,13 @@
                                 <label class="block text-xs font-bold uppercase text-slate-700">Search</label>
                                 <div class="relative">
                                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                    <input type="text" id="examSearch" class="w-full border border-slate-300 rounded-xl pl-9 pr-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Search exam title..." autocomplete="off" oninput="filterExams()">
+                                    <input type="text" id="examSearch" class="w-full border border-slate-300 rounded-xl pl-9 pr-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search exam title..." autocomplete="off" oninput="filterExams()">
                                 </div>
                             </div>
 
                             <div class="space-y-1">
                                 <label class="block text-xs font-bold uppercase text-slate-700">Exam Type</label>
-                                <select id="examTypeFilter" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500" onchange="filterExams()">
+                                <select id="examTypeFilter" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="filterExams()">
                                     <option value="">All Types</option>
                                     <option value="QUIZ">QUIZ</option>
                                     <option value="MIDTERM">MIDTERM</option>
@@ -80,7 +181,7 @@
 
                             <div class="space-y-1">
                                 <label class="block text-xs font-bold uppercase text-slate-700">Status</label>
-                                <select id="examStatusFilter" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500" onchange="filterExams()">
+                                <select id="examStatusFilter" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="filterExams()">
                                     <option value="">All Status</option>
                                     <option value="DRAFT">DRAFT</option>
                                     <option value="PUBLISHED">PUBLISHED</option>
@@ -89,7 +190,7 @@
                             </div>
 
                             <div class="flex items-center gap-2">
-                                <button type="button" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs py-3 px-4 rounded-xl transition cursor-pointer shadow-xs" onclick="filterExams()">Search</button>
+                                <button type="button" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 px-4 rounded-xl transition cursor-pointer shadow-xs" onclick="filterExams()">Search</button>
                                 <button type="button" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs py-3 px-4 rounded-xl transition cursor-pointer" onclick="resetExamSearch()">Reset</button>
                             </div>
                         </div>
@@ -128,17 +229,11 @@
 
                                         <td class="px-4 py-3 text-xs text-slate-500 font-medium" th:text="${index.count}">1</td>
                                         
-                                        <!-- <td class="px-4 py-3 font-semibold text-slate-900">
-                                            <div class="exam-title-wrapper flex items-center gap-2">
-                                                <span class="title" th:text="${exam.title}">Java Basic Exam</span>
-                                            </div>
-                                        </td>-->
-                                        
                                         <td class="px-4 py-3 font-semibold text-slate-900">
-    <div class="exam-title-wrapper flex items-center justify-between gap-3">
-        <span class="title min-w-0" th:text="${exam.title}">Java Basic Exam</span>
-    </div>
-</td>
+                                            <div class="exam-title-wrapper flex items-center justify-between gap-3">
+                                                <span class="title min-w-0" th:text="${exam.title}">Java Basic Exam</span>
+                                            </div>
+                                        </td>
                                         
                                         <td class="px-4 py-3 text-xs font-semibold text-slate-600">
                                             <span class="exam-type" th:text="${exam.examType}">MCQ</span>
@@ -157,28 +252,13 @@
 
                                         <td class="px-4 py-3 text-center">
                                             <div class="flex items-center justify-center gap-1.5">
-                                              
+                                                <button type="button" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold transition cursor-pointer" title="View"
+                                                        th:attr="data-id=${exam.examId}, data-title=${exam.title}, data-type=${exam.examType}, data-duration=${exam.durationMin}, data-total=${exam.totalMark}, data-pass=${exam.passMark}, data-attempts=${exam.maxAttempts}, data-status=${exam.status}"
+                                                        onclick="openViewModal(this)">
+                                                    View
+                                                </button>
 
-<button type="button"
-    class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition cursor-pointer"
-    title="View"
-    th:attr="
-        data-id=${exam.examId},
-        data-course=${exam.courseId},
-        data-batch=${exam.batchId},
-        data-title=${exam.title},
-        data-type=${exam.examType},
-        data-duration=${exam.durationMin},
-        data-total=${exam.totalMark},
-        data-pass=${exam.passMark},
-        data-attempts=${exam.maxAttempts},
-        data-status=${exam.status}"
-    onclick="openViewModal(this)">
-    View
-</button>
-
-
-                                                <button type="button" class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition cursor-pointer shadow-xs" title="Edit"
+                                                <button type="button" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition cursor-pointer shadow-xs" title="Edit"
                                                         th:attr="data-id=${exam.examId}, data-course=${exam.courseId}, data-batch=${exam.batchId}, data-title=${exam.title}, data-type=${exam.examType}, data-duration=${exam.durationMin}, data-total=${exam.totalMark}, data-pass=${exam.passMark}, data-start=${exam.startAt != null ? #temporals.format(exam.startAt, 'yyyy-MM-dd''T''HH:mm') : ''}, data-end=${exam.endAt != null ? #temporals.format(exam.endAt, 'yyyy-MM-dd''T''HH:mm') : ''}, data-attempts=${exam.maxAttempts}, data-shuffle=${exam.shuffleQuestions}, data-status=${exam.status}"
                                                         onclick="openEditModal(this)">
                                                     Edit
@@ -222,12 +302,12 @@
 
             <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 uppercase block mb-1 text-xs">Exam ID</span>
-                    <span id="viewExamId" class="text-slate-900 font-normal"></span>
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Exam ID</span>
+                    <span id="viewExamId" class="text-slate-900 font-medium"></span>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 uppercase block mb-1 text-xs">Status</span>
-                    <span id="viewStatus" class="text-slate-900 font-normal"></span>
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Status</span>
+                    <span id="viewStatus" class="text-slate-900 font-medium"></span>
                 </div>
 
 <!-- Course -->
@@ -252,28 +332,28 @@
 
                 
                 <div class="sm:col-span-2 bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 uppercase block mb-1 text-xs">Title</span>
-                    <span id="viewTitle" class="text-slate-900 font-normal"></span>
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Title</span>
+                    <span id="viewTitle" class="text-slate-900 font-medium"></span>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 uppercase block mb-1 text-xs">Exam Type</span>
-                    <span id="viewType" class="text-slate-900 font-normal"></span>
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Exam Type</span>
+                    <span id="viewType" class="text-slate-900 font-medium"></span>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 uppercase block mb-1 text-xs">Duration</span>
-                    <span id="viewDuration" class="text-slate-900 font-normal"></span>
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Duration</span>
+                    <span id="viewDuration" class="text-slate-900 font-medium"></span>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 uppercase block mb-1 text-xs">Total Mark</span>
-                    <span id="viewTotal" class="text-slate-900 font-normal"></span>
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Total Mark</span>
+                    <span id="viewTotal" class="text-slate-900 font-medium"></span>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 uppercase block mb-1 text-xs">Pass Mark</span>
-                    <span id="viewPass" class="text-slate-900 font-normal"></span>
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Pass Mark</span>
+                    <span id="viewPass" class="text-slate-900 font-medium"></span>
                 </div>
                 <div class="sm:col-span-2 bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-slate-500 uppercase block mb-1 text-xs">Max Attempts</span>
-                    <span id="viewAttempts" class="text-slate-900 font-normal"></span>
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Max Attempts</span>
+                    <span id="viewAttempts" class="text-slate-900 font-medium"></span>
                 </div>
             </div>
 
@@ -289,14 +369,14 @@
             <div class="flex items-center justify-between pb-4 border-b border-slate-200 mb-4">
                 <div>
                     <h2 class="text-base font-bold text-slate-900">Edit Exam</h2>
-                    <p class="text-xs text-slate-600">Update exam information</p>
+                    <p class="text-xs text-slate-500">Update exam information</p>
                 </div>
                 <button type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 flex items-center justify-center cursor-pointer text-xl" onclick="closeEditModal()">&times;</button>
             </div>
 
             <form id="editExamForm" method="post" th:action="@{/teacher/exams/update/prepare}" class="space-y-4 text-sm">
-               <input type="hidden" id="editExamId" name="examId">
-<input type="hidden" id="originalTotalMark" name="originalTotalMark">
+                <input type="hidden" id="editExamId" name="examId">
+                <input type="hidden" id="originalTotalMark" name="originalTotalMark">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                 <div class="grid grid-cols-2 gap-3">
@@ -319,13 +399,13 @@
 
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Exam Title <span class="text-rose-500">*</span></label>
-                    <input type="text" id="editTitle" name="title" maxlength="255" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+                    <input type="text" id="editTitle" name="title" maxlength="255" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Exam Type <span class="text-rose-500">*</span></label>
-                        <select id="editType" name="examType" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+                        <select id="editType" name="examType" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             <option value="QUIZ">Quiz</option>
                             <option value="MIDTERM">Midterm</option>
                             <option value="FINAL">Final</option>
@@ -334,43 +414,43 @@
 
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Duration (Minutes) <span class="text-rose-500">*</span></label>
-                        <input type="number" id="editDuration" name="durationMin" min="1" step="1" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+                        <input type="number" id="editDuration" name="durationMin" min="1" step="1" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Total Mark <span class="text-rose-500">*</span></label>
-                        <input type="number" id="editTotal" name="totalMark" min="0.01" step="0.01" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+                        <input type="number" id="editTotal" name="totalMark" min="0.01" step="0.01" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Pass Mark <span class="text-rose-500">*</span></label>
-                        <input type="number" id="editPass" name="passMark" min="0" step="0.01" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+                        <input type="number" id="editPass" name="passMark" min="0" step="0.01" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Start Date & Time <span class="text-rose-500">*</span></label>
-                        <input type="datetime-local" id="editStart" name="startAt" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+                        <input type="datetime-local" id="editStart" name="startAt" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-700 mb-1">End Date & Time <span class="text-rose-500">*</span></label>
-                        <input type="datetime-local" id="editEnd" name="endAt" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+                        <input type="datetime-local" id="editEnd" name="endAt" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Maximum Attempts <span class="text-rose-500">*</span></label>
-                        <input type="number" id="editAttempts" name="maxAttempts" min="1" step="1" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+                        <input type="number" id="editAttempts" name="maxAttempts" min="1" step="1" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Status <span class="text-rose-500">*</span></label>
-                        <select id="editStatus" name="status" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+                        <select id="editStatus" name="status" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             <option value="DRAFT">Draft</option>
                             <option value="PUBLISHED">Published</option>
                             <option value="CLOSED">Closed</option>
@@ -379,18 +459,14 @@
                 </div>
 
                 <div class="flex items-center gap-2 pt-1">
-                    <input type="checkbox" id="editShuffle" name="shuffleQuestions" value="true" class="w-4 h-4 text-teal-600 focus:ring-teal-500 rounded cursor-pointer">
+                    <input type="checkbox" id="editShuffle" name="shuffleQuestions" value="true" class="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded cursor-pointer">
                     <label for="editShuffle" class="text-xs font-bold text-slate-700 cursor-pointer">Shuffle Questions</label>
                 </div>
 
                 <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
                     <button type="button" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold cursor-pointer" onclick="closeEditModal()">Cancel</button>
-<button type="submit"
-    id="editExamSubmitBtn"
-    class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs">
-    Save
-</button>
-              </div>
+                    <button type="submit" id="editExamSubmitBtn" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs">Save</button>
+                </div>
             </form>
         </div>
     </div>
@@ -465,8 +541,7 @@
             document.getElementById("editEnd").value = d.end || "";
             document.getElementById("editAttempts").value = d.attempts || "";
             document.getElementById("editStatus").value = d.status || "";
-            document.getElementById("editShuffle").checked =
-                d.shuffle === "true";
+            document.getElementById("editShuffle").checked = d.shuffle === "true";
 
             document.getElementById("editPass").setCustomValidity("");
             document.getElementById("editEnd").setCustomValidity("");
@@ -479,6 +554,7 @@
 
             document.body.style.overflow = "hidden";
         }
+
         function closeEditModal() {
             const modal = document.getElementById("editModal");
             modal.classList.add("hidden");
@@ -513,9 +589,6 @@
                 event.preventDefault();
             }
         });
-
-      
-
 
         document.getElementById("editTotal").addEventListener("input", function() {
             document.getElementById("editPass").setCustomValidity("");
@@ -593,13 +666,12 @@
                     const badge = document.createElement("span");
                     badge.className = "inline-flex items-center px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold whitespace-nowrap exam-status-badge ml-1.5";
                     badge.innerHTML = '<i class="fa-solid fa-pen mr-1"></i> EDITED';
-                    /* titleWrapper.prepend(badge); */
                     titleWrapper.appendChild(badge);
                 } else if (createdTime > 0) {
                     row.classList.add("exam-new");
                     const badge = document.createElement("span");
-                    badge.className = "inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-[10px] font-bold whitespace-nowrap exam-status-badge ml-1.5";                    badge.innerHTML = '<i class="fa-solid fa-sparkles mr-1"></i> NEW';
-                    /* titleWrapper.prepend(badge); */
+                    badge.className = "inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-[10px] font-bold whitespace-nowrap exam-status-badge ml-1.5";
+                    badge.innerHTML = '<i class="fa-solid fa-sparkles mr-1"></i> NEW';
                     titleWrapper.appendChild(badge);
                 }
             });

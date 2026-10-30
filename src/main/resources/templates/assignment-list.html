@@ -1,57 +1,173 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Assignment Management - Teacher Portal</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - LearnHub LMS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
 <style>
-    ::-webkit-scrollbar {width: 6px;height: 6px;}
-    ::-webkit-scrollbar-track {background: rgba(0,0,0,0.03);}
-    ::-webkit-scrollbar-thumb {background: rgba(0,0,0,0.15);border-radius: 3px; }
-    .fade-in {animation: fadeIn 0.25s ease-in-out;}
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.03);
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,0.15);
+        border-radius: 3px;
+    }
+    .fade-in {
+        animation: fadeIn 0.25s ease-in-out;
+    }
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(4px); }
         to { opacity: 1; transform: translateY(0); }
     }
-.assignment-title-wrapper { display: flex !important;align-items: center;justify-content: space-between;gap: 12px; width: 100%;}
 
-.assignment-title-text {flex: 1;min-width: 0;overflow-wrap: anywhere;}
-.assignment-status-badge {
-    display: inline-flex !important;align-items: center !important;justify-content: center !important;
-    gap: 5px !important;padding: 6px 12px !important;sborder-radius: 9999px !important;
-    font-size: 12px !important;font-weight: 700 !important;white-space: nowrap !important;flex-shrink: 0 !important;
-}
-
-.assignment-status-badge.edited {background: #fef3c7 !important; background-color: #fef3c7 !important;color: #92400e !important;border: 1px solid #f59e0b !important;}
-.assignment-status-badge.new {background: #dcfce7 !important;background-color: #dcfce7 !important;color: #166534 !important;border: 1px solid #22c55e !important;}
-
+    .assignment-title-wrapper { display: flex !important;align-items: center;justify-content: space-between;gap: 12px; width: 100%;}
+    .assignment-title-text {flex: 1;min-width: 0;overflow-wrap: anywhere;}
+    .assignment-status-badge {
+        display: inline-flex !important;align-items: center !important;justify-content: center !important;
+        gap: 5px !important;padding: 6px 12px !important;border-radius: 9999px !important;
+        font-size: 12px !important;font-weight: 700 !important;white-space: nowrap !important;flex-shrink: 0 !important;
+    }
+    .assignment-status-badge.edited {background: #fef3c7 !important; background-color: #fef3c7 !important;color: #92400e !important;border: 1px solid #f59e0b !important;}
+    .assignment-status-badge.new {background: #dcfce7 !important;background-color: #dcfce7 !important;color: #166534 !important;border: 1px solid #22c55e !important;}
 </style>
 </head>
 
-<body class="h-full font-sans text-slate-900 bg-slate-50 antialiased">
+<body class="bg-slate-50 text-slate-800 antialiased font-sans">
 
-    <div id="app" class="min-h-screen flex flex-col">
+    <div class="flex min-h-screen">
         
-       <div th:replace="~{teacher :: header}"></div>
-        <div class="flex-1 flex">
-  
-         <div th:replace="~{teacher :: sidebar}"></div>
+        <!-- SIDEBAR NAVIGATION MENU (Collapsible Dark Theme) -->
+        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar z-30">
+            
+            <!-- 🟢 Pure CSS Toggle Checkbox Engine -->
+            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+            
+            <!-- 🟢 Error-Free Scoped Structural Animation Layout Adjustments -->
+            <style>
+                #sidebar-content-box { width: 256px; }
+                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+            </style>
+
+            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden overflow-y-auto">
+                <div>
+                    <!-- Logo & Collapse Button Trigger -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+                        <!-- 🟢 Centered uncollapse bars icon inside 72px header -->
+                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </label>
+
+                        <div class="flex items-center gap-3 hidden-on-collapse">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
+                                <i class="fa-solid fa-chalkboard-user text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-base font-bold text-white tracking-wide block leading-none">EduPulse</span>
+                                <small class="text-[11px] font-medium text-slate-400">Teacher Portal</small>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Collapse Arrow Button (visible on hover) -->
+                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+                        </label>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-6">
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Teaching Portal</div>
+                            <div class="space-y-1">
+                                <a href="/teacher" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-house text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                                </a>
+                                <a href="/teacher/courses" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-300">
+                                    <i class="fa-solid fa-book-open text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Courses</span>
+                                </a>
+                                <a href="/teacher/batches" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-users text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Batches</span>
+                                </a>
+                                <a href="/teacher/attendance" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-calendar-check text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Check Attendance</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Assessments</div>
+                            <div class="space-y-1">
+                                <a href="/teacher/question-list" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-database text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Question Bank</span>
+                                </a>
+                                <!-- Active Assignment Link -->
+                                <a href="/teacher/assignments" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 shadow-sm transition">
+                                    <i class="fa-solid fa-clipboard-list text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Assignments</span>
+                                </a>
+                                <a href="/teacher/submissions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-check-double text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Grade Submissions</span>
+                                </a>
+                                <a href="/teacher/exams" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-file-pen text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exams</span>
+                                </a>
+                                <a href="/teacher/exam-results" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-square-poll-vertical text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exam Results</span>
+                                </a>
+                                <a href="/teacher/final-grades" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-graduation-cap text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Final Grades</span>
+                                </a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+
+                <div class="p-4 border-t border-slate-800">
+                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA WRAPPER -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+            
+            <!-- HEADER FRAGMENT -->
+            <div th:replace="~{teacher :: header}"></div>
 
             <!-- MAIN CONTENT AREA -->
-            <main class="flex-1 min-w-0 px-6 py-6 bg-slate-50 overflow-y-auto">
+            <main class="p-6 lg:p-8 space-y-6 max-w-[1400px] mx-auto w-full">
 
                 <!-- Page Header -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                     <div>
                         <h1 class="text-xl font-bold text-slate-900">Assignment Management</h1>
-                        <p class="text-xs text-slate-600 mt-1">Manage your assignments easily.</p>
+                        <p class="text-xs text-slate-500 mt-1">Manage your assignments easily.</p>
                     </div>
 
-                    <a th:href="@{/teacher/assignments/create}" class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-xl shadow-xs transition cursor-pointer">
+                    <a th:href="@{/teacher/assignments/create}" class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-xl shadow-xs transition cursor-pointer">
                         <i class="fa-solid fa-plus text-xs"></i> Create Assignment
                     </a>
                 </div>
@@ -62,17 +178,17 @@
 
                 <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-6 shadow-xs">
                     <form th:action="@{/teacher/assignments/search}" method="get" class="grid grid-cols-1 sm:grid-cols-4 gap-3 items-center">
-<!--                         <input type="text" name="title" placeholder="Search assignment title..." th:value="${title}" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50">-->
-						<input type="text" id="searchTitle" name="title"
-							placeholder="Search assignment title..." th:value="${title}"
-							oninput="liveSearch()"
-							class="w-full rounded-lg border border-slate-300 px-4 py-2" />
-						<select name="batchId" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <input type="text" id="searchTitle" name="title"
+                            placeholder="Search assignment title..." th:value="${title}"
+                            oninput="liveSearch()"
+                            class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        
+                        <select name="batchId" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">All Batches</option>
                             <option th:each="batch : ${batches}" th:value="${batch['batch_id']}" th:text="${batch['title']}" th:selected="${selectedBatchId != null and selectedBatchId == batch['batch_id']}"></option>
                         </select>
 
-                        <select name="status" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <select name="status" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">All Status</option>
                             <option value="DRAFT" th:selected="${selectedStatus == 'DRAFT'}">DRAFT</option>
                             <option value="PUBLISHED" th:selected="${selectedStatus == 'PUBLISHED'}">PUBLISHED</option>
@@ -80,7 +196,7 @@
                         </select>
 
                         <div class="flex items-center gap-2">
-                            <button type="submit" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition cursor-pointer shadow-xs">Search</button>
+                            <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition cursor-pointer shadow-xs">Search</button>
                             <a th:href="@{/teacher/assignments}" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs py-2.5 px-4 rounded-xl transition cursor-pointer">Reset</a>
                         </div>
                     </form>
@@ -90,7 +206,7 @@
                 <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
                     <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-slate-100">
                         <h2 class="font-bold text-sm uppercase text-slate-700">Assignment List</h2>
-                        <span class="text-xs font-bold text-slate-600">Total: <strong th:text="${totalItems}">0</strong></span>
+                        <span class="text-xs font-bold text-slate-500">Total: <strong th:text="${totalItems}">0</strong></span>
                     </div>
 
                     <div class="overflow-x-auto">
@@ -111,13 +227,13 @@
                                 <tr th:each="assignment, index : ${assignments}" th:attr="data-id=${assignment.assignmentId}, data-created-at=${assignment.createdAt}">
                                     <td class="px-4 py-3 text-xs text-slate-500 font-medium" th:text="${index.count}">1</td>
 
-									<td class="px-4 py-3 text-sm font-medium text-slate-800">
-										<span th:each="batch : ${batches}"
-										th:if="${batch['batch_id'] == assignment.batchId}"
-										th:text="${batch['title']}"> </span>
-									</td>
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">
+                                        <span th:each="batch : ${batches}"
+                                        th:if="${batch['batch_id'] == assignment.batchId}"
+                                        th:text="${batch['title']}"> </span>
+                                    </td>
 
-									<td class="px-4 py-3 text-xs text-slate-600 font-medium">
+                                    <td class="px-4 py-3 text-xs text-slate-500 font-medium">
                                         <span th:each="lesson : ${lessons}" th:if="${lesson.lessonId == assignment.lessonId}" th:text="${lesson.title}"></span>
                                     </td>
                                     <td class="px-4 py-3 font-semibold text-slate-900 assignment-title">
@@ -159,7 +275,7 @@
                     <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-center gap-2 text-xs font-bold">
                         <a th:if="${currentPage > 1}" th:href="@{/teacher/assignments(page=${currentPage - 1})}" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 text-slate-700">Previous</a>
                         <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-                            <a th:href="@{/teacher/assignments(page=${i})}" th:text="${i}" th:classappend="${i == currentPage} ? ' bg-teal-600 text-white border-teal-600' : ' bg-white border-slate-300 text-slate-700 hover:bg-slate-100'" class="px-3 py-1.5 border rounded-lg"></a>
+                            <a th:href="@{/teacher/assignments(page=${i})}" th:text="${i}" th:classappend="${i == currentPage} ? ' bg-blue-600 text-white border-blue-600' : ' bg-white border-slate-300 text-slate-700 hover:bg-slate-100'" class="px-3 py-1.5 border rounded-lg"></a>
                         </span>
                         <a th:if="${currentPage < totalPages}" th:href="@{/teacher/assignments(page=${currentPage + 1})}" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 text-slate-700">Next</a>
                     </div>
@@ -174,67 +290,67 @@
             <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200">
                 <div>
                     <h2 class="text-base font-bold text-slate-900">Assignment Details</h2>
-                    <p class="text-xs text-slate-600">View complete assignment information.</p>
+                    <p class="text-xs text-slate-500">View complete assignment information.</p>
                 </div>
                 <button type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 cursor-pointer flex items-center justify-center" onclick="closeAssignmentModal()">&times;</button>
             </div>
             <div class="p-5 space-y-4 text-sm">
                 <div class="grid grid-cols-2 gap-3">
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                        <span class="text-xs font-bold uppercase text-slate-600">Assignment ID</span>
+                        <span class="text-xs font-bold uppercase text-slate-400">Assignment ID</span>
                         <strong id="detailAssignmentId" class="block text-slate-900 mt-1">-</strong>
                     </div>
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                        <span class="text-xs font-bold uppercase text-slate-600">Title</span>
+                        <span class="text-xs font-bold uppercase text-slate-400">Title</span>
                         <strong id="detailTitle" class="block text-slate-900 mt-1">-</strong>
                     </div>
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                        <span class="text-xs font-bold uppercase text-slate-600">Batch</span>
+                        <span class="text-xs font-bold uppercase text-slate-400">Batch</span>
                         <strong id="detailBatch" class="block text-slate-900 mt-1">-</strong>
                     </div>
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                        <span class="text-xs font-bold uppercase text-slate-600">Lesson</span>
+                        <span class="text-xs font-bold uppercase text-slate-400">Lesson</span>
                         <strong id="detailLesson" class="block text-slate-900 mt-1">-</strong>
                     </div>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span class="text-xs font-bold uppercase text-slate-600">Description</span>
+                    <span class="text-xs font-bold uppercase text-slate-400">Description</span>
                     <div id="detailDescription" class="text-slate-800 mt-1">-</div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                        <span class="text-xs font-bold uppercase text-slate-600">Start At</span>
+                        <span class="text-xs font-bold uppercase text-slate-400">Start At</span>
                         <strong id="detailStartAt" class="block text-slate-900 mt-1">-</strong>
                     </div>
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                        <span class="text-xs font-bold uppercase text-slate-600">Due At</span>
+                        <span class="text-xs font-bold uppercase text-slate-400">Due At</span>
                         <strong id="detailDueAt" class="block text-slate-900 mt-1">-</strong>
                     </div>
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                        <span class="text-xs font-bold uppercase text-slate-600">Allow Late Submit</span>
+                        <span class="text-xs font-bold uppercase text-slate-400">Allow Late Submit</span>
                         <strong id="detailAllowLate" class="block text-slate-900 mt-1">-</strong>
                     </div>
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                        <span class="text-xs font-bold uppercase text-slate-600">Late Deadline</span>
+                        <span class="text-xs font-bold uppercase text-slate-400">Late Deadline</span>
                         <strong id="detailLateDeadline" class="block text-slate-900 mt-1">-</strong>
                     </div>
                 </div>
                 <div class="grid grid-cols-3 gap-3">
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                        <span class="text-xs font-bold uppercase text-slate-600">Total Mark</span>
+                        <span class="text-xs font-bold uppercase text-slate-400">Total Mark</span>
                         <strong id="detailTotalMark" class="block text-slate-900 mt-1">-</strong>
                     </div>
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                        <span class="text-xs font-bold uppercase text-slate-600">Pass Mark</span>
+                        <span class="text-xs font-bold uppercase text-slate-400">Pass Mark</span>
                         <strong id="detailPassMark" class="block text-slate-900 mt-1">-</strong>
                     </div>
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                        <span class="text-xs font-bold uppercase text-slate-600">Status</span>
+                        <span class="text-xs font-bold uppercase text-slate-400">Status</span>
                         <div class="mt-1"><span id="detailStatus" class="px-2.5 py-1 rounded-full text-xs font-bold border"></span></div>
                     </div>
                 </div>
                 <div>
-                    <span class="text-xs font-bold uppercase text-slate-600 mb-1 block">Attachment</span>
+                    <span class="text-xs font-bold uppercase text-slate-400 mb-1 block">Attachment</span>
                     <div id="detailAttachment" class="flex gap-2"></div>
                 </div>
             </div>
@@ -250,7 +366,7 @@
             <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200">
                 <div>
                     <h2 class="text-base font-bold text-slate-900">Edit Assignment</h2>
-                    <p class="text-xs text-slate-600">Update assignment information.</p>
+                    <p class="text-xs text-slate-500">Update assignment information.</p>
                 </div>
                 <button type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 cursor-pointer flex items-center justify-center" onclick="closeEditModal()">&times;</button>
             </div>
@@ -259,14 +375,14 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Batch</span>
-                        <select id="editBatchId" name="batchId" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <select id="editBatchId" name="batchId" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">-- Select Batch --</option>
-							<option th:each="batch : ${batches}" th:value="${batch['batch_id']}" th:text="${batch['title']}"></option>
-						</select>
+                            <option th:each="batch : ${batches}" th:value="${batch['batch_id']}" th:text="${batch['title']}"></option>
+                        </select>
                     </div>
                     <div>
                         <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Lesson</span>
-                        <select id="editLessonId" name="lessonId" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <select id="editLessonId" name="lessonId" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">-- Select Lesson --</option>
                             <option th:each="lesson : ${lessons}" th:value="${lesson.lessonId}" th:text="${lesson.title}"></option>
                         </select>
@@ -274,45 +390,45 @@
                 </div>
                 <div>
                     <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Assignment Title</span>
-                    <input type="text" id="editTitle" name="title" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    <input type="text" id="editTitle" name="title" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
                     <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Description</span>
-                    <textarea id="editDescription" name="description" rows="2" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+                    <textarea id="editDescription" name="description" rows="2" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Start At</span>
-                        <input type="datetime-local" id="editStartAt" name="startAt" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <input type="datetime-local" id="editStartAt" name="startAt" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Due At</span>
-                        <input type="datetime-local" id="editDueAt" name="dueAt" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <input type="datetime-local" id="editDueAt" name="dueAt" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
                     <input type="hidden" name="_allowLateSubmit" value="on">
-                    <input type="checkbox" id="editAllowLate" name="allowLateSubmit" value="true" class="w-4 h-4 text-teal-600 focus:ring-teal-500 rounded cursor-pointer">
+                    <input type="checkbox" id="editAllowLate" name="allowLateSubmit" value="true" class="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded cursor-pointer">
                     <label for="editAllowLate" class="text-xs font-bold text-slate-700 cursor-pointer">Allow Late Submit</label>
                 </div>
                 <div>
                     <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Late Deadline</span>
-                    <input type="datetime-local" id="editLateDeadline" name="lateDeadline" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    <input type="datetime-local" id="editLateDeadline" name="lateDeadline" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Total Mark</span>
-                        <input type="number" step="0.01" min="0" id="editTotalMark" name="totalMark" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <input type="number" step="0.01" min="0" id="editTotalMark" name="totalMark" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Pass Mark</span>
-                        <input type="number" step="0.01" min="0" id="editPassMark" name="passMark" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <input type="number" step="0.01" min="0" id="editPassMark" name="passMark" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Status</span>
-                        <select id="editStatus" name="status" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <select id="editStatus" name="status" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="DRAFT">DRAFT</option>
                             <option value="PUBLISHED">PUBLISHED</option>
                             <option value="CLOSED">CLOSED</option>
@@ -320,17 +436,17 @@
                     </div>
                     <div>
                         <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Created By</span>
-                        <input type="number" id="editCreatedBy" name="createdBy" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <input type="number" id="editCreatedBy" name="createdBy" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
                 <div>
                     <span class="text-xs font-bold uppercase text-slate-700 mb-1 block">Attachment</span>
-                    <input type="file" name="attachmentFile" accept=".pdf,.zip,.doc,.docx" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 cursor-pointer">
+                    <input type="file" name="attachmentFile" accept=".pdf,.zip,.doc,.docx" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
                     <div id="editCurrentAttachment" class="mt-1"></div>
                 </div>
                 <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
                     <button type="button" class="px-4 py-2 text-xs font-bold border border-slate-300 rounded-xl hover:bg-slate-50 cursor-pointer" onclick="closeEditModal()">Cancel</button>
-                    <button type="submit" class="px-5 py-2 text-xs font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-xs cursor-pointer">Update Assignment</button>
+                    <button type="submit" class="px-5 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-xs cursor-pointer">Update Assignment</button>
                 </div>
             </form>
         </div>
@@ -379,7 +495,7 @@
                         viewLink.href = assignment.attachment;
                         viewLink.target = "_blank";
                         viewLink.rel = "noopener noreferrer";
-                        viewLink.className = "px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition";
+                        viewLink.className = "px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition";
                         viewLink.textContent = "View Attachment";
 
                         const downloadLink = document.createElement("a");
@@ -447,7 +563,7 @@
                 link.href = button.dataset.attachment;
                 link.target = "_blank";
                 link.rel = "noopener noreferrer";
-                link.className = "text-teal-600 hover:underline font-semibold";
+                link.className = "text-blue-600 hover:underline font-semibold";
                 link.textContent = "View Current File";
 
                 wrapper.append(label, link);
@@ -556,7 +672,6 @@
 
                     badge.append(icon, document.createTextNode(" EDITED"));
 
-                 // EDITED badge color
                     badge.style.setProperty("background", "#fef3c7", "important");
                     badge.style.setProperty("background-color", "#fef3c7", "important");
                     badge.style.setProperty("color", "#92400e", "important");
@@ -572,7 +687,6 @@
 
                     badge.append(icon, document.createTextNode(" NEW"));
 
-                 // NEW badge color
                     badge.style.setProperty("background", "#dcfce7", "important");
                     badge.style.setProperty("background-color", "#dcfce7", "important");
                     badge.style.setProperty("color", "#166534", "important");
@@ -593,9 +707,6 @@
 
                     titleWrapper.appendChild(badge);
                 }
-                
-
-              
             });
 
             rows.sort(function(a, b) {
@@ -640,7 +751,6 @@
             applyAssignmentStatus();
         });
         
-       
         let searchTimer;
 
         function liveSearch() {
@@ -674,7 +784,6 @@
                 window.location.href = url;
             }, 400);
         }
-    
     </script>
 </body>
 </html>

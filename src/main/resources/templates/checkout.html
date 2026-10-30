@@ -195,94 +195,232 @@
             </div>
         </aside>
 
+ <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+            
+            <!-- Top Header -->
+           <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shrink-0 z-40 shadow-sm">
+    <div>
+        <h2 class="text-lg font-bold text-slate-900 leading-tight">Payment History & Invoices</h2>
+        <p class="text-xs text-slate-400 font-medium">Manage your tuition fees, review billing history status, and download receipts safely.</p>
+    </div>
+
+    <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
+        <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+            <span th:text="${fullName != null ? #strings.substring(fullName,0,2) : 'ST'}">ST</span>
+        </div>
+        <div class="hidden lg:block">
+            <b class="block text-xs font-bold text-slate-800 leading-none" th:text="${fullName != null ? fullName : 'Student'}">Student</b>
+            <small class="text-[11px] text-slate-400 font-medium">Student Portal</small>
+        </div>
+    </div>
+</header>
+
                
-        <!-- Right Side Panel Column Main Display Content -->
-        <main class="flex-1 p-4 md:p-8 min-w-0 min-h-screen flex items-center justify-center bg-slate-50 overflow-y-auto">
-            <div class="container-fluid max-w-4xl mx-auto w-full flex flex-col items-center">
-                
-                <!-- Centered Layout Wrapper Matrix -->
-                <div class="checkout-wrapper w-full max-w-[540px]">
-                    <!-- Premium Modular Payment Selection Container Card -->
-                    <div class="payment-card">
-                        <div class="mb-4 text-center sm:text-start">
-                            <h3 class="h4 font-bold text-slate-900 m-0">Select Payment Method</h3>
-                            <p class="text-xs text-slate-400 mt-1">Choose your preferred transaction platform to complete enrollment checkouts securely.</p>
-                        </div>
+       <!-- Right Side Panel Column Main Display Content -->
+<main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 w-full text-xs bg-slate-50">
+    <div class="container-fluid max-w-4xl mx-auto w-full flex flex-col items-center">
+        
+        <!-- Centered Layout Wrapper Matrix -->
+        <div class="checkout-wrapper w-full max-w-[540px] space-y-4">
+            
+            <!-- FLASH TOAST ALERT FEEDBACK NOTIFICATIONS -->
+            <div th:if="${successMessage != null}" class="p-3 text-xs font-semibold text-emerald-700 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center gap-2">
+                <i class="fa-solid fa-circle-check"></i> <span th:text="${successMessage}">Success Toast</span>
+            </div>
+            <div th:if="${errorMessage != null}" class="p-3 text-xs font-semibold text-rose-700 bg-rose-50 rounded-xl border border-rose-100 flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation"></i> <span th:text="${errorMessage}">Error Toast</span>
+            </div>
 
-                        <!-- Main Ledger Submission Form Row Layout Matrix Components -->
-                        <form th:action="@{/student/checkout/submit}" method="POST" id="checkout-form">
-                            <!-- Explicit Spring Security CSRF Token Payload Injection -->
-                            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-
-                            <!-- Method Option 1: KPay -->
-                            <label class="method-option w-full d-flex align-items-center justify-content-between" for="method-kpay">
-                                <div class="d-flex align-items-center gap-3">
-                                    <input type="radio" name="paymentMethod" value="KPAY" id="method-kpay" class="form-check-input m-0" checked />
-                                    <div>
-                                        <div class="text-sm font-bold text-slate-900">KBZPay (KPay)</div>
-                                        <div class="text-xs text-slate-400 mt-0.5">Instant transfer via mobile wallet application</div>
-                                    </div>
-                                </div>
-                            </label>
-
-                            <!-- Method Option 2: WavePay -->
-                            <label class="method-option w-full d-flex align-items-center justify-content-between" for="method-wave">
-                                <div class="d-flex align-items-center gap-3">
-                                    <input type="radio" name="paymentMethod" value="WAVEPAY" id="method-wave" class="form-check-input m-0" />
-                                    <div>
-                                        <div class="text-sm font-bold text-slate-900">WaveMoney (WavePay)</div>
-                                        <div class="text-xs text-slate-400 mt-0.5">Secure payment via Wave mobile networks</div>
-                                    </div>
-                                </div>
-                            </label>
-
-                            <!-- Method Option 3: CB Pay -->
-                            <label class="method-option w-full d-flex align-items-center justify-content-between" for="method-cb">
-                                <div class="d-flex align-items-center gap-3">
-                                    <input type="radio" name="paymentMethod" value="CBPAY" id="method-cb" class="form-check-input m-0" />
-                                    <div>
-                                        <div class="text-sm font-bold text-slate-900">CB Pay</div>
-                                        <div class="text-xs text-slate-400 mt-0.5">Direct link bank transfer channel protocols</div>
-                                    </div>
-                                </div>
-                            </label>
-
-                            <!-- Method Option 4: AYA Pay -->
-                            <label class="method-option w-full d-flex align-items-center justify-content-between" for="method-aya">
-                                <div class="d-flex align-items-center gap-3">
-                                    <input type="radio" name="paymentMethod" value="AYAPAY" id="method-aya" class="form-check-input m-0" />
-                                    <div>
-                                        <div class="text-sm font-bold text-slate-900">AYA Pay Wallet</div>
-                                        <div class="text-xs text-slate-400 mt-0.5">Quick digital banking payment gateway system</div>
-                                    </div>
-                                </div>
-                            </label>
-
-                            <!-- Structural Billing Metadata Row Fields Input Segment -->
-                            <div class="mt-4 space-y-3 text-start">
-                                <div class="form-group flex flex-col gap-1.5">
-                                    <label for="transactionId" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Transaction ID / Reference Number</label>
-                                    <input type="text" id="transactionId" name="transactionId" class="form-control" required placeholder="Enter the 10-20 digit tx reference code" />
-                                </div>
-
-                                <div class="form-group flex flex-col gap-1.5">
-                                    <label for="phoneNumber" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Sender Mobile Number</label>
-                                    <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" required placeholder="09xxxxxxxxx" />
-                                </div>
-                            </div>
-
-                            <!-- Final Checkout Submission Trigger Button Action -->
-                            <div class="mt-4">
-                                <button type="submit" class="btn btn-primary btn-submit w-full">
-                                    Confirm & Submit Tuition Receipt
-                                </button>
-                            </div>
-                        </form>
+            <!-- Premium Modular Payment Selection Container Card -->
+            <div class="payment-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="mb-4 flex flex-col sm:flex-row justify-between sm:items-start gap-2">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 m-0">Select Payment Method</h3>
+                        <p class="text-xs text-slate-400 mt-1">Choose your preferred transaction platform to complete enrollment checkouts securely.</p>
                     </div>
+                    <!-- Trigger link to open the history modal framework layout -->
+                    <button type="button" onclick="togglePaymentHistoryModal(true)" class="shrink-0 text-xs font-bold text-indigo-600 hover:underline flex items-center gap-1 focus:outline-none cursor-pointer">
+                        <i class="fa-solid fa-clock-rotate-left"></i> View History
+                    </button>
                 </div>
 
+                <!-- Main Ledger Submission Form Row Layout Matrix Components -->
+                <form th:action="@{/student/checkout/submit}" method="POST" id="checkout-form">
+                    <!-- Explicit Spring Security CSRF Token Payload Injection -->
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                    <div class="space-y-2.5">
+                        <!-- Method Option 1: KPay -->
+                        <label class="method-option w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50/50 cursor-pointer transition" for="method-kpay">
+                            <div class="flex items-center gap-3">
+                                <input type="radio" name="paymentMethod" value="KPAY" id="method-kpay" class="m-0 accent-indigo-600" checked />
+                                <div>
+                                    <div class="text-xs font-bold text-slate-900">KBZPay (KPay)</div>
+                                    <div class="text-[11px] text-slate-400 mt-0.5">Instant transfer via mobile wallet application</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- Method Option 2: WavePay -->
+                        <label class="method-option w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50/50 cursor-pointer transition" for="method-wave">
+                            <div class="flex items-center gap-3">
+                                <input type="radio" name="paymentMethod" value="WAVEPAY" id="method-wave" class="m-0 accent-indigo-600" />
+                                <div>
+                                    <div class="text-xs font-bold text-slate-900">WaveMoney (WavePay)</div>
+                                    <div class="text-[11px] text-slate-400 mt-0.5">Secure payment via Wave mobile networks</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- Method Option 3: CB Pay -->
+                        <label class="method-option w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50/50 cursor-pointer transition" for="method-cb">
+                            <div class="flex items-center gap-3">
+                                <input type="radio" name="paymentMethod" value="CBPAY" id="method-cb" class="m-0 accent-indigo-600" />
+                                <div>
+                                    <div class="text-xs font-bold text-slate-900">CB Pay</div>
+                                    <div class="text-[11px] text-slate-400 mt-0.5">Direct bank transfer channel protocols</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- Method Option 4: AYA Pay -->
+                        <label class="method-option w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50/50 cursor-pointer transition" for="method-aya">
+                            <div class="flex items-center gap-3">
+                                <input type="radio" name="paymentMethod" value="AYAPAY" id="method-aya" class="m-0 accent-indigo-600" />
+                                <div>
+                                    <div class="text-xs font-bold text-slate-900">AYA Pay Wallet</div>
+                                    <div class="text-[11px] text-slate-400 mt-0.5">Quick digital banking payment gateway system</div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Structural Billing Fields Input Segment -->
+                    <div class="mt-4 space-y-3 text-start">
+                        <div class="form-group flex flex-col gap-1.5">
+                            <label for="transactionId" class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Transaction ID / Reference Number</label>
+                            <input type="text" id="transactionId" name="transactionId" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 transition" required placeholder="Enter the 10-20 digit reference code" />
+                        </div>
+
+                        <div class="form-group flex flex-col gap-1.5">
+                            <label for="phoneNumber" class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sender Mobile Number</label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 transition" required placeholder="09xxxxxxxxx" />
+                        </div>
+                    </div>
+
+                    <!-- Final Checkout Submission Trigger Button Action -->
+                    <div class="mt-5">
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl transition shadow-sm cursor-pointer text-center">
+                            Confirm & Submit Tuition Receipt
+                        </button>
+                    </div>
+                </form>
             </div>
-        </main>
+        </div>
+
+    </div>
+</main>
+
+<!-- PAYMENT HISTORY MODAL OVERLAY COMPONENT -->
+<div id="payment-history-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] flex flex-col shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+        
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center border-b border-slate-100 p-5 shrink-0">
+            <div>
+                <h3 class="text-base font-bold text-slate-900 m-0">Payment History & Invoices</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Review the logging approval verification status of your tuition receipts.</p>
+            </div>
+            <button onclick="togglePaymentHistoryModal(false)" class="text-slate-400 hover:text-slate-600 text-2xl font-semibold p-1 cursor-pointer leading-none focus:outline-none">&times;</button>
+        </div>
+
+        <!-- Modal Body Content (Scrollable Invoices Table Grid) -->
+        <div class="p-5 overflow-y-auto min-h-[200px]">
+            <!-- Empty History State Check Placeholder -->
+            <div th:if="${paymentHistory == null or #lists.isEmpty(paymentHistory)}" class="text-center py-12 text-slate-400 border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                <div class="text-2xl mb-1.5">💳</div>
+                <p class="text-xs font-semibold text-slate-600">No payment records located</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Your submitted receipt invoices index logs will display here.</p>
+            </div>
+
+            <!-- Dynamic Invoices Table List Output Block -->
+            <div th:unless="${paymentHistory == null or #lists.isEmpty(paymentHistory)}" class="overflow-x-auto">
+                <table class="w-full text-left text-slate-600 border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-100 text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                            <th class="py-2.5 px-3">Method</th>
+                            <th class="py-2.5 px-3">Transaction Info</th>
+                            <th class="py-2.5 px-3">Amount</th>
+                            <th class="py-2.5 px-3 text-right">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+    <tr th:each="pay : ${paymentHistory}" class="hover:bg-slate-50/40 transition">
+        <!-- 1. Display Payment Type / Category description text -->
+        <td class="py-3 px-3 font-semibold text-slate-900" 
+            th:text="${pay.paymentType != null ? pay.paymentType : 'Course Fee'}">Full Course Fee</td>
+        
+        <td class="py-3 px-3 space-y-0.5">
+            <!-- 2. Display Transaction Reference Token -->
+            <div class="font-medium text-slate-800" th:text="${pay.transactionNo}">TXN-83A12901</div>
+            <div class="text-[10px] text-slate-400 flex items-center gap-1">
+                <i class="fa-regular fa-clock"></i>
+                <!-- 🟢 Formats your actual paymentDate variable accurately -->
+                <span th:text="${pay.paymentDate != null ? #temporals.format(pay.paymentDate, 'dd-MM-yyyy hh:mm a') : 'Recently'}">Date</span>
+            </div>
+        </td>
+        
+        <!-- 3. Renders the course pricing digits formatted with currency metrics -->
+        <td class="py-3 px-3 font-bold text-slate-900" 
+            th:text="${#numbers.formatDecimal(pay.amount, 1, 'COMMA', 2, 'POINT')} + ' MMK'">150,000.00 MMK</td>
+        
+        <td class="py-3 px-3 text-right">
+            <!-- 4. Dynamic status evaluations checking matching database string states safely -->
+            <span th:if="${#strings.equalsIgnoreCase(pay.status, 'PENDING')}" class="bg-amber-50 text-amber-600 font-bold px-2 py-0.5 rounded-full text-[10px] inline-block">⏳ Pending</span>
+            <span th:if="${#strings.equalsIgnoreCase(pay.status, 'SUCCESS') or #strings.equalsIgnoreCase(pay.status, 'APPROVED')}" class="bg-emerald-50 text-emerald-600 font-bold px-2 py-0.5 rounded-full text-[10px] inline-block">✓ Success</span>
+            <span th:if="${#strings.equalsIgnoreCase(pay.status, 'FAILED') or #strings.equalsIgnoreCase(pay.status, 'REJECTED')}" class="bg-rose-50 text-rose-600 font-bold px-2 py-0.5 rounded-full text-[10px] inline-block">✕ Declined</span>
+        </td>
+    </tr>
+</tbody>
+
+                </table>
+            </div>
+        </div>
+
+        <!-- Modal Footer Close Trigger Actions -->
+        <div class="border-t border-slate-100 p-4 flex justify-end shrink-0 bg-slate-50 rounded-b-2xl">
+            <button onclick="togglePaymentHistoryModal(false)" class="px-4 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer focus:outline-none">
+                Close View
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- UTILITY UI SWAP TOGGLE FUNCTION LOGIC -->
+<script>
+    function togglePaymentHistoryModal(show) {
+        const modal = document.getElementById('payment-history-modal');
+        if (!modal) return;
+        
+        if (show) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Freeze main layout scrollbar when overlay is active
+        } else {
+            modal.classList.add('hidden');
+            document.body.style.overflow = ''; // Restore background scrollbar
+        }
+    }
+
+    // Auto dismiss modal overlay window backdrop box areas if clicked externally
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('payment-history-modal');
+        if (event.target === modal) {
+            togglePaymentHistoryModal(false);
+        }
+    });
+</script>
+
 
 
 </body>

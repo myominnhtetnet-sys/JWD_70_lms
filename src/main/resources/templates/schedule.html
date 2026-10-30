@@ -112,17 +112,27 @@
             </div>
         </aside>
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
 
             <!-- Header -->
-            <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+            <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shrink-0 z-40 shadow-sm">
+
                 <div>
                     <h2 class="text-lg font-bold text-slate-900 leading-tight">My Schedule</h2>
                     <p class="text-xs text-slate-400 font-medium">သင်တန်း အတန်းချိန်များနှင့် စာမေးပွဲ ဇယားများ</p>
                 </div>
+                 <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
+                    <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+                        <span th:text="${fullName != null ? #strings.substring(fullName,0,2) : 'ST'}">ST</span>
+                    </div>
+                    <div class="hidden lg:block">
+                        <b class="block text-xs font-bold text-slate-800 leading-none" th:text="${fullName != null ? fullName : 'Student'}">Student</b>
+                        <small class="text-[11px] text-slate-400 font-medium">Student Portal</small>
+                    </div>
+                </div>
             </header>
 
-            <main class="p-6 lg:p-8 space-y-6 max-w-[1400px] mx-auto w-full">
+          <main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 w-full text-xs bg-slate-50">
 
                 <!-- Batches Section -->
                 <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">

@@ -130,10 +130,10 @@
         </aside>
 
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+       <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
             
             <!-- Top Header -->
-            <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+            <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shrink-0 z-40 shadow-sm">
                 <div>
                     <h2 class="text-lg font-bold text-slate-900 leading-tight">My Assignments</h2>
                     <p class="text-xs text-slate-400 font-medium">Track your coursework deliverables, milestones, and grading feedback details.</p>
@@ -151,7 +151,7 @@
             </header>
 
             <!-- Main Body Content -->
-            <main class="p-6 lg:p-8 space-y-6 max-w-[1300px] mx-auto w-full text-xs">
+            <main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 w-full text-xs bg-slate-50">
 
                 <!-- Feedback Messages Container -->
                 <div th:if="${successMessage}" class="p-4 bg-emerald-100 text-emerald-700 rounded-xl font-semibold" th:text="${successMessage}"></div>

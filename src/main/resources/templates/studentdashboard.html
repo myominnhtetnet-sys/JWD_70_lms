@@ -112,16 +112,23 @@
 
 
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
             <!-- Header -->
-            <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-10 shadow-sm">
-                <div>
-                    <h2 class="text-lg font-bold text-slate-900 leading-tight">Welcome, <span th:text="${fullName}">Student</span>!</h2>
-                    <p class="text-xs text-slate-400 font-medium mt-0.5">Student ID: <span th:text="${studentId}">STU-001</span></p>
+             <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shrink-0 z-40 shadow-sm">
+               <div>
+               </div>
+                <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
+                    <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+                        <span th:text="${fullName != null ? #strings.substring(fullName,0,2) : 'ST'}">ST</span>
+                    </div>
+                    <div class="hidden lg:block">
+                        <b class="block text-xs font-bold text-slate-800 leading-none" th:text="${fullName != null ? fullName : 'Student'}">Student</b>
+                        <small class="text-[11px] text-slate-400 font-medium">Student Portal</small>
+                    </div>
                 </div>
             </header>
 
-            <main class="p-6 lg:p-8 space-y-6 max-w-[1400px] mx-auto w-full">
+             <main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 w-full text-xs bg-slate-50">
                 
                 <!-- Welcome Banner -->
                 <div class="bg-indigo-600 text-white p-6 rounded-2xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -160,7 +167,7 @@
                         </div>
                        <div>
     <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Passed Exams</div>
-    <!-- ⚡ DYNAMIC BINDING: Safely prints your real database count natively with zero JavaScript! -->
+    
     <div class="text-xl font-extrabold text-slate-900 mt-0.5" 
          th:text="${passedCount != null ? passedCount : '0'}">0</div>
 </div>
@@ -171,7 +178,7 @@
                         </div>
                         <div>
     <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Certificates</div>
-    <!-- ⚡ DYNAMIC BINDING: Safely renders your real database count natively with zero JavaScript! -->
+    
     <div class="text-xl font-extrabold text-slate-900 mt-0.5" 
          th:text="${certCount != null ? certCount : '0'}">0</div>
 </div>
@@ -184,36 +191,90 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     
                     <!-- Announcements Panel -->
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm lg:col-span-2 space-y-4">
-                        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                            <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Platform Announcements</h4>
-                            <span class="text-xs font-bold text-indigo-600 cursor-pointer hover:underline">Mark all read</span>
-                        </div>
-                        <div class="space-y-4">
-                            <!-- Notice Item 1 -->
-                            <div class="flex gap-4 items-start pb-4 border-b border-slate-50 last:border-0 last:pb-0">
-                                <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center text-xs shrink-0 mt-0.5">
-                                    <i class="fa-solid fa-bullhorn"></i>
-                                </div>
-                                <div>
-                                    <h5 class="text-xs font-bold text-slate-900">System Maintenance Notice</h5>
-                                    <p class="text-xs text-slate-400 mt-0.5 leading-normal">LearnHub Student Portal will undergo a scheduled performance optimization patch tonight at 11:55 PM MMT. System downtime is expected to be under 15 minutes.</p>
-                                    <small class="text-[10px] text-slate-400 font-medium block mt-1.5"><i class="fa-regular fa-clock me-1"></i>Today, 10:55 AM MMT</small>
-                                </div>
-                            </div>
-                            <!-- Notice Item 2 -->
-                            <div class="flex gap-4 items-start">
-                                <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-500 flex items-center justify-center text-xs shrink-0 mt-0.5">
-                                    <i class="fa-solid fa-bell"></i>
-                                </div>
-                                <div>
-                                    <h5 class="text-xs font-bold text-slate-900">New Exam Room Scope Assigned</h5>
-                                    <p class="text-xs text-slate-400 mt-0.5 leading-normal">Your teacher has successfully initialized the baseline assignment assessment modules grid matrix inside your workspace dashboard row.</p>
-                                    <small class="text-[10px] text-slate-400 font-medium block mt-1.5"><i class="fa-regular fa-clock me-1"></i>Yesterday</small>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- RECENT ANNOUNCEMENTS CARD -->
+<div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm lg:col-span-2 space-y-4">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Recent Announcements</h4>
+        <!-- Trigger to open the modal framework -->
+        <span onclick="toggleHistoryModal(true)" class="text-xs font-bold text-indigo-600 cursor-pointer hover:underline flex items-center gap-1">
+            View History <i class="fa-solid fa-clock-rotate-left text-[10px]"></i>
+        </span>
+    </div>
+    
+    <div class="space-y-4">
+        <div th:if="${allAnnouncements == null or #lists.isEmpty(allAnnouncements)}" class="text-center py-4 text-xs text-slate-400">
+            No recent announcements available.
+        </div>
+
+        <!-- Dashboard Loop (Shows recent records loaded by controller) -->
+        <div th:each="announcement : ${allAnnouncements}" 
+             class="flex gap-4 items-start pb-4 border-b border-slate-50 last:border-0 last:pb-0">
+            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-500 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h5 class="text-xs font-bold text-slate-900" th:text="${announcement.title}">Notice Title</h5>
+                <p class="text-xs text-slate-400 mt-0.5 leading-normal text-ellipsis overflow-hidden line-clamp-2" th:text="${announcement.body}">Notice body text.</p>
+                <small class="text-[10px] text-slate-400 font-medium block mt-1.5">
+                    <i class="fa-regular fa-clock me-1"></i>
+                    <span th:text="${announcement.createdAt != null ? #temporals.format(announcement.createdAt, 'dd-MM-yyyy hh:mm a') : 'Recently'}">Date</span>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🟢 ANNOUNCEMENT HISTORY MODAL BOX (Place this at the bottom of your HTML body) -->
+<div id="history-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-2xl w-full max-h-[80vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in-95 duration-150">
+        
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 p-5 shrink-0">
+            <div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">Announcement History</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Browse all historically broadcasted updates</p>
+            </div>
+            <button onclick="toggleHistoryModal(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-2xl font-semibold p-1 cursor-pointer leading-none">&times;</button>
+        </div>
+
+        <!-- Modal Body Content (Scrollable List Container) -->
+        <div class="p-6 overflow-y-auto space-y-4 divide-y divide-slate-100 dark:divide-slate-700/50">
+            <div th:if="${historyAnnouncements == null or #lists.isEmpty(historyAnnouncements)}" class="text-center py-8 text-xs text-slate-400">
+                No announcement records found in the archive logs.
+            </div>
+
+            <!-- Loop that iterates over the full historical data map directly in the viewport window -->
+            <div th:each="announcement, iterStat : ${historyAnnouncements}" 
+                 class="flex gap-4 items-start text-left w-full"
+                 th:classappend="${iterStat.index == 0} ? 'pt-0' : 'pt-4'">
+                <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h5 class="text-xs font-bold text-slate-900 dark:text-slate-100" th:text="${announcement.title}">Title</h5>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed whitespace-pre-line" th:text="${announcement.body}">Body Text Content</p>
+                    <div class="flex flex-wrap items-center gap-x-3 mt-2 text-[10px] text-slate-400 font-medium">
+                        <span th:if="${announcement.postedByName != null}">
+                            <i class="fa-solid fa-user me-1"></i><span th:text="${announcement.postedByName}">Sender</span>
+                        </span>
+                        <span>
+                            <i class="fa-regular fa-clock me-1"></i>
+                            <span th:text="${announcement.createdAt != null ? #temporals.format(announcement.createdAt, 'dd-MM-yyyy hh:mm a') : 'Archive'}">Date</span>
+                        </span>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="border-t border-slate-100 dark:border-slate-700 p-4 flex justify-end shrink-0 bg-slate-50 dark:bg-slate-800/50 rounded-b-2xl">
+            <button onclick="toggleHistoryModal(false)" class="px-4 py-2 border border-slate-200 dark:border-slate-600 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
+                Close View
+            </button>
+        </div>
+    </div>
+</div>
+
 
                     <!-- Fast Action Center Hub Grid Box -->
                     <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
@@ -246,5 +307,28 @@
     </div>
 
 </body>
+<script>
+    function toggleHistoryModal(show) {
+        const modal = document.getElementById('history-modal');
+        if (!modal) return;
+        
+        if (show) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Lock background scrolling
+        } else {
+            modal.classList.add('hidden');
+            document.body.style.overflow = ''; // Unlock background scrolling
+        }
+    }
+
+    // Optional close listener when clicking outside the main dialog content frame box area
+    window.onclick = function(event) {
+        const modal = document.getElementById('history-modal');
+        if (event.target === modal) {
+            toggleHistoryModal(false);
+        }
+    }
+</script>
+
 </html>
                     

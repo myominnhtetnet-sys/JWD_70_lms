@@ -31,25 +31,41 @@
                         <p class="text-sm text-slate-500">Manage system users, roles and account statuses seamlessly.</p>
                     </div>
                     
-                    <div class="flex items-center gap-3">
-                        <!-- Search Form -->
-                        <form method="get" th:action="@{/admin/users/search}" class="flex items-center gap-2">
-                            <input type="text" name="keyword" th:value="${keyword}" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-indigo-500 w-60 sm:w-72 shadow-sm transition" placeholder="Search by name or email...">
-                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition flex items-center justify-center shadow-sm">
-                                <i class="fa-solid fa-search"></i>
-                            </button>
-                        </form>
-                        
-                        <button type="button" onclick="openAddModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition flex items-center gap-2 shadow-md shadow-indigo-600/20 whitespace-nowrap">
-                            <i class="fa-solid fa-plus"></i> Add User
-                        </button>
+                    <!-- Active / Trash Tabs -->
+                    <div class="flex items-center gap-2 bg-slate-200/60 p-1.5 rounded-xl">
+                        <a th:href="@{/admin/users}" 
+                           th:classappend="${isTrashView == null ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}"
+                           class="px-4 py-2 rounded-lg text-sm font-semibold transition">
+                            Active Users
+                        </a>
+                        <a th:href="@{/admin/users/trash}" 
+                           th:classappend="${isTrashView != null ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}"
+                           class="px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2">
+                            <i class="fa-solid fa-trash-can text-xs"></i> Trash
+                        </a>
                     </div>
+                </div>
+
+                <!-- Action Bar (Search & Add User - Only show in Active View) -->
+                <div class="flex items-center justify-end gap-3 mb-6" th:if="${isTrashView == null}">
+                    <form method="get" th:action="@{/admin/users/search}" class="flex items-center gap-2">
+                        <input type="text" name="keyword" th:value="${keyword}" class="bg-white border border-slate-300 text-slate-900 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-indigo-500 w-60 sm:w-72 shadow-sm transition" placeholder="Search by name, email, role...">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition flex items-center justify-center shadow-sm">
+                            <i class="fa-solid fa-search"></i>
+                        </button>
+                    </form>
+                    
+                    <button type="button" onclick="openAddModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition flex items-center gap-2 shadow-md shadow-indigo-600/20 whitespace-nowrap">
+                        <i class="fa-solid fa-plus"></i> Add User
+                    </button>
                 </div>
 
                 <!-- Users Table Panel -->
                 <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                        
+                        <!-- 1. ACTIVE USERS TABLE -->
+                        <table class="w-full text-left border-collapse" th:if="${isTrashView == null}">
                             <thead>
                                 <tr class="border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider bg-slate-50/70">
                                     <th class="py-4 px-6 font-semibold">#</th>
@@ -79,6 +95,7 @@
                                         <div class="inline-flex items-center justify-end gap-2">
                                             <button type="button" class="bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-blue-200" th:onclick="'openEditModal(' + ${u.user_id} + ')'">Edit</button>
                                             
+                                            <!-- Suspend / Activate -->
                                             <form th:action="@{/admin/users/suspend}" method="post" class="inline" th:if="${u.status == 'ACTIVE'}">
                                                 <input type="hidden" name="userId" th:value="${u.user_id}">
                                                 <button type="submit" class="bg-amber-50 hover:bg-amber-500 text-amber-700 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition border border-amber-200">Suspend</button>
@@ -88,11 +105,56 @@
                                                 <input type="hidden" name="userId" th:value="${u.user_id}">
                                                 <button type="submit" class="bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition border border-emerald-200">Activate</button>
                                             </form>
+
+                                            <!-- Soft Delete (Trash) -->
+                                            <form th:action="@{/admin/users/delete}" method="post" class="inline" onsubmit="return confirm('Are you sure you want to move this user to trash?');">
+                                                <input type="hidden" name="userId" th:value="${u.user_id}">
+                                                <button type="submit" class="bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-rose-200">Delete</button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
+                                <tr th:if="${#lists.isEmpty(users)}">
+                                    <td colspan="6" class="py-8 text-center text-slate-400">No active users found.</td>
+                                </tr>
                             </tbody>
                         </table>
+
+                        <!-- 2. TRASH / DELETED USERS TABLE -->
+                        <table class="w-full text-left border-collapse" th:if="${isTrashView != null}">
+                            <thead>
+                                <tr class="border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider bg-slate-50/70">
+                                    <th class="py-4 px-6 font-semibold">#</th>
+                                    <th class="py-4 px-6 font-semibold">Name</th>
+                                    <th class="py-4 px-6 font-semibold">Email</th>
+                                    <th class="py-4 px-6 font-semibold">Role</th>
+                                    <th class="py-4 px-6 font-semibold text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                                <tr th:each="u, index : ${deletedUsers}" class="hover:bg-slate-50/80 transition">
+                                    <td class="py-4 px-6 font-medium text-slate-900" th:text="${index.count}">1</td>
+                                    <td class="py-4 px-6 font-semibold text-slate-900" th:text="${u.full_name}">Name</td>
+                                    <td class="py-4 px-6 text-slate-500" th:text="${u.email}">Email</td>
+                                    <td class="py-4 px-6">
+                                        <span class="px-2.5 py-1 bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-semibold rounded-md" th:text="${u.role_name}">Role</span>
+                                    </td>
+                                    <td class="py-4 px-6 text-right">
+                                        <!-- Restore Button -->
+                                        <form th:action="@{/admin/users/restore}" method="post" class="inline">
+                                            <input type="hidden" name="userId" th:value="${u.user_id}">
+                                            <button type="submit" class="bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-emerald-200">
+                                                Restore
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(deletedUsers)}">
+                                    <td colspan="5" class="py-8 text-center text-slate-400">Trash is empty.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
                     </div>
                 </section>
             </div>
@@ -176,7 +238,6 @@
                 document.getElementById('modalTitle').innerText = 'Edit User';
                 document.getElementById('userForm').action = '/admin/users/update';
                 
-                // 🟢 Data များကို Form Input တွေထဲသို့ ထည့်သွင်းပေးခြင်း
                 document.getElementById('user_id').value = data.user_id || '';
                 document.getElementById('full_name').value = data.full_name || '';
                 document.getElementById('email').value = data.email || '';

@@ -1,33 +1,67 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.Learning_Managnment_System.JWD_70_lms.Service.BatchDetailService;
 import com.Learning_Managnment_System.JWD_70_lms.model.BatchDetailBean.*;
+import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/admin/batches/{batchId}")
 public class BatchDetailController {
+	
+	@Autowired
+    private BatchDetailService batchDetailService;
 
-    private final BatchDetailService batchDetailService;
+    /**
+     * 🟢 @ModelAttribute ဖြင့် Batch Detail Page များကို ဝင်ရောက်သည့်အခါတိုင်း 
+     * Login ဝင်ထားသော User ၏ အမည်နှင့် Role ကို Header ထဲသို့ အလိုအလျောက် ပို့ပေးခြင်း
+     */
+    @ModelAttribute
+    public void addCommonAttributes(HttpSession session, Model model) {
+        String displayName = "Administrator";
+        int roleId = 1;
 
-    public BatchDetailController(BatchDetailService batchDetailService) {
-        this.batchDetailService = batchDetailService;
+        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+        if (currentUser != null) {
+            if (currentUser.getFull_name() != null) {
+                displayName = currentUser.getFull_name();
+            }
+            roleId = currentUser.getRole_id();
+        } else {
+            if (session.getAttribute("fullName") != null) {
+                displayName = (String) session.getAttribute("fullName");
+            }
+            if (session.getAttribute("roleId") != null) {
+                roleId = (int) session.getAttribute("roleId");
+            }
+        }
+
+        String roleName = "Administrator";
+        if (roleId == 1) {
+            roleName = "Administrator";
+        } else if (roleId == 2) {
+            roleName = "Instructor";
+        } else if (roleId == 3) {
+            roleName = "Student";
+        }
+
+        model.addAttribute("fullName", displayName);
+        model.addAttribute("loggedInRole", roleName);
     }
-
-    // ==========================================
-    // 1. VIEW ROUTING METHODS (HTML Template ပြသရန်)
-    // ==========================================
 
     @GetMapping("/students")
     public String showStudentsPage(@PathVariable("batchId") Long batchId, Model model) {
         model.addAttribute("batchId", batchId);
         model.addAttribute("activeTab", "students");
         model.addAttribute("batches", batchDetailService.getAllBatches());
-        model.addAttribute("lessons", batchDetailService.getAllLessons()); // 👈 Lesson စာရင်းများ ထည့်သွင်းခြင်း
+        model.addAttribute("lessons", batchDetailService.getAllLessons());
         return "Batch_Detail";
     }
 
@@ -36,7 +70,7 @@ public class BatchDetailController {
         model.addAttribute("batchId", batchId);
         model.addAttribute("activeTab", "sessions");
         model.addAttribute("batches", batchDetailService.getAllBatches());
-        model.addAttribute("lessons", batchDetailService.getAllLessons()); // 👈 Lesson စာရင်းများ ထည့်သွင်းခြင်း
+        model.addAttribute("lessons", batchDetailService.getAllLessons());
         return "Batch_Detail";
     }
 
@@ -45,7 +79,7 @@ public class BatchDetailController {
         model.addAttribute("batchId", batchId);
         model.addAttribute("activeTab", "progress");
         model.addAttribute("batches", batchDetailService.getAllBatches());
-        model.addAttribute("lessons", batchDetailService.getAllLessons()); // 👈 Lesson စာရင်းများ ထည့်သွင်းခြင်း
+        model.addAttribute("lessons", batchDetailService.getAllLessons());
         return "Batch_Detail";
     }
 
@@ -54,13 +88,9 @@ public class BatchDetailController {
         model.addAttribute("batchId", batchId);
         model.addAttribute("activeTab", "announcements");
         model.addAttribute("batches", batchDetailService.getAllBatches());
-        model.addAttribute("lessons", batchDetailService.getAllLessons()); // 👈 Lesson စာရင်းများ ထည့်သွင်းခြင်း
+        model.addAttribute("lessons", batchDetailService.getAllLessons());
         return "Batch_Detail";
     }
-
-    // ==========================================
-    // 2. REST API ENDPOINTS
-    // ==========================================
 
     @GetMapping("/api/students")
     @ResponseBody
