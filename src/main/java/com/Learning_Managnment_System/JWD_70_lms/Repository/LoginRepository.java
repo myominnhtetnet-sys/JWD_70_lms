@@ -84,5 +84,14 @@ public class LoginRepository {
 						""";
 		return jdbcTemplate.update(sql, newPassword, email);
 	}
-
+	public LoginBean findByEmail(String email) {
+        String sql =" SELECT * FROM users WHERE email = ? AND password_hash = ? AND status = 'ACTIVE'";
+        try {
+            return jdbcTemplate.queryForObject(sql, new org.springframework.jdbc.core.BeanPropertyRowMapper<>(LoginBean.class), email);
+        } catch (Exception e) {
+            return null;
+        }
+    
+    }
+	
 }

@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.Admin_Repository;
-import com.Learning_Managnment_System.JWD_70_lms.Repository.PaymentRepository;
+import com.Learning_Managnment_System.JWD_70_lms.Service.UserService;
 import com.Learning_Managnment_System.JWD_70_lms.model.AdminUserBean;
 
 @Controller
@@ -17,9 +17,11 @@ public class Admin_Controller {
     @Autowired
     private Admin_Repository adminRepository;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping({"", "/"})
     public String show() {
-
         return "redirect:/admin/dashboard";
     }
 
@@ -29,7 +31,9 @@ public class Admin_Controller {
         model.addAttribute("users", users);
         return "dashboard";
     }
- 
+  
+    
+    
 
     @GetMapping("/users")
     public String listUsers(Model model) {
@@ -123,7 +127,6 @@ public class Admin_Controller {
         return "admin/user_form";
     }
 
-    // 🟢 MODAL မာ EDIT DATA ပေါ်လာစေရန် ထည့်သွင်းထားသော JSON ENDPOINT
     @GetMapping("/users/edit-json/{id}")
     @ResponseBody
     public AdminUserBean getUserJson(@PathVariable("id") int id) {
@@ -206,6 +209,23 @@ public class Admin_Controller {
             redirectAttributes.addFlashAttribute("error", "Unable to delete user.");
         }
 
+        return "redirect:/admin/users";
+    }
+
+    // 🟢 ဤနေရာတွင် /users/trash ဟု ပြင်ဆင်လိုက်ပါ
+    @GetMapping("/users/trash")
+    public String viewTrashInMain(Model model) {
+        List<AdminUserBean> deletedUsers = userService.getDeletedUsers();
+        model.addAttribute("deletedUsers", deletedUsers);
+        model.addAttribute("isTrashView", true); 
+        return "users"; // users.html ကို ပြန်ပြမည်
+    }
+
+    // 🟢 ဤနေရာတွင် /users/restore ဟု ပြင်ဆင်လိုက်ပါ
+    @PostMapping("/users/restore")
+    public String restoreUser(@RequestParam("userId") int userId, RedirectAttributes redirectAttributes) {
+        userService.restoreUser(userId);
+        redirectAttributes.addFlashAttribute("success", "User restored successfully!");
         return "redirect:/admin/users";
     }
 }

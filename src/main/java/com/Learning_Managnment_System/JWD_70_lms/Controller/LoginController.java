@@ -30,25 +30,57 @@ public class LoginController {
         return "login";
     }
     
+//    @PostMapping("/login")
+//    public String login(@ModelAttribute("login") LoginBean login, HttpSession session,
+//            RedirectAttributes redirectAttributes) {
+//        LoginBean user = loginRepo.login(login.getEmail(), login.getPassword_hash());
+//        if (user == null) {
+//            redirectAttributes.addFlashAttribute("error", "Invalid email or password.");
+//            return "redirect:/login";
+//        }
+//        
+//        // 🟢 ADD THIS LINE: Save the authenticated user record to match your view checks
+//        session.setAttribute("currentUser", user);
+//        
+//        // Keep your existing simple attribute mappings
+//        session.setAttribute("roleId", user.getRole_id());
+//        session.setAttribute("fullName", user.getFull_name());
+//        session.setAttribute("email", user.getEmail());
+//        
+//      
+//        session.setAttribute("studentId", user.getRole_id()); 
+//
+//        if (user.getRole_id() == 1) {
+//            return "redirect:/admin";
+//        } else if (user.getRole_id() == 2) {
+//            return "redirect:/teacher";
+//        } else if (user.getRole_id() == 3) {
+//            return "redirect:/student";
+//        }
+//
+//        return "redirect:/login";
+//    }
     @PostMapping("/login")
     public String login(@ModelAttribute("login") LoginBean login, HttpSession session,
             RedirectAttributes redirectAttributes) {
+        
         LoginBean user = loginRepo.login(login.getEmail(), login.getPassword_hash());
         if (user == null) {
             redirectAttributes.addFlashAttribute("error", "Invalid email or password.");
             return "redirect:/login";
         }
         
-        // 🟢 ADD THIS LINE: Save the authenticated user record to match your view checks
+        // 🟢 အကောင့် Suspend ဖြစ်နေခြင်း ရှိမရှိ စစ်ဆေးခြင်း
+        if ("SUSPENDED".equalsIgnoreCase(user.getStatus())) {
+            redirectAttributes.addFlashAttribute("error", "Your account has been suspended");
+            return "redirect:/login";
+        }
+
+        // ကျန်ရှိသော Session များနှင့် Role အလိုက် လမ်းကြောင်းပြောင်းခြင်း...
         session.setAttribute("currentUser", user);
-        
-        // Keep your existing simple attribute mappings
         session.setAttribute("roleId", user.getRole_id());
         session.setAttribute("fullName", user.getFull_name());
         session.setAttribute("email", user.getEmail());
-        
-      
-        session.setAttribute("studentId", user.getRole_id()); 
 
         if (user.getRole_id() == 1) {
             return "redirect:/admin";
@@ -60,40 +92,51 @@ public class LoginController {
 
         return "redirect:/login";
     }
-
-
-	/*
-	 * @GetMapping("/teacher") public String teacherPage(HttpSession session) { if
-	 * (session.getAttribute("roleId") == null || (int)
-	 * session.getAttribute("roleId") != 2) { return "redirect:/login"; } return
-	 * "redirect:/teacher/dashboard"; }
-	 */
-
     @Autowired
     private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate; // 👈 1. Ensure JdbcTemplate is autowired at the top of LoginController
-
+//
+//    @GetMapping("/student")
+//    public String studentPage(HttpSession session, Model model) {
+//        // Enforce Session Security Guard Boundaries
+//        if (session.getAttribute("roleId") == null || (int) session.getAttribute("roleId") != 3) {
+//            return "redirect:/login";
+//        }
+//
+//        String email = (String) session.getAttribute("email");
+//        
+//        // Fetch aggregated transactional model map metrics out of business service
+//        Map<String, Object> dashboardData = dashboardService.getStudentDashboardData(email);
+//        
+//        // Populate Thymeleaf UI scope variables natively
+//        model.addAllAttributes(dashboardData);
+//        
+//        // Active link tracking token state for sidebar component highlighting
+//        model.addAttribute("activeLink", "dashboard");
+//
+//        return "studentdashboard";
+//    }
     @GetMapping("/student")
     public String studentPage(HttpSession session, Model model) {
-        // Enforce Session Security Guard Boundaries
         if (session.getAttribute("roleId") == null || (int) session.getAttribute("roleId") != 3) {
             return "redirect:/login";
         }
 
         String email = (String) session.getAttribute("email");
         
-        // Fetch aggregated transactional model map metrics out of business service
+        // 🟢 Database ထဲမှ User ၏ လက်ရှိ Status ကို စစ်ဆေးခြင်း
+        LoginBean freshUser = loginRepo.findByEmail(email); 
+        if (freshUser == null || "SUSPENDED".equalsIgnoreCase(freshUser.getStatus())) {
+            session.invalidate(); // Session ကို ဖျက်မည်
+            return "redirect:/login?suspended=true";
+        }
+
         Map<String, Object> dashboardData = dashboardService.getStudentDashboardData(email);
-        
-        // Populate Thymeleaf UI scope variables natively
         model.addAllAttributes(dashboardData);
-        
-        // Active link tracking token state for sidebar component highlighting
         model.addAttribute("activeLink", "dashboard");
 
         return "studentdashboard";
     }
-
-
+    
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         Object roleId = session.getAttribute("roleId");
