@@ -82,6 +82,7 @@ public class Admin_Controller {
     private UserService userService;
 
     @GetMapping({"", "/"})
+    
     public String show(HttpSession session) {
         if (isNotAdmin(session)) {
             return "redirect:/login";

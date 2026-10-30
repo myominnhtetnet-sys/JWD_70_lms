@@ -89,6 +89,7 @@ public class LoginController {
 
         Map<String, Object> dashboardData = dashboardService.getStudentDashboardData(email);
         model.addAllAttributes(dashboardData);
+     
         
         List<AnnouncementBean> recentAnnouncements = announcementService.getLatestAnnouncements(2);
         model.addAttribute("allAnnouncements", recentAnnouncements);

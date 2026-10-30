@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Question List - Teacher Portal</title>
-<!-- Tailwind CSS CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<!-- FontAwesome Icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- Google Fonts: Inter -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - LearnHub LMS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
     /* Custom Scrollbar */
@@ -24,14 +25,117 @@
 </style>
 </head>
 
-<body class="h-full font-sans text-slate-900 bg-slate-50 antialiased">
+<body class="bg-slate-50 text-slate-800 antialiased font-sans">
 
-    <div id="app" class="min-h-screen flex flex-col">
+    <div class="flex min-h-screen">
         
-        <div th:replace="~{teacher :: header}"></div>
-        <div class="flex-1 flex">
-  
-           <div th:replace="~{teacher :: sidebar}"></div>
+        <!-- SIDEBAR NAVIGATION MENU (Collapsible Dark Theme) -->
+        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar z-30">
+            
+            <!-- 🟢 Pure CSS Toggle Checkbox Engine -->
+            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+            
+            <!-- 🟢 Error-Free Scoped Structural Animation Layout Adjustments -->
+            <style>
+                #sidebar-content-box { width: 256px; }
+                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+            </style>
+
+            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden overflow-y-auto">
+                <div>
+                    <!-- Logo & Collapse Button Trigger -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+                        <!-- 🟢 Centered uncollapse bars icon inside 72px header -->
+                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </label>
+
+                        <div class="flex items-center gap-3 hidden-on-collapse">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
+                                <i class="fa-solid fa-chalkboard-user text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-base font-bold text-white tracking-wide block leading-none">EduPulse</span>
+                                <small class="text-[11px] font-medium text-slate-400">Teacher Portal</small>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Collapse Arrow Button (visible on hover) -->
+                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+                        </label>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-6">
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Teaching Portal</div>
+                            <div class="space-y-1">
+                                <a href="/teacher" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-house text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                                </a>
+                                <a href="/teacher/courses" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-book-open text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Courses</span>
+                                </a>
+                                <a href="/teacher/batches" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-users text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Batches</span>
+                                </a>
+                                <a href="/teacher/attendance" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-calendar-check text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Check Attendance</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Assessments</div>
+                            <div class="space-y-1">
+                                <!-- Active Question Bank Link -->
+                                <a href="/teacher/question-list" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 shadow-sm transition">
+                                    <i class="fa-solid fa-database text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Question Bank</span>
+                                </a>
+                                <a href="/teacher/assignments" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-clipboard-list text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Assignments</span>
+                                </a>
+                                <a href="/teacher/submissions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-check-double text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Grade Submissions</span>
+                                </a>
+                                <a href="/teacher/exams" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-file-pen text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exams</span>
+                                </a>
+                                <a href="/teacher/exam-results" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-square-poll-vertical text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exam Results</span>
+                                </a>
+                                <a href="/teacher/final-grades" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-graduation-cap text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Final Grades</span>
+                                </a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+
+                <div class="p-4 border-t border-slate-800">
+                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA WRAPPER -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+            
+            <!-- HEADER FRAGMENT -->
+            <div th:replace="~{teacher :: header}"></div>
 
             <main class="flex-1 min-w-0 px-6 py-6 bg-slate-50 overflow-y-auto">
 
@@ -39,9 +143,9 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                     <div>
                         <h1 class="text-xl font-bold text-slate-900">Question Bank</h1>
-                        <p class="text-xs text-slate-600 mt-1">Create and manage questions for your courses.</p>
+                        <p class="text-xs text-slate-500 mt-1">Create and manage questions for your courses.</p>
                     </div>
-                    <a th:href="@{/questions/new}" class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-xl shadow-xs transition cursor-pointer">
+                    <a th:href="@{/questions/new}" class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-xl shadow-xs transition cursor-pointer">
                         <i class="fa-solid fa-plus text-xs"></i> Add Question
                     </a>
                 </div>
@@ -51,14 +155,14 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div class="relative">
                             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                            <input id="searchInput" type="text" placeholder="Search questions..." class="w-full border border-slate-300 rounded-xl pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-slate-50">
+                            <input id="searchInput" type="text" placeholder="Search questions..." class="w-full border border-slate-300 rounded-xl pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50">
                         </div>
 
-                        <select id="courseFilter" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-slate-50 font-medium">
+                        <select id="courseFilter" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 font-medium">
                             <option value="">All Courses</option>
                         </select> 
                         
-                        <select id="typeFilter" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-slate-50 font-medium">
+                        <select id="typeFilter" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 font-medium">
                             <option value="">All Types</option>
                             <option value="MCQ">MCQ</option>
                             <option value="TRUE_FALSE">True / False</option>
@@ -96,48 +200,37 @@
             <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200">
                 <div>
                     <h2 class="text-base font-bold text-slate-900">Question Details</h2>
-                    <p class="text-xs text-slate-600">View question and options.</p>
+                    <p class="text-xs text-slate-500">View question and options.</p>
                 </div>
                 <button type="button" onclick="closeViewQuestion()" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 cursor-pointer flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <div class="p-5 space-y-4">
-            <!-- Course -->
-<div>
-    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">
-        Course
-    </label>
-    <div id="viewQuestionCourse"
-         class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-900 font-medium">
-    </div>
-</div>
-<!--  <div>
-    <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Course</label> 
-       <select id="viewQuestionCourse" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
-            <option value="">---Select Course---</option>
-         </select>
-                </div> -->
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Question</label>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Course</label>
+                    <div id="viewQuestionCourse" class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-900 font-medium"></div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Question</label>
                     <div id="viewQuestionText" class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-900 font-medium"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                        <p class="text-xs font-bold uppercase text-slate-600">Question Type</p>
+                        <p class="text-xs font-bold uppercase text-slate-400">Question Type</p>
                         <p id="viewQuestionType" class="text-sm font-bold text-slate-900 mt-1"></p>
                     </div>
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                        <p class="text-xs font-bold uppercase text-slate-600">Mark</p>
+                        <p class="text-xs font-bold uppercase text-slate-400">Mark</p>
                         <p id="viewQuestionMark" class="text-sm font-bold text-slate-900 mt-1"></p>
                     </div>
                 </div>
                 <div id="viewOptionsSection">
-                    <h3 class="text-xs font-bold uppercase text-slate-600 mb-2">Answer Options</h3>
+                    <h3 class="text-xs font-bold uppercase text-slate-400 mb-2">Answer Options</h3>
                     <div id="viewOptionsContainer" class="space-y-2"></div>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Explanation</label>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Explanation</label>
                     <div id="viewExplanation" class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-700"></div>
                 </div>
             </div>
@@ -153,7 +246,7 @@
             <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200">
                 <div>
                     <h2 class="text-base font-bold text-slate-900">Edit Question</h2>
-                    <p class="text-xs text-slate-600">Update question and options.</p>
+                    <p class="text-xs text-slate-500">Update question and options.</p>
                 </div>
                 <button type="button" onclick="closeEditQuestion()" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 cursor-pointer flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
@@ -162,18 +255,18 @@
             <form id="editQuestionForm" class="p-5 space-y-4">
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Course</label> 
-                    <select id="editQuestionCourse" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    <select id="editQuestionCourse" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">---Select Course---</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Question</label>
-                    <textarea id="editQuestionText" rows="2" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+                    <textarea id="editQuestionText" rows="2" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Question Type</label> 
-                        <select id="editQuestionType" onchange="changeEditQuestionType()" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <select id="editQuestionType" onchange="changeEditQuestionType()" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Select Type</option>
                             <option value="MCQ">MCQ</option>
                             <option value="TRUE_FALSE">True / False</option>
@@ -182,12 +275,12 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Default Mark</label> 
-                        <input id="editDefaultMark" type="number" min="0" step="0.5" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <input id="editDefaultMark" type="number" min="0" step="0.5" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Explanation</label>
-                    <textarea id="editExplanation" rows="2" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+                    <textarea id="editExplanation" rows="2" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
                 <div id="editOptionsSection" class="hidden">
                     <h3 class="text-xs font-bold uppercase text-slate-700 mb-1">Answer Options</h3>
@@ -196,7 +289,7 @@
                 </div>
                 <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
                     <button type="button" onclick="closeEditQuestion()" class="px-4 py-2 text-xs font-bold border border-slate-300 rounded-xl hover:bg-slate-50 cursor-pointer">Cancel</button>
-                    <button type="submit" class="px-5 py-2 text-xs font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-xs cursor-pointer">
+                    <button type="submit" class="px-5 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-xs cursor-pointer">
                         <i class="fa-solid fa-save mr-1"></i> Update
                     </button>
                 </div>
@@ -205,6 +298,8 @@
     </div>
 
 	<script>
+	let courses = [];
+
 	function loadQuestions() {
 	    fetch('/api/questions').then(response => {
 	            if (!response.ok) {
@@ -234,11 +329,9 @@
 	            }
 	            return response.json();
 	        })
-	        /* .then(courses => {
-	            console.log("Courses:", courses); */
-	            .then(courseList => {
-	                courses = courseList;
-	                console.log("Courses:", courses);
+	        .then(courseList => {
+	            courses = courseList;
+	            console.log("Courses:", courses);
 	            const courseFilter = document.getElementById('courseFilter');
 	            courseFilter.innerHTML = '<option value="">All Courses</option>';
 	            const editCourse = document.getElementById('editQuestionCourse');
@@ -373,7 +466,6 @@
 	        tableBody.appendChild(row);
 	    });
 	}
-	
 
 	function viewQuestion(questionId) {
 	    const modal = document.getElementById('viewQuestionModal');
@@ -389,32 +481,14 @@
 	            return response.json();
 	        })
 	        .then(question => {
+	            document.getElementById('viewQuestionText').textContent = question.questionText;
+	            document.getElementById('viewQuestionType').textContent = question.questionType;
+	            document.getElementById('viewQuestionMark').textContent = question.defaultMark;
+	            document.getElementById('viewExplanation').textContent = question.explanation || 'No explanation provided.';
 
-	            // Show Question
-	            document.getElementById('viewQuestionText').textContent =
-	                question.questionText;
+	            const course = courses.find(c => String(c.course_id) === String(question.courseId));
+	            document.getElementById('viewQuestionCourse').textContent = course ? course.title : 'Course not found';
 
-	            // Show Question Type
-	            document.getElementById('viewQuestionType').textContent =
-	                question.questionType;
-
-	            // Show Mark
-	            document.getElementById('viewQuestionMark').textContent =
-	                question.defaultMark;
-
-	            // Show Explanation
-	            document.getElementById('viewExplanation').textContent =
-	                question.explanation || 'No explanation provided.';
-
-	            // Find and show Course
-	            const course = courses.find(
-	                c => String(c.course_id) === String(question.courseId)
-	            );
-
-	            document.getElementById('viewQuestionCourse').textContent =
-	                course ? course.title : 'Course not found';
-
-	            // Load Answer Options
 	            return fetch(`/api/questions/${questionId}/options`);
 	        })
 	        .then(response => {
@@ -520,9 +594,9 @@
 	    const div = document.createElement('div');
 	    div.className = 'flex items-center gap-2.5';
 	    div.innerHTML = `
-	        <input type="radio" name="editCorrectOption" value="${label}" ${isCorrect ? 'checked' : ''} class="w-4 h-4 text-teal-600 focus:ring-teal-500 cursor-pointer" required>
+	        <input type="radio" name="editCorrectOption" value="${label}" ${isCorrect ? 'checked' : ''} class="w-4 h-4 text-blue-600 focus:ring-blue-500 cursor-pointer" required>
 	        <div class="w-8 h-8 flex items-center justify-center bg-slate-100 border border-slate-300 rounded-lg text-xs font-bold text-slate-800">${label}</div>
-	        <input type="text" id="editOption_${label}" value="${defaultText}" placeholder="Option ${label}" required class="flex-1 border border-slate-300 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+	        <input type="text" id="editOption_${label}" value="${defaultText}" placeholder="Option ${label}" required class="flex-1 border border-slate-300 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
 	    `;
 	    container.appendChild(div);
 	}
