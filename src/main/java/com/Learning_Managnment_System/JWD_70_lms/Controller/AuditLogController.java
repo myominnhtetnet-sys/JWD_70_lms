@@ -2,6 +2,7 @@ package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,12 +14,9 @@ import com.Learning_Managnment_System.JWD_70_lms.model.AuditLogBean;
 
 @Controller
 public class AuditLogController {
-
-    private final AuditLogService auditLogService;
-
-    public AuditLogController(AuditLogService auditLogService) {
-        this.auditLogService = auditLogService;
-    }
+	
+	@Autowired
+    private AuditLogService auditLogService;
 
     // 1. HTML Page Render ပြုလုပ်ရန် (URL: /admin/audit-logs)
     @GetMapping("/admin/audit-logs")
