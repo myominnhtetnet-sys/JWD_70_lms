@@ -30,7 +30,7 @@ public class ExamRepository {
                 exam_id,
                 course_id,
                 batch_id,
-                title,
+                title,	
                 exam_type,
                 duration_min,
                 total_mark,
@@ -270,7 +270,6 @@ public class ExamRepository {
     }
     
     public BigDecimal getDefaultMark(Long questionId, Long courseId) {
-
         String sql = """
             SELECT default_mark
             FROM questions
@@ -279,17 +278,11 @@ public class ExamRepository {
               AND is_active = 1
             """;
 
-        List<BigDecimal> marks = jdbcTemplate.query(
-            sql,
-            (rs, rowNum) -> rs.getBigDecimal("default_mark"),
-            questionId,
-            courseId
-        );
+		List<BigDecimal> marks = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getBigDecimal("default_mark"), questionId,
+				courseId);
 
-        if (marks.isEmpty()) {
-            throw new IllegalArgumentException(
-                "Active question not found in this course: " + questionId
-            );
+		if (marks.isEmpty()) {
+			throw new IllegalArgumentException("Active question not found in this course: " + questionId);
         }
 
         return marks.get(0);
@@ -303,11 +296,7 @@ public class ExamRepository {
             WHERE exam_id = ?
             """;
 
-        BigDecimal total = jdbcTemplate.queryForObject(
-            sql,
-            BigDecimal.class,
-            examId
-        );
+		BigDecimal total = jdbcTemplate.queryForObject(sql, BigDecimal.class, examId);
 
         return total == null ? BigDecimal.ZERO : total;
     }

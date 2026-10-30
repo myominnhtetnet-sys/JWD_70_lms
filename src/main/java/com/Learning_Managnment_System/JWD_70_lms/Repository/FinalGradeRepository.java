@@ -114,17 +114,25 @@ public class FinalGradeRepository {
             """, assignmentId, enrollmentId);
     }
 
-    public List<Map<String, Object>> findAttempts(
-            int examId, int enrollmentId) {
 
-        return jdbc.queryForList("""
-            SELECT status, score, result
-            FROM exam_attempts
-            WHERE exam_id = ?
-              AND enrollment_id = ?
-            ORDER BY attempt_no
-            """, examId, enrollmentId);
-    }
+public List<Map<String, Object>> findLatestAttempt(
+        int examId,
+        int enrollmentId) {
+
+    return jdbc.queryForList("""
+        SELECT attempt_id AS attemptId,
+               attempt_no AS attemptNo,
+               status,
+               score,
+               result
+        FROM exam_attempts
+        WHERE exam_id = ?
+          AND enrollment_id = ?
+        ORDER BY attempt_no DESC, attempt_id DESC
+        LIMIT 1
+        """, examId, enrollmentId);
+}
+
 
     public int countScheduledSessions(int batchId) {
         return jdbc.queryForObject("""

@@ -30,6 +30,7 @@ public class StudentExamController {
         if (studentEmail == null) return "redirect:/login";
         
         model.addAttribute("exams", examService.getAvailableExams(studentEmail));
+        model.addAttribute("fullName", session.getAttribute("fullName")); 
         return "exam_list";
     }
 
@@ -38,6 +39,7 @@ public class StudentExamController {
         String studentEmail = (String) session.getAttribute("email");
         if (studentEmail == null) return "redirect:/login";
         model.addAttribute("results", examService.getExamResultsHistory(studentEmail));
+        model.addAttribute("fullName", session.getAttribute("fullName")); 
         return "exam_history";
     }
 

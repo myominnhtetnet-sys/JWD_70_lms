@@ -54,4 +54,38 @@ public class PaymentRepository {
                 combinedRemark
         );
     }
+    
+    public List<PaymentBean> getPaymentsByUserId(int userId) {
+        String sql = "SELECT p.* FROM payments p " +
+                     "JOIN enrollments e ON p.enrollment_id = e.id " +
+                     "WHERE e.user_id = ? ORDER BY p.payment_id DESC"; // Mapped to payment_id column ranking
+                     
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            PaymentBean payment = new PaymentBean();
+            
+            // 🟢 Fully synchronized with your custom PaymentBean fields
+            payment.setPaymentId(rs.getInt("payment_id")); 
+            payment.setEnrollmentId(rs.getInt("enrollment_id"));
+            payment.setScheduleId(rs.getInt("schedule_id"));
+            payment.setPaymentMethodId(rs.getInt("payment_method_id"));
+            payment.setAmount(rs.getDouble("amount"));
+            payment.setTransactionNo(rs.getString("transaction_no"));
+            payment.setPaymentType(rs.getString("payment_type"));
+            payment.setNote(rs.getString("note"));
+            payment.setProofImage(rs.getString("proof_image"));
+            payment.setStatus(rs.getString("status"));
+            payment.setProcessedBy(rs.getObject("processed_by", Integer.class));
+            payment.setRemark(rs.getString("remark"));
+            
+            // Safe LocalDateTime conversion using your paymentDate property field
+            java.sql.Timestamp ts = rs.getTimestamp("payment_date");
+            if (ts != null) {
+                payment.setPaymentDate(ts.toLocalDateTime());
+            }
+            
+            return payment;
+        }, userId);
+    }
+
+
 }

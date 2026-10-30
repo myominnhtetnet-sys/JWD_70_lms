@@ -39,6 +39,7 @@ public class MyCourseController {
         }
 
         model.addAttribute("enrolledCourses", enrolledCourses);
+        model.addAttribute("fullName", session.getAttribute("fullName")); 
         return "my-courses";
     }
 

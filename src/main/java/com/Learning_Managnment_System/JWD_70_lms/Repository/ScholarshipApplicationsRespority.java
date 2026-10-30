@@ -18,7 +18,7 @@ public class ScholarshipApplicationsRespority {
     private JdbcTemplate jdbcTemplate;
 
     /**
-     * Fetch all scholarship applications.
+     * Fetch all scholarship applications safely from the main table.
      */
     public List<ScholarshipApplicationsBean> getAllApplications() {
         String sql = "SELECT sa.* FROM scholarship_applications sa ORDER BY sa.application_id DESC";
@@ -37,6 +37,16 @@ public class ScholarshipApplicationsRespority {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    /**
+     * Fetch a single scholarship application by its ID (Long version).
+     */
+    public ScholarshipApplicationsBean findById(Long applicationId) {
+        if (applicationId == null) {
+            return null;
+        }
+        return getApplicationById(applicationId.intValue());
     }
 
     /**
