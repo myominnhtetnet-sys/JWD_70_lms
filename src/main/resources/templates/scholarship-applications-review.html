@@ -7,8 +7,21 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Awesome --><head th:replace="~{head :: head}"></head>
+
+<body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
+
+    <div id="app" class="min-h-screen flex flex-col overflow-hidden">
+        
+        <!-- TOP HEADER BAR -->
+        <div th:replace="~{header :: header}"></div>
+
+        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- DYNAMIC SIDEBAR -->
+            <div th:replace="~{nav :: nav}"></div>
+    
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
