@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.Learning_Managnment_System.JWD_70_lms.Mapper.AdminUserMapper;
-import com.Learning_Managnment_System.JWD_70_lms.model.AdminUserBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.AdminUserBean;	
 
 @Repository
 public class Admin_Repository {
@@ -133,6 +133,33 @@ public class Admin_Repository {
         String sql = "UPDATE users SET deleted_at = NOW(), updated_at = NOW() WHERE user_id = ? AND deleted_at IS NULL";
         return jdbcTemplate.update(sql, userId);
     }
+    
+    public int restoreUser(int userId) {
+        String sql = "UPDATE users SET deleted_at = NULL, updated_at = NOW() WHERE user_id = ? AND deleted_at IS NOT NULL";
+        return jdbcTemplate.update(sql, userId);
+    }
+
+ // 17. GET DELETED USERS (Trash / Soft Deleted User စာရင်းကြည့်ရန်)
+    public List<AdminUserBean> getDeletedUsers() {
+        String sql = """
+            SELECT 
+                u.user_id, u.role_id, u.full_name, u.email, u.phone,
+                u.password_hash, u.dob, u.gender, u.address, r.role_name,
+                u.status, u.created_at, u.updated_at
+            FROM users u
+            JOIN roles r ON u.role_id = r.role_id
+            WHERE u.deleted_at IS NOT NULL
+            ORDER BY u.user_id DESC
+            """;
+        
+        return jdbcTemplate.query(sql, userMapper);
+    }
+    
+    
+    
+    
+    
+    
 
     // 11. DASHBOARD STATISTICS
     public int getTotalUsers() {

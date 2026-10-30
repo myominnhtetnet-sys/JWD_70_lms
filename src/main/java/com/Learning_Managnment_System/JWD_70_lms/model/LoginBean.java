@@ -10,6 +10,10 @@ public class LoginBean {
 	private String full_name;
     private String email;
     private String password_hash;
+	public String getStatus() {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
     
 }
