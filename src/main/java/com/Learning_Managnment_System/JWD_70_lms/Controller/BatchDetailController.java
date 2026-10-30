@@ -1,6 +1,8 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,23 +13,16 @@ import com.Learning_Managnment_System.JWD_70_lms.model.BatchDetailBean.*;
 @Controller
 @RequestMapping("/admin/batches/{batchId}")
 public class BatchDetailController {
-
-    private final BatchDetailService batchDetailService;
-
-    public BatchDetailController(BatchDetailService batchDetailService) {
-        this.batchDetailService = batchDetailService;
-    }
-
-    // ==========================================
-    // 1. VIEW ROUTING METHODS (HTML Template ပြသရန်)
-    // ==========================================
+	
+	@Autowired
+    private BatchDetailService batchDetailService;
 
     @GetMapping("/students")
     public String showStudentsPage(@PathVariable("batchId") Long batchId, Model model) {
         model.addAttribute("batchId", batchId);
         model.addAttribute("activeTab", "students");
         model.addAttribute("batches", batchDetailService.getAllBatches());
-        model.addAttribute("lessons", batchDetailService.getAllLessons()); // 👈 Lesson စာရင်းများ ထည့်သွင်းခြင်း
+        model.addAttribute("lessons", batchDetailService.getAllLessons());
         return "Batch_Detail";
     }
 
@@ -57,10 +52,6 @@ public class BatchDetailController {
         model.addAttribute("lessons", batchDetailService.getAllLessons()); // 👈 Lesson စာရင်းများ ထည့်သွင်းခြင်း
         return "Batch_Detail";
     }
-
-    // ==========================================
-    // 2. REST API ENDPOINTS
-    // ==========================================
 
     @GetMapping("/api/students")
     @ResponseBody
