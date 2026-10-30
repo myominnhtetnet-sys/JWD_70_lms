@@ -1,17 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full">
-<<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduPulse LMS - Scholarship Application Review</title>
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Font Awesome --><head th:replace="~{head :: head}"></head>
-
 <body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
 
-    <div id="app" class="min-h-screen flex flex-col overflow-hidden">
+    <div id="app" class="min-h-screen flex flex-col">
         
         <!-- TOP HEADER BAR -->
         <div th:replace="~{header :: header}"></div>
@@ -21,6 +12,12 @@
             
             <!-- DYNAMIC SIDEBAR -->
             <div th:replace="~{nav :: nav}"></div>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Lucide Icons CDN -->
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
     <script>
@@ -75,49 +72,21 @@
             <!-- Top Header Bar -->
             <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700/80 px-4 sm:px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4 sticky top-0 z-10 transition-colors">
                 
-                <!-- Brand / Logo Header -->
-                <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 rounded-xl bg-[#5243f6] flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-indigo-500/30">
-                        E
-                    </div>
-                    <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">EduPulse <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-[#5243f6] dark:text-indigo-400 font-semibold uppercase">LMS</span></span>
-                </div>
+               
 
-                <!-- Search Input -->
-                <div class="relative w-full md:w-80 lg:w-96">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <i data-lucide="search" class="w-4 h-4"></i>
-                    </div>
-                    <input type="text" id="searchInput" placeholder="Search reports, students, logs..." class="w-full pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-slate-700/60 border border-transparent dark:border-slate-600/50 rounded-xl text-sm focus:bg-white dark:focus:bg-slate-800 focus:border-indigo-500 dark:focus:border-indigo-500 focus:outline-none transition-all placeholder-slate-400">
-                </div>
 
                 <!-- Right Header Actions -->
                 <div class="flex items-center justify-between md:justify-end w-full md:w-auto space-x-2 sm:space-x-4">
-                   
+                    
+                    
 
                     <!-- Divider -->
                     <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block"></div>
 
-                    <!-- Dark Mode Toggle -->
-                    <button id="themeToggle" class="p-2.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all" title="Toggle Theme">
-                        <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
-                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
-                    </button>
 
-                    <!-- Notifications -->
-                    <button class="relative p-2.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all" title="Notifications">
-                        <i data-lucide="bell" class="w-5 h-5"></i>
-                        <span class="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full ring-2 ring-white dark:ring-slate-800"></span>
-                    </button>
+                  
 
-                    <!-- User Profile Avatar -->
-                    <div class="flex items-center space-x-3 pl-2">
-                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80" alt="Sarah Jenkins" class="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-500/30">
-                        <div class="hidden xl:block text-left">
-                            <p class="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-tight">Sarah Jenkins</p>
-                            <p class="text-xs text-slate-400 font-medium">Administrator</p>
-                        </div>
-                    </div>
+                   
 
                 </div>
             </header>
@@ -131,6 +100,20 @@
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">System Reports</h1>
                         <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Generate, view, and export comprehensive administrative and academic performance reports.</p>
                     </div>
+                    
+                    <!-- Dark Mode Toggle -->
+                    <button id="themeToggle" class="p-2.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all" title="Toggle Theme">
+                        <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    </button>
+                    
+                <!-- Search Input -->
+                <div class="relative w-full md:w-80 lg:w-96">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </div>
+                    <input type="text" id="searchInput" placeholder="Search reports, students, logs..." class="w-full pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-slate-700/60 border border-transparent dark:border-slate-600/50 rounded-xl text-sm focus:bg-white dark:focus:bg-slate-800 focus:border-indigo-500 dark:focus:border-indigo-500 focus:outline-none transition-all placeholder-slate-400">
+                </div>
                     <div>
                         <button id="openModalBtn" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-5 py-3 bg-[#5243f6] hover:bg-indigo-600 text-white font-medium text-sm rounded-xl shadow-lg shadow-indigo-500/25 transition-all hover:scale-[1.02] active:scale-95">
                             <i data-lucide="plus" class="w-4 h-4"></i>
