@@ -61,7 +61,7 @@ public class StudentAssignmentController {
         model.addAttribute("assignments", paginatedAssignments);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
-        
+        model.addAttribute("fullName", session.getAttribute("fullName")); 
         model.addAttribute("submittedAssignments", studentAssignmentService.getSubmittedAssignments(activeUserId));
         model.addAttribute("lateAssignments", studentAssignmentService.getLateAssignments(activeUserId));
         

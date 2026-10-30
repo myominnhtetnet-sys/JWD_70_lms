@@ -26,6 +26,7 @@ public class AwardController {
 
         List<StudentGradeBean> awardsList = awardService.getStudentAwardsDashboard(studentEmail);
         model.addAttribute("awards", awardsList);
+        model.addAttribute("fullName", session.getAttribute("fullName")); 
         
         return "student_awards_dashboard";
     }
