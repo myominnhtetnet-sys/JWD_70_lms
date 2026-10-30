@@ -1,12 +1,17 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.Learning_Managnment_System.JWD_70_lms.Service.CourseReviewService;
 import com.Learning_Managnment_System.JWD_70_lms.model.CourseReviewBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/admin/reviews")
@@ -16,6 +21,43 @@ public class CourseReviewController {
 
     public CourseReviewController(CourseReviewService reviewService) {
         this.reviewService = reviewService;
+    }
+
+    /**
+     * 🟢 @ModelAttribute ဖြင့် Course Reviews စာမျက်နှာသို့ ဝင်ရောက်သည့်အခါတိုင်း 
+     * Login ဝင်ထားသော User ၏ အမည်နှင့် Role ကို Header ထဲသို့ အလိုအလျောက် ပို့ပေးခြင်း
+     */
+    @ModelAttribute
+    public void addCommonAttributes(HttpSession session, Model model) {
+        String displayName = "Administrator";
+        int roleId = 1;
+
+        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+        if (currentUser != null) {
+            if (currentUser.getFull_name() != null) {
+                displayName = currentUser.getFull_name();
+            }
+            roleId = currentUser.getRole_id();
+        } else {
+            if (session.getAttribute("fullName") != null) {
+                displayName = (String) session.getAttribute("fullName");
+            }
+            if (session.getAttribute("roleId") != null) {
+                roleId = (int) session.getAttribute("roleId");
+            }
+        }
+
+        String roleName = "Administrator";
+        if (roleId == 1) {
+            roleName = "Administrator";
+        } else if (roleId == 2) {
+            roleName = "Instructor";
+        } else if (roleId == 3) {
+            roleName = "Student";
+        }
+
+        model.addAttribute("fullName", displayName);
+        model.addAttribute("loggedInRole", roleName);
     }
 
     // 1. Review Moderation Page (List All Reviews or Filter by Course)

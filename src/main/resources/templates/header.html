@@ -46,15 +46,17 @@
                     </div>
                 </div>
 
-                <!-- User Profile Dropdown -->
-                <div class="flex items-center gap-3 pl-3 border-l border-slate-200 dark:border-slate-700">
-                    <img id="user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120" alt="Avatar" class="w-9 h-9 rounded-full object-cover ring-2 ring-indigo-500/30">
-                    <div class="hidden lg:block text-left">
-                        <div id="user-name" class="text-xs font-bold leading-tight text-slate-900 dark:text-white">Sarah Jenkins</div>
-                        <div id="user-role-label" class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Administrator</div>
-                    </div>
-                </div>
-
+<!-- User Profile Dropdown -->
+<div class="flex items-center gap-3 pl-3 border-l border-slate-200 dark:border-slate-700">
+    <img id="user-avatar" src="D:/img/mmh.jpg" alt="Avatar" class="w-9 h-9 rounded-full object-cover ring-2 ring-indigo-500/30">
+    <div class="hidden lg:block text-left">
+        <!-- Login ဝင်ထားသော User ၏ နာမည် -->
+        <div id="user-name" th:text="${fullName}" class="text-xs font-bold leading-tight text-slate-900 dark:text-white">Sarah Jenkins</div>
+        
+        <!-- Database မှ လာသော Role Name -->
+        <div id="user-role-label" th:text="${loggedInRole}" class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Administrator</div>
+    </div>
+</div>
             </div>
 
         </div>
