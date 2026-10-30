@@ -1,10 +1,14 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import com.Learning_Managnment_System.JWD_70_lms.Repository.LoginRepository;
+import com.Learning_Managnment_System.JWD_70_lms.Service.AnnouncementService;
 import com.Learning_Managnment_System.JWD_70_lms.Service.StudentDashboardService;
+import com.Learning_Managnment_System.JWD_70_lms.model.AnnouncementBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 
 import jakarta.servlet.http.HttpSession;
+
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class LoginController {
+
+	 @Autowired
+	    private AnnouncementService announcementService;
 
     @Autowired
     private LoginRepository loginRepo;
@@ -74,24 +81,27 @@ public class LoginController {
 
     @GetMapping("/student")
     public String studentPage(HttpSession session, Model model) {
-        // Enforce Session Security Guard Boundaries
         if (session.getAttribute("roleId") == null || (int) session.getAttribute("roleId") != 3) {
             return "redirect:/login";
         }
 
         String email = (String) session.getAttribute("email");
-        
-        // Fetch aggregated transactional model map metrics out of business service
         Map<String, Object> dashboardData = dashboardService.getStudentDashboardData(email);
-        
-        // Populate Thymeleaf UI scope variables natively
         model.addAllAttributes(dashboardData);
         
-        // Active link tracking token state for sidebar component highlighting
+        // 1. Fetch only the 2 latest items for the quick dashboard card feed view
+        List<AnnouncementBean> recentAnnouncements = announcementService.getLatestAnnouncements(2);
+        model.addAttribute("allAnnouncements", recentAnnouncements);
+        
+        // 2. Fetch the entire collection list to hydrate the history modal container frame
+        List<AnnouncementBean> fullHistoryList = announcementService.getAllAnnouncements();
+        model.addAttribute("historyAnnouncements", fullHistoryList);
+        
         model.addAttribute("activeLink", "dashboard");
-
+        model.addAttribute("fullName", session.getAttribute("fullName")); 
         return "studentdashboard";
     }
+
 
 
     @GetMapping("/dashboard")
