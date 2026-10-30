@@ -98,11 +98,7 @@ public class Admin_Controller {
         model.addAttribute("users", users);
         return "dashboard";
     }
-  
-    
-    
 
- 
     @GetMapping("/users")
     public String listUsers(HttpSession session, Model model) {
         if (isNotAdmin(session)) {
@@ -261,6 +257,7 @@ public class Admin_Controller {
         return "redirect:/admin/users";
     }
 
+    // 🟢 Suspend Method (Comment ဖြုတ်ပြီး ပြန်လည်ပြင်ဆင်ထားသည်)
     @PostMapping("/users/suspend")
     public String suspendUser(
             @RequestParam("userId") int userId,
@@ -321,16 +318,14 @@ public class Admin_Controller {
         return "redirect:/admin/users";
     }
 
-    // 🟢 ဤနေရာတွင် /users/trash ဟု ပြင်ဆင်လိုက်ပါ
     @GetMapping("/users/trash")
     public String viewTrashInMain(Model model) {
         List<AdminUserBean> deletedUsers = userService.getDeletedUsers();
         model.addAttribute("deletedUsers", deletedUsers);
         model.addAttribute("isTrashView", true); 
-        return "users"; // users.html ကို ပြန်ပြမည်
+        return "users";
     }
 
-    // 🟢 ဤနေရာတွင် /users/restore ဟု ပြင်ဆင်လိုက်ပါ
     @PostMapping("/users/restore")
     public String restoreUser(@RequestParam("userId") int userId, RedirectAttributes redirectAttributes) {
         userService.restoreUser(userId);
