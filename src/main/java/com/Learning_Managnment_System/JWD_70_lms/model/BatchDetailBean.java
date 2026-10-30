@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter @Setter
 public class BatchDetailBean {
 	
-	// *** အသစ်ထည့်လိုက်သည့် Batch Dropdown အတွက် Model ***
 	@Getter @Setter
 	public static class BatchInfo {
 		private Long batchId;
