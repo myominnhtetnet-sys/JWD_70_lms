@@ -3,6 +3,9 @@
 <div th:replace="~{head :: head}"></div>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
+<!-- Hidden Course ID for JS usage -->
+<input type="hidden" id="currentCourseId" th:value="${course.courseId}">
+
 <div id="app" class="min-h-screen flex flex-col">
         
         <!-- TOP HEADER BAR -->
@@ -37,7 +40,7 @@
                 <!-- Tab Navigation Bar -->
                 <div class="bg-white rounded-t-lg shadow-sm border-b border-gray-200 px-6 flex gap-6 overflow-x-auto">
                     <button onclick="switchTab('info')" id="btn-info" class="tab-btn py-4 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600 flex items-center gap-2 cursor-pointer whitespace-nowrap">
-                        <i class="fa-solid fa-circle-info"></i>1. Course Info
+                        <i class="fa-solid fa-circle-info"></i> Course Info
                     </button>
                     <button onclick="switchTab('instructors')" id="btn-instructors" class="tab-btn py-4 text-xs font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 flex items-center gap-2 cursor-pointer whitespace-nowrap">
                         <i class="fa-solid fa-chalkboard-user"></i> 2. Instructors
@@ -79,7 +82,7 @@
                     <div id="tab-instructors" class="tab-content hidden space-y-4">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Assigned Instructors</h3>
-                            <button onclick="openModal('instructorModal')" class="bg-indigo-600 text-white px-3 py-1.5 rounded text-xs font-semibold hover:bg-indigo-700 cursor-pointer">+ Assign Instructor</button>
+                            <button onclick="openInstructorModal()" class="bg-indigo-600 text-white px-3 py-1.5 rounded text-xs font-semibold hover:bg-indigo-700 cursor-pointer">+ Assign Instructor</button>
                         </div>
                         <div id="instructorEmpty" class="border border-dashed rounded-lg p-8 text-center text-gray-400 text-xs">
                             No instructors assigned to this course yet.
@@ -170,10 +173,12 @@
 <div id="instructorModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-lg w-full max-w-md p-6 shadow-lg">
         <h3 class="text-sm font-bold text-gray-800 mb-3">Assign Instructor</h3>
-        <form onsubmit="addInstructor(event)">
+        <form onsubmit="assignInstructor(event)">
             <div class="mb-3">
-                <label class="block text-xs font-semibold mb-1">Instructor Name</label>
-                <input type="text" id="instructorNameInput" required placeholder="e.g. U Aung Kyaw" class="w-full border rounded p-2 text-xs outline-none">
+                <label class="block text-xs font-semibold mb-1">Select Instructor from Database</label>
+                <select id="instructorSelect" required class="w-full border rounded p-2 text-xs bg-white outline-none">
+                    <option value="">-- Choose Instructor --</option>
+                </select>
             </div>
             <div class="flex justify-end gap-2">
                 <button type="button" onclick="closeModal('instructorModal')" class="px-3 py-1.5 text-xs text-gray-600 bg-gray-100 rounded hover:bg-gray-200">Cancel</button>
@@ -242,8 +247,17 @@
     </div>
 </div>
 
-<!-- Scripts for Tabs, Modals, and Dynamic DOM Rendering -->
+<!-- Scripts for Database-Driven AJAX Operations -->
 <script>
+    const courseId = document.getElementById('currentCourseId').value;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadInstructors();
+        loadModules();
+        loadLessons();
+        loadMaterials();
+    });
+
     function switchTab(tabName) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
         document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -267,86 +281,196 @@
         document.getElementById(modalId).classList.remove('flex');
     }
 
-    // 1. Add Instructor Logic
-    function addInstructor(e) {
-        e.preventDefault();
-        const name = document.getElementById('instructorNameInput').value;
-        
-        document.getElementById('instructorEmpty').classList.add('hidden');
-        document.getElementById('instructorListContainer').classList.remove('hidden');
+    // --- 1. INSTRUCTORS AJAX ---
+    async function loadInstructors() {
+        try {
+            const res = await fetch(`/admin/course-builder/api/${courseId}/instructors`);
+            const instructors = await res.json();
+            const tbody = document.getElementById('instructorTableBody');
+            tbody.innerHTML = '';
 
-        const tbody = document.getElementById('instructorTableBody');
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="p-3 font-medium text-gray-800">${name}</td>
-            <td class="p-3 text-gray-500">Lead Instructor</td>
-            <td class="p-3 text-center"><button onclick="this.closest('tr').remove()" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button></td>
-        `;
-        tbody.appendChild(row);
-        closeModal('instructorModal');
-        e.target.reset();
+            if (instructors.length === 0) {
+                document.getElementById('instructorEmpty').classList.remove('hidden');
+                document.getElementById('instructorListContainer').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('instructorEmpty').classList.add('hidden');
+            document.getElementById('instructorListContainer').classList.remove('hidden');
+
+            instructors.forEach(ins => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-3 font-medium text-gray-800">${ins.fullName}</td>
+                        <td class="p-3 text-gray-500">Lead Instructor</td>
+                        <td class="p-3 text-center"><button onclick="deleteInstructor(${ins.userId})" class="text-red-500 hover:text-red-700 cursor-pointer"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>`;
+            });
+        } catch (err) { console.error(err); }
     }
 
-    // 2. Add Module Logic
-    function addModule(e) {
+    async function openInstructorModal() {
+        openModal('instructorModal');
+        const res = await fetch('/admin/course-builder/api/instructors');
+        const list = await res.json();
+        const select = document.getElementById('instructorSelect');
+        select.innerHTML = '<option value="">-- Choose Instructor --</option>' + 
+            list.map(i => `<option value="${i.userId}">${i.fullName}</option>`).join('');
+    }
+
+    async function assignInstructor(e) {
+        e.preventDefault();
+        const instructorId = document.getElementById('instructorSelect').value;
+        const res = await fetch('/admin/course-builder/api/instructors', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ courseId, instructorId })
+        });
+        if (res.ok) { closeModal('instructorModal'); loadInstructors(); }
+    }
+
+    async function deleteInstructor(instructorId) {
+        if (!confirm('Remove instructor?')) return;
+        const res = await fetch(`/admin/course-builder/api/${courseId}/instructors/${instructorId}`, { method: 'DELETE' });
+        if (res.ok) loadInstructors();
+    }
+
+    // --- 2. MODULES AJAX ---
+    async function loadModules() {
+        try {
+            const res = await fetch(`/admin/course-builder/api/${courseId}/modules`);
+            const modules = await res.json();
+            const container = document.getElementById('moduleTableBody');
+            container.innerHTML = '';
+
+            if (modules.length === 0) {
+                document.getElementById('moduleEmpty').classList.remove('hidden');
+                document.getElementById('moduleListContainer').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('moduleEmpty').classList.add('hidden');
+            document.getElementById('moduleListContainer').classList.remove('hidden');
+
+            modules.forEach(m => {
+                container.innerHTML += `
+                    <div class="border rounded p-3 flex justify-between items-center bg-gray-50">
+                        <span class="font-semibold text-xs text-indigo-600"><i class="fa-solid fa-layer-group mr-2"></i>${m.title}</span>
+                        <button onclick="deleteModule(${m.moduleId})" class="text-red-500 hover:text-red-700 text-xs cursor-pointer"><i class="fa-solid fa-trash"></i></button>
+                    </div>`;
+            });
+        } catch (err) { console.error(err); }
+    }
+
+    async function addModule(e) {
         e.preventDefault();
         const title = document.getElementById('moduleTitleInput').value;
-        
-        document.getElementById('moduleEmpty').classList.add('hidden');
-        document.getElementById('moduleListContainer').classList.remove('hidden');
-
-        const container = document.getElementById('moduleTableBody');
-        const card = document.createElement('div');
-        card.className = "border rounded p-3 flex justify-between items-center bg-gray-50";
-        card.innerHTML = `
-            <span class="font-semibold text-xs text-indigo-600"><i class="fa-solid fa-layer-group mr-2"></i>${title}</span>
-            <button onclick="this.closest('div').remove()" class="text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i></button>
-        `;
-        container.appendChild(card);
-        closeModal('moduleModal');
-        e.target.reset();
+        const res = await fetch('/admin/course-builder/api/modules', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ courseId, title })
+        });
+        if (res.ok) { closeModal('moduleModal'); e.target.reset(); loadModules(); }
     }
 
-    // 3. Add Lesson Logic
-    function addLesson(e) {
+    async function deleteModule(moduleId) {
+        if (!confirm('Delete module?')) return;
+        const res = await fetch(`/admin/course-builder/api/modules/${moduleId}`, { method: 'DELETE' });
+        if (res.ok) loadModules();
+    }
+
+    // --- 3. LESSONS AJAX ---
+    async function loadLessons() {
+        try {
+            const res = await fetch(`/admin/course-builder/api/${courseId}/lessons`);
+            const lessons = await res.json();
+            const tbody = document.getElementById('lessonTableBody');
+            tbody.innerHTML = '';
+
+            if (lessons.length === 0) {
+                document.getElementById('lessonEmpty').classList.remove('hidden');
+                document.getElementById('lessonListContainer').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('lessonEmpty').classList.add('hidden');
+            document.getElementById('lessonListContainer').classList.remove('hidden');
+
+            lessons.forEach(l => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-3 font-medium text-gray-800">${l.title}</td>
+                        <td class="p-3 text-blue-600 truncate max-w-xs">${l.videoUrl || '-'}</td>
+                        <td class="p-3 text-center"><button onclick="deleteLesson(${l.lessonId})" class="text-red-500 hover:text-red-700 cursor-pointer"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>`;
+            });
+        } catch (err) { console.error(err); }
+    }
+
+    async function addLesson(e) {
         e.preventDefault();
         const title = document.getElementById('lessonTitleInput').value;
-        const url = document.getElementById('lessonUrlInput').value || '-';
-        
-        document.getElementById('lessonEmpty').classList.add('hidden');
-        document.getElementById('lessonListContainer').classList.remove('hidden');
-
-        const tbody = document.getElementById('lessonTableBody');
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="p-3 font-medium text-gray-800">${title}</td>
-            <td class="p-3 text-blue-600 truncate max-w-xs">${url}</td>
-            <td class="p-3 text-center"><button onclick="this.closest('tr').remove()" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button></td>
-        `;
-        tbody.appendChild(row);
-        closeModal('lessonModal');
-        e.target.reset();
+        const url = document.getElementById('lessonUrlInput').value;
+        const res = await fetch('/admin/course-builder/api/lessons', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ courseId, title, url })
+        });
+        if (res.ok) { closeModal('lessonModal'); e.target.reset(); loadLessons(); }
+        else { alert(await res.text()); }
     }
 
-    // 4. Add Material Logic
-    function addMaterial(e) {
+    async function deleteLesson(lessonId) {
+        if (!confirm('Delete lesson?')) return;
+        const res = await fetch(`/admin/course-builder/api/lessons/${lessonId}`, { method: 'DELETE' });
+        if (res.ok) loadLessons();
+    }
+
+    // --- 4. MATERIALS AJAX ---
+    async function loadMaterials() {
+        try {
+            const res = await fetch(`/admin/course-builder/api/${courseId}/materials`);
+            const materials = await res.json();
+            const tbody = document.getElementById('materialTableBody');
+            tbody.innerHTML = '';
+
+            if (materials.length === 0) {
+                document.getElementById('materialEmpty').classList.remove('hidden');
+                document.getElementById('materialListContainer').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('materialEmpty').classList.add('hidden');
+            document.getElementById('materialListContainer').classList.remove('hidden');
+
+            materials.forEach(mat => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-3 font-medium text-gray-800">${mat.title}</td>
+                        <td class="p-3 text-gray-600">${mat.filePath}</td>
+                        <td class="p-3 text-center"><button onclick="deleteMaterial(${mat.materialId})" class="text-red-500 hover:text-red-700 cursor-pointer"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>`;
+            });
+        } catch (err) { console.error(err); }
+    }
+
+    async function addMaterial(e) {
         e.preventDefault();
         const title = document.getElementById('materialTitleInput').value;
-        const file = document.getElementById('materialFileInput').value;
-        
-        document.getElementById('materialEmpty').classList.add('hidden');
-        document.getElementById('materialListContainer').classList.remove('hidden');
+        const filePath = document.getElementById('materialFileInput').value;
+        const res = await fetch('/admin/course-builder/api/materials', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ courseId, title, filePath })
+        });
+        if (res.ok) { closeModal('materialModal'); e.target.reset(); loadMaterials(); }
+        else { alert(await res.text()); }
+    }
 
-        const tbody = document.getElementById('materialTableBody');
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="p-3 font-medium text-gray-800">${title}</td>
-            <td class="p-3 text-gray-600">${file}</td>
-            <td class="p-3 text-center"><button onclick="this.closest('tr').remove()" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button></td>
-        `;
-        tbody.appendChild(row);
-        closeModal('materialModal');
-        e.target.reset();
+    async function deleteMaterial(materialId) {
+        if (!confirm('Delete material?')) return;
+        const res = await fetch(`/admin/course-builder/api/materials/${materialId}`, { method: 'DELETE' });
+        if (res.ok) loadMaterials();
     }
 </script>
 </body>
