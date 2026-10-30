@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${'Certificate & Review - ' + (application.studentName != null ? application.studentName : 'Scholarship Review')}">Scholarship Review Certificate</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        .font-serif-classic { font-family: 'Playfair Display', Georgia, serif; }
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .font-sans-inter { font-family: 'Inter', sans-serif; }
+
+        .certificate-frame {
+            background-color: #fcf8ee;
+            border: 12px solid #dfc380;
+            outline: 2px solid #b8860b;
+            outline-offset: -7px;
+            box-shadow: inset 0 0 40px rgba(184, 134, 11, 0.15), 0 20px 35px -10px rgba(0,0,0,0.2);
+        }
+
+        .corner-accent {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            border-color: #9a721d;
+        }
+        .corner-tl { top: 12px; left: 12px; border-top: 3px double #9a721d; border-left: 3px double #9a721d; }
+        .corner-tr { top: 12px; right: 12px; border-top: 3px double #9a721d; border-right: 3px double #9a721d; }
+        .corner-bl { bottom: 12px; left: 12px; border-bottom: 3px double #9a721d; border-left: 3px double #9a721d; }
+        .corner-br { bottom: 12px; right: 12px; border-bottom: 3px double #9a721d; border-right: 3px double #9a721d; }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; }
+            .certificate-frame { box-shadow: none; border-color: #b8860b; }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 font-sans-inter min-h-screen py-8 px-4 flex flex-col items-center justify-center">
+
+    <!-- Top Action Bar (No Print) -->
+    <div class="w-full max-w-4xl flex items-center justify-between mb-6 no-print">
+       <a th:href="@{/admin/scholarship-applications-review}" 
+   class="inline-flex items-center gap-2 text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-sm font-semibold transition-all">
+    <i class="fa-solid fa-arrow-left"></i> Back to Applications Queue
+</a>
+
+        <div class="flex items-center gap-3">
+            <button onclick="window.print()" 
+                    class="inline-flex items-center gap-2 bg-[#b8860b] hover:bg-[#9a721d] text-white px-5 py-2 rounded-xl text-sm font-semibold shadow-lg shadow-amber-900/40 transition-all">
+                <i class="fa-solid fa-print"></i> Print Certificate
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== CERTIFICATE CONTAINER ==================== -->
+    <div class="w-full max-w-4xl relative certificate-frame p-8 sm:p-14 text-center rounded-sm overflow-hidden text-[#3a2d13]">
+
+        <!-- Corner Ornaments -->
+        <div class="corner-accent corner-tl"></div>
+        <div class="corner-accent corner-tr"></div>
+        <div class="corner-accent corner-bl"></div>
+        <div class="corner-accent corner-br"></div>
+
+        <!-- Inner Thin Border -->
+        <div class="border border-[#cbb070] p-6 sm:p-10 relative">
+
+            <!-- Header Badge / Seal -->
+            <div class="flex flex-col items-center justify-center mb-6">
+                <div class="w-16 h-16 rounded-full bg-[#f3e6c3] border-2 border-[#b8860b] flex items-center justify-center shadow-inner mb-3">
+                    <i class="fa-solid fa-graduation-cap text-2xl text-[#8a6414]"></i>
+                </div>
+                <p class="font-cinzel text-xs font-bold tracking-[0.3em] uppercase text-[#8a6414]">EduPulse LMS Academic Council</p>
+            </div>
+
+            <!-- Certificate Title -->
+            <h1 class="font-cinzel text-3xl sm:text-4xl font-extrabold tracking-wider uppercase text-[#5a4313] my-3">
+                Scholarship Award
+            </h1>
+            <p class="font-serif-classic italic text-lg text-[#7c5f20] mb-8">This official record hereby verifies that</p>
+
+            <!-- Student Name -->
+            <div class="my-4 border-b-2 border-[#cbb070] pb-2 max-w-lg mx-auto">
+                <h2 class="font-serif-classic text-3xl sm:text-4xl font-bold text-[#2c2008]" 
+                    th:text="${application.studentName != null ? application.studentName : 'Student Name'}">
+                    Alex Morgan
+                </h2>
+            </div>
+            <p class="text-xs font-semibold text-[#8a6414] tracking-wide mb-6" th:text="${application.studentEmail}">alex.morgan@email.com</p>
+
+            <!-- Program Statement -->
+            <p class="font-serif-classic text-base sm:text-lg leading-relaxed text-[#4a3916] max-w-2xl mx-auto my-6">
+                has successfully qualified for the <strong class="font-bold text-[#2c2008]" th:text="${application.scholarshipName != null ? application.scholarshipName : 'Scholarship Program'}">STEM Excellence Grant</strong> 
+                and is granted formal financial aid support for the academic period.
+            </p>
+
+            <!-- Application Reason / Statement Box -->
+            <div class="bg-[#f5eccc]/60 border border-[#e3d3a3] rounded-lg p-4 max-w-xl mx-auto my-6 text-left">
+                <p class="text-[11px] font-bold uppercase tracking-wider text-[#8a6414] mb-1">Submitted Statement:</p>
+                <p class="text-xs italic text-[#4a3916] leading-relaxed" th:text="${application.reason != null ? application.reason : 'No statement provided.'}">
+                    "Applying due to financial constraints while maintaining high academic marks in full-stack coursework."
+                </p>
+            </div>
+
+            <!-- Award Summary Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-lg mx-auto my-8 pt-4 border-t border-[#dfc380]/60 text-xs">
+                <div>
+                    <span class="block text-[10px] font-bold uppercase tracking-wider text-[#8a6414]">Application ID</span>
+                    <strong class="text-sm font-bold text-[#2c2008]" th:text="${'#APP-' + application.applicationId}">#APP-101</strong>
+                </div>
+                <div>
+                    <span class="block text-[10px] font-bold uppercase tracking-wider text-[#8a6414]">Status</span>
+                    <span class="inline-block mt-0.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase bg-[#e9dca3] text-[#5a4313] border border-[#b8860b]"
+                          th:text="${application.status != null ? application.status : 'PENDING'}">PENDING</span>
+                </div>
+                <div class="col-span-2 sm:col-span-1">
+                    <span class="block text-[10px] font-bold uppercase tracking-wider text-[#8a6414]">Approved Aid</span>
+                    <strong class="text-sm font-bold text-[#1f5e2b]" 
+                            th:text="${application.approvedAmount != null ? '$' + #numbers.formatDecimal(application.approvedAmount, 1, 'COMMA', 2, 'POINT') : 'Pending Review'}">
+                        $1,500.00
+                    </strong>
+                </div>
+            </div>
+
+            <!-- Reviewer Notes (If present) -->
+            <div th:if="${application.reviewNotes != null and !#strings.isEmpty(application.reviewNotes)}" 
+                 class="bg-[#f5eccc]/60 border border-[#e3d3a3] rounded-lg p-4 max-w-xl mx-auto my-4 text-left">
+                <p class="text-[11px] font-bold uppercase tracking-wider text-[#8a6414] mb-1">Reviewer Feedback:</p>
+                <p class="text-xs text-[#4a3916]" th:text="${application.reviewNotes}">Approved based on high performance criteria.</p>
+            </div>
+
+            <!-- Signatures Section -->
+            <div class="grid grid-cols-2 gap-8 mt-12 pt-6 border-t border-[#cbb070]">
+                <div class="text-center">
+                    <div class="h-10 flex items-end justify-center font-serif-classic italic text-lg text-[#5a4313]">Sarah Jenkins</div>
+                    <div class="border-t border-[#9a721d] w-36 mx-auto mt-1"></div>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-[#8a6414] mt-1">Authorized Administrator</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="h-10 flex items-end justify-center font-serif-classic italic text-lg text-[#5a4313]">EduPulse Board</div>
+                    <div class="border-t border-[#9a721d] w-36 mx-auto mt-1"></div>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-[#8a6414] mt-1">Academic Review Board</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
