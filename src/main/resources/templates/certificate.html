@@ -266,12 +266,7 @@
                     <strong>Reason for Revocation:</strong> <span th:text="${cert['revoked_reason']}">Administrative cancellation details.</span>
                 </div>
 
-                <!-- 📄 Download Attached Digital PDF Copy Action Hook Link Button -->
-                <div th:if="${cert['status'].toString() == 'ISSUED' and cert['file_path'] != null}" class="mt-4 pt-2">
-                    <a th:href="${cert['file_path']}" target="_blank" class="btn btn-outline-primary w-100 py-2.5 fw-bold d-inline-flex align-items-center justify-content-center gap-2 rounded-3" style="border-radius: 10px !important;">
-                        <i class="fa-solid fa-file-arrow-down fs-5"></i> View / Download Digital Certificate Document
-                    </a>
-                </div>
+              
             </div>
         </div>
 
