@@ -46,19 +46,38 @@ public class DashboardService {
         return map;
     }
 
-    // 3. Payments Waiting for Verification Table
+//    // 3. Payments Waiting for Verification Table
+//    public List<Map<String, Object>> getPendingPayments() {
+//        String sql = "SELECT p.payment_id, u.full_name AS student_name, u.phone AS student_phone, " +
+//                     "u.email AS student_email, c.title AS course_name, b.batch_code AS batch_name, " +
+//                     "p.amount, p.transaction_no, p.payment_date, p.proof_image, p.status " +
+//                     "FROM payments p " +
+//                     "JOIN enrollments e ON p.enrollment_id = e.enrollment_id " +
+//                     "JOIN users u ON e.user_id = u.user_id " +
+//                     "JOIN batches b ON e.batch_id = b.batch_id " +
+//                     "LEFT JOIN courses c ON b.course_id = c.course_id " +
+//                     "WHERE p.status = 'PENDING' ORDER BY p.payment_date DESC LIMIT 5";
+//        return jdbcTemplate.queryForList(sql);
+//    }
+    
+ // 3. Payments Waiting for Verification Table
     public List<Map<String, Object>> getPendingPayments() {
-        String sql = "SELECT p.payment_id, u.full_name AS student_name, u.phone AS student_phone, " +
-                     "u.email AS student_email, c.title AS course_name, b.batch_code AS batch_name, " +
-                     "p.amount, p.transaction_no, p.payment_date, p.proof_image, p.status " +
-                     "FROM payments p " +
-                     "JOIN enrollments e ON p.enrollment_id = e.enrollment_id " +
-                     "JOIN users u ON e.user_id = u.user_id " +
-                     "JOIN batches b ON e.batch_id = b.batch_id " +
-                     "LEFT JOIN courses c ON b.course_id = c.course_id " +
-                     "WHERE p.status = 'PENDING' ORDER BY p.payment_date DESC LIMIT 5";
-        return jdbcTemplate.queryForList(sql);
-    }
+    
+
+            String sql = "SELECT p.payment_id, u.full_name AS student_name, u.phone AS student_phone, " +
+                         "u.email AS student_email, c.title AS course_name, b.batch_code AS batch_name, " +
+                         "p.amount, p.transaction_no, p.payment_date, p.proof_image, p.status, " +
+                         "COALESCE(e.payment_type, 'FULL') AS payment_for, " +
+                         "COALESCE(pm.name, 'Bank Transfer') AS payment_method " +
+                         "FROM payments p " +
+                         "JOIN enrollments e ON p.enrollment_id = e.enrollment_id " +
+                         "JOIN users u ON e.user_id = u.user_id " +
+                         "JOIN batches b ON e.batch_id = b.batch_id " +
+                         "LEFT JOIN courses c ON b.course_id = c.course_id " +
+                         "LEFT JOIN payment_methods pm ON p.payment_method_id = pm.payment_method_id " +
+                         "WHERE p.status = 'PENDING' ORDER BY p.payment_date DESC LIMIT 5";
+            return jdbcTemplate.queryForList(sql);
+        }
     // 4. Seats in Open & Upcoming Batches
     public List<Map<String, Object>> getBatchSeatProgress() {
         String sql = "SELECT b.batch_id, b.batch_code, b.title AS course_name, b.start_date, b.max_seats, " +

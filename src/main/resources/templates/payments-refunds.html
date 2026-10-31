@@ -107,25 +107,24 @@
                             </div>
                         </form>
 
-                        <!-- TABLE -->
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider bg-slate-50/70 dark:bg-slate-800/70">
-                                        <th class="py-4 px-6 font-semibold">No</th>
-                                        <th class="py-4 px-6 font-semibold">Student</th>
-                                        <th class="py-4 px-6 font-semibold">Course / Batch</th>
-                                        <th class="py-4 px-6 font-semibold">Amount</th>
-                                        <th class="py-4 px-6 font-semibold">Transaction No</th>
-                                        <th class="py-4 px-6 font-semibold">Payment Date</th>
-                                        <th class="py-4 px-6 font-semibold">Proof</th>
-                                        <th class="py-4 px-6 font-semibold">Status</th>
-                                        <th class="py-4 px-6 font-semibold text-right">Action</th>
+                        <!-- TABLE CONTAINER WITH SCROLL -->
+                        <div class="overflow-x-auto max-h-[550px] overflow-y-auto">
+                            <table class="w-full text-left border-collapse relative">
+                                <thead class="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800">
+                                    <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
+                                        <th class="py-4 px-6 font-semibold bg-slate-50 dark:bg-slate-800">No</th>
+                                        <th class="py-4 px-6 font-semibold bg-slate-50 dark:bg-slate-800">Student</th>
+                                        <th class="py-4 px-6 font-semibold bg-slate-50 dark:bg-slate-800">Course / Batch</th>
+                                        <th class="py-4 px-6 font-semibold bg-slate-50 dark:bg-slate-800">Amount</th>
+                                        <th class="py-4 px-6 font-semibold bg-slate-50 dark:bg-slate-800">Transaction No</th>
+                                        <th class="py-4 px-6 font-semibold bg-slate-50 dark:bg-slate-800">Payment Date</th>
+                                        <th class="py-4 px-6 font-semibold bg-slate-50 dark:bg-slate-800">Proof</th>
+                                        <th class="py-4 px-6 font-semibold bg-slate-50 dark:bg-slate-800">Status</th>
+                                        <th class="py-4 px-6 font-semibold text-right bg-slate-50 dark:bg-slate-800">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 dark:divide-slate-700/60 text-sm text-slate-600 dark:text-slate-300">
                                     <tr th:each="p, i : ${payments}" th:if="${payments != null and !payments.isEmpty()}" class="hover:bg-slate-50/80 dark:hover:bg-slate-700/30 transition">
-                                        <!-- whitespace-nowrap ထည့်ထားသဖြင့် အောက်သို့မဆင်းတော့ပါ -->
                                         <td class="py-4 px-6 font-bold text-slate-900 dark:text-white whitespace-nowrap" th:text="${'#PAY-' + i.count}">#1</td>
                                         <td class="py-4 px-6">
                                             <div class="font-bold text-slate-900 dark:text-white" th:text="${p.student_name}">Student Name</div>
@@ -207,30 +206,28 @@
                             </div>
                         </form>
 
-                        <!-- TABLE -->
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider bg-slate-50/70 dark:bg-slate-800/70">
-                                        <th class="py-4 px-6 font-semibold">Refund ID</th>
-                                        <th class="py-4 px-6 font-semibold">Student</th>
-                                        <th class="py-4 px-6 font-semibold">Refund Amount</th>
-                                        <th class="py-4 px-6 font-semibold">Reason</th>
-                                        <th class="py-4 px-6 font-semibold">Request Date</th>
-                                        <th class="py-4 px-6 font-semibold">Status</th>
-                                        <th class="py-4 px-6 font-semibold text-right">Action</th>
+                        <!-- TABLE CONTAINER WITH SCROLL -->
+                        <div class="overflow-x-auto max-h-[550px] overflow-y-auto">
+                            <table class="w-full text-left border-collapse relative">
+                                <thead class="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800">
+                                    <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
+                                        <th class="py-4 px-6 font-semibold bg-slate-50 dark:bg-slate-800">Refund ID</th>
+                                        <th class="py-4 px-6 font-semibold bg-slate-50 dark:bg-slate-800">Student</th>
+                                        <th class="py-4 px-6 font-semibold bg-slate-50 dark:bg-slate-800">Refund Amount</th>
+                                        <th class="py-4 px-6 font-semibold bg-slate-50 dark:bg-slate-800">Reason</th>
+                                        <th class="py-4 px-6 font-semibold bg-slate-50 dark:bg-slate-800">Request Date</th>
+                                        <th class="py-4 px-6 font-semibold bg-slate-50 dark:bg-slate-800">Status</th>
+                                        <th class="py-4 px-6 font-semibold text-right bg-slate-50 dark:bg-slate-800">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 dark:divide-slate-700/60 text-sm text-slate-600 dark:text-slate-300">
                                     <tr th:each="r, i : ${refunds}" th:if="${refunds != null and !refunds.isEmpty()}" class="hover:bg-slate-50/80 dark:hover:bg-slate-700/30 transition">
-                                        <!-- whitespace-nowrap ထည့်ထားသဖြင့် Refund ID လည်း အောက်သို့မဆင်းပါ -->
                                         <td class="py-4 px-6 font-bold text-slate-900 dark:text-white whitespace-nowrap" th:text="${'#REF-' + i.count}">#1</td>
                                         <td class="py-4 px-6 font-bold text-slate-900 dark:text-white" th:text="${r.student_name}">Student Name</td>
                                         <td class="py-4 px-6 font-bold text-amber-600" th:text="${r.amount != null ? #numbers.formatDecimal(r.amount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
                                         <td class="py-4 px-6 text-slate-500 dark:text-slate-400" th:text="${r.reason}">Reason text</td>
                                         <td class="py-4 px-6 text-xs text-slate-500 dark:text-slate-400" th:text="${r.created_at != null ? r.created_at : '-'}">-</td>
                                         <td class="py-4 px-6">
-                                            <!-- PENDING အပါအဝင် အားလုံးအတွက် မှန်ကန်စွာ ပေါ်စေရန် #strings.equalsIgnoreCase သုံးထားသည် -->
                                             <span th:text="${r.status}"
                                                   class="px-3 py-1 text-xs font-bold rounded-full border inline-block"
                                                   th:classappend="${#strings.equalsIgnoreCase(r.status, 'PENDING') ? 'bg-amber-50 text-amber-600 border-amber-200' : 
