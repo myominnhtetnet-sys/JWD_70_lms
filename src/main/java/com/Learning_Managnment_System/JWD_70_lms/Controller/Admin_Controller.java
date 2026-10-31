@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.Admin_Repository;
+import com.Learning_Managnment_System.JWD_70_lms.Service.DashboardService;
 import com.Learning_Managnment_System.JWD_70_lms.Service.UserService;
 import com.Learning_Managnment_System.JWD_70_lms.model.AdminUserBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
@@ -90,16 +91,30 @@ public class Admin_Controller {
         return "redirect:/admin/dashboard";
     }
 
-    @GetMapping("/dashboard")
-    public String adminDashboard(HttpSession session, Model model) {
-        if (isNotAdmin(session)) {
-            return "redirect:/login";
-        }
-        List<AdminUserBean> users = adminRepository.getAllUsers();
-        model.addAttribute("users", users);
-        return "dashboard";
-    }
+//    @GetMapping("/dashboard")
+//    public String adminDashboard(HttpSession session, Model model) {
+//        if (isNotAdmin(session)) {
+//            return "redirect:/login";
+//        }
+//        List<AdminUserBean> users = adminRepository.getAllUsers();
+//        model.addAttribute("users", users);
+//        return "dashboard";
+//    }
 
+
+@Autowired
+private DashboardService dashboardService;
+@GetMapping("/dashboard")
+public String showDashboard(Model model) {
+    model.addAttribute("activePage", "dashboard");
+    model.addAttribute("banner", dashboardService.getBannerSummary());
+    model.addAttribute("stats", dashboardService.getStatCardsSummary());
+    model.addAttribute("pendingPayments", dashboardService.getPendingPayments());
+    model.addAttribute("batches", dashboardService.getBatchSeatProgress());
+    model.addAttribute("overdues", dashboardService.getOverdueInstallmentsList());
+    return "dashboard";
+}
+    
     @GetMapping("/users")
     public String listUsers(HttpSession session, Model model) {
         if (isNotAdmin(session)) {
