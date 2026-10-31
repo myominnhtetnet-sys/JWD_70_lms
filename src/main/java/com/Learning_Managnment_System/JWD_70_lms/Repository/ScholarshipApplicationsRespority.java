@@ -18,19 +18,38 @@ public class ScholarshipApplicationsRespority {
     private JdbcTemplate jdbcTemplate;
 
     /**
-     * Fetch all scholarship applications safely from the main table.
+     * Fetch all scholarship applications with joined student and scholarship program details.
      */
     public List<ScholarshipApplicationsBean> getAllApplications() {
-        String sql = "SELECT sa.* FROM scholarship_applications sa ORDER BY sa.application_id DESC";
+        String sql = "SELECT sa.*, " +
+                     "u.full_name AS student_name, u.email AS student_email, " + 
+                     "p.name AS scholarship_name " + 
+                     "FROM scholarship_applications sa " +
+                     "LEFT JOIN users u ON sa.user_id = u.user_id " +
+                     "LEFT JOIN scholarships p ON sa.scholarship_id = p.scholarship_id " +
+                     "ORDER BY sa.application_id DESC";
         
         return jdbcTemplate.query(sql, new ScholarshipApplicationsMapper());
     }
 
     /**
-     * Fetch a single scholarship application by its ID.
+     * Convenience alias method for controllers/services expecting findAll().
+     */
+    public List<ScholarshipApplicationsBean> findAll() {
+        return getAllApplications();
+    }
+
+    /**
+     * Fetch a single scholarship application by its ID with joined student and program details.
      */
     public ScholarshipApplicationsBean getApplicationById(int applicationId) {
-        String sql = "SELECT sa.* FROM scholarship_applications sa WHERE sa.application_id = ?";
+        String sql = "SELECT sa.*, " +
+                     "u.full_name AS student_name, u.email AS student_email, " +
+                     "p.name AS scholarship_name " + 
+                     "FROM scholarship_applications sa " +
+                     "LEFT JOIN users u ON sa.user_id = u.user_id " +
+                     "LEFT JOIN scholarships p ON sa.scholarship_id = p.scholarship_id " +
+                     "WHERE sa.application_id = ?";
         
         try {
             return jdbcTemplate.queryForObject(sql, new ScholarshipApplicationsMapper(), applicationId);
