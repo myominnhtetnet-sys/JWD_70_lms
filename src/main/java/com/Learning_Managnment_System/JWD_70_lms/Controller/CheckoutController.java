@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate; // 🟢 Added for the inline dynamic enrollment check
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,9 @@ public class CheckoutController {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate; // 🟢 Injected to handle dynamic enrollment listings natively
+
     @GetMapping("/student/checkout")
     public String showCheckoutPage(
             @RequestParam(value = "courseId", required = false, defaultValue = "1") int courseId,
@@ -46,18 +50,32 @@ public class CheckoutController {
         
         int userId = 0;
         List<PaymentBean> paymentHistory = new ArrayList<>();
+        List<Map<String, Object>> studentEnrollments = new ArrayList<>(); // 🟢 Instantiated enrollment holder
 
         if (student != null && student.get("user_id") != null) {
             try {
                 userId = Integer.parseInt(student.get("user_id").toString());
                 
                 // 🟢 CRUCIAL FIX: Bind the real database ID to 'studentId' into HTTP Session RAM.
-                // This permanently prevents the "Student session expired" validation reject crash on form submit!
                 session.setAttribute("studentId", userId);
                 session.setAttribute("userId", userId); // Sync map variant for backup safety
                 
                 // 🟢 POPULATE HISTORY LOGS: Pulls dynamic payment maps natively to populate the view history popup
                 paymentHistory = paymentRepository.getPaymentsByUserId(userId);
+
+                // 🟢 NEW: Pull all active courses or batches the student has registered for
+                String enrollmentListSql = """
+                    SELECT b.batch_id, b.title as course_title, b.batch_code 
+                    FROM enrollments e 
+                    JOIN batches b ON e.batch_id = b.batch_id 
+                    WHERE e.user_id = ? AND e.status = 'ACTIVE'
+                    """;
+                studentEnrollments = jdbcTemplate.queryForList(enrollmentListSql, userId);
+
+                // Fallback: If page requested without parameters, use the first assigned batch automatically
+                if (session.getAttribute("selectedCourseId") == null && !studentEnrollments.isEmpty() && courseId == 1) {
+                    courseId = Integer.parseInt(studentEnrollments.get(0).get("batch_id").toString());
+                }
             } catch (Exception e) {
                 System.err.println("CHECKOUT CONTROLLER NOTICE -> Handled silent binding parsing mismatch check: " + e.getMessage());
             }
@@ -82,6 +100,7 @@ public class CheckoutController {
         model.addAttribute("installments", installments);
         model.addAttribute("paymentMethods", paymentMethods);
         model.addAttribute("paymentHistory", paymentHistory); // Dynamic history overlay target array hook
+        model.addAttribute("studentEnrollments", studentEnrollments); // 🟢 Injected dynamic dropdown options map
         
         model.addAttribute(
                 "fullName",
