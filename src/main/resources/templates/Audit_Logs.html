@@ -54,7 +54,7 @@
                                 <th class="p-3">Action</th>
                                 <th class="p-3">Table Name</th>
                                 <th class="p-3">Record ID</th>
-                                <th class="p-3">Changes (Old / New)</th>
+                                <th class="p-3">Changes Summary</th>
                                 <th class="p-3">IP Address</th>
                                 <th class="p-3 pr-4 text-right rounded-r-xl">Date & Time</th>
                             </tr>
@@ -67,6 +67,67 @@
 
             </div>
         </main>
+
+    </div>
+</div>
+
+<!-- 🌟 View Details Modal (JSON Changes ကို လှပစွာပြသရန်) -->
+<div id="auditDetailModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-[#181d28] border border-slate-200 dark:border-[#293142] rounded-2xl w-full max-w-2xl p-6 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+        
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-[#293142]">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-file-code"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-800 dark:text-white">Audit Log Details</h3>
+                    <p class="text-[11px] text-slate-400" id="modal-sub-info">Table & Record Info</p>
+                </div>
+            </div>
+            <button onclick="closeAuditModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#202634] transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body (JSON formatted content) -->
+        <div class="py-4 overflow-y-auto space-y-4 flex-1">
+            <div class="grid grid-cols-2 gap-4 bg-slate-50 dark:bg-[#202634]/50 p-3.5 rounded-xl border border-slate-200/60 dark:border-[#293142]">
+                <div>
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">User</span>
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-200" id="modal-user">-</span>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Action & Table</span>
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-200" id="modal-action-table">-</span>
+                </div>
+            </div>
+
+            <!-- Old vs New Comparison Area -->
+            <div class="space-y-3">
+                <div id="old-value-container" class="hidden">
+                    <h4 class="text-xs font-bold text-rose-500 mb-1.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-minus"></i> Old Values
+                    </h4>
+                    <div id="modal-old-values" class="bg-slate-900 text-rose-300 font-mono text-xs p-3.5 rounded-xl overflow-x-auto border border-slate-800"></div>
+                </div>
+
+                <div id="new-value-container" class="hidden">
+                    <h4 class="text-xs font-bold text-emerald-500 mb-1.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-plus"></i> New Values
+                    </h4>
+                    <div id="modal-new-values" class="bg-slate-900 text-emerald-300 font-mono text-xs p-3.5 rounded-xl overflow-x-auto border border-slate-800"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="pt-4 border-t border-slate-100 dark:border-[#293142] flex justify-end">
+            <button onclick="closeAuditModal()" class="px-4 py-2 text-xs font-semibold bg-slate-100 dark:bg-[#202634] text-slate-600 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-[#293142]/85 transition">
+                Close
+            </button>
+        </div>
 
     </div>
 </div>
@@ -97,25 +158,37 @@ async function loadAuditLogsTable() {
             return;
         }
 
-        tbody.innerHTML = data.map(item => `
-            <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors duration-150 border-b border-slate-100 dark:border-[#293142]/40">
-                <td class="p-3.5 pl-4 font-normal text-slate-600 dark:text-slate-300">
-                    ${escapeHtml(item.userName || 'System')}
-                </td>
-                <td class="p-3.5">
-                    <span class="px-2.5 py-1 rounded-md text-[10px] font-semibold tracking-wide ${getActionBadgeClass(item.actionType)}">
-                        ${escapeHtml(item.actionType)}
-                    </span>
-                </td>
-                <td class="p-3.5 font-mono text-slate-500 dark:text-slate-400">${escapeHtml(item.tableName)}</td>
-                <td class="p-3.5 font-mono text-slate-500 dark:text-slate-400">${escapeHtml(item.recordId || '-')}</td>
-                <td class="p-3.5 font-mono text-slate-500 dark:text-slate-400">
-                    ${formatChanges(item.oldValues, item.newValues)}
-                </td>
-                <td class="p-3.5 font-mono text-xs text-slate-400">${escapeHtml(item.ipAddress || '-')}</td>
-                <td class="p-3.5 pr-4 text-right text-slate-400">${formatDateTime(item.createdAt)}</td>
-            </tr>
-        `).join('');
+        tbody.innerHTML = data.map(item => {
+            // Safe JSON strings for passing into open modal function
+            const safeOld = item.oldValues ? encodeURIComponent(item.oldValues) : '';
+            const safeNew = item.newValues ? encodeURIComponent(item.newValues) : '';
+            const userName = escapeHtml(item.userName || 'System');
+            const tableName = escapeHtml(item.tableName);
+            const actionType = escapeHtml(item.actionType);
+
+            return `
+                <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors duration-150 border-b border-slate-100 dark:border-[#293142]/40">
+                    <td class="p-3.5 pl-4 font-normal text-slate-600 dark:text-slate-300">
+                        ${userName}
+                    </td>
+                    <td class="p-3.5">
+                        <span class="px-2.5 py-1 rounded-md text-[10px] font-semibold tracking-wide ${getActionBadgeClass(item.actionType)}">
+                            ${actionType}
+                        </span>
+                    </td>
+                    <td class="p-3.5 font-mono text-slate-500 dark:text-slate-400">${tableName}</td>
+                    <td class="p-3.5 font-mono text-slate-500 dark:text-slate-400">${escapeHtml(item.recordId || '-')}</td>
+                    <td class="p-3.5">
+                        <button onclick="openAuditModal('${userName}', '${actionType}', '${tableName}', '${item.recordId || '-'}', '${safeOld}', '${safeNew}')"
+                            class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20 transition flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-eye text-[10px]"></i> View Details
+                        </button>
+                    </td>
+                    <td class="p-3.5 font-mono text-xs text-slate-400">${escapeHtml(item.ipAddress || '-')}</td>
+                    <td class="p-3.5 pr-4 text-right text-slate-400">${formatDateTime(item.createdAt)}</td>
+                </tr>
+            `;
+        }).join('');
 
     } catch (error) {
         console.error('Error fetching audit logs:', error);
@@ -123,22 +196,63 @@ async function loadAuditLogsTable() {
     }
 }
 
-// 🟢 Old / New Values များကို လှပသေသပ်စွာ ပုံဖော်ပေးသည့် Function
-function formatChanges(oldVal, newVal) {
-    const hasOld = oldVal && oldVal !== '{}' && oldVal.trim() !== '';
-    const hasNew = newVal && newVal !== '{}' && newVal.trim() !== '';
+// 🌟 View Details Modal ဖွင့်ရန်နှင့် JSON Formatting ပြုလုပ်ရန်
+function openAuditModal(userName, actionType, tableName, recordId, safeOld, safeNew) {
+    const modal = document.getElementById('auditDetailModal');
+    const modalUser = document.getElementById('modal-user');
+    const modalActionTable = document.getElementById('modal-action-table');
+    const modalSubInfo = document.getElementById('modal-sub-info');
+    
+    const oldContainer = document.getElementById('old-value-container');
+    const newContainer = document.getElementById('new-value-container');
+    const modalOldValues = document.getElementById('modal-old-values');
+    const modalNewValues = document.getElementById('modal-new-values');
 
-    if (hasOld && hasNew) {
-        return `<div class="text-[11px] space-y-0.5">
-                    <div class="text-rose-400"><span class="font-semibold">Old:</span> ${escapeHtml(oldVal)}</div>
-                    <div class="text-emerald-400"><span class="font-semibold">New:</span> ${escapeHtml(newVal)}</div>
-                </div>`;
-    } else if (hasNew) {
-        return `<div class="text-[11px] text-emerald-400"><span class="font-semibold">New:</span> ${escapeHtml(newVal)}</div>`;
-    } else if (hasOld) {
-        return `<div class="text-[11px] text-rose-400"><span class="font-semibold">Old:</span> ${escapeHtml(oldVal)}</div>`;
+    modalUser.textContent = userName;
+    modalActionTable.textContent = `${actionType} on ${tableName}`;
+    modalSubInfo.textContent = `Record ID: ${recordId}`;
+
+    // Decode values
+    const oldValStr = safeOld ? decodeURIComponent(safeOld) : '';
+    const newValStr = safeNew ? decodeURIComponent(safeNew) : '';
+
+    // Format Old Values JSON
+    if (oldValStr && oldValStr !== '{}' && oldValStr.trim() !== '') {
+        oldContainer.classList.remove('hidden');
+        modalOldValues.innerHTML = formatJsonToHtml(oldValStr);
+    } else {
+        oldContainer.classList.add('hidden');
     }
-    return '<span class="text-slate-400">-</span>';
+
+    // Format New Values JSON
+    if (newValStr && newValStr !== '{}' && newValStr.trim() !== '') {
+        newContainer.classList.remove('hidden');
+        modalNewValues.innerHTML = formatJsonToHtml(newValStr);
+    } else {
+        newContainer.classList.add('hidden');
+    }
+
+    modal.classList.remove('hidden');
+}
+
+function closeAuditModal() {
+    document.getElementById('auditDetailModal').classList.add('hidden');
+}
+
+// 🌟 JSON String ကို Prettify လုပ်ပေးပြီး Key-Value အလှပြင်ပေးသည့် Helper
+function formatJsonToHtml(jsonStr) {
+    try {
+        const jsonObj = JSON.parse(jsonStr);
+        let html = '<ul class="space-y-1">';
+        for (const [key, value] of Object.entries(jsonObj)) {
+            html += `<li><span class="text-slate-400 font-semibold">"${escapeHtml(key)}":</span> <span class="text-amber-300">${escapeHtml(JSON.stringify(value))}</span></li>`;
+        }
+        html += '</ul>';
+        return html;
+    } catch (e) {
+        // JSON မဟုတ်ဘဲ Plain text ဖြစ်နေပါက
+        return `<pre class="whitespace-pre-wrap">${escapeHtml(jsonStr)}</pre>`;
+    }
 }
 
 function filterAuditLogs() {
