@@ -122,6 +122,10 @@
                     <h2 class="text-lg font-bold text-slate-900 leading-tight">My Enrolled Programs</h2>
                     <p class="text-xs text-slate-400 font-medium">Track your progress modules and continue your customized learning path.</p>
                 </div>
+                
+                 <a th:href="@{/courses/show}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                                    <i class="fa-solid fa-book-open text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Browse Courses</span>
+                                </a>
 
                 <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
                     <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
@@ -185,6 +189,7 @@
             </main>
         </div>
     </div>
+
 
 </body>
 </html>
