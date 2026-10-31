@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - Payment Method</title>
+    <!-- Combined CSS UI Framework Modules -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cloudflare.com">
     <style>
+        body {
+            background-color: #f8fafc !important;
+            color: #1e293b;
+        }
         .payment-card {
             max-width: 550px;
             margin: 40px auto;
@@ -25,19 +32,57 @@
             border-color: #0d6efd;
             background-color: #f8f9fa;
         }
+        /* Custom Native Modal Overlay Layers Styles */
+        .history-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1050;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .history-modal-content {
+            background: #ffffff;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body class="bg-light">
 
 <div class="container">
     <div class="payment-card">
-        <h4 class="fw-bold mb-1">Select Payment Method</h4>
-        <p class="text-muted small">ကျေးဇူးပြု၍ မိမိပေးချေလိုသော App ကို ရွေးချယ်၍ ငွေလွှဲပေးပါရန်။</p>
+        
+        <!-- Header Text Block & History Trigger button shortcut link -->
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+                <h4 class="fw-bold m-0">Select Payment Method</h4>
+                <p class="text-muted small m-0 mt-1">ကျေးဇူးပြု၍ မိမိပေးချေလိုသော App ကို ရွေးချယ်၍ Ngwe လွှဲပေးပါရန်။</p>
+            </div>
+            <!-- 🟢 Clickable View History Text Shortcut Anchor Link Trigger -->
+            <button type="button" onclick="togglePaymentHistoryModal(true)" class="btn btn-link btn-sm p-0 fw-bold text-decoration-none text-primary focus-none">
+                <i class="fa-solid fa-clock-rotate-left me-1"></i> View History
+            </button>
+        </div>
 
         <!-- Error Alert -->
         <div th:if="${error}" class="alert alert-danger py-2 small mb-3" th:text="${error}"></div>
 
         <form th:action="@{/student/process-payment}" method="post">
+            <!-- Explicit Spring Security CSRF Token Payload Injection -->
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             
             <!-- Payment Methods List -->
             <div class="mb-4">
@@ -56,14 +101,13 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Total Amount -->
+            <!-- Total Amount Input Field Area -->
             <div class="mb-3">
                 <label class="form-label fw-semibold">Total Amount (MMK)</label>
                 <input type="number" name="amount" class="form-control" placeholder="75000" required>
             </div>
 
-            <!-- Payment Purpose -->
+            <!-- Payment Purpose Selection Dropdown -->
             <div class="mb-3">
                 <label class="form-label fw-semibold">Payment Purpose</label>
                 <select name="paymentType" class="form-select">
@@ -74,17 +118,103 @@
                 </select>
             </div>
 
-            <!-- Note / Remark -->
+            <!-- Note / Remark Multiline Textarea -->
             <div class="mb-3">
                 <label class="form-label fw-semibold">Note / Remark <span class="text-muted fw-normal">(Optional)</span></label>
                 <textarea name="note" class="form-control" rows="2" placeholder="အကြောင်းအရာ သို့မဟုတ် မှတ်ချက်ရေးပါ..."></textarea>
             </div>
 
-            <!-- Submit Button -->
+            <!-- Submit Button Trigger -->
             <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Confirm & Submit Payment</button>
         </form>
     </div>
 </div>
+            <!-- PAYMENT HISTORY OVERLAY COMPONENT (HIDDEN BY DEFAULT) -->
+<div id="payment-history-modal" class="d-none history-modal-overlay">
+    <div class="history-modal-content">
+        
+        <!-- Modal Dialog Header -->
+        <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
+            <div>
+                <h5 class="fw-bold m-0" style="font-size: 16px;">Payment Submission History</h5>
+                <p class="text-muted m-0 mt-1" style="font-size: 12px;">Track your submitted tuition receipts and accounting verification states.</p>
+            </div>
+            <button type="button" onclick="togglePaymentHistoryModal(false)" class="border-0 bg-transparent text-muted fs-3 leading-none p-0 cursor-pointer focus:outline-none">&times;</button>
+        </div>
 
+        <!-- Modal Body (Scrollable Table Area) -->
+<div class="p-4 overflow-y-auto" style="flex: 1;">
+    <div th:if="${#lists.isEmpty(paymentHistory)}" class="text-center py-5 text-muted bg-light rounded-3 border border-dashed" style="font-size: 13px;">
+        No historical payment entries found for this student account.
+    </div>
+
+    <div th:unless="${#lists.isEmpty(paymentHistory)}" class="table-responsive">
+        <table class="table table-sm table-hover align-middle m-0" style="font-size: 13px;">
+            <thead>
+                <tr class="text-muted fw-bold text-uppercase border-bottom" style="font-size: 11px;">
+                    <th class="pb-2">Method</th>
+                    <th class="pb-2">Purpose</th>
+                    <th class="pb-2">Transaction ID</th>
+                    <th class="pb-2 text-end">Amount</th>
+                    <th class="pb-2 text-end">Status</th>
+                </tr>
+            </thead>
+            <tbody class="text-secondary border-0">
+                <tr th:each="payment : ${paymentHistory}">
+                    <td class="py-2.5 fw-bold text-dark" th:text="${payment.paymentMethodName != null ? payment.paymentMethodName : 'Wallet'}">KPay</td>
+                    <td class="py-2.5" th:text="${payment.paymentType}">Full Course Fee</td>
+                    <td class="py-2.5 font-monospace text-primary" th:text="${payment.transactionNo}">TXN-XXXXXXXX</td>
+                    <td class="py-2.5 text-end font-semibold text-dark" th:text="${#numbers.formatDecimal(payment.amount, 1, 'COMMA', 0, 'POINT') + ' MMK'}">75,000 MMK</td>
+                    <td class="py-2.5 text-end">
+                        <!-- 🟢 FIXED Badge style formatting looks up 'SUCCESS' and 'PENDING' enums correctly -->
+                        <span th:text="${payment.status}" 
+                              th:classappend="${payment.status == 'SUCCESS'} ? 'badge bg-success-subtle text-success-emphasis rounded-pill' : (${payment.status == 'PENDING'} ? 'badge bg-warning-subtle text-warning-emphasis rounded-pill' : 'badge bg-danger-subtle text-danger-emphasis rounded-pill')" style="font-size: 10px; font-weight: 700;">
+                            PENDING
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+        <!-- Modal Actions Bar Footer -->
+        <div class="p-3 border-top d-flex justify-content-end bg-light rounded-bottom-4">
+            <button type="button" onclick="togglePaymentHistoryModal(false)" class="btn btn-secondary btn-sm px-4 fw-bold" style="border-radius: 8px;">
+                Close Logs
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- CLIENT SIDE POPUP INTERACTIVE ACTION SCRIPT MODULE -->
+<script th:inline="javascript">
+    /**
+     * Toggles the display classes of the structural history log pop-up panel.
+     * @param {boolean} show - Controls target DOM node class visibility list vectors.
+     */
+    function togglePaymentHistoryModal(show) {
+        const targetModalBox = document.getElementById("payment-history-modal");
+        if (!targetModalBox) return;
+        
+        if (show) {
+            targetModalBox.classList.remove("d-none");
+            document.body.style.overflow = "hidden"; // Locks main background content scroll layer
+        } else {
+            targetModalBox.classList.add("d-none");
+            document.body.style.overflow = "";        // Unlocks background workspace tracking bounds
+        }
+    }
+
+    // Listens to manual device Escape keystrokes to dismiss window layer natively
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape") {
+            togglePaymentHistoryModal(false);
+        }
+    });
+</script>
 </body>
 </html>
+            
