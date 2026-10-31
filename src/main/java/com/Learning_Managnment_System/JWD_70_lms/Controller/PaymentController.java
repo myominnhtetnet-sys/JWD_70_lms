@@ -1,4 +1,3 @@
-
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.math.BigDecimal;
@@ -7,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate; // 🟢 Added to query batch titles dynamically
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +25,9 @@ public class PaymentController {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate; // 🟢 Injected to resolve batch information text parameters
+
     @PostMapping("/student/process-payment")
     public String processPayment(
             @RequestParam(value = "paymentMethodId", defaultValue = "0")
@@ -36,6 +39,9 @@ public class PaymentController {
             @RequestParam(value = "paymentType",
                     defaultValue = "Full Course Fee")
             String paymentType,
+
+            @RequestParam("courseId")
+            int courseId, // 🟢 NEW: Captures the selected batch/course identifier request parameter
 
             @RequestParam(value = "note", required = false)
             String note,
@@ -66,7 +72,6 @@ public class PaymentController {
             return "redirect:/student/checkout";
         }
 
-        // Session ထဲက studentId မရှိရင် payment မလုပ်စေပါ
         if (studentIdObj == null) {
             redirectAttributes.addFlashAttribute(
                     "error",
@@ -87,8 +92,15 @@ public class PaymentController {
             return "redirect:/login";
         }
 
-        Integer enrollmentId =
-                paymentRepository.getEnrollmentIdByUserId(userId);
+        // 🟢 FIXED: Resolves the exact enrollment row matching this user ID and selected course/batch ID combination
+        Integer enrollmentId = null;
+        try {
+            String findEnrollmentSql = "SELECT enrollment_id FROM enrollments WHERE user_id = ? AND batch_id = ? LIMIT 1";
+            enrollmentId = jdbcTemplate.queryForObject(findEnrollmentSql, Integer.class, userId, courseId);
+        } catch (Exception e) {
+            // Fallback rule if specific lookup drops out
+            enrollmentId = paymentRepository.getEnrollmentIdByUserId(userId);
+        }
 
         if (enrollmentId == null) {
             redirectAttributes.addFlashAttribute(
@@ -114,21 +126,27 @@ public class PaymentController {
         payment.setPaymentType(paymentType);
         payment.setNote(note);
         payment.setProofImage(null);
-
-        // Payment တကယ်အတည်ပြုပြီးမှ SUCCESS သတ်မှတ်သင့်ပါတယ်
         payment.setStatus("PENDING");
 
         int result = paymentRepository.savePayment(payment);
 
         if (result > 0) {
+            // 🟢 NEW: Pulls the batch title text string out of the database to pass to the receipt
+            String batchName = "Enrolled Course";
+            try {
+                String batchTitleSql = "SELECT title FROM batches WHERE batch_id = ?";
+                batchName = jdbcTemplate.queryForObject(batchTitleSql, String.class, courseId);
+            } catch (Exception e) {
+                System.err.println("PAYMENT CONTROLLER NOTICE -> Handled batch text fallback.");
+            }
+
+            // Redirects to success view mapping with the encrypted batchName parameter attached
             return "redirect:/student/payment-success"
                     + "?amount=" + amount.toString()
                     + "&transactionNo=" + transactionNo
-                    + "&paymentType=" + URLEncoder.encode(
-                            paymentType, StandardCharsets.UTF_8)
-                    + "&note=" + URLEncoder.encode(
-                            note != null ? note : "",
-                            StandardCharsets.UTF_8);
+                    + "&batchName=" + URLEncoder.encode(batchName != null ? batchName : "Enrolled Course", StandardCharsets.UTF_8)
+                    + "&paymentType=" + URLEncoder.encode(paymentType, StandardCharsets.UTF_8)
+                    + "&note=" + URLEncoder.encode(note != null ? note : "", StandardCharsets.UTF_8);
         }
 
         redirectAttributes.addFlashAttribute(
@@ -147,6 +165,9 @@ public class PaymentController {
             @RequestParam(value = "transactionNo", required = false)
             String transactionNo,
 
+            @RequestParam(value = "batchName", required = false)
+            String batchName, // 🟢 NEW: Captures the redirected batch name value string parameter
+
             @RequestParam(value = "paymentType", required = false)
             String paymentType,
 
@@ -162,6 +183,7 @@ public class PaymentController {
 
         model.addAttribute("amount", amount);
         model.addAttribute("transactionNo", transactionNo);
+        model.addAttribute("batchName", batchName); // 🟢 Attached to view context map matrix
         model.addAttribute("paymentType", paymentType);
         model.addAttribute("note", note);
 

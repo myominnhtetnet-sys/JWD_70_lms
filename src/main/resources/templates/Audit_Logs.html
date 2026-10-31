@@ -45,7 +45,7 @@
                     </div>
                 </div>
 
-                <!-- Audit Logs Table -->
+                <!-- Audit Logs Table (User, Action, Table Name only + View Details) -->
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
                         <thead class="bg-slate-50/70 dark:bg-[#202634]/60 uppercase text-[10px] text-slate-400 font-semibold tracking-wider border-b border-slate-200/50 dark:border-[#293142]">
@@ -53,10 +53,7 @@
                                 <th class="p-3 pl-4 rounded-l-xl">User</th>
                                 <th class="p-3">Action</th>
                                 <th class="p-3">Table Name</th>
-                                <th class="p-3">Record ID</th>
-                                <th class="p-3">Changes Summary</th>
-                                <th class="p-3">IP Address</th>
-                                <th class="p-3 pr-4 text-right rounded-r-xl">Date & Time</th>
+                                <th class="p-3 pr-4 text-right rounded-r-xl">Action</th>
                             </tr>
                         </thead>
                         <tbody id="audit-log-table-body" class="divide-y divide-slate-100 dark:divide-[#293142]/60">
@@ -71,7 +68,7 @@
     </div>
 </div>
 
-<!-- 🌟 View Details Modal (JSON Changes ကို လှပစွာပြသရန်) -->
+<!-- 🌟 View Details Modal -->
 <div id="auditDetailModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white dark:bg-[#181d28] border border-slate-200 dark:border-[#293142] rounded-2xl w-full max-w-2xl p-6 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
         
@@ -91,7 +88,7 @@
             </button>
         </div>
 
-        <!-- Modal Body (JSON formatted content) -->
+        <!-- Modal Body -->
         <div class="py-4 overflow-y-auto space-y-4 flex-1">
             <div class="grid grid-cols-2 gap-4 bg-slate-50 dark:bg-[#202634]/50 p-3.5 rounded-xl border border-slate-200/60 dark:border-[#293142]">
                 <div>
@@ -101,6 +98,18 @@
                 <div>
                     <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Action & Table</span>
                     <span class="text-xs font-semibold text-slate-700 dark:text-slate-200" id="modal-action-table">-</span>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Record ID</span>
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 font-mono" id="modal-record-id">-</span>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">IP Address</span>
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 font-mono" id="modal-ip">-</span>
+                </div>
+                <div class="col-span-2">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Date & Time</span>
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-200" id="modal-date">-</span>
                 </div>
             </div>
 
@@ -133,7 +142,6 @@
 </div>
 
 <script>
-// Data များကို Fetch ပြီး Table ထဲပြသပေးသည့် Main Function
 async function loadAuditLogsTable() {
     const tbody = document.getElementById('audit-log-table-body');
     const actionFilter = document.getElementById('audit-action-filter')?.value || 'ALL';
@@ -146,7 +154,7 @@ async function loadAuditLogsTable() {
     }
 
     try {
-        tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400">Loading audit logs...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-slate-400">Loading audit logs...</td></tr>';
 
         const response = await fetch(url);
         if (!response.ok) throw new Error('Network response was not ok');
@@ -154,17 +162,19 @@ async function loadAuditLogsTable() {
         const data = await response.json();
 
         if (!data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400">No audit logs found for this filter.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-slate-400">No audit logs found for this filter.</td></tr>';
             return;
         }
 
         tbody.innerHTML = data.map(item => {
-            // Safe JSON strings for passing into open modal function
             const safeOld = item.oldValues ? encodeURIComponent(item.oldValues) : '';
             const safeNew = item.newValues ? encodeURIComponent(item.newValues) : '';
             const userName = escapeHtml(item.userName || 'System');
             const tableName = escapeHtml(item.tableName);
             const actionType = escapeHtml(item.actionType);
+            const recordId = escapeHtml(item.recordId || '-');
+            const ipAddress = escapeHtml(item.ipAddress || '-');
+            const createdAt = formatDateTime(item.createdAt);
 
             return `
                 <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors duration-150 border-b border-slate-100 dark:border-[#293142]/40">
@@ -177,31 +187,31 @@ async function loadAuditLogsTable() {
                         </span>
                     </td>
                     <td class="p-3.5 font-mono text-slate-500 dark:text-slate-400">${tableName}</td>
-                    <td class="p-3.5 font-mono text-slate-500 dark:text-slate-400">${escapeHtml(item.recordId || '-')}</td>
-                    <td class="p-3.5">
-                        <button onclick="openAuditModal('${userName}', '${actionType}', '${tableName}', '${item.recordId || '-'}', '${safeOld}', '${safeNew}')"
-                            class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20 transition flex items-center gap-1.5 cursor-pointer">
+                    <td class="p-3.5 pr-4 text-right">
+                        <button onclick="openAuditModal('${userName}', '${actionType}', '${tableName}', '${recordId}', '${ipAddress}', '${createdAt}', '${safeOld}', '${safeNew}')"
+                            class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20 transition inline-flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-eye text-[10px]"></i> View Details
                         </button>
                     </td>
-                    <td class="p-3.5 font-mono text-xs text-slate-400">${escapeHtml(item.ipAddress || '-')}</td>
-                    <td class="p-3.5 pr-4 text-right text-slate-400">${formatDateTime(item.createdAt)}</td>
                 </tr>
             `;
         }).join('');
 
     } catch (error) {
         console.error('Error fetching audit logs:', error);
-        tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-rose-500">Failed to load audit logs.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-rose-500">Failed to load audit logs.</td></tr>';
     }
 }
 
-// 🌟 View Details Modal ဖွင့်ရန်နှင့် JSON Formatting ပြုလုပ်ရန်
-function openAuditModal(userName, actionType, tableName, recordId, safeOld, safeNew) {
+// Modal ထဲသို့ ဒေတာများနှင့် JSON များကို ပေးပို့ခြင်း
+function openAuditModal(userName, actionType, tableName, recordId, ipAddress, createdAt, safeOld, safeNew) {
     const modal = document.getElementById('auditDetailModal');
     const modalUser = document.getElementById('modal-user');
     const modalActionTable = document.getElementById('modal-action-table');
     const modalSubInfo = document.getElementById('modal-sub-info');
+    const modalRecordId = document.getElementById('modal-record-id');
+    const modalIp = document.getElementById('modal-ip');
+    const modalDate = document.getElementById('modal-date');
     
     const oldContainer = document.getElementById('old-value-container');
     const newContainer = document.getElementById('new-value-container');
@@ -210,13 +220,14 @@ function openAuditModal(userName, actionType, tableName, recordId, safeOld, safe
 
     modalUser.textContent = userName;
     modalActionTable.textContent = `${actionType} on ${tableName}`;
-    modalSubInfo.textContent = `Record ID: ${recordId}`;
+    modalSubInfo.textContent = `Table: ${tableName} | Record ID: ${recordId}`;
+    modalRecordId.textContent = recordId;
+    modalIp.textContent = ipAddress;
+    modalDate.textContent = createdAt;
 
-    // Decode values
     const oldValStr = safeOld ? decodeURIComponent(safeOld) : '';
     const newValStr = safeNew ? decodeURIComponent(safeNew) : '';
 
-    // Format Old Values JSON
     if (oldValStr && oldValStr !== '{}' && oldValStr.trim() !== '') {
         oldContainer.classList.remove('hidden');
         modalOldValues.innerHTML = formatJsonToHtml(oldValStr);
@@ -224,7 +235,6 @@ function openAuditModal(userName, actionType, tableName, recordId, safeOld, safe
         oldContainer.classList.add('hidden');
     }
 
-    // Format New Values JSON
     if (newValStr && newValStr !== '{}' && newValStr.trim() !== '') {
         newContainer.classList.remove('hidden');
         modalNewValues.innerHTML = formatJsonToHtml(newValStr);
@@ -239,7 +249,6 @@ function closeAuditModal() {
     document.getElementById('auditDetailModal').classList.add('hidden');
 }
 
-// 🌟 JSON String ကို Prettify လုပ်ပေးပြီး Key-Value အလှပြင်ပေးသည့် Helper
 function formatJsonToHtml(jsonStr) {
     try {
         const jsonObj = JSON.parse(jsonStr);
@@ -250,7 +259,6 @@ function formatJsonToHtml(jsonStr) {
         html += '</ul>';
         return html;
     } catch (e) {
-        // JSON မဟုတ်ဘဲ Plain text ဖြစ်နေပါက
         return `<pre class="whitespace-pre-wrap">${escapeHtml(jsonStr)}</pre>`;
     }
 }
@@ -278,6 +286,7 @@ function formatDateTime(dateStr) {
     return new Date(dateStr).toLocaleString('en-US', { 
         month: 'short', 
         day: 'numeric', 
+        year: 'numeric',
         hour: '2-digit', 
         minute: '2-digit',
         hour12: true 
