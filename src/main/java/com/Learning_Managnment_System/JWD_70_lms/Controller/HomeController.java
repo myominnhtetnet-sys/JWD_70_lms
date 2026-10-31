@@ -1,26 +1,45 @@
-//package com.Learning_Managnment_System.JWD_70_lms.Controller;
-//
-//import org.springframework.stereotype.Controller;
-//import org.springframework.ui.Model;
-//import org.springframework.web.bind.annotation.GetMapping;
-//
-//import jakarta.servlet.http.HttpSession;
-//import jakarta.servlet.http.HttpServletRequest; // Spring Boot 3 အတွက် jakarta.servlet သုံးရမည်
-//
-//@Controller
-//public class HomeController {
-//
-//    @GetMapping("/admin/dashboard")
-//    public String dashboardPage(Model model, HttpServletRequest request) {
-//        // လက်ရှိ URL path (e.g. /admin/dashboard) ကို HTML ဘက်သို့ ပို့ပေးသည်
-//        model.addAttribute("currentUri", request.getRequestURI());
-//        return "dashboard"; 
-//    }
-//	@GetMapping("/logout")
-//    public String logout(HttpSession session) {
-//           
-//            session.invalidate();
-//        
-//        return "redirect:/"; 
-//    }
-//}
+package com.Learning_Managnment_System.JWD_70_lms.Controller;
+
+import java.security.Principal;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model; // 🟢 FIXED: Safe Spring UI template container import
+import org.springframework.web.bind.annotation.GetMapping;
+import com.Learning_Managnment_System.JWD_70_lms.Service.CourseService; // Make sure this matches your actual service path
+
+import jakarta.servlet.http.HttpSession;
+
+@Controller
+public class HomeController {
+
+    // 🟢 DECLARE THE SERVICE INJECTION CONTEXT
+    private final CourseService courseService;
+
+    // 🟢 INJECT SERVICE VIA CONSTRUCTOR BEAN INJECTION
+    public HomeController(CourseService courseService) {
+        this.courseService = courseService;
+    }
+
+    @GetMapping("/")
+    public String homePage(Model model, Principal principal) {
+        if (principal != null) {
+            return "redirect:/student/exam-list"; 
+        }
+        
+        // Pass the active repository content pool array straight into the index template
+        List<Map<String, Object>> liveCourses = courseService.getActivePublishedCourses();
+        model.addAttribute("courses", liveCourses);
+        
+        return "index"; 
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        if (session != null) {
+            session.invalidate();
+        }
+        return "redirect:/login?logout"; 
+    }
+}

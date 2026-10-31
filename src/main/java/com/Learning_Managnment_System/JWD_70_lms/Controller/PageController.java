@@ -7,13 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/teacher")
 public class PageController {
-	
-	@GetMapping("/")
-	public String show() {		
-		return "index";		
-	}
-	@GetMapping("/question-list")
-    public String questionList() {
-        return "question-list";
-	}
+ 
+ @GetMapping("/")
+ public String show() {  
+  return "dashboard";  
+ }
+
 }

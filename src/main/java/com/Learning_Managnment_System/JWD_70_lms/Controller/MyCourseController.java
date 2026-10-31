@@ -10,10 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/student")
@@ -24,33 +26,25 @@ public class MyCourseController {
 
     @GetMapping("/my-courses")
     public String showMyCoursesDashboard(Model model, HttpSession session) {
-        // 1. Recover the secure email string token set directly by your LoginController
         String studentEmail = (String) session.getAttribute("email");
-        Object roleId = session.getAttribute("roleId");
-        
-        // Safety verification check: If user session has expired or role isn't STUDENT (3), kick to login page
-        if (studentEmail == null || roleId == null || (int) roleId != 3) {
-            System.out.println("❌ SESSION SECURITY CHECK FAILED: Redirecting to login context.");
-            return "redirect:/login";
+        if (studentEmail == null) return "redirect:/login";
+
+        List<Map<String, Object>> enrolledCourses = courseService.getEnrolledCoursesProgressByEmail(studentEmail);
+
+        for (Map<String, Object> course : enrolledCourses) {
+            int completed = ((Number) course.get("completed_lessons")).intValue();
+            int total = ((Number) course.get("total_lessons")).intValue();
+            int percent = (total > 0) ? (completed * 100 / total) : 0;
+            course.put("progress_percent", percent); 
         }
-        
-        System.out.println("✅ SESSION ACCESS GRANTED: Fetching enrolled courses for Student Email: " + studentEmail);
-        
-        // 2. Query the data layer using the active email variable string token
-        List<MyCourseBean> enrolledCourses = courseService.getEnrolledCoursesProgressByEmail(studentEmail);
+
         model.addAttribute("enrolledCourses", enrolledCourses);
-        
+        model.addAttribute("fullName", session.getAttribute("fullName")); 
         return "my-courses";
     }
-    
-    /**
-     * 🟢 Renders the classroom detail timeline view for a specific course.
-     * URL Target: http://localhost:8080/student/course/{id}
-     */
+
     @GetMapping("/course/{id}")
-    public String showClassroomDetail(@org.springframework.web.bind.annotation.PathVariable("id") int courseId, 
-                                      Model model, HttpSession session) {
-        // 1. Recover secure session email token
+    public String showClassroomDetail(@PathVariable("id") int courseId, Model model, HttpSession session) {
         String studentEmail = (String) session.getAttribute("email");
         Object roleId = session.getAttribute("roleId");
         
@@ -58,50 +52,86 @@ public class MyCourseController {
             return "redirect:/login";
         }
 
-        // 2. Fetch data via service layer routines
         MyCourseBean courseMeta = courseService.getCourseMetaDetails(courseId, studentEmail);
-        
-        // Safety check if student isn't enrolled or course doesn't exist
         if (courseMeta == null) {
             return "redirect:/student/my-courses";
         }
         
-        // Reuse the query logic to fetch individual module lessons with their DONE status
-        List<com.Learning_Managnment_System.JWD_70_lms.model.LessonProgressBean> lessonTimeline = 
-                courseService.getCourseLessonTimeline(courseId, courseMeta.getBatchCode());
+        List<LessonProgressBean> lessonTimeline = 
+                courseService.getCourseLessonTimeline(courseId, courseMeta.getBatchCode(), studentEmail);
 
-        // 3. Bind properties to the view layout model
         model.addAttribute("course", courseMeta);
         model.addAttribute("lessons", lessonTimeline);
         
         return "student-classroom";
     }
+
     @GetMapping("/course/lesson/{id}")
-    public String showLessonWorkspace(@PathVariable("id") int lessonId, 
-                                      @RequestParam("courseId") int courseId,
-                                      Model model, HttpSession session) {
+    public String showLessonWorkspace(
+            @PathVariable("id") int lessonId, 
+            @RequestParam("courseId") int courseId, 
+            Model model, 
+            HttpSession session) {
+            
         String studentEmail = (String) session.getAttribute("email");
-        Object roleId = session.getAttribute("roleId");
-        
-        if (studentEmail == null || roleId == null || (int) roleId != 3) {
-            return "redirect:/login";
-        }
+        if (studentEmail == null) return "redirect:/login";
 
-        LessonProgressBean lessonDetail = courseService.getSingleLessonDetails(lessonId, courseId);
-                
-        if (lessonDetail == null) {
-            return "redirect:/student/course/" + courseId;
-        }
+        Map<String, Object> hybridLesson = courseService.getActiveLessonDetails(lessonId, courseId, studentEmail);
+        Map<String, Object> hybridCourse = courseService.getCourseWorkspaceMetadata(studentEmail, courseId);
+        List<LessonProgressBean> sidebarLessons = courseService.getSidebarLessons(studentEmail, courseId);
 
-        MyCourseBean courseMeta = courseService.getCourseMetaDetails(courseId, studentEmail);
-        java.util.List<LessonProgressBean> lessonTimeline = 
-                courseService.getCourseLessonTimeline(courseId, courseMeta.getBatchCode());
+        model.addAttribute("lesson", hybridLesson);
+        model.addAttribute("course", hybridCourse);
+        model.addAttribute("sidebarLessons", sidebarLessons);
 
-        model.addAttribute("lesson", lessonDetail);
-        model.addAttribute("course", courseMeta);
-        model.addAttribute("sidebarLessons", lessonTimeline);
-        
         return "student-lesson-view";
     }
 
+    @PostMapping("/course/lesson/complete")
+    public String completeLessonAction(
+            @RequestParam("lessonId") int lessonId, 
+            @RequestParam("courseId") int courseId,
+            HttpSession session) {
+            
+        String studentEmail = (String) session.getAttribute("email");
+        if (studentEmail == null) return "redirect:/login";
+
+        try {
+            int verifiedBatchId = courseService.getVerifiedBatchId(studentEmail, courseId);
+            courseService.markLessonAsCompleted(verifiedBatchId, lessonId, studentEmail);
+            return "redirect:/student/course/lesson/" + lessonId + "?courseId=" + courseId;
+        } catch (Exception e) {
+            return "redirect:/student/my-courses";
+        }
+    }
+
+    @PostMapping("/course/lesson/regress")
+    public String regressLessonAction(
+            @RequestParam("lessonId") int lessonId,
+            @RequestParam("courseId") int courseId,
+            HttpSession session) {
+            
+        String studentEmail = (String) session.getAttribute("email");
+        if (studentEmail == null) return "redirect:/login";
+        
+        try {
+            int verifiedBatchId = courseService.getVerifiedBatchId(studentEmail, courseId);
+            courseService.regressLessonProgress(verifiedBatchId, lessonId, studentEmail);
+            return "redirect:/student/course/lesson/" + lessonId + "?courseId=" + courseId;
+        } catch (Exception e) {
+            return "redirect:/student/my-courses";
+        }
+    }
+
+    @PostMapping("/course/complete")
+    public String completeCourseManualAction(@RequestParam("courseId") int courseId, HttpSession session) {
+        String studentEmail = (String) session.getAttribute("email");
+        if (studentEmail == null) return "redirect:/login";
+        
+        boolean success = courseService.finalizeCourseManualCheckout(studentEmail, courseId);
+        if (success) {
+            return "redirect:/student/awards";
+        }
+        return "redirect:/student/my-courses";
+    }
 }

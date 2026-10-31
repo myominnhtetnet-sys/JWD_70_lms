@@ -32,5 +32,8 @@ public class AssignmentBean {
     private String batchCode;
     private String batchTitle;
     private String lessonTitle;
+    
+    private String batchName;
+    private String lessonName;
 
 }

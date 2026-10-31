@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - LearnHub LMS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px;height: 6px;}
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.03);}
+    ::-webkit-scrollbar-thumb {background: rgba(0,0,0,0.15);border-radius: 3px;}
+    .fade-in {animation: fadeIn 0.25s ease-in-out;}
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 antialiased font-sans">
+
+    <div class="flex min-h-screen">
+        
+        <!-- SIDEBAR NAVIGATION MENU (Collapsible Dark Theme) -->
+        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar z-30">
+            
+            <!-- 🟢 Pure CSS Toggle Checkbox Engine -->
+            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+            
+            <!-- 🟢 Error-Free Scoped Structural Animation Layout Adjustments -->
+            <style>
+                #sidebar-content-box { width: 256px; }
+                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+            </style>
+
+            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden overflow-y-auto">
+                <div>
+                    <!-- Logo & Collapse Button Trigger -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+                        <!-- 🟢 Centered uncollapse bars icon inside 72px header -->
+                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </label>
+
+                        <div class="flex items-center gap-3 hidden-on-collapse">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
+                                <i class="fa-solid fa-chalkboard-user text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-base font-bold text-white tracking-wide block leading-none">EduPulse</span>
+                                <small class="text-[11px] font-medium text-slate-400">Teacher Portal</small>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Collapse Arrow Button (visible on hover) -->
+                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+                        </label>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-6">
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Teaching Portal</div>
+                            <div class="space-y-1">
+                                <a href="/teacher" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-house text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                                </a>
+                                <a href="/teacher/courses" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-book-open text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Courses</span>
+                                </a>
+                                <a href="/teacher/batches" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-users text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Batches</span>
+                                </a>
+                                <a href="/teacher/attendance" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-calendar-check text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Check Attendance</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Assessments</div>
+                            <div class="space-y-1">
+                                <a href="/teacher/question-list" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-database text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Question Bank</span>
+                                </a>
+                                <a href="/teacher/assignments" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-clipboard-list text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Assignments</span>
+                                </a>
+                                <a href="/teacher/submissions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-check-double text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Grade Submissions</span>
+                                </a>
+                                <a href="/teacher/exams" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-file-pen text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exams</span>
+                                </a>
+                                <!-- Active Exam Results Link -->
+                                <a href="/teacher/exam-results" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 shadow-sm transition">
+                                    <i class="fa-solid fa-square-poll-vertical text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exam Results</span>
+                                </a>
+                                <a href="/teacher/final-grades" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-graduation-cap text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Final Grades</span>
+                                </a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+
+                <div class="p-4 border-t border-slate-800">
+                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA WRAPPER -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+            
+            <!-- HEADER FRAGMENT -->
+            <div th:replace="~{teacher :: header}"></div>
+
+            <main class="flex-1 min-w-0 px-4 sm:px-8 py-6 bg-slate-50 overflow-y-auto">
+
+                <div class="w-full space-y-6">
+
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <h1 class="text-xl font-bold text-slate-900">Exam Results & Grading</h1>
+                            <p class="text-xs text-slate-500 mt-1">Review student exam attempts and grade short answers</p>
+                        </div>
+                    </div>
+
+                    <div th:if="${success}" class="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl" th:text="${success}"></div>
+                    <div th:if="${error != null and attempt == null}" class="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl" th:text="${error}"></div>
+
+                    <!-- Summary Cards Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full">
+                        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs flex flex-col justify-center">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Total Exam Attempts</p>
+                            <h2 id="totalCount" class="text-3xl font-extrabold text-slate-900" th:text="${totalCount}">0</h2>
+                        </div>
+                        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs flex flex-col justify-center">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Pending Grading</p>
+                            <h2 id="pendingCount" class="text-3xl font-extrabold text-amber-600" th:text="${pendingCount}">0</h2>
+                        </div>
+                        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs flex flex-col justify-center">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Graded Attempts</p>
+                            <h2 id="gradedCount" class="text-3xl font-extrabold text-emerald-600" th:text="${gradedCount}">0</h2>
+                        </div>
+                    </div>
+
+                    <!-- Search / Filter Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs w-full">
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+                            <div class="space-y-1">
+                                <label for="searchInput" class="block text-xs font-bold uppercase text-slate-700">Search</label>
+                                <input id="searchInput" type="search" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Student or exam...">
+                            </div>
+
+                            <div class="space-y-1">
+                                <label for="examFilter" class="block text-xs font-bold uppercase text-slate-700">Exam</label>
+                                <select id="examFilter" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">All Exams</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-1">
+                                <label for="statusFilter" class="block text-xs font-bold uppercase text-slate-700">Grading Status</label>
+                                <select id="statusFilter" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">All Status</option>
+                                    <option value="SUBMITTED">Pending Grading</option>
+                                    <option value="GRADED">Graded</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <button type="button" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs py-3 px-4 rounded-xl transition cursor-pointer" id="resetButton">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exam Results Table Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden w-full">
+                        <div class="px-6 py-4 border-b border-slate-200 bg-slate-100">
+                            <h2 class="font-bold text-sm uppercase text-slate-700">Student Exam Results</h2>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-700 font-bold">
+                                    <tr>
+                                        <th class="px-4 py-3">No</th>
+                                        <th class="px-4 py-3">Student</th>
+                                        <th class="px-4 py-3">Exam</th>
+                                        <th class="px-4 py-3">Attempt</th>
+                                        <th class="px-4 py-3">Submitted At</th>
+                                        <th class="px-4 py-3">Status</th>
+                                        <th class="px-4 py-3">Score</th>
+                                        <th class="px-4 py-3">Result</th>
+                                        <th class="px-4 py-3 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr th:each="item, stat : ${results}"
+                                        class="result-row hover:bg-slate-50/80 transition"
+                                        th:attr="data-student=${item.studentName},
+                                                 data-exam=${item.examTitle},
+                                                 data-exam-id=${item.examId},
+                                                 data-status=${item.status}">
+
+                                        <td class="px-4 py-3 text-xs text-slate-500 font-medium" th:text="${stat.count}"></td>
+                                        <td class="px-4 py-3 font-semibold text-slate-900" th:text="${item.studentName}"></td>
+                                        <td class="px-4 py-3 text-slate-700 font-medium" th:text="${item.examTitle}"></td>
+                                        <td class="px-4 py-3 text-xs text-slate-500 font-medium" th:text="${item.attemptNo}"></td>
+                                        <td class="px-4 py-3 text-xs text-slate-400 font-mono" th:text="${item.submittedAt != null ? #temporals.format(item.submittedAt, 'dd MMM yyyy, HH:mm') : '-'}"></td>
+                                        
+                                        <td class="px-4 py-3">
+                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border inline-block"
+                                                  th:classappend="${item.status == 'GRADED'} ? ' bg-emerald-50 text-emerald-700 border-emerald-200' : ' bg-amber-50 text-amber-700 border-amber-200'"
+                                                  th:text="${item.status == 'GRADED' ? 'GRADED' : 'PENDING'}"></span>
+                                        </td>
+
+                                        <td class="px-4 py-3 font-bold text-slate-800 text-xs">
+                                            <span th:text="${item.status == 'GRADED' ? item.score : 'Pending'}"></span> / <span th:text="${item.totalMark}"></span>
+                                        </td>
+
+                                        <td class="px-4 py-3">
+                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border inline-block"
+                                                  th:classappend="${item.status != 'GRADED'} ? ' bg-amber-50 text-amber-700 border-amber-200' : (${item.result == 'PASSED'} ? ' bg-emerald-50 text-emerald-700 border-emerald-200' : ' bg-rose-50 text-rose-700 border-rose-200')"
+                                                  th:text="${item.status == 'GRADED' ? item.result : 'PENDING'}"></span>
+                                        </td>
+
+                                        <td class="px-4 py-3 text-center">
+                                            <div class="flex items-center justify-center gap-1.5">
+                                                <a class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold"
+                                                   th:href="@{/teacher/exam-results/view/{id}(id=${item.attemptId})}">
+                                                    View
+                                                </a>
+                                                <a class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold"
+                                                   th:href="@{/teacher/exam-results/grade/{id}(id=${item.attemptId})}"
+                                                   th:text="${item.status == 'GRADED' ? 'Regrade' : 'Grade'}">
+                                                    Grade
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr id="emptyRow" hidden>
+                                        <td colspan="9" class="px-6 py-10 text-center text-slate-500 text-sm font-medium">
+                                            No matching exam attempts found.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal overlay rendered when attempt is selected -->
+    <div th:if="${attempt != null}" id="examModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+            
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200 mb-4">
+                <h2 id="modalTitle" class="text-lg font-bold text-slate-900" th:text="${mode == 'grade' ? 'Grade Exam Answers' : 'Exam Answer Details'}"></h2>
+                <a class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 flex items-center justify-center cursor-pointer text-xl" th:href="@{/teacher/exam-results}" aria-label="Close modal">&times;</a>
+            </div>
+
+            <div th:if="${error}" class="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl mb-4" role="alert" th:text="${error}"></div>
+
+            <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Student</span>
+                    <span class="text-slate-900 font-medium" th:text="${attempt.studentName}"></span>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Exam</span>
+                    <span class="text-slate-900 font-medium" th:text="${attempt.examTitle}"></span>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Attempt</span>
+                    <span class="text-slate-900 font-medium" th:text="${attempt.attemptNo}"></span>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Pass Mark / Total Mark</span>
+                    <span class="text-slate-900 font-medium" th:text="${attempt.passMark + ' / ' + attempt.totalMark}"></span>
+                </div>
+            </div>
+
+            <!-- View mode -->
+            <div th:if="${mode == 'view'}" class="space-y-4">
+                <div class="border border-slate-200 rounded-2xl p-4 bg-white shadow-xs space-y-2" th:each="answer, stat : ${examAnswers}">
+                    <div class="text-xs font-bold text-blue-600 uppercase" th:text="${'Q' + stat.count + ' · ' + answer.questionType}"></div>
+                    <h3 class="text-sm font-bold text-slate-900" th:text="${answer.questionText}"></h3>
+                    
+                    <label class="block text-xs font-bold uppercase text-slate-700 mt-2">Student Answer</label>
+                    <div class="answer-box font-normal text-slate-800" th:text="${answer.questionType == 'SHORT_ANSWER' ? (answer.answerText != null ? answer.answerText : 'No answer provided.') : (answer.selectedOptionText != null ? answer.selectedOptionText : 'No valid option selected.')}"></div>
+
+                    <p class="text-xs text-slate-500 font-medium">
+                        Mark: <strong class="text-slate-900 font-bold" th:text="${answer.markAwarded != null ? answer.markAwarded : 'Not graded'}"></strong> / <span th:text="${answer.maxMark}"></span>
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Teacher Remark</label>
+                    <div class="answer-box font-normal text-slate-800" th:text="${attempt.remark != null and !#strings.isEmpty(attempt.remark) ? attempt.remark : 'No remark.'}"></div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4 mt-6 border-t border-slate-200">
+                    <a class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold cursor-pointer" th:href="@{/teacher/exam-results}">Close</a>
+                    <a class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs" th:href="@{/teacher/exam-results(attemptId=${attempt.attemptId}, mode='grade')}">Grade Answers</a>
+                </div>
+            </div>
+
+            <!-- Grade mode -->
+            <form th:if="${mode == 'grade'}" th:object="${gradingForm}" th:action="@{/teacher/exam-results/{id}/grade(id=${attempt.attemptId})}" method="post" class="space-y-4 text-sm">
+                <p class="text-xs text-slate-500 font-medium">
+                    Grade every short answer. MCQ and True/False marks are calculated automatically when you save.
+                </p>
+
+                <div class="border border-slate-200 rounded-2xl p-4 bg-white shadow-xs space-y-3" th:each="answer, stat : ${examAnswers}">
+                    <div class="text-xs font-bold text-blue-600 uppercase" th:text="${'Q' + stat.count + ' · ' + answer.questionType}"></div>
+                    <h3 class="text-sm font-bold text-slate-900" th:text="${answer.questionText}"></h3>
+
+                    <label class="block text-xs font-bold uppercase text-slate-700">Student Answer</label>
+                    <div class="answer-box font-normal text-slate-800" th:text="${answer.questionType == 'SHORT_ANSWER' ? (answer.answerText != null ? answer.answerText : 'No answer provided.') : (answer.selectedOptionText != null ? answer.selectedOptionText : 'No valid option selected.')}"></div>
+
+                    <th:block th:if="${answer.questionType == 'SHORT_ANSWER'}">
+                        <th:block th:each="entry, entryStat : *{answers}">
+                            <div th:if="${entry.questionId == answer.questionId}" class="space-y-2 pt-2 border-t border-slate-100">
+                                <input type="hidden" th:field="*{answers[__${entryStat.index}__].questionId}">
+
+                                <label class="block text-xs font-bold uppercase text-slate-700" th:for="${'answers' + entryStat.index + '.mark'}">Awarded Mark</label>
+                                <input class="w-full max-w-[180px] border border-slate-300 rounded-xl px-3.5 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                                       type="number" min="0" step="0.01"
+                                       th:max="${answer.maxMark}"
+                                       th:field="*{answers[__${entryStat.index}__].mark}"
+                                       required>
+
+                                <p class="text-xs text-slate-400 font-medium">Maximum: <span th:text="${answer.maxMark}"></span></p>
+                            </div>
+                        </th:block>
+
+                        <div th:if="${answer.explanation != null and !#strings.isEmpty(answer.explanation)}" class="space-y-1">
+                            <label class="block text-xs font-bold uppercase text-slate-700">Question Explanation</label>
+                            <div class="answer-box font-normal text-slate-800" th:text="${answer.explanation}"></div>
+                        </div>
+                    </th:block>
+
+                    <p class="text-xs text-slate-400 font-medium italic" th:if="${answer.questionType != 'SHORT_ANSWER'}">
+                        Automatic grading · Maximum: <span th:text="${answer.maxMark}"></span>
+                    </p>
+                </div>
+
+                <div class="space-y-1 pt-2">
+                    <label for="remark" class="block text-xs font-bold uppercase text-slate-700">Teacher Remark (optional)</label>
+                    <textarea id="remark" th:field="*{remark}" rows="3" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4 border-t border-slate-200">
+                    <a class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold cursor-pointer" th:href="@{/teacher/exam-results}">Cancel</a>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs">Save Grades</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+    const rows = Array.from(document.querySelectorAll(".result-row"));
+    const searchInput = document.getElementById("searchInput");
+    const examFilter = document.getElementById("examFilter");
+    const statusFilter = document.getElementById("statusFilter");
+    const exams = new Map();
+
+    rows.forEach(row => {
+        exams.set(row.dataset.examId, row.dataset.exam);
+    });
+
+    exams.forEach((title, id) => {
+        examFilter.add(new Option(title, id));
+    });
+
+    function filterResults() {
+        const keyword = searchInput.value.trim().toLowerCase();
+        let visible = 0;
+
+        rows.forEach(row => {
+            const text = ((row.dataset.student || "") + " " +(row.dataset.exam || "") ).toLowerCase();
+
+            const matches = text.includes(keyword) &&
+                (!examFilter.value || row.dataset.examId === examFilter.value) &&
+                (!statusFilter.value || row.dataset.status === statusFilter.value);
+
+            row.hidden = !matches;
+
+            if (matches) {
+                visible++;
+            }
+        });
+
+        document.getElementById("emptyRow").hidden = visible > 0;
+    }
+
+    searchInput.addEventListener("input", filterResults);
+    examFilter.addEventListener("change", filterResults);
+    statusFilter.addEventListener("change", filterResults);
+
+    document.getElementById("resetButton")
+        .addEventListener("click", () => {
+            searchInput.value = "";
+            examFilter.value = "";
+            statusFilter.value = "";
+            filterResults();
+        });
+
+    filterResults();
+
+    const modal = document.getElementById("examModal");
+
+    if (modal) {
+        document.body.style.overflow = "hidden";
+
+        const box = modal.querySelector(".modal-box");
+        const closeLink = modal.querySelector('[aria-label="Close modal"]');
+
+        if (box) box.focus();
+
+        modal.addEventListener("click", event => {
+            if (event.target === modal) {
+                closeLink.click();
+            }
+        });
+
+        modal.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                closeLink.click();
+            }
+
+            if (event.key === "Tab" && box) {
+                const controls = Array.from(box.querySelectorAll(
+                    'a[href], button, input:not([type="hidden"]), ' +'select, textarea, [tabindex="0"]'
+                )).filter(element => element.getClientRects().length);
+
+                const first = controls[0];
+                const last = controls[controls.length - 1];
+
+                if (event.shiftKey && (document.activeElement === first || document.activeElement === box)) {
+                    event.preventDefault();
+                    last?.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first?.focus();
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

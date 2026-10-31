@@ -1,11 +1,12 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate; // 🟢 Added to query batch titles dynamically
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,27 +25,29 @@ public class PaymentController {
     @Autowired
     private PaymentRepository paymentRepository;
 
-    @GetMapping("/student/checkout")
-    public String showCheckoutPage(HttpSession session, Model model) {
-        String email = (String) session.getAttribute("email");
-        if (email == null) {
-            return "redirect:/login";
-        }
-
-        List<Map<String, Object>> paymentMethods = paymentRepository.getActivePaymentMethods();
-        model.addAttribute("paymentMethods", paymentMethods);
-        model.addAttribute("fullName", session.getAttribute("fullName"));
-
-        return "checkout";
-    }
+    @Autowired
+    private JdbcTemplate jdbcTemplate; // 🟢 Injected to resolve batch information text parameters
 
     @PostMapping("/student/process-payment")
-    public String processPayment(@RequestParam(value = "paymentMethodId", defaultValue = "0") int paymentMethodId,
-                                 @RequestParam("amount") double amount,
-                                 @RequestParam(value = "paymentType", defaultValue = "Full Course Fee") String paymentType,
-                                 @RequestParam(value = "note", required = false) String note,
-                                 HttpSession session,
-                                 RedirectAttributes redirectAttributes) {
+    public String processPayment(
+            @RequestParam(value = "paymentMethodId", defaultValue = "0")
+            int paymentMethodId,
+
+            @RequestParam("amount")
+            Double amount,
+
+            @RequestParam(value = "paymentType",
+                    defaultValue = "Full Course Fee")
+            String paymentType,
+
+            @RequestParam("courseId")
+            int courseId, // 🟢 NEW: Captures the selected batch/course identifier request parameter
+
+            @RequestParam(value = "note", required = false)
+            String note,
+
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
 
         String email = (String) session.getAttribute("email");
         Object studentIdObj = session.getAttribute("studentId");
@@ -53,52 +56,138 @@ public class PaymentController {
             return "redirect:/login";
         }
 
-        if (paymentMethodId == 0) {
-            redirectAttributes.addFlashAttribute("error", "ကျေးဇူးပြု၍ Payment Method တစ်ခုခုကို ရွေးချယ်ပေးပါရန်။");
+        if (paymentMethodId <= 0) {
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    "Please select a payment method."
+            );
             return "redirect:/student/checkout";
         }
 
-        int userId = (studentIdObj != null) ? Integer.parseInt(studentIdObj.toString()) : 1;
-        
-        // Database ထဲမှ Valid ဖြစ်သော Enrollment ID ကို ရှာဖွေခြင်း
-        Integer validEnrollmentId = paymentRepository.getEnrollmentIdByUserId(userId);
+        if (amount == null || amount <= 0) {
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    "Please enter a valid payment amount."
+            );
+            return "redirect:/student/checkout";
+        }
 
-        // System မှ Random Transaction Number အလိုအလျောက် ထုတ်ပေးခြင်း
-        String generatedTxnNo = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        if (studentIdObj == null) {
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    "Student session expired. Please log in again."
+            );
+            return "redirect:/login";
+        }
+
+        int userId;
+
+        try {
+            userId = Integer.parseInt(studentIdObj.toString());
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    "Invalid student session. Please log in again."
+            );
+            return "redirect:/login";
+        }
+
+        // 🟢 FIXED: Resolves the exact enrollment row matching this user ID and selected course/batch ID combination
+        Integer enrollmentId = null;
+        try {
+            String findEnrollmentSql = "SELECT enrollment_id FROM enrollments WHERE user_id = ? AND batch_id = ? LIMIT 1";
+            enrollmentId = jdbcTemplate.queryForObject(findEnrollmentSql, Integer.class, userId, courseId);
+        } catch (Exception e) {
+            // Fallback rule if specific lookup drops out
+            enrollmentId = paymentRepository.getEnrollmentIdByUserId(userId);
+        }
+
+        if (enrollmentId == null) {
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    "No enrollment found for this student."
+            );
+            return "redirect:/student/checkout";
+        }
+
+        String transactionNo =
+                "TXN-" + UUID.randomUUID()
+                        .toString()
+                        .substring(0, 8)
+                        .toUpperCase();
 
         PaymentBean payment = new PaymentBean();
-        payment.setEnrollmentId(validEnrollmentId);
+
+        payment.setEnrollmentId(enrollmentId);
         payment.setScheduleId(1);
         payment.setPaymentMethodId(paymentMethodId);
-        
-        // 🟢 Fix: double မှ BigDecimal သို့ ပြောင်းလဲသတ်မှတ်ခြင်း
-        payment.setAmount(BigDecimal.valueOf(amount));
-        
-        payment.setTransactionNo(generatedTxnNo);
+        payment.setAmount(amount);
+        payment.setTransactionNo(transactionNo);
         payment.setPaymentType(paymentType);
         payment.setNote(note);
         payment.setProofImage(null);
-        payment.setStatus("SUCCESS");
+        payment.setStatus("PENDING");
 
         int result = paymentRepository.savePayment(payment);
 
         if (result > 0) {
-            redirectAttributes.addFlashAttribute("amount", amount);
-            redirectAttributes.addFlashAttribute("transactionNo", generatedTxnNo);
-            redirectAttributes.addFlashAttribute("paymentType", paymentType);
-            redirectAttributes.addFlashAttribute("note", note);
-            return "redirect:/student/payment-success";
-        } else {
-            redirectAttributes.addFlashAttribute("error", "Payment submission failed. Please try again.");
-            return "redirect:/student/checkout";
+            // 🟢 NEW: Pulls the batch title text string out of the database to pass to the receipt
+            String batchName = "Enrolled Course";
+            try {
+                String batchTitleSql = "SELECT title FROM batches WHERE batch_id = ?";
+                batchName = jdbcTemplate.queryForObject(batchTitleSql, String.class, courseId);
+            } catch (Exception e) {
+                System.err.println("PAYMENT CONTROLLER NOTICE -> Handled batch text fallback.");
+            }
+
+            // Redirects to success view mapping with the encrypted batchName parameter attached
+            return "redirect:/student/payment-success"
+                    + "?amount=" + amount.toString()
+                    + "&transactionNo=" + transactionNo
+                    + "&batchName=" + URLEncoder.encode(batchName != null ? batchName : "Enrolled Course", StandardCharsets.UTF_8)
+                    + "&paymentType=" + URLEncoder.encode(paymentType, StandardCharsets.UTF_8)
+                    + "&note=" + URLEncoder.encode(note != null ? note : "", StandardCharsets.UTF_8);
         }
+
+        redirectAttributes.addFlashAttribute(
+                "error",
+                "Payment submission failed. Please try again."
+        );
+
+        return "redirect:/student/checkout";
     }
 
     @GetMapping("/student/payment-success")
-    public String showSuccessPage(HttpSession session) {
+    public String showSuccessPage(
+            @RequestParam(value = "amount", required = false)
+            BigDecimal amount,
+
+            @RequestParam(value = "transactionNo", required = false)
+            String transactionNo,
+
+            @RequestParam(value = "batchName", required = false)
+            String batchName, // 🟢 NEW: Captures the redirected batch name value string parameter
+
+            @RequestParam(value = "paymentType", required = false)
+            String paymentType,
+
+            @RequestParam(value = "note", required = false)
+            String note,
+
+            HttpSession session,
+            Model model) {
+
         if (session.getAttribute("email") == null) {
             return "redirect:/login";
         }
+
+        model.addAttribute("amount", amount);
+        model.addAttribute("transactionNo", transactionNo);
+        model.addAttribute("batchName", batchName); // 🟢 Attached to view context map matrix
+        model.addAttribute("paymentType", paymentType);
+        model.addAttribute("note", note);
+
         return "payment-success";
     }
+    
 }

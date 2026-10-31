@@ -2,6 +2,7 @@ package com.Learning_Managnment_System.JWD_70_lms.Service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.Learning_Managnment_System.JWD_70_lms.Repository.AnnouncementRepository;
@@ -10,12 +11,9 @@ import com.Learning_Managnment_System.JWD_70_lms.model.AnnouncementBean;
 @Service
 public class AnnouncementService {
 	
-    private final AnnouncementRepository repository;
+	@Autowired
+    private AnnouncementRepository repository;
 
-    public AnnouncementService(AnnouncementRepository repository) {
-        this.repository = repository;
-    }
-	
     // 1. Get All Announcements
     public List<AnnouncementBean> getAllAnnouncements() {
         String sql = """

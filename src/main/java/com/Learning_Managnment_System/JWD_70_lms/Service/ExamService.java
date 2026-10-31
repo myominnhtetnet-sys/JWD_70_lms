@@ -84,7 +84,9 @@ public class ExamService {
 			throw new IllegalArgumentException("Sort order must be greater than zero");
 		}
 
-		getExamById(examQuestion.getExamId());
+//		getExamById(examQuestion.getExamId());
+		
+		validateQuestionBelongsToExam( examQuestion.getExamId(),examQuestion.getQuestionId());
 		return examRepository.addQuestionToExam(examQuestion);
 	}
 
@@ -150,10 +152,15 @@ public class ExamService {
 		return questionRepository.findAll();
 	}
 
+	public List<QuestionBean> getQuestionBankByCourse(Long courseId) {
+	    if (courseId == null) {
+	        throw new IllegalArgumentException("Course ID is required.");
+	    }
+	    return questionRepository.findActiveByCourseId(courseId);
+	}
+	
 	@Transactional
-	public void saveSelectedQuestions(Long examId,
-	        List<Long> questionIds, List<String> marks) {
-
+	public void saveSelectedQuestions(Long examId, List<Long> questionIds, List<String> marks) {
 	    getExamById(examId);
 
 	    if (questionIds == null || questionIds.isEmpty()) {
@@ -166,9 +173,18 @@ public class ExamService {
 
 	    for (int i = 0; i < questionIds.size(); i++) {
 	        Long questionId = questionIds.get(i);
+//	        if (questionId == null) {
+//	            continue;
+//	        }
+//	        if (examRepository.existsQuestionInExam(examId, questionId)) {
+//	            continue;
+//	        }
 	        if (questionId == null) {
-	            continue;
+	            throw new IllegalArgumentException("Invalid question ID.");
 	        }
+
+	        validateQuestionBelongsToExam(examId, questionId);
+
 	        if (examRepository.existsQuestionInExam(examId, questionId)) {
 	            continue;
 	        }
@@ -229,37 +245,39 @@ public class ExamService {
 	    BigDecimal selectedTotal = BigDecimal.ZERO;
 
 	    for (Long questionId : uniqueIds) {
+
 	        if (questionId == null) {
-	            throw new IllegalArgumentException( "Invalid question ID.");
+	            throw new IllegalArgumentException("Invalid question ID.");
 	        }
+
+	        // Question သည် Exam ၏ Course ထဲက Active Question ဖြစ်ကြောင်း စစ်မည်
+	        BigDecimal defaultMark = examRepository.getDefaultMark(
+	                questionId, exam.getCourseId());
 
 	        BigDecimal mark;
 
 	        if (existingMarks.containsKey(questionId)) {
 	            mark = existingMarks.get(questionId);
 	        } else {
-	            mark = examRepository.getDefaultMark( questionId, exam.getCourseId());
+	            mark = defaultMark;
 	        }
 
 	        if (mark == null || mark.signum() <= 0) {
 	            throw new IllegalArgumentException(
-	                "Invalid mark for question " + questionId);
+	                    "Invalid mark for question " + questionId);
 	        }
 
 	        selectedTotal = selectedTotal.add(mark);
 	    }
 
 	    if (selectedTotal.compareTo(exam.getTotalMark()) != 0) {
-	        throw new IllegalArgumentException(
-	            "Selected Question Marks (" + selectedTotal
-	            + ") must equal Exam Total Mark ("
-	            + exam.getTotalMark() + ").");
+	        throw new IllegalArgumentException( "Selected Question Marks (" + selectedTotal
+	            + ") must equal Exam Total Mark (" + exam.getTotalMark() + ").");
 	    }
 
 	    for (ExamQuestionBean question : existingQuestions) {
 	        if (!uniqueIds.contains(question.getQuestionId())) {
-	            examRepository.removeQuestionFromExam(
-	                exam.getExamId(),question.getQuestionId());
+	            examRepository.removeQuestionFromExam( exam.getExamId(),question.getQuestionId());
 	        }
 	    }
 
@@ -269,16 +287,10 @@ public class ExamService {
 	        }
 
 	        ExamQuestionBean newQuestion = new ExamQuestionBean();
-
 	        newQuestion.setExamId(exam.getExamId());
 	        newQuestion.setQuestionId(questionId);
-
-	        newQuestion.setMark(
-	            examRepository.getDefaultMark(
-	                questionId,exam.getCourseId()));
-
-	        newQuestion.setSortOrder(
-	            examRepository.getNextSortOrder(exam.getExamId()));
+	        newQuestion.setMark( examRepository.getDefaultMark(questionId,exam.getCourseId()));
+	        newQuestion.setSortOrder( examRepository.getNextSortOrder(exam.getExamId()));
 
 	        examRepository.addQuestionToExam(newQuestion);
 	    }
@@ -288,4 +300,33 @@ public class ExamService {
 	        throw new IllegalArgumentException("Exam update failed.");
 	    }
 	}
+	private void validateQuestionBelongsToExam( Long examId, Long questionId) {
+
+	    ExamBean exam = getExamById(examId);
+	    QuestionBean question = questionRepository.getQuestionById(questionId);
+
+	    if (question == null) {
+	        throw new IllegalArgumentException( "Question not found: " + questionId);
+	    }
+
+	    if (!exam.getCourseId().equals(question.getCourseId())) {
+	        throw new IllegalArgumentException( "This question does not belong to the exam course.");
+	    }
+
+	    if (!Boolean.TRUE.equals(question.getIsActive())) {
+	        throw new IllegalArgumentException("This question is inactive.");
+	    }
+	}
+	private void validateQuestionBelongsToCourse(
+	        Long questionId, Long courseId) {
+
+	    BigDecimal defaultMark =
+	            examRepository.getDefaultMark(questionId, courseId);
+
+	    if (defaultMark == null) {
+	        throw new IllegalArgumentException(
+	                "Selected question does not belong to this exam's course.");
+	    }
+	}
+	
 }

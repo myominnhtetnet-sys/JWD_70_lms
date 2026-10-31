@@ -1,1589 +1,821 @@
 <!DOCTYPE html>
-
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Exam Management</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - LearnHub LMS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    * {
-        box-sizing: border-box;
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {width: 6px;height: 6px;}
+    ::-webkit-scrollbar-track {background: rgba(0,0,0,0.03);}
+    ::-webkit-scrollbar-thumb {background: rgba(0,0,0,0.15);border-radius: 3px;}
+    .fade-in {animation: fadeIn 0.25s ease-in-out;}
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
     }
-
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #f8fafc;
-        color: #1e293b;
-    }
-
-    .container {
-        width: 95%;
-        max-width: 1400px;
-        margin: 30px auto;
-    }
-
-    /* ================= HEADER ================= */
-
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    .page-title h1 {
-        margin: 0;
-        font-size: 24px;
-    }
-
-    .page-title p {
-        margin: 5px 0 0;
-        color: #64748b;
-        font-size: 14px;
-    }
-
-    /* ================= BUTTON ================= */
-
-    .btn {
-        border: none;
-        padding: 9px 14px;
-        border-radius: 7px;
-        text-decoration: none;
-        cursor: pointer;
-        font-size: 13px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-    }
-
-    .btn-primary {
-        background: #4f46e5;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background: #4338ca;
-    }
-
-    .btn-view {
-        background: #e0f2fe;
-        color: #0369a1;
-    }
-
-    .btn-view:hover {
-        background: #bae6fd;
-    }
-
-    .btn-edit {
-        background: #fef3c7;
-        color: #92400e;
-    }
-
-    .btn-edit:hover {
-        background: #fde68a;
-    }
-
-    .btn-delete {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
-
-    .btn-delete:hover {
-        background: #fecaca;
-    }
-
-    .btn-save {
-        background: #4f46e5;
-        color: white;
-        padding: 10px 18px;
-    }
-
-    .btn-save:hover {
-        background: #4338ca;
-    }
-
-    .btn-cancel {
-        background: #e2e8f0;
-        color: #334155;
-        padding: 10px 18px;
-    }
-
-    .btn-cancel:hover {
-        background: #cbd5e1;
-    }
-
-    /* ================= CARD ================= */
-
-    .card {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-        overflow: hidden;
-    }
-
-    .table-wrapper {
-        overflow-x: auto;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 1000px;
-    }
-
-    thead {
-        background: #f1f5f9;
-    }
-
-    th {
-        text-align: left;
-        padding: 13px 14px;
-        font-size: 12px;
-        color: #475569;
-        text-transform: uppercase;
-    }
-
-    td {
-        padding: 13px 14px;
-        border-top: 1px solid #e2e8f0;
-        font-size: 13px;
-    }
-
-    tbody tr:hover {
-        background: #f8fafc;
-    }
-
-    .title {
-        font-weight: 600;
-        color: #0f172a;
-    }
-
-    .exam-type {
-        font-size: 12px;
-        font-weight: 600;
-        color: #475569;
-    }
-
-    /* ================= STATUS ================= */
-
-    .status {
-        display: inline-block;
-        padding: 5px 9px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 600;
-    }
-
-    .status-draft {
-        background: #f1f5f9;
-        color: #475569;
-    }
-
-    .status-published {
-        background: #dcfce7;
-        color: #15803d;
-    }
-
-    .status-closed {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
-
-    /* ================= ACTIONS ================= */
-
-    .actions {
-        display: flex;
-        gap: 6px;
-        align-items: center;
-    }
-
-    .actions form {
-        margin: 0;
-    }
-
-    /* ================= ALERT ================= */
-
-    .alert {
-        padding: 11px 15px;
-        border-radius: 7px;
-        margin-bottom: 15px;
-        font-size: 13px;
-    }
-
-    .alert-success {
-        background: #dcfce7;
-        color: #166534;
-    }
-
-    .alert-error {
-        background: #fee2e2;
-        color: #991b1b;
-    }
-
-    /* =====================================================
-       MODAL
-    ===================================================== */
-
-    .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-
-    background: rgba(15, 23, 42, 0.45);
-
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-    .modal-overlay.show {
-        display: flex;
-    }
-
-    .modal-box {
-        width: 100%;
-        max-width: 550px;
-        max-height: 90vh;
-        overflow-y: auto;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.25);
-        animation: modalOpen 0.2s ease;
-    }
-
-    @keyframes modalOpen {
-        from {
-            opacity: 0;
-            transform: translateY(-20px) scale(0.98);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-    }
-
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 18px 22px;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .modal-header h2 {
-        margin: 0;
-        font-size: 19px;
-        color: #0f172a;
-    }
-
-    .modal-close {
-        border: none;
-        background: transparent;
-        font-size: 24px;
-        color: #64748b;
-        cursor: pointer;
-        width: 35px;
-        height: 35px;
-        border-radius: 6px;
-    }
-
-    .modal-close:hover {
-        background: #f1f5f9;
-        color: #0f172a;
-    }
-
-    .modal-body {
-        padding: 18px;
-    }
-
-    .modal-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        padding: 16px 22px;
-        border-top: 1px solid #e2e8f0;
-    }
-
-    /* ================= VIEW MODAL ================= */
-
-    .detail-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
-
-    .detail-item {
-        background: #f8fafc;
-        padding: 10px;
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-    }
-
-    .detail-item.full {
-        grid-column: 1 / -1;
-    }
-
-    .detail-label {
-        display: block;
-        font-size: 11px;
-        color: #64748b;
-        margin-bottom: 5px;
-        text-transform: uppercase;
-        font-weight: 600;
-    }
-
-    .detail-value {
-        font-size: 14px;
-        color: #0f172a;
-        font-weight: 500;
-        word-break: break-word;
-    }
-
-    /* ================= EDIT FORM ================= */
-
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    .form-group.full {
-        grid-column: 1 / -1;
-    }
-
-    .form-group label {
-        font-size: 12px;
-        font-weight: 600;
-        color: #475569;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        width: 100%;
-        padding: 10px 11px;
-        border: 1px solid #cbd5e1;
-        border-radius: 7px;
-        font-size: 13px;
-        outline: none;
-        background: white;
-    }
-
-    .form-group textarea {
-        min-height: 90px;
-        resize: vertical;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-        border-color: #4f46e5;
-        box-shadow: 0 0 0 3px rgba(79,70,229,0.10);
-    }
-
-    /* ================= EMPTY ================= */
-
-    .empty {
-        text-align: center;
-        padding: 50px 20px;
-        color: #64748b;
-    }
-
-    .empty i {
-        font-size: 35px;
-        margin-bottom: 10px;
-    }
-
-    /* ================= RESPONSIVE ================= */
-
-    @media (max-width: 700px) {
-        .page-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        .detail-grid,
-        .form-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .detail-item.full,
-        .form-group.full {
-            grid-column: auto;
-        }
-
-        .modal-box {
-            max-height: 95vh;
-        }
-    }
-
-    body.modal-open {
-        overflow: hidden;
-    }
-
-/* ================= NEW / EDITED ================= */
-
-.exam-new {
-    background: #f0fdf4 !important;
-}
-
-.exam-new:hover {
-    background: #dcfce7 !important;
-}
-
-.exam-edited {
-    background: #fffbeb !important;
-}
-
-.exam-edited:hover {
-    background: #fef3c7 !important;
-}
-
-.exam-title-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.exam-status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 7px;
-    border-radius: 5px;
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 1;
-    white-space: nowrap;
-}
-
-.exam-new-badge {
-    background: #dcfce7;
-    color: #15803d;
-    border: 1px solid #bbf7d0;
-}
-
-.exam-edited-badge {
-    background: #fef3c7;
-    color: #b45309;
-    border: 1px solid #fde68a;
-}
-.edit-modal-box {
-    max-width: 580px;
-}
-
-/* ================= SEARCH / FILTER ================= */
-
-.search-card {
-    display: grid;
-    grid-template-columns: minmax(180px, 2fr)
-                           minmax(180px, 1fr)
-                           minmax(160px, 0.8fr)
-                           auto;
-    align-items: center;
-    gap: 14px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.search-box {
-    position: relative;
-    width: 100%;
-    min-width: 0;
-}
-
-.search-box i {
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #94a3b8;
-    font-size: 15px;
-}
-
-.search-box input,
-.search-card select {
-    width: 100%;
-    height: 30px;
-    padding: 0 16px;
-    border: 1px solid #d1d5db;
-    border-radius: 10px;
-    outline: none;
-    background: #ffffff;
-    color: #334155;
-    font-size: 13px;
-}
-
-.search-box input {
-    padding-left: 44px;
-}
-
-.search-box input:focus,
-.search-card select:focus {
-    border-color: #3768ed;
-    box-shadow: 0 0 0 3px rgba(55, 104, 237, 0.12);
-}
-
-.search-card select {
-    cursor: pointer;
-}
-
-.search-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.search-btn,
-.search-reset-btn {
-    height: 30px;
-    padding: 0 24px;
-    border: none;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.search-btn {
-    background: #3768ed;
-    color: #ffffff;
-}
-
-.search-btn:hover {
-    background: #2855d9;
-}
-
-.search-reset-btn {
-    background: #f1f1f1;
-    color: #334155;
-}
-
-.search-reset-btn:hover {
-    background: #e5e7eb;
-}
-
-/* ================= RESPONSIVE ================= */
-
-@media (max-width: 1000px) {
-    .search-card {
-        grid-template-columns: 1fr 1fr;
-    }
-    .search-box {
-        grid-column: 1 / -1;
-    }
-    .search-actions {
-        width: 100%;
-    }
-    .search-actions button {
-        flex: 1;
-    }
-}
-
-@media (max-width: 600px) {
-    .search-card {
-        grid-template-columns: 1fr;
-        padding: 16px;
-    }
-    .search-box {
-        grid-column: auto;
-    }
-    .search-actions {
-        flex-direction: column;
-    }
-    .search-actions button {
-        width: 100%;
-        flex: auto;
-    }
-}
-/* EDIT MODAL */
-
-.exam-edit-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;backdrop-filter: blur(4px);
-    z-index: 9999;
-    background: rgba(15, 23, 42, 0.55);
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-}
-
-.exam-edit-overlay.show {
-    display: flex;
-}
-
-.exam-edit-box {
-    width: 100%;
-    max-width: 650px;
-    max-height: 90vh;
-    background: white;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.exam-edit-header {
-    padding: 18px 22px;
-    border-bottom: 1px solid #e2e8f0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.exam-edit-header h2 {
-    margin: 0;
-    font-size: 20px;
-}
-
-.exam-edit-header p {
-    margin: 5px 0 0;
-    font-size: 13px;
-    color: #64748b;
-}
-
-.exam-edit-close {
-    border: none;
-    background: transparent;
-    font-size: 26px;
-    cursor: pointer;
-}
-
-#editExamForm {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-}
-
-.exam-edit-body {
-    padding: 20px;
-    overflow-y: auto;
-}
-
-.exam-edit-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-}
-
-.exam-edit-full {
-    grid-column: 1 / -1;
-}
-
-.exam-edit-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.exam-edit-group label {
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.exam-edit-group input,
-.exam-edit-group select {
-    width: 100%;
-    padding: 9px;
-    border: 1px solid #cbd5e1;
-    border-radius: 7px;
-}
-
-.exam-edit-group select:disabled {
-    background: #f1f5f9;
-}
-
-.exam-edit-check {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.exam-edit-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    padding: 15px 20px;
-    border-top: 1px solid #e2e8f0;
-}
-
-.exam-edit-footer button {
-    padding: 9px 16px;
-    border-radius: 7px;
-    cursor: pointer;
-}
-
-.exam-edit-save {
-    background: #4f46e5;
-    color: white;
-    border: none;
-}
-
-.exam-edit-cancel {
-    background: #e2e8f0;
-    border: none;
-}
-
-@media (max-width: 600px) {
-    .exam-edit-grid {
-        grid-template-columns: 1fr;
-    }
-}
 </style>
-
 </head>
 
-<body>
+<body class="bg-slate-50 text-slate-800 antialiased font-sans">
 
-<div class="container">
+    <div class="flex min-h-screen">
+        
+        <!-- SIDEBAR NAVIGATION MENU (Collapsible Dark Theme) -->
+        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar z-30">
+            
+            <!-- 🟢 Pure CSS Toggle Checkbox Engine -->
+            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+            
+            <!-- 🟢 Error-Free Scoped Structural Animation Layout Adjustments -->
+            <style>
+                #sidebar-content-box { width: 256px; }
+                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+            </style>
 
-<div class="page-header">
-    <div class="page-title">
-        <h1>
-            <i class="fa-solid fa-file-circle-check"></i>
-            Exam Management
-        </h1>
-        <p>Create and manage teacher exams</p>
-    </div>
+            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden overflow-y-auto">
+                <div>
+                    <!-- Logo & Collapse Button Trigger -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+                        <!-- 🟢 Centered uncollapse bars icon inside 72px header -->
+                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </label>
 
-    <a th:href="@{/teacher/exams/create}" class="btn btn-primary">
-        <i class="fa-solid fa-plus"></i>
-        Create Exam
-    </a>
-</div>
-
-<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-<div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
-
-<!-- ================= SEARCH / FILTER ================= -->
-
-<div class="search-card">
-
-    <!-- Search by exam title -->
-    <div class="search-box">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text"
-               id="examSearch"
-               placeholder="Search exam title..."
-               autocomplete="off"
-               oninput="filterExams()">
-    </div>
-
-    <!-- Exam Type -->
-    <select id="examTypeFilter" onchange="filterExams()">
-        <option value="">All Types</option>
-        <option value="QUIZ">QUIZ</option>
-        <option value="MIDTERM">MIDTERM</option>
-        <option value="FINAL">FINAL</option>
-    </select>
-
-    <!-- Exam Status -->
-    <select id="examStatusFilter" onchange="filterExams()">
-        <option value="">All Status</option>
-        <option value="DRAFT">DRAFT</option>
-        <option value="PUBLISHED">PUBLISHED</option>
-        <option value="CLOSED">CLOSED</option>
-    </select>
-
-    <!-- Buttons -->
-    <div class="search-actions">
-        <button type="button"
-                class="search-btn"
-                onclick="filterExams()">
-            Search
-        </button>
-
-        <button type="button"
-                class="search-reset-btn"
-                onclick="resetExamSearch()">
-            Reset
-        </button>
-    </div>
-
-</div>
-
-<div class="card">
-    <div class="table-wrapper">
-
-        <table>
-					<thead>
-						<tr>
-							<th>No</th>
-							<th>Title</th>
-							<th>Type</th>
-							<th>Duration</th>
-							<th>Total Mark</th>
-							<th>Pass Mark</th>
-							<th>Max Attempts</th>
-							<th>Status</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-
-					<tbody>
-
-						<tr th:each="exam,index : ${exams}"
-							th:attr="data-id=${exam.examId},
-             				data-created-at=${exam.createdAt},
-             				data-title=${exam.title},
-				             data-type=${exam.examType},
-				             data-status=${exam.status}">
-							<td th:text="${index.count}">1</td>
-
-							<td>
-								<div class="exam-title-wrapper">
-									<span class="title" th:text="${exam.title}"> Java Basic
-										Exam </span>
-								</div>
-							</td>
-
-							<td>
-							   <span class="exam-type" th:text="${exam.examType}">
-									MCQ </span>
-							</td>
-
-							<td><span th:text="${exam.durationMin}"> 60 </span> min</td>
-							<td th:text="${exam.totalMark}">100</td>
-							<td th:text="${exam.passMark}">40</td>
-							<td th:text="${exam.maxAttempts}">2</td>
-
-							<td>
-								<span class="status"
-								th:classappend="${exam.status == 'DRAFT'} ? ' status-draft' :
-                                          (${exam.status == 'PUBLISHED'} ? ' status-published' :
-                                          (${exam.status == 'CLOSED'} ? ' status-closed' : ''))"
-								th:text="${exam.status}"> DRAFT </span></td>
-							<td>
-
-								<div class="actions">
-									<button type="button" class="btn btn-view" title="View"
-										th:attr="
-                                    data-id=${exam.examId},
-                                    data-title=${exam.title},
-                                    data-type=${exam.examType},
-                                    data-duration=${exam.durationMin},
-                                    data-total=${exam.totalMark},
-                                    data-pass=${exam.passMark},
-                                    data-attempts=${exam.maxAttempts},
-                                    data-status=${exam.status}"
-										onclick="openViewModal(this)">
-										<i class="fa-solid fa-eye"></i>
-									</button>
-
-									<button type="button" class="btn btn-edit" title="Edit"
-										th:attr="
-            									data-id=${exam.examId},
-            									data-course=${exam.courseId},
-								            data-batch=${exam.batchId},
-								            data-title=${exam.title},
-								            data-type=${exam.examType},
-								            data-duration=${exam.durationMin},
-								            data-total=${exam.totalMark},
-								            data-pass=${exam.passMark},
-								            data-start=${exam.startAt != null ? #temporals.format(exam.startAt, 'yyyy-MM-dd''T''HH:mm') : ''},
-								            data-end=${exam.endAt != null ? #temporals.format(exam.endAt, 'yyyy-MM-dd''T''HH:mm') : ''},
-								            data-attempts=${exam.maxAttempts},
-								            data-shuffle=${exam.shuffleQuestions},
-								            data-status=${exam.status}"
-										onclick="openEditModal(this)">
-
-										<i class="fa-solid fa-pen"></i>
-
-									</button>
-
-									<form
-										th:action="@{/teacher/exams/delete/{id}(id=${exam.examId})}"
-										method="post"
-										onsubmit="return confirm('Are you sure you want to delete this exam?');">
-										<button type="submit" class="btn btn-delete" title="Delete">
-											<i class="fa-solid fa-trash"></i>
-										</button>
-									</form>
-
-								</div>
-
-							</td>
-							
-						</tr>
-
-			<tr th:if="${#lists.isEmpty(exams)}">
-                <td colspan="9">
-                    <div class="empty">
-                        <div>
-                            <i class="fa-regular fa-folder-open"></i>
+                        <div class="flex items-center gap-3 hidden-on-collapse">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
+                                <i class="fa-solid fa-chalkboard-user text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-base font-bold text-white tracking-wide block leading-none">EduPulse</span>
+                                <small class="text-[11px] font-medium text-slate-400">Teacher Portal</small>
+                            </div>
                         </div>
-                        <strong> No exams found</strong>
-                        <p>Create your first exam to get started.</p>
+
+                        <!-- Interactive Collapse Arrow Button (visible on hover) -->
+                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+                        </label>
                     </div>
-                </td>
-            </tr>
 
-            </tbody>
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-6">
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Teaching Portal</div>
+                            <div class="space-y-1">
+                                <a href="/teacher" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-house text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                                </a>
+                                <a href="/teacher/courses" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-book-open text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Courses</span>
+                                </a>
+                                <a href="/teacher/batches" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-users text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Batches</span>
+                                </a>
+                                <a href="/teacher/attendance" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-calendar-check text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Check Attendance</span>
+                                </a>
+                            </div>
+                        </div>
 
-        </table>
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Assessments</div>
+                            <div class="space-y-1">
+                                <a href="/teacher/question-list" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-database text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Question Bank</span>
+                                </a>
+                                <a href="/teacher/assignments" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-clipboard-list text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Assignments</span>
+                                </a>
+                                <a href="/teacher/submissions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-check-double text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Grade Submissions</span>
+                                </a>
+                                <!-- Active Exams Link -->
+                                <a href="/teacher/exams" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 shadow-sm transition">
+                                    <i class="fa-solid fa-file-pen text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exams</span>
+                                </a>
+                                <a href="/teacher/exam-results" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-square-poll-vertical text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exam Results</span>
+                                </a>
+                                <a href="/teacher/final-grades" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-graduation-cap text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Final Grades</span>
+                                </a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
 
-    </div>
-
-</div>
-</div>
-
-<div id="viewModal" class="modal-overlay">
-
-<div class="modal-box">
-
-    <div class="modal-header">
-        <h2>
-            <i class="fa-solid fa-eye"></i>
-            Exam Details
-        </h2>
-        <button type="button" class="modal-close"
-                onclick="closeViewModal()">
-            &times;
-        </button>
-    </div>
-
-    <div class="modal-body">
-
-        <div class="detail-grid">
-
-            <div class="detail-item">
-                <span class="detail-label">Exam ID</span>
-                <span id="viewExamId" class="detail-value"></span>
+                <div class="p-4 border-t border-slate-800">
+                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
+                    </a>
+                </div>
             </div>
+        </aside>
 
-            <div class="detail-item">
-                <span class="detail-label">Status </span>
-                <span id="viewStatus" class="detail-value"></span>
-            </div>
+        <!-- MAIN CONTENT AREA WRAPPER -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+            
+            <!-- HEADER FRAGMENT -->
+            <div th:replace="~{teacher :: header}"></div>
 
-            <div class="detail-item full">
-                <span class="detail-label"> Title</span>
-                <span id="viewTitle" class="detail-value"> </span>
-            </div>
+            <!-- Main Content -->
+            <main class="flex-1 min-w-0 px-4 sm:px-8 py-6 bg-slate-50 overflow-y-auto">
 
-            <div class="detail-item">
-                <span class="detail-label">Exam Type</span>
-                <span id="viewType" class="detail-value"></span>
-            </div>
+                <div class="w-full space-y-6">
 
-            <div class="detail-item">
-                <span class="detail-label">Duration</span>
-                <span id="viewDuration" class="detail-value"> </span>
-            </div>
+                    <!-- Page Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <h1 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-file-circle-check text-blue-600"></i> Exam Management
+                            </h1>
+                            <p class="text-xs text-slate-500 mt-1">Create and manage teacher exams</p>
+                        </div>
 
-            <div class="detail-item">
-                <span class="detail-label"> Total Mark</span>
-                <span id="viewTotal" class="detail-value"> </span>
-            </div>
+                        <a th:href="@{/teacher/exams/create}" class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-xl shadow-xs transition cursor-pointer">
+                            <i class="fa-solid fa-plus text-xs"></i> Create Exam
+                        </a>
+                    </div>
 
-            <div class="detail-item">
-                <span class="detail-label">Pass Mark</span>
-                <span id="viewPass" class="detail-value"> </span>
-            </div>
+                    <div th:if="${success}" class="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl" th:text="${success}"></div>
+                    <div th:if="${error}" class="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl" th:text="${error}"></div>
 
-            <div class="detail-item">
-                <span class="detail-label"> Max Attempts</span>
-                <span id="viewAttempts" class="detail-value"></span>
-            </div>
+                    <!-- Search / Filter Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs w-full">
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold uppercase text-slate-700">Search</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                    <input type="text" id="examSearch" class="w-full border border-slate-300 rounded-xl pl-9 pr-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search exam title..." autocomplete="off" oninput="filterExams()">
+                                </div>
+                            </div>
 
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold uppercase text-slate-700">Exam Type</label>
+                                <select id="examTypeFilter" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="filterExams()">
+                                    <option value="">All Types</option>
+                                    <option value="QUIZ">QUIZ</option>
+                                    <option value="MIDTERM">MIDTERM</option>
+                                    <option value="FINAL">FINAL</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold uppercase text-slate-700">Status</label>
+                                <select id="examStatusFilter" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="filterExams()">
+                                    <option value="">All Status</option>
+                                    <option value="DRAFT">DRAFT</option>
+                                    <option value="PUBLISHED">PUBLISHED</option>
+                                    <option value="CLOSED">CLOSED</option>
+                                </select>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <button type="button" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 px-4 rounded-xl transition cursor-pointer shadow-xs" onclick="filterExams()">Search</button>
+                                <button type="button" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs py-3 px-4 rounded-xl transition cursor-pointer" onclick="resetExamSearch()">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exam Table Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden w-full">
+                        <div class="px-6 py-4 border-b border-slate-200 bg-slate-100 flex justify-between items-center">
+                            <h2 class="font-bold text-sm uppercase text-slate-700">Exam List</h2>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-700 font-bold">
+                                    <tr>
+                                        <th class="px-4 py-3">No</th>
+                                        <th class="px-4 py-3">Title</th>
+                                        <th class="px-4 py-3">Type</th>
+                                        <th class="px-4 py-3">Duration</th>
+                                        <th class="px-4 py-3">Total Mark</th>
+                                        <th class="px-4 py-3">Pass Mark</th>
+                                        <th class="px-4 py-3">Max Attempts</th>
+                                        <th class="px-4 py-3">Status</th>
+                                        <th class="px-4 py-3 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr th:each="exam, index : ${exams}"
+                                        th:attr="data-id=${exam.examId},
+                                                 data-created-at=${exam.createdAt},
+                                                 data-title=${exam.title},
+                                                 data-type=${exam.examType},
+                                                 data-status=${exam.status}"
+                                        class="hover:bg-slate-50/80 transition">
+
+                                        <td class="px-4 py-3 text-xs text-slate-500 font-medium" th:text="${index.count}">1</td>
+                                        
+                                        <td class="px-4 py-3 font-semibold text-slate-900">
+                                            <div class="exam-title-wrapper flex items-center justify-between gap-3">
+                                                <span class="title min-w-0" th:text="${exam.title}">Java Basic Exam</span>
+                                            </div>
+                                        </td>
+                                        
+                                        <td class="px-4 py-3 text-xs font-semibold text-slate-600">
+                                            <span class="exam-type" th:text="${exam.examType}">MCQ</span>
+                                        </td>
+
+                                        <td class="px-4 py-3 text-xs text-slate-600"><span th:text="${exam.durationMin}">60</span> min</td>
+                                        <td class="px-4 py-3 text-sm font-bold text-slate-800" th:text="${exam.totalMark}">100</td>
+                                        <td class="px-4 py-3 text-sm font-bold text-slate-800" th:text="${exam.passMark}">40</td>
+                                        <td class="px-4 py-3 text-xs text-slate-600 font-medium" th:text="${exam.maxAttempts}">2</td>
+
+                                        <td class="px-4 py-3">
+                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border inline-block"
+                                                  th:classappend="${exam.status == 'DRAFT'} ? ' bg-slate-100 text-slate-700 border-slate-200' : (${exam.status == 'PUBLISHED'} ? ' bg-emerald-50 text-emerald-700 border-emerald-200' : ' bg-rose-50 text-rose-700 border-rose-200')"
+                                                  th:text="${exam.status}">DRAFT</span>
+                                        </td>
+
+                                        <td class="px-4 py-3 text-center">
+                                            <div class="flex items-center justify-center gap-1.5">
+                                                <button type="button" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold transition cursor-pointer" title="View"
+                                                        th:attr="data-id=${exam.examId}, data-title=${exam.title}, data-type=${exam.examType}, data-duration=${exam.durationMin}, data-total=${exam.totalMark}, data-pass=${exam.passMark}, data-attempts=${exam.maxAttempts}, data-status=${exam.status}"
+                                                        onclick="openViewModal(this)">
+                                                    View
+                                                </button>
+
+                                                <button type="button" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition cursor-pointer shadow-xs" title="Edit"
+                                                        th:attr="data-id=${exam.examId}, data-course=${exam.courseId}, data-batch=${exam.batchId}, data-title=${exam.title}, data-type=${exam.examType}, data-duration=${exam.durationMin}, data-total=${exam.totalMark}, data-pass=${exam.passMark}, data-start=${exam.startAt != null ? #temporals.format(exam.startAt, 'yyyy-MM-dd''T''HH:mm') : ''}, data-end=${exam.endAt != null ? #temporals.format(exam.endAt, 'yyyy-MM-dd''T''HH:mm') : ''}, data-attempts=${exam.maxAttempts}, data-shuffle=${exam.shuffleQuestions}, data-status=${exam.status}"
+                                                        onclick="openEditModal(this)">
+                                                    Edit
+                                                </button>
+
+                                                <form th:action="@{/teacher/exams/delete/{id}(id=${exam.examId})}" method="post" class="inline" onsubmit="return confirm('Are you sure you want to delete this exam?');">
+                                                    <button type="submit" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg text-xs font-bold transition cursor-pointer" title="Delete">
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr th:if="${#lists.isEmpty(exams)}">
+                                        <td colspan="9" class="px-6 py-12 text-center text-slate-500 text-sm font-medium">
+                                            <div class="flex flex-col items-center justify-center space-y-2">
+                                                <i class="fa-regular fa-folder-open text-3xl text-slate-400"></i>
+                                                <strong>No exams found</strong>
+                                                <p class="text-xs text-slate-400">Create your first exam to get started.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
         </div>
-
     </div>
 
-    <div class="modal-footer">
-        <button type="button" class="btn btn-cancel"
-                onclick="closeViewModal()">
-            Close
-        </button>
-    </div>
-
-</div>
-</div>
-
-<div id="editModal" class="exam-edit-overlay">
-
-    <div class="exam-edit-box">
-
-        <div class="exam-edit-header">
-            <div>
-                <h2>Edit Exam</h2>
-                <p>Update exam information</p>
+    <!-- View Modal Overlay -->
+    <div id="viewModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4" onclick="closeOnOverlay(event, 'viewModal')">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200 mb-4">
+                <h2 class="text-lg font-bold text-slate-900">Exam Details</h2>
+                <button type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 flex items-center justify-center cursor-pointer text-xl" onclick="closeViewModal()">&times;</button>
             </div>
 
-            <button type="button" class="exam-edit-close"
-                    onclick="closeEditModal()">
-                &times;
-            </button>
+            <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Exam ID</span>
+                    <span id="viewExamId" class="text-slate-900 font-medium"></span>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Status</span>
+                    <span id="viewStatus" class="text-slate-900 font-medium"></span>
+                </div>
+
+<!-- Course -->
+<div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+    <span class="text-slate-500 uppercase block mb-1 text-xs">
+        Course
+    </span>
+    <span id="viewCourse" class="text-slate-900 font-semibold">
+        -
+    </span>
+</div>
+
+<!-- Batch -->
+<div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+    <span class="text-slate-500 uppercase block mb-1 text-xs">
+        Batch
+    </span>
+    <span id="viewBatch" class="text-slate-900 font-semibold">
+        -
+    </span>
+</div>
+
+                
+                <div class="sm:col-span-2 bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Title</span>
+                    <span id="viewTitle" class="text-slate-900 font-medium"></span>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Exam Type</span>
+                    <span id="viewType" class="text-slate-900 font-medium"></span>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Duration</span>
+                    <span id="viewDuration" class="text-slate-900 font-medium"></span>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Total Mark</span>
+                    <span id="viewTotal" class="text-slate-900 font-medium"></span>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Pass Mark</span>
+                    <span id="viewPass" class="text-slate-900 font-medium"></span>
+                </div>
+                <div class="sm:col-span-2 bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span class="text-slate-400 uppercase block mb-1 text-xs font-bold">Max Attempts</span>
+                    <span id="viewAttempts" class="text-slate-900 font-medium"></span>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-4 border-t border-slate-200">
+                <button type="button" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold cursor-pointer" onclick="closeViewModal()">Close</button>
+            </div>
         </div>
+    </div>
 
-            <form id="editExamForm" method="post" th:action="@{/teacher/exams/update/prepare}">
+    <!-- Edit Exam Modal Overlay -->
+    <div id="editModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4" onclick="closeOnOverlay(event, 'editModal')">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200 mb-4">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900">Edit Exam</h2>
+                    <p class="text-xs text-slate-500">Update exam information</p>
+                </div>
+                <button type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 flex items-center justify-center cursor-pointer text-xl" onclick="closeEditModal()">&times;</button>
+            </div>
 
-            <input type="hidden" id="editExamId" name="examId">
+            <form id="editExamForm" method="post" th:action="@{/teacher/exams/update/prepare}" class="space-y-4 text-sm">
+                <input type="hidden" id="editExamId" name="examId">
+                <input type="hidden" id="originalTotalMark" name="originalTotalMark">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
-            <input type="hidden"
-                   th:if="${_csrf != null}"
-                   th:name="${_csrf.parameterName}"
-                   th:value="${_csrf.token}">
-
-            <div class="exam-edit-body">
-
-                <div class="exam-edit-grid">
-
-                    <div class="exam-edit-group">
-                        <label>Course</label>
-
-                        <select id="editCourse" disabled>
-                            <option value="">
-                                Select Course
-                            </option>
-
-                            <option th:each="course : ${courses}"
-                                    th:value="${course['course_id']}"
-                                    th:text="${course['title']}">
-                            </option>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Course</label>
+                        <select id="editCourse" disabled class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-100 cursor-not-allowed">
+                            <option value="">Select Course</option>
+                            <option th:each="course : ${courses}" th:value="${course['course_id']}" th:text="${course['title']}"></option>
                         </select>
                     </div>
 
-                    <div class="exam-edit-group">
-                        <label>Batch</label>
-
-                        <select id="editBatch" disabled>
-                            <option value="">
-                                Select Batch
-                            </option>
-
-                            <option th:each="batch : ${batches}"
-                                    th:value="${batch['batch_id']}"
-                                    th:text="${batch['title']}">
-                            </option>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Batch</label>
+                        <select id="editBatch" disabled class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-100 cursor-not-allowed">
+                            <option value="">Select Batch</option>
+                            <option th:each="batch : ${batches}" th:value="${batch['batch_id']}" th:text="${batch['title']}"></option>
                         </select>
                     </div>
+                </div>
 
-                    <div class="exam-edit-group exam-edit-full">
-                        <label>Exam Title <span>*</span></label>
-                        <input type="text" id="editTitle" name="title"
-                               maxlength="255" required>
-                    </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Exam Title <span class="text-rose-500">*</span></label>
+                    <input type="text" id="editTitle" name="title" maxlength="255" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
 
-                    <div class="exam-edit-group">
-                        <label>Exam Type <span>*</span></label>
-                        <select id="editType" name="examType" required>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Exam Type <span class="text-rose-500">*</span></label>
+                        <select id="editType" name="examType" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             <option value="QUIZ">Quiz</option>
                             <option value="MIDTERM">Midterm</option>
                             <option value="FINAL">Final</option>
                         </select>
                     </div>
 
-                    <div class="exam-edit-group">
-                        <label>Duration (Minutes) <span>*</span></label>
-                        <input type="number" id="editDuration"
-                               name="durationMin"
-                               min="1" step="1" required>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Duration (Minutes) <span class="text-rose-500">*</span></label>
+                        <input type="number" id="editDuration" name="durationMin" min="1" step="1" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Total Mark <span class="text-rose-500">*</span></label>
+                        <input type="number" id="editTotal" name="totalMark" min="0.01" step="0.01" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
 
-                    <div class="exam-edit-group">
-                        <label>Total Mark <span>*</span></label>
-                        <input type="number" id="editTotal"
-                               name="totalMark"
-                               min="0.01" step="0.01" required>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Pass Mark <span class="text-rose-500">*</span></label>
+                        <input type="number" id="editPass" name="passMark" min="0" step="0.01" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Start Date & Time <span class="text-rose-500">*</span></label>
+                        <input type="datetime-local" id="editStart" name="startAt" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
 
-                    <div class="exam-edit-group">
-                        <label>Pass Mark <span>*</span></label>
-                        <input type="number" id="editPass"
-                               name="passMark"
-                               min="0" step="0.01" required>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-700 mb-1">End Date & Time <span class="text-rose-500">*</span></label>
+                        <input type="datetime-local" id="editEnd" name="endAt" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Maximum Attempts <span class="text-rose-500">*</span></label>
+                        <input type="number" id="editAttempts" name="maxAttempts" min="1" step="1" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
 
-                    <div class="exam-edit-group">
-                        <label>Start Date & Time <span>*</span></label>
-                        <input type="datetime-local" id="editStart"
-                               name="startAt" required>
-                    </div>
-
-                    <div class="exam-edit-group">
-                        <label>End Date & Time <span>*</span></label>
-                        <input type="datetime-local" 
-                        id="editEnd" name="endAt" required>
-                    </div>
-
-                    <div class="exam-edit-group">
-                        <label>Maximum Attempts <span>*</span></label>
-                        <input type="number" id="editAttempts"
-                               name="maxAttempts"
-                               min="1" step="1" required>
-                    </div>
-
-                    <div class="exam-edit-group">
-                        <label>Status <span>*</span></label>
-                        <select id="editStatus" name="status" required>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Status <span class="text-rose-500">*</span></label>
+                        <select id="editStatus" name="status" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             <option value="DRAFT">Draft</option>
                             <option value="PUBLISHED">Published</option>
                             <option value="CLOSED">Closed</option>
                         </select>
                     </div>
-
-                    <div class="exam-edit-check exam-edit-full">
-                        <input type="checkbox" id="editShuffle" name="shuffleQuestions" value="true">
-                        <label for="editShuffle">
-                            Shuffle Questions
-                        </label>
-                    </div>
-
                 </div>
 
-            </div>
+                <div class="flex items-center gap-2 pt-1">
+                    <input type="checkbox" id="editShuffle" name="shuffleQuestions" value="true" class="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded cursor-pointer">
+                    <label for="editShuffle" class="text-xs font-bold text-slate-700 cursor-pointer">Shuffle Questions</label>
+                </div>
 
-            <div class="exam-edit-footer">
-                <button type="button" class="exam-edit-cancel" onclick="closeEditModal()">
-                    Cancel
-                </button>
-                <button type="submit" class="exam-edit-save">
-    						Next: Manage Questions
-				</button>
-
-            </div>
-
-        </form>
-
+                <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
+                    <button type="button" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold cursor-pointer" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" id="editExamSubmitBtn" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs">Save</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-</div>
+    <!-- JavaScript -->
+    <script>
 
-<!-- =========================================================
-     JAVASCRIPT
-========================================================= -->
-<script>
 
     function openViewModal(button) {
+        const d = button.dataset;
 
-        const id = button.dataset.id;
-        const title = button.dataset.title;
-        const type = button.dataset.type;
-        const duration = button.dataset.duration;
-        const total = button.dataset.total;
-        const pass = button.dataset.pass;
-        const attempts = button.dataset.attempts;
-        const status = button.dataset.status;
+        document.getElementById("viewExamId").textContent =
+            d.id || "-";
 
-        document.getElementById("viewExamId").textContent = id;
-        document.getElementById("viewTitle").textContent = title;
-        document.getElementById("viewType").textContent = type;
-        document.getElementById("viewDuration").textContent =
-            duration + " minutes";
-        document.getElementById("viewTotal").textContent = total;
-        document.getElementById("viewPass").textContent = pass;
-        document.getElementById("viewAttempts").textContent = attempts;
-        document.getElementById("viewStatus").textContent = status;
+        // Course ID ကို Course Name အဖြစ် ပြောင်းမယ်
+        const courseSelect = document.getElementById("editCourse");
+        const courseOption = Array.from(courseSelect.options)
+            .find(option => option.value === d.course);
 
-        document.getElementById("viewModal").classList.add("show");
-        document.body.classList.add("modal-open");
+        document.getElementById("viewCourse").textContent =
+            courseOption ? courseOption.textContent.trim() : "-";
+
+        // Batch ID ကို Batch Name အဖြစ် ပြောင်းမယ်
+        const batchSelect = document.getElementById("editBatch");
+        const batchOption = Array.from(batchSelect.options)
+            .find(option => option.value === d.batch);
+
+        document.getElementById("viewBatch").textContent = batchOption ? batchOption.textContent.trim() : "-";
+        document.getElementById("viewTitle").textContent = d.title || "-";
+        document.getElementById("viewType").textContent = d.type || "-";
+        document.getElementById("viewDuration").textContent =(d.duration || "0") + " minutes";
+        document.getElementById("viewTotal").textContent = d.total || "-";
+        document.getElementById("viewPass").textContent = d.pass || "-";
+        document.getElementById("viewAttempts").textContent = d.attempts || "-";
+        document.getElementById("viewStatus").textContent =d.status || "-";
+
+        const modal = document.getElementById("viewModal");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+
+        document.body.style.overflow = "hidden";
     }
 
 
-    function closeViewModal() {
-        document.getElementById("viewModal").classList.remove("show");
-        document.body.classList.remove("modal-open");
-    }
 
- function openEditModal(button) {
-
-     const d = button.dataset;
-
-     document.getElementById("editExamId").value =
-         d.id || "";
-
-     document.getElementById("editCourse").value =
-         d.course || "";
-
-     document.getElementById("editBatch").value =
-         d.batch || "";
-
-     document.getElementById("editTitle").value =
-         d.title || "";
-
-     document.getElementById("editType").value =
-         d.type || "";
-
-     document.getElementById("editDuration").value =
-         d.duration || "";
-
-     document.getElementById("editTotal").value =
-         d.total || "";
-
-     document.getElementById("editPass").value =
-         d.pass || "";
-
-     document.getElementById("editStart").value =
-         d.start || "";
-
-     document.getElementById("editEnd").value =
-         d.end || "";
-
-     document.getElementById("editAttempts").value =
-         d.attempts || "";
-
-     document.getElementById("editStatus").value =
-         d.status || "";
-
-     document.getElementById("editShuffle").checked =
-         d.shuffle === "true";
-
-     document.getElementById("editPass").setCustomValidity("");
-     document.getElementById("editEnd").setCustomValidity("");
-     document.getElementById("editModal").classList.add("show");
-     document.body.style.overflow = "hidden";
- }
-
- function closeEditModal() {
-     document.getElementById("editModal") .classList.remove("show");
-     document.body.style.overflow = "";
- }
-
- // Form Validation
- document.getElementById("editExamForm") .addEventListener("submit", function(event) {
-
-         const total = document.getElementById("editTotal");
-         const pass = document.getElementById("editPass");
-         const start = document.getElementById("editStart");
-         const end = document.getElementById("editEnd");
-
-         pass.setCustomValidity("");
-         end.setCustomValidity("");
-
-         if (Number(pass.value) > Number(total.value)) {
-             pass.setCustomValidity( "Pass Mark cannot exceed Total Mark.");
-         }
-
-         if (start.value && end.value &&
-             end.value <= start.value) {
-             end.setCustomValidity("End Date must be after Start Date.");
-         }
-
-         if (!this.reportValidity()) {
-             event.preventDefault();
-         }
-     });
-
- document.getElementById("editPass")
-     .addEventListener("input", function() {
-         this.setCustomValidity("");
-     });
-
- document.getElementById("editTotal")
-     .addEventListener("input", function() {
-         document.getElementById("editPass")
-             .setCustomValidity("");
-     });
-
- ["editStart", "editEnd"].forEach(function(id) {
-     document.getElementById(id)
-         .addEventListener("input", function() {
-             document.getElementById("editEnd")
-             .setCustomValidity("");
-         });
- });
-
- document.getElementById("editModal").addEventListener("click", function(event) {
-         if (event.target === this) {
-             closeEditModal();
-         }
-     });
-
- document.addEventListener("keydown", function(event) {
-     if (event.key === "Escape" &&
-         document.getElementById("editModal") .classList.contains("show")) {
-         closeEditModal();
-     }
- });
- 
-    function setupExamEditTracking() {
-
-        const editForm = document.getElementById("editExamForm");
-        if (!editForm) {
-            return;
+        function closeViewModal() {
+            const modal = document.getElementById("viewModal");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+            document.body.style.overflow = "";
         }
 
-        editForm.addEventListener("submit", function() {
-            const examId = document.getElementById("editExamId").value;
-            if (!examId) {
-                return;
+        function openEditModal(button) {
+            const d = button.dataset;
+
+            document.getElementById("editExamId").value = d.id || "";
+            document.getElementById("editCourse").value = d.course || "";
+            document.getElementById("editBatch").value = d.batch || "";
+            document.getElementById("editTitle").value = d.title || "";
+            document.getElementById("editType").value = d.type || "";
+            document.getElementById("editDuration").value = d.duration || "";
+
+            const totalInput = document.getElementById("editTotal");
+            const originalTotal = d.total || "";
+
+            totalInput.value = originalTotal;
+            totalInput.dataset.originalTotal = originalTotal;
+
+            document.getElementById("originalTotalMark").value = originalTotal;
+            document.getElementById("editPass").value = d.pass || "";
+            document.getElementById("editStart").value = d.start || "";
+            document.getElementById("editEnd").value = d.end || "";
+            document.getElementById("editAttempts").value = d.attempts || "";
+            document.getElementById("editStatus").value = d.status || "";
+            document.getElementById("editShuffle").checked = d.shuffle === "true";
+
+            document.getElementById("editPass").setCustomValidity("");
+            document.getElementById("editEnd").setCustomValidity("");
+
+            updateEditExamButton();
+
+            const modal = document.getElementById("editModal");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById("editModal");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+            document.body.style.overflow = "";
+        }
+
+        function closeOnOverlay(event, id) {
+            if (event.target.id === id) {
+                closeModal(id);
             }
-            localStorage.setItem( "exam_edited_" + examId, new Date().toISOString());
-        });
-    }
-
-    function getRecentTime(value, now) {
-
-        if (!value) {
-            return 0;
         }
-        const date = new Date(value);
 
-        if (isNaN(date.getTime())) {
+        document.getElementById("editExamForm").addEventListener("submit", function(event) {
+            const total = document.getElementById("editTotal");
+            const pass = document.getElementById("editPass");
+            const start = document.getElementById("editStart");
+            const end = document.getElementById("editEnd");
+
+            pass.setCustomValidity("");
+            end.setCustomValidity("");
+
+            if (Number(pass.value) > Number(total.value)) {
+                pass.setCustomValidity("Pass Mark cannot exceed Total Mark.");
+            }
+
+            if (start.value && end.value && end.value <= start.value) {
+                end.setCustomValidity("End Date must be after Start Date.");
+            }
+
+            if (!this.reportValidity()) {
+                event.preventDefault();
+            }
+        });
+
+        document.getElementById("editTotal").addEventListener("input", function() {
+            document.getElementById("editPass").setCustomValidity("");
+            updateEditExamButton();
+        });
+
+        ["editStart", "editEnd"].forEach(function(id) {
+            document.getElementById(id).addEventListener("input", function() {
+                document.getElementById("editEnd").setCustomValidity("");
+            });
+        });
+
+        document.getElementById("viewModal").addEventListener("click", function(event) {
+            if (event.target === this) closeViewModal();
+        });
+
+        document.getElementById("editModal").addEventListener("click", function(event) {
+            if (event.target === this) closeEditModal();
+        });
+
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Escape") {
+                closeViewModal();
+                closeEditModal();
+            }
+        });
+
+        function setupExamEditTracking() {
+            const editForm = document.getElementById("editExamForm");
+            if (!editForm) return;
+
+            editForm.addEventListener("submit", function() {
+                const examId = document.getElementById("editExamId").value;
+                if (!examId) return;
+                localStorage.setItem("exam_edited_" + examId, new Date().toISOString());
+            });
+        }
+
+        function getRecentTime(value, now) {
+            if (!value) return 0;
+            const date = new Date(value);
+            if (isNaN(date.getTime())) return 0;
+            const diff = now - date.getTime();
+            const twentyFourHours = 24 * 60 * 60 * 1000;
+            if (diff >= 0 && diff <= twentyFourHours) return date.getTime();
             return 0;
         }
 
-        const diff = now - date.getTime();
-        const twentyFourHours = 24 * 60 * 60 * 1000;
+        function applyExamStatus() {
+            const now = Date.now();
+            const tbody = document.querySelector("table tbody");
+            if (!tbody) return;
 
-        if (diff >= 0 && diff <= twentyFourHours) {
-            return date.getTime();
-        }
+            const rows = Array.from(tbody.querySelectorAll("tr[data-id]"));
 
-        return 0;
-    }
+            rows.forEach(function(row) {
+                const examId = row.dataset.id;
+                const createdTime = getRecentTime(row.dataset.createdAt, now);
+                const editedRaw = localStorage.getItem("exam_edited_" + examId);
+                const editedTime = getRecentTime(editedRaw, now);
 
-    function applyExamStatus() {
-
-        const now = Date.now();
-        const tbody = document.querySelector("table tbody");
-
-        if (!tbody) {
-            return;
-        }
-
-        const rows = Array.from( tbody.querySelectorAll("tr[data-id]"));
-
-        rows.forEach(function(row) {
-
-            const examId = row.dataset.id;
-            const createdTime = getRecentTime( row.dataset.createdAt, now);
-            const editedRaw = localStorage.getItem( "exam_edited_" + examId);
-            const editedTime =getRecentTime(editedRaw,now);
-
-            if (editedRaw && editedTime === 0) {
-                localStorage.removeItem("exam_edited_" + examId );
-            }
-
-            row.classList.remove("exam-new","exam-edited");
-
-            const oldBadge = row.querySelector( ".exam-status-badge");
-
-            if (oldBadge) {
-                oldBadge.remove();
-            }
-
-            const titleWrapper =row.querySelector(".exam-title-wrapper");
-
-            if (!titleWrapper) {
-                return;
-            }
-
-            if (editedTime > 0) {
-
-                row.classList.add("exam-edited");
-
-                const badge = document.createElement("span");
-
-                badge.className = "exam-status-badge exam-edited-badge";
-                badge.innerHTML ='<i class="fa-solid fa-pen"></i> EDITED';
-
-                titleWrapper.appendChild(badge);
-                return;
-            }
-
-            if (createdTime > 0) {
-
-                row.classList.add("exam-new");
-
-                const badge = document.createElement("span");
-                
-                badge.className ="exam-status-badge exam-new-badge";
-                badge.innerHTML ='<i class="fa-solid fa-star"></i> NEW';
-
-                titleWrapper.appendChild(badge);
-            }
-
-        });
-
-        rows.sort(function(a, b) {
-            const aId = Number(a.dataset.id);
-            const bId = Number(b.dataset.id);
-
-            const aCreatedTime = getRecentTime(a.dataset.createdAt, now);
-            const bCreatedTime = getRecentTime( b.dataset.createdAt, now);
-
-            const aEditedTime =getRecentTime(
-                		localStorage.getItem("exam_edited_" + a.dataset.id), now);
-
-            const bEditedTime =getRecentTime(
-                    localStorage.getItem("exam_edited_" + b.dataset.id),now);
-
-            const aLatest = Math.max( aCreatedTime, aEditedTime);
-            const bLatest = Math.max( bCreatedTime,bEditedTime);
-
-            if (aLatest > 0 && bLatest === 0) {
-                return -1;
-            }
-            if (aLatest === 0 && bLatest > 0) {
-                return 1;
-            }
-            if (aLatest > 0 && bLatest > 0) {
-                return bLatest - aLatest;
-            }
-            return bId - aId;
-        });
-
-        rows.forEach(function(row) {
-            tbody.appendChild(row);
-        });
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-
-        setupExamEditTracking();
-        applyExamStatus();
-
-        const searchInput = document.getElementById("examSearch");
-        const typeFilter = document.getElementById("examTypeFilter");
-        const statusFilter = document.getElementById("examStatusFilter");
-
-        if (searchInput) {
-            searchInput.addEventListener("input", filterExams);
-        }
-        if (typeFilter) {
-            typeFilter.addEventListener("change", filterExams);
-        }
-        if (statusFilter) {
-            statusFilter.addEventListener("change", filterExams);
-        }
-
-        filterExams();
-    });
-
-
-function filterExams() {
-
-    const searchInput = document.getElementById("examSearch");
-    const typeFilter = document.getElementById("examTypeFilter");
-    const statusFilter = document.getElementById("examStatusFilter");
-
-    if (!searchInput || !typeFilter || !statusFilter) {
-        return;
-    }
-
-    const searchText = searchInput.value.trim().toLowerCase();
-    const selectedType = typeFilter.value.trim().toUpperCase();
-    const selectedStatus = statusFilter.value.trim().toUpperCase();
-    const rows = document.querySelectorAll("table tbody tr[data-id]");
-
-    let visibleCount = 0;
-
-    rows.forEach(function(row) {
-        const titleElement = row.querySelector(".title");
-
-        const title = ( titleElement ? titleElement.textContent
-                : row.cells[1]?.textContent || "").trim().toLowerCase();
-
-        const type = (row.dataset.type || "").trim().toUpperCase();
-        const status = (row.dataset.status || "").trim().toUpperCase();
-        const titleMatch = title.includes(searchText);
-
-        const typeMatch =
-            selectedType === "" ||
-            selectedType === "ALL" ||
-            type === selectedType;
-
-        const statusMatch =
-            selectedStatus === "" ||
-            selectedStatus === "ALL" ||
-            status === selectedStatus;
-
-        const show = titleMatch && typeMatch && statusMatch;
-        row.style.display = show ? "" : "none";
-
-        if (show) {
-            visibleCount++;
-        }
-    });
-
-    updateExamNumbers();
-    updateNoSearchResult(visibleCount, rows.length);
-}
-
-    function updateExamNumbers() {
-        const rows = document.querySelectorAll("table tbody tr[data-id]");
-
-        let number = 1;
-
-        rows.forEach(function (row) {
-            if (row.style.display !== "none") {
-                const firstCell = row.querySelector("td:first-child");
-                if (firstCell) {
-                    firstCell.textContent = number;
+                if (editedRaw && editedTime === 0) {
+                    localStorage.removeItem("exam_edited_" + examId);
                 }
-                number++;
-            }
+
+                row.classList.remove("exam-new", "exam-edited");
+                const oldBadge = row.querySelector(".exam-status-badge");
+                if (oldBadge) oldBadge.remove();
+
+                const titleWrapper = row.querySelector(".exam-title-wrapper");
+                if (!titleWrapper) return;
+
+                if (editedTime > 0) {
+                    row.classList.add("exam-edited");
+                    const badge = document.createElement("span");
+                    badge.className = "inline-flex items-center px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold whitespace-nowrap exam-status-badge ml-1.5";
+                    badge.innerHTML = '<i class="fa-solid fa-pen mr-1"></i> EDITED';
+                    titleWrapper.appendChild(badge);
+                } else if (createdTime > 0) {
+                    row.classList.add("exam-new");
+                    const badge = document.createElement("span");
+                    badge.className = "inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-[10px] font-bold whitespace-nowrap exam-status-badge ml-1.5";
+                    badge.innerHTML = '<i class="fa-solid fa-sparkles mr-1"></i> NEW';
+                    titleWrapper.appendChild(badge);
+                }
+            });
+
+            rows.sort(function(a, b) {
+                const aId = Number(a.dataset.id);
+                const bId = Number(b.dataset.id);
+
+                const aCreatedTime = getRecentTime(a.dataset.createdAt, now);
+                const bCreatedTime = getRecentTime(b.dataset.createdAt, now);
+
+                const aEditedTime = getRecentTime(localStorage.getItem("exam_edited_" + a.dataset.id), now);
+                const bEditedTime = getRecentTime(localStorage.getItem("exam_edited_" + b.dataset.id), now);
+
+                const aLatest = Math.max(aCreatedTime, aEditedTime);
+                const bLatest = Math.max(bCreatedTime, bEditedTime);
+
+                if (aLatest > 0 && bLatest === 0) return -1;
+                if (aLatest === 0 && bLatest > 0) return 1;
+                if (aLatest > 0 && bLatest > 0) return bLatest - aLatest;
+                return bId - aId;
+            });
+
+            rows.forEach(function(row) {
+                tbody.appendChild(row);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            setupExamEditTracking();
+            applyExamStatus();
+            filterExams();
         });
-    }
 
-    function updateNoSearchResult(visibleCount, totalCount) {
-        const tbody = document.querySelector("table tbody");
-        if (!tbody) {
-            return;
+        function filterExams() {
+            const searchInput = document.getElementById("examSearch");
+            const typeFilter = document.getElementById("examTypeFilter");
+            const statusFilter = document.getElementById("examStatusFilter");
+
+            if (!searchInput || !typeFilter || !statusFilter) return;
+
+            const searchText = searchInput.value.trim().toLowerCase();
+            const selectedType = typeFilter.value.trim().toUpperCase();
+            const selectedStatus = statusFilter.value.trim().toUpperCase();
+            const rows = document.querySelectorAll("table tbody tr[data-id]");
+
+            let visibleCount = 0;
+
+            rows.forEach(function(row) {
+                const titleElement = row.querySelector(".title");
+                const title = (titleElement ? titleElement.textContent : row.cells[1]?.textContent || "").trim().toLowerCase();
+                const type = (row.dataset.type || "").trim().toUpperCase();
+                const status = (row.dataset.status || "").trim().toUpperCase();
+                
+                const titleMatch = title.includes(searchText);
+                const typeMatch = selectedType === "" || selectedType === "ALL" || type === selectedType;
+                const statusMatch = selectedStatus === "" || selectedStatus === "ALL" || status === selectedStatus;
+
+                const show = titleMatch && typeMatch && statusMatch;
+                row.style.display = show ? "" : "none";
+
+                if (show) visibleCount++;
+            });
+
+            updateExamNumbers();
+            updateNoSearchResult(visibleCount, rows.length);
         }
-        let noResultRow = document.getElementById("noSearchResult");
 
-        if (!noResultRow) {
+        function updateExamNumbers() {
+            const rows = document.querySelectorAll("table tbody tr[data-id]");
+            let number = 1;
+            rows.forEach(function (row) {
+                if (row.style.display !== "none") {
+                    const firstCell = row.querySelector("td:first-child");
+                    if (firstCell) firstCell.textContent = number;
+                    number++;
+                }
+            });
+        }
 
-            noResultRow = document.createElement("tr");
-            noResultRow.id = "noSearchResult";
+        function updateNoSearchResult(visibleCount, totalCount) {
+            const tbody = document.querySelector("table tbody");
+            if (!tbody) return;
+            let noResultRow = document.getElementById("noSearchResult");
 
-            noResultRow.innerHTML = `
-                <td colspan="9">
-                    <div class="empty">
-                        <div>
-                            <i class="fa-solid fa-magnifying-glass"></i>
+            if (!noResultRow) {
+                noResultRow = document.createElement("tr");
+                noResultRow.id = "noSearchResult";
+                noResultRow.innerHTML = `
+                    <td colspan="9" class="px-6 py-10 text-center text-slate-500 text-sm font-medium">
+                        <div class="flex flex-col items-center justify-center space-y-2">
+                            <i class="fa-solid fa-magnifying-glass text-2xl text-slate-400"></i>
+                            <strong>No matching exams found</strong>
+                            <p class="text-xs text-slate-400">Try another search or filter.</p>
                         </div>
-                        <strong>No matching exams found</strong>
-                        <p>Try another search or filter.</p>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(noResultRow);
+                    </td>
+                `;
+                tbody.appendChild(noResultRow);
+            }
+
+            if (totalCount > 0 && visibleCount === 0) {
+                noResultRow.style.display = "";
+            } else {
+                noResultRow.style.display = "none";
+            }
         }
 
-        if (totalCount > 0 && visibleCount === 0) {
-            noResultRow.style.display = "";
-        } else {
-            noResultRow.style.display = "none";
+        function resetExamSearch() {
+            document.getElementById("examSearch").value = "";
+            document.getElementById("examTypeFilter").value = "";
+            document.getElementById("examStatusFilter").value = "";
+            filterExams();
         }
-    }
+        
 
-    function resetExamSearch() {
-        document.getElementById("examSearch").value = "";
-        document.getElementById("examTypeFilter").value = "";
-        document.getElementById("examStatusFilter").value = "";
-        filterExams();
-    }
-</script>
-</div>
+        function updateEditExamButton() {
+            const totalInput = document.getElementById("editTotal");
+            const submitButton = document.getElementById("editExamSubmitBtn");
+
+            if (!totalInput || !submitButton) return;
+
+            const originalValue = totalInput.dataset.originalTotal;
+
+            // Original Total Mark မရှိသေးရင် Save ပဲပြမယ်
+            if (originalValue === undefined || originalValue.trim() === "") {
+                submitButton.textContent = "Save";
+                return;
+            }
+
+            const originalTotal = Number(originalValue);
+            const currentTotal = Number(totalInput.value);
+
+            const changed =
+                totalInput.value.trim() !== "" &&
+                Number.isFinite(currentTotal) &&
+                currentTotal !== originalTotal;
+
+            submitButton.textContent = changed
+                ? "Next: Manage Questions"
+                : "Save";
+        }
+
+
+
+    </script>
 </body>
 </html>

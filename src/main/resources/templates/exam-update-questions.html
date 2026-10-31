@@ -224,53 +224,26 @@ th, td {
 
     <div class="card">
 
-        <form id="updateQuestionForm" method="post"
-              th:action="@{/teacher/exams/update/confirm}">
-
-            <input type="hidden" th:if="${_csrf != null}"
-                   th:name="${_csrf.parameterName}"
-                   th:value="${_csrf.token}">
-
-            <input type="hidden" name="examId"
-                   th:value="${exam.examId}">
-
-            <input type="hidden" name="title"
-                   th:value="${exam.title}">
-
-            <input type="hidden" name="examType"
-                   th:value="${exam.examType}">
-
-            <input type="hidden" name="durationMin"
-                   th:value="${exam.durationMin}">
-
-            <input type="hidden" name="totalMark"
-                   th:value="${exam.totalMark}">
-
-            <input type="hidden" name="passMark"
-                   th:value="${exam.passMark}">
-
-            <input type="hidden" name="startAt"
-                   th:value="${exam.startAt}">
-
-            <input type="hidden" name="endAt"
-                   th:value="${exam.endAt}">
-
-            <input type="hidden" name="maxAttempts"
-                   th:value="${exam.maxAttempts}">
-
-            <input type="hidden" name="status"
-                   th:value="${exam.status}">
-
-            <input type="hidden" name="shuffleQuestions"
-                   th:value="${exam.shuffleQuestions}">
+        <form id="updateQuestionForm" method="post" th:action="@{/teacher/exams/update/confirm}">
+        
+            <input type="hidden" th:if="${_csrf != null}"  th:name="${_csrf.parameterName}"  th:value="${_csrf.token}">
+            <input type="hidden" name="examId" th:value="${exam.examId}">
+            <input type="hidden" name="title" th:value="${exam.title}">
+            <input type="hidden" name="examType" th:value="${exam.examType}">
+            <input type="hidden" name="durationMin" th:value="${exam.durationMin}">
+            <input type="hidden" name="totalMark" th:value="${exam.totalMark}">
+            <input type="hidden" name="passMark" th:value="${exam.passMark}">
+            <input type="hidden" name="startAt" th:value="${exam.startAt}">
+            <input type="hidden" name="endAt" th:value="${exam.endAt}">
+            <input type="hidden" name="maxAttempts" th:value="${exam.maxAttempts}">
+            <input type="hidden" name="status" th:value="${exam.status}">
+            <input type="hidden" name="shuffleQuestions" th:value="${exam.shuffleQuestions}">
 
             <div class="summary">
 
                 <div class="summary-item">
                     <span>Exam Total Mark</span>
-                    <strong id="targetMark" th:text="${exam.totalMark}">
-                        100
-                    </strong>
+                    <strong id="targetMark" th:text="${exam.totalMark}">100</strong>
                 </div>
 
                 <div class="summary-item">
@@ -285,8 +258,7 @@ th, td {
 
             </div>
 
-            <input type="text" id="questionSearch"
-                   class="search" placeholder="Search questions...">
+            <input type="text" id="questionSearch" class="search" placeholder="Search questions...">
 
             <div class="table-wrapper">
 
@@ -395,14 +367,9 @@ document.addEventListener("DOMContentLoaded", function () {
             message.className = "message invalid";
 
             if (difference > 0) {
-                message.textContent =
-                    "You need " + difference.toFixed(2)
-                    + " more marks. Add questions.";
+                message.textContent = "You need " + difference.toFixed(2) + " more marks. Add questions.";
             } else {
-                message.textContent =
-                    "Selected marks exceed the target by "
-                    + Math.abs(difference).toFixed(2)
-                    + ". Remove questions.";
+                message.textContent ="Selected marks exceed the target by " + Math.abs(difference).toFixed(2) + ". Remove questions.";
             }
 
             saveBtn.disabled = true;

@@ -6,95 +6,329 @@
     <title>Student Dashboard - LearnHub LMS</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased font-sans">
+<body class="bg-slate-50 text-slate-800 antialiased font-sans">
 
     <div class="flex min-h-screen">
-        <!-- Sidebar Navigation Menu -->
-        <aside class="w-64 bg-slate-900 text-slate-300 hidden md:flex flex-col justify-between shrink-0 sticky top-0 h-screen overflow-y-auto border-r border-slate-800">
-            <div>
-                <!-- Logo -->
-                <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
-                        <i class="fa-solid fa-graduation-cap text-lg"></i>
+            <!-- Sidebar Navigation Menu (Fixed Pure-CSS Collapsible Animation) -->
+        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar">
+            
+            <!-- 🟢 Pure CSS Toggle Checkbox Engine -->
+            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+            
+            <!-- 🟢 Error-Free Scoped Structural Animation Layout Adjustments -->
+            <style>
+                #sidebar-content-box { width: 256px; }
+                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+            </style>
+
+            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden">
+                <div>
+                    <!-- Logo & Collapse Button Trigger -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+                        <!-- 🟢 FIXED: Centered the uncollapse bars icon perfectly inside the 72px header -->
+                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </label>
+
+                        <div class="flex items-center gap-3 hidden-on-collapse">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
+                                <i class="fa-solid fa-graduation-cap text-lg"></i>
+                            </div>
+                            <div>
+                                <span class="text-base font-bold text-white tracking-wide block leading-none">LearnHub</span>
+                                <small class="text-[11px] font-medium text-slate-400">Student Portal</small>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Collapse Arrow Button (visible on hover) -->
+                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+                        </label>
                     </div>
-                    <div>
-                        <span class="text-base font-bold text-white tracking-wide block leading-none">LearnHub</span>
-                        <small class="text-[11px] font-medium text-slate-400">Student Portal</small>
-                    </div>
+
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-6">
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Learning</div>
+                            <div class="space-y-1">
+                                <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 shadow-sm transition">
+                                    <i class="fa-solid fa-border-all text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                                </a>
+                                <a th:href="@{/student/my-courses}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                                    <i class="fa-solid fa-book-open text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">My Courses</span>
+                                </a>
+                                <a th:href="@{/student/schedule}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-regular fa-calendar-check text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Schedule</span>
+                                </a>
+                                <a th:href="@{/student/assignments}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fa-regular fa-file-lines text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Assignments</span>
+                                    </div>
+                                </a>
+                                <a th:href="@{/student/exam-list}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-square-check text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">My Exams</span>
+                                </a>
+                                <a th:href="@{/student/exam-results}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-chart-simple text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">My Results</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Account</div>
+                            <div class="space-y-1">
+                                <a th:href="@{/student/checkout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-regular fa-credit-card text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Payments</span>
+                                </a>
+                                <a th:href="@{/student/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-regular fa-user text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">My Profile</span>
+                                </a>
+                            </div>
+                        </div>
+                    </nav>
                 </div>
 
-                <!-- Navigation Links -->
-                <nav class="p-4 space-y-6">
-                    <div>
-                        <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Learning</div>
-                        <div class="space-y-1">
-                            <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 shadow-sm transition">
-                                <i class="fa-solid fa-border-all text-base"></i> Dashboard
-                            </a>
-                            <a th:href="@{/student/my-courses}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
-                                <i class="fa-solid fa-book-open text-base"></i> My Courses
-                            </a>
-                            <a th:href="@{/student/schedule}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                <i class="fa-regular fa-calendar-check text-base"></i> Schedule
-                            </a>
-                            <a th:href="@{/student/assignments}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                <div class="flex items-center gap-3">
-                                    <i class="fa-regular fa-file-lines text-base"></i> Assignments
-                                </div>
-                            </a>
-                            <a th:href="@{/student/exams}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                <i class="fa-solid fa-square-check text-base"></i> Exams
-                            </a>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Account</div>
-                        <div class="space-y-1">
-                            <a th:href="@{/student/checkout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                <i class="fa-regular fa-credit-card text-base"></i> Payments
-                            </a>
-                            <a th:href="@{/student/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                <i class="fa-regular fa-user text-base"></i> My Profile
-                            </a>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-
-            <div class="p-4 border-t border-slate-800">
-                <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
-                    <i class="fa-solid fa-right-from-bracket text-base"></i> Logout
-                </a>
+                <div class="p-4 border-t border-slate-800">
+                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
+                    </a>
+                </div>
             </div>
         </aside>
 
+
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
             <!-- Header -->
-            <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-10 shadow-sm">
-                <div>
-                    <h2 class="text-lg font-bold text-slate-900 leading-tight">Welcome, <span th:text="${fullName}">Student</span>!</h2>
-                    <p class="text-xs text-slate-400 font-medium">Student ID: <span th:text="${studentId}">STU-001</span></p>
+             <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shrink-0 z-40 shadow-sm">
+               <div>
+               </div>
+                <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
+                    <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+                        <span th:text="${fullName != null ? #strings.substring(fullName,0,2) : 'ST'}">ST</span>
+                    </div>
+                    <div class="hidden lg:block">
+                        <b class="block text-xs font-bold text-slate-800 leading-none" th:text="${fullName != null ? fullName : 'Student'}">Student</b>
+                        <small class="text-[11px] text-slate-400 font-medium">Student Portal</small>
+                    </div>
                 </div>
             </header>
 
-            <main class="p-6 lg:p-8 space-y-6 max-w-[1400px] mx-auto w-full">
-                <div class="bg-indigo-600 text-white p-6 rounded-2xl shadow-sm flex items-center justify-between">
+             <main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 w-full text-xs bg-slate-50">
+                
+                <!-- Welcome Banner -->
+                <div class="bg-indigo-600 text-white p-6 rounded-2xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
                         <h3 class="text-xl font-bold">LearnHub Student Portal မှ ကြိုဆိုပါတယ်</h3>
                         <p class="text-xs text-indigo-100 mt-1">သင်၏ အတန်းချိန်များနှင့် စာမေးပွဲ ဇယားများကို Schedule မီနူးတွင် ကြည့်ရှုနိုင်ပါသည်။</p>
                     </div>
-                    <a th:href="@{/student/schedule}" class="px-4 py-2 bg-white text-indigo-600 text-xs font-bold rounded-xl hover:bg-indigo-50 transition">
+                    <a th:href="@{/student/schedule}" class="px-4 py-2 bg-white text-indigo-600 text-xs font-bold rounded-xl hover:bg-indigo-50 transition shrink-0">
                         View Schedule
                     </a>
                 </div>
+
+                <!-- 🟢 ROW 1: REAL-TIME PROGRESS STATISTICS CARDS -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg shrink-0">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <div>
+                            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Enrolled Courses</div>
+                            <div class="text-xl font-extrabold text-slate-900 mt-0.5" th:text="${enrolledCount != null ? enrolledCount : '0'}">0</div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg shrink-0">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div>
+                            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pending Tasks</div>
+                            <div class="text-xl font-extrabold text-slate-900 mt-0.5" th:text="${pendingCount != null ? pendingCount : '0'}">0</div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shrink-0">
+                            <i class="fa-solid fa-square-check"></i>
+                        </div>
+                       <div>
+    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Passed Exams</div>
+    
+    <div class="text-xl font-extrabold text-slate-900 mt-0.5" 
+         th:text="${passedCount != null ? passedCount : '0'}">0</div>
+</div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-lg shrink-0">
+                            <i class="fa-solid fa-certificate"></i>
+                        </div>
+                        <div>
+    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Certificates</div>
+    
+    <div class="text-xl font-extrabold text-slate-900 mt-0.5" 
+         th:text="${certCount != null ? certCount : '0'}">0</div>
+</div>
+                    </div>
+                </div>              
+
+                <!-- ========================================================= -->
+                <!-- 🟢 ROW 3: PLATFORM ANNOUNCEMENTS & QUICK ACTION HUB         -->
+                <!-- ========================================================= -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Announcements Panel -->
+                    <!-- RECENT ANNOUNCEMENTS CARD -->
+<div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm lg:col-span-2 space-y-4">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Recent Announcements</h4>
+        <!-- Trigger to open the modal framework -->
+        <span onclick="toggleHistoryModal(true)" class="text-xs font-bold text-indigo-600 cursor-pointer hover:underline flex items-center gap-1">
+            View History <i class="fa-solid fa-clock-rotate-left text-[10px]"></i>
+        </span>
+    </div>
+    
+    <div class="space-y-4">
+        <div th:if="${allAnnouncements == null or #lists.isEmpty(allAnnouncements)}" class="text-center py-4 text-xs text-slate-400">
+            No recent announcements available.
+        </div>
+
+        <!-- Dashboard Loop (Shows recent records loaded by controller) -->
+        <div th:each="announcement : ${allAnnouncements}" 
+             class="flex gap-4 items-start pb-4 border-b border-slate-50 last:border-0 last:pb-0">
+            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-500 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h5 class="text-xs font-bold text-slate-900" th:text="${announcement.title}">Notice Title</h5>
+                <p class="text-xs text-slate-400 mt-0.5 leading-normal text-ellipsis overflow-hidden line-clamp-2" th:text="${announcement.body}">Notice body text.</p>
+                <small class="text-[10px] text-slate-400 font-medium block mt-1.5">
+                    <i class="fa-regular fa-clock me-1"></i>
+                    <span th:text="${announcement.createdAt != null ? #temporals.format(announcement.createdAt, 'dd-MM-yyyy hh:mm a') : 'Recently'}">Date</span>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🟢 ANNOUNCEMENT HISTORY MODAL BOX (Place this at the bottom of your HTML body) -->
+<div id="history-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-2xl w-full max-h-[80vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in-95 duration-150">
+        
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 p-5 shrink-0">
+            <div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">Announcement History</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Browse all historically broadcasted updates</p>
+            </div>
+            <button onclick="toggleHistoryModal(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-2xl font-semibold p-1 cursor-pointer leading-none">&times;</button>
+        </div>
+
+        <!-- Modal Body Content (Scrollable List Container) -->
+        <div class="p-6 overflow-y-auto space-y-4 divide-y divide-slate-100 dark:divide-slate-700/50">
+            <div th:if="${historyAnnouncements == null or #lists.isEmpty(historyAnnouncements)}" class="text-center py-8 text-xs text-slate-400">
+                No announcement records found in the archive logs.
+            </div>
+
+            <!-- Loop that iterates over the full historical data map directly in the viewport window -->
+            <div th:each="announcement, iterStat : ${historyAnnouncements}" 
+                 class="flex gap-4 items-start text-left w-full"
+                 th:classappend="${iterStat.index == 0} ? 'pt-0' : 'pt-4'">
+                <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h5 class="text-xs font-bold text-slate-900 dark:text-slate-100" th:text="${announcement.title}">Title</h5>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed whitespace-pre-line" th:text="${announcement.body}">Body Text Content</p>
+                    <div class="flex flex-wrap items-center gap-x-3 mt-2 text-[10px] text-slate-400 font-medium">
+                        <span th:if="${announcement.postedByName != null}">
+                            <i class="fa-solid fa-user me-1"></i><span th:text="${announcement.postedByName}">Sender</span>
+                        </span>
+                        <span>
+                            <i class="fa-regular fa-clock me-1"></i>
+                            <span th:text="${announcement.createdAt != null ? #temporals.format(announcement.createdAt, 'dd-MM-yyyy hh:mm a') : 'Archive'}">Date</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="border-t border-slate-100 dark:border-slate-700 p-4 flex justify-end shrink-0 bg-slate-50 dark:bg-slate-800/50 rounded-b-2xl">
+            <button onclick="toggleHistoryModal(false)" class="px-4 py-2 border border-slate-200 dark:border-slate-600 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
+                Close View
+            </button>
+        </div>
+    </div>
+</div>
+
+
+                    <!-- Fast Action Center Hub Grid Box -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="border-b border-slate-100 pb-3">
+                            <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Fast Action Center</h4>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <a th:href="@{/student/assignments}" class="p-3 bg-slate-50 border border-slate-100 rounded-xl text-center hover:bg-indigo-50 hover:border-indigo-100 group transition">
+                                <i class="fa-regular fa-file-lines text-lg text-slate-400 group-hover:text-indigo-600 block mb-1"></i>
+                                <span class="text-xs font-bold text-slate-700 group-hover:text-indigo-900 block">Submit Task</span>
+                            </a>
+                            <a th:href="@{/student/exam-list}" class="p-3 bg-slate-50 border border-slate-100 rounded-xl text-center hover:bg-indigo-50 hover:border-indigo-100 group transition">
+                                <i class="fa-solid fa-square-check text-lg text-slate-400 group-hover:text-indigo-600 block mb-1"></i>
+                                <span class="text-xs font-bold text-slate-700 group-hover:text-indigo-900 block">Take Exam</span>
+                            </a>
+                            <a th:href="@{/student/exam-results}" class="p-3 bg-slate-50 border border-slate-100 rounded-xl text-center hover:bg-indigo-50 hover:border-indigo-100 group transition">
+                                <i class="fa-solid fa-chart-simple text-lg text-slate-400 group-hover:text-indigo-600 block mb-1"></i>
+                                <span class="text-xs font-bold text-slate-700 group-hover:text-indigo-900 block">View Marks</span>
+                            </a>
+                            <a th:href="@{/student/checkout}" class="p-3 bg-slate-50 border border-slate-100 rounded-xl text-center hover:bg-indigo-50 hover:border-indigo-100 group transition">
+                                <i class="fa-regular fa-credit-card text-lg text-slate-400 group-hover:text-indigo-600 block mb-1"></i>
+                                <span class="text-xs font-bold text-slate-700 group-hover:text-indigo-900 block">Pay Tuition</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
             </main>
         </div>
     </div>
 
 </body>
+<script>
+    function toggleHistoryModal(show) {
+        const modal = document.getElementById('history-modal');
+        if (!modal) return;
+        
+        if (show) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Lock background scrolling
+        } else {
+            modal.classList.add('hidden');
+            document.body.style.overflow = ''; // Unlock background scrolling
+        }
+    }
+
+    // Optional close listener when clicking outside the main dialog content frame box area
+    window.onclick = function(event) {
+        const modal = document.getElementById('history-modal');
+        if (event.target === modal) {
+            toggleHistoryModal(false);
+        }
+    }
+</script>
+
 </html>
+                    

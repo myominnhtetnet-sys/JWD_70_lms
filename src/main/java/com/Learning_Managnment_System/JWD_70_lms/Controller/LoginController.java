@@ -1,11 +1,18 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import com.Learning_Managnment_System.JWD_70_lms.Repository.LoginRepository;
+import com.Learning_Managnment_System.JWD_70_lms.Service.AnnouncementService;
+import com.Learning_Managnment_System.JWD_70_lms.Service.StudentDashboardService;
+import com.Learning_Managnment_System.JWD_70_lms.model.AnnouncementBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 
 import jakarta.servlet.http.HttpSession;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +24,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class LoginController {
 
     @Autowired
+    private AnnouncementService announcementService;
+
+    @Autowired
     private LoginRepository loginRepo;
+    
+    @Autowired
+    StudentDashboardService dashboardService;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @GetMapping("/login")
     public String showLogin(Model model) {
@@ -28,22 +44,23 @@ public class LoginController {
     @PostMapping("/login")
     public String login(@ModelAttribute("login") LoginBean login, HttpSession session,
             RedirectAttributes redirectAttributes) {
+        
         LoginBean user = loginRepo.login(login.getEmail(), login.getPassword_hash());
         if (user == null) {
             redirectAttributes.addFlashAttribute("error", "Invalid email or password.");
             return "redirect:/login";
         }
         
-        // 🟢 ADD THIS LINE: Save the authenticated user record to match your view checks
+        // 🟢 အကောင့် Suspend ဖြစ်နေခြင်း ရှိမရှိ စစ်ဆေးခြင်း
+        if ("SUSPENDED".equalsIgnoreCase(user.getStatus())) {
+            redirectAttributes.addFlashAttribute("error", "Your account has been suspended");
+            return "redirect:/login";
+        }
+
         session.setAttribute("currentUser", user);
-        
-        // Keep your existing simple attribute mappings
         session.setAttribute("roleId", user.getRole_id());
         session.setAttribute("fullName", user.getFull_name());
         session.setAttribute("email", user.getEmail());
-        
-      
-        session.setAttribute("studentId", user.getRole_id()); 
 
         if (user.getRole_id() == 1) {
             return "redirect:/admin";
@@ -56,26 +73,33 @@ public class LoginController {
         return "redirect:/login";
     }
 
-
-    @GetMapping("/teacher")
-    public String teacherPage(HttpSession session) {
-        if (session.getAttribute("roleId") == null || (int) session.getAttribute("roleId") != 2) {
-            return "redirect:/login";
-        }
-        return "dashboard";
-    }
-
     @GetMapping("/student")
     public String studentPage(HttpSession session, Model model) {
         if (session.getAttribute("roleId") == null || (int) session.getAttribute("roleId") != 3) {
             return "redirect:/login";
         }
 
-        model.addAttribute("fullName", session.getAttribute("fullName"));
-        Object studentId = session.getAttribute("studentId");
-        model.addAttribute("studentId", studentId != null ? "STU-" + studentId : "STU-2026-0042");
+        String email = (String) session.getAttribute("email");
+        
+        LoginBean freshUser = loginRepo.findByEmail(email); 
+        if (freshUser == null || "SUSPENDED".equalsIgnoreCase(freshUser.getStatus())) {
+            session.invalidate(); 
+            return "redirect:/login?suspended=true";
+        }
 
-        return "studentdashboard"; 
+        Map<String, Object> dashboardData = dashboardService.getStudentDashboardData(email);
+        model.addAllAttributes(dashboardData);
+     
+        
+        List<AnnouncementBean> recentAnnouncements = announcementService.getLatestAnnouncements(2);
+        model.addAttribute("allAnnouncements", recentAnnouncements);
+        
+        List<AnnouncementBean> fullHistoryList = announcementService.getAllAnnouncements();
+        model.addAttribute("historyAnnouncements", fullHistoryList);
+        
+        model.addAttribute("activeLink", "dashboard");
+        model.addAttribute("fullName", session.getAttribute("fullName")); 
+        return "studentdashboard";
     }
 
     @GetMapping("/dashboard")

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - LearnHub LMS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {width: 6px;height: 6px;}
+    ::-webkit-scrollbar-track {background: rgba(0,0,0,0.03);}
+    ::-webkit-scrollbar-thumb {background: rgba(0,0,0,0.15);border-radius: 3px;}
+    .fade-in {animation: fadeIn 0.25s ease-in-out;}
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 antialiased font-sans">
+
+    <div class="flex min-h-screen">
+        
+        <!-- SIDEBAR NAVIGATION MENU (Collapsible Dark Theme) -->
+        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar z-30">
+            
+            <!-- 🟢 Pure CSS Toggle Checkbox Engine -->
+            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+            
+            <!-- 🟢 Error-Free Scoped Structural Animation Layout Adjustments -->
+            <style>
+                #sidebar-content-box { width: 256px; }
+                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+            </style>
+
+            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden overflow-y-auto">
+                <div>
+                    <!-- Logo & Collapse Button Trigger -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+                        <!-- 🟢 Centered uncollapse bars icon inside 72px header -->
+                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </label>
+
+                        <div class="flex items-center gap-3 hidden-on-collapse">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
+                                <i class="fa-solid fa-chalkboard-user text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-base font-bold text-white tracking-wide block leading-none">EduPulse</span>
+                                <small class="text-[11px] font-medium text-slate-400">Teacher Portal</small>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Collapse Arrow Button (visible on hover) -->
+                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+                        </label>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-6">
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Teaching Portal</div>
+                            <div class="space-y-1">
+                                <a href="/teacher" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-house text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                                </a>
+                                <a href="/teacher/courses" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-book-open text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Courses</span>
+                                </a>
+                                <a href="/teacher/batches" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-users text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Batches</span>
+                                </a>
+                                <a href="/teacher/attendance" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-calendar-check text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Check Attendance</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Assessments</div>
+                            <div class="space-y-1">
+                                <a href="/teacher/question-list" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-database text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Question Bank</span>
+                                </a>
+                                <a href="/teacher/assignments" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-clipboard-list text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Assignments</span>
+                                </a>
+                                <a href="/teacher/submissions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-check-double text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Grade Submissions</span>
+                                </a>
+                                <a href="/teacher/exams" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-file-pen text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exams</span>
+                                </a>
+                                <a href="/teacher/exam-results" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-square-poll-vertical text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exam Results</span>
+                                </a>
+                                <!-- Active Final Grades Link -->
+                                <a href="/teacher/final-grades" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 shadow-sm transition">
+                                    <i class="fa-solid fa-graduation-cap text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Final Grades</span>
+                                </a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+
+                <div class="p-4 border-t border-slate-800">
+                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA WRAPPER -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+            
+            <!-- HEADER FRAGMENT -->
+            <div th:replace="~{teacher :: header}"></div>
+
+            <!-- Main Content -->
+            <main class="flex-1 min-w-0 px-4 sm:px-8 py-6 bg-slate-50 overflow-y-auto">
+
+                <div class="w-full space-y-6">
+
+                    <!-- Page Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <h1 class="text-xl font-bold text-slate-900">Final Grades</h1>
+                            <p class="text-xs text-slate-500 mt-1">Calculate, review and publish student results.</p>
+                        </div>
+                    </div>
+
+                    <!-- Messages -->
+                    <div th:if="${successMessage}" class="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl" th:text="${successMessage}"></div>
+                    <div th:if="${errorMessage}" class="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl" th:text="${errorMessage}"></div>
+
+                    <!-- Toolbar / Batch Selection Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs w-full">
+                        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                            <form class="flex flex-col sm:flex-row items-end gap-3 flex-1" method="get" th:action="@{/teacher/final-grades}">
+                                <div class="space-y-1 flex-1 max-w-sm">
+                                    <label for="batchId" class="block text-xs font-bold uppercase text-slate-700">Batch</label>
+                                    <select id="batchId" name="batchId" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                        <option value="">Select a batch</option>
+                                        <option th:each="batch : ${batches}"
+                                                th:value="${batch.batchId}"
+                                                th:text="${batch.batchCode + ' - ' + batch.title}"
+                                                th:selected="${selectedBatchId != null and selectedBatchId == batch.batchId}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <button class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs py-3 px-4 rounded-xl transition cursor-pointer" type="submit">
+                                    Load Students
+                                </button>
+                            </form>
+
+                            <div class="flex items-center gap-2" th:if="${selectedBatchId != null and not #lists.isEmpty(students)}">
+                                <form method="post" th:action="@{/teacher/final-grades/calculate}">
+                                    <input type="hidden" name="batchId" th:value="${selectedBatchId}">
+                                    <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 px-4 rounded-xl transition cursor-pointer shadow-xs" type="submit">
+                                        Calculate
+                                    </button>
+                                </form>
+
+                                <form method="post" th:action="@{/teacher/final-grades/publish}" onsubmit="return confirm('Publish all calculated draft grades in this batch?')">
+                                    <input type="hidden" name="batchId" th:value="${selectedBatchId}">
+                                    <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 px-4 rounded-xl transition cursor-pointer shadow-xs disabled:opacity-40 disabled:cursor-not-allowed" type="submit" th:disabled="${not canPublish}">
+                                        Publish
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Policy Info Box -->
+                        <div class="mt-4 p-3 bg-blue-50 border border-blue-200 text-blue-800 text-xs font-semibold rounded-xl leading-relaxed">
+                            <i class="fa-solid fa-circle-info mr-1"></i> Assignment 30% · Exam 60% · Attendance 10% · Pass mark 40[cite: 6]
+                            <br>
+                            Close assessments and finish attendance before calculating. Published grades are locked on this page.[cite: 6]
+                        </div>
+
+                        <p class="text-xs text-slate-400 mt-3" th:if="${#lists.isEmpty(batches)}">
+                            No batches are assigned to your teacher account.[cite: 6]
+                        </p>
+                    </div>
+
+                    <!-- Students Table Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden w-full">
+                        <div class="px-6 py-4 border-b border-slate-200 bg-slate-100">
+                            <h2 class="font-bold text-sm uppercase text-slate-700">Student Final Grades</h2>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-700 font-bold">
+                                    <tr>
+                                        <th class="px-4 py-3">No.</th>
+                                        <th class="px-4 py-3">Student</th>
+                                        <th class="px-4 py-3">Assignment / 30</th>
+                                        <th class="px-4 py-3">Exam / 60</th>
+                                        <th class="px-4 py-3">Attendance / 10 %</th>
+                                        <th class="px-4 py-3">Final / 100</th>
+                                        <th class="px-4 py-3">Grade</th>
+                                        <th class="px-4 py-3">Result</th>
+                                        <th class="px-4 py-3">Status</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr th:each="student, row : ${students}" class="hover:bg-slate-50/80 transition">
+                                        <td class="px-4 py-3 text-xs text-slate-500 font-medium" th:text="${row.count}"></td>
+                                        <td class="px-4 py-3 font-semibold text-slate-900" th:text="${student.studentName}"></td>
+
+                                        <td class="px-4 py-3 text-xs text-slate-500 font-medium" th:text="${student.gradeId == null ? '—' : student.assignmentScore}"></td>
+                                        <td class="px-4 py-3 text-xs text-slate-500 font-medium" th:text="${student.gradeId == null ? '—' : student.examScore}"></td>
+                                        <td class="px-4 py-3 text-xs text-slate-500 font-medium" th:text="${student.gradeId == null ? '—' : student.attendancePercent}"></td>
+
+                                        <td class="px-4 py-3 text-sm font-bold text-slate-800">
+                                            <span th:text="${student.gradeId == null ? '—' : student.totalScore}"></span>
+                                        </td>
+
+                                        <td class="px-4 py-3 text-xs font-bold text-slate-800" th:text="${student.gradeId == null ? '—' : student.gradeLetter}"></td>
+
+                                        <td class="px-4 py-3">
+                                            <span th:if="${student.gradeId != null}"
+                                                  class="px-2.5 py-1 rounded-full text-[10px] font-bold border inline-block"
+                                                  th:classappend="${student.result == 'PASSED'} ? ' bg-emerald-50 text-emerald-700 border-emerald-200' : ' bg-rose-50 text-rose-700 border-rose-200'"
+                                                  th:text="${student.result}">
+                                            </span>
+                                            <span th:if="${student.gradeId == null}" class="text-xs text-slate-400">—</span>
+                                        </td>
+
+                                        <td class="px-4 py-3">
+                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border inline-block"
+                                                  th:classappend="${student.publishedAt != null} ? ' bg-emerald-50 text-emerald-700 border-emerald-200' : (${student.gradeId != null} ? ' bg-amber-50 text-amber-700 border-amber-200' : ' bg-slate-100 text-slate-600 border-slate-200')"
+                                                  th:text="${student.publishedAt != null ? 'Published' : (student.gradeId != null ? 'Draft' : 'Not calculated')}">
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <tr th:if="${#lists.isEmpty(students)}">
+                                        <td colspan="9" class="px-6 py-12 text-center text-slate-500 text-sm font-medium"
+                                            th:text="${selectedBatchId == null ? 'Select a batch to view students.' : 'No ACTIVE or COMPLETED students in this batch.'}">[cite: 6]
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Footer Note -->
+                        <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 text-xs text-slate-400 font-medium">
+                            <i class="fa-solid fa-circle-info mr-1"></i> Attendance contributes up to 10 points. For example, 90% attendance contributes 9 points.[cite: 6]
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+</body>
+</html>

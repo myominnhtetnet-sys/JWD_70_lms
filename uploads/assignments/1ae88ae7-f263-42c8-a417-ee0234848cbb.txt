@@ -1,0 +1,3664 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Question Bank</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+
+        /* =========================
+           Global
+        ========================== */
+
+        body {
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+                         BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        /* Smooth transition */
+        button,
+        input,
+        select,
+        textarea {
+            transition: all 0.2s ease;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Modal backdrop */
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+        }
+
+        /* Table row */
+        .question-row {
+            transition: all 0.2s ease;
+        }
+
+        .question-row:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Action button */
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Form input */
+        .form-input {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 12px 14px;
+            outline: none;
+            background: white;
+        }
+
+        .form-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.10);
+        }
+
+        /* Stat card */
+        .stat-card {
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+    </style>
+
+</head>
+
+
+<body class="bg-slate-100 text-slate-800">
+
+<div class="min-h-screen p-4 sm:p-6 lg:p-8">
+
+    <!-- =========================
+         PAGE HEADER
+    ========================== -->
+
+    <div class="mb-7">
+
+        <div class="flex flex-col lg:flex-row
+                    lg:items-center lg:justify-between
+                    gap-5">
+
+            <!-- Left -->
+
+            <div>
+
+                <div class="flex items-center gap-3 mb-2">
+
+                    <div class="w-11 h-11 rounded-xl
+                                bg-indigo-600
+                                flex items-center justify-center
+                                text-white shadow-lg shadow-indigo-200">
+
+                        <i class="fa-solid fa-circle-question text-lg"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h1 class="text-2xl sm:text-3xl
+                                   font-bold text-slate-900">
+
+                            Question Bank
+
+                        </h1>
+
+                        <p class="text-sm text-slate-500 mt-1">
+
+                            Create, manage and organize your course questions
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Add Question -->
+
+            <button
+                onclick="openQuestionForm()"
+                class="inline-flex items-center justify-center
+                       gap-2
+                       bg-indigo-600
+                       hover:bg-indigo-700
+                       active:bg-indigo-800
+                       text-white
+                       px-5 py-3
+                       rounded-xl
+                       font-semibold
+                       shadow-lg shadow-indigo-200
+                       hover:shadow-indigo-300">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Add Question
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         STAT CARDS
+    ========================== -->
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4
+                gap-4 mb-6">
+
+        <!-- Total -->
+
+        <div class="stat-card bg-white rounded-2xl
+                    border border-slate-200
+                    p-5 shadow-sm">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+
+                    <p class="text-sm font-medium text-slate-500">
+                        Total Questions
+                    </p>
+
+                    <p id="totalQuestionCount"
+                       class="text-2xl font-bold text-slate-900 mt-2">
+
+                        0
+
+                    </p>
+
+                </div>
+
+                <div class="w-11 h-11 rounded-xl
+                            bg-indigo-50 text-indigo-600
+                            flex items-center justify-center">
+
+                    <i class="fa-solid fa-layer-group"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MCQ -->
+
+        <div class="stat-card bg-white rounded-2xl
+                    border border-slate-200
+                    p-5 shadow-sm">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+
+                    <p class="text-sm font-medium text-slate-500">
+                        MCQ
+                    </p>
+
+                    <p id="mcqCount"
+                       class="text-2xl font-bold text-slate-900 mt-2">
+
+                        0
+
+                    </p>
+
+                </div>
+
+                <div class="w-11 h-11 rounded-xl
+                            bg-blue-50 text-blue-600
+                            flex items-center justify-center">
+
+                    <i class="fa-solid fa-list-check"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- True False -->
+
+        <div class="stat-card bg-white rounded-2xl
+                    border border-slate-200
+                    p-5 shadow-sm">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+
+                    <p class="text-sm font-medium text-slate-500">
+                        True / False
+                    </p>
+
+                    <p id="trueFalseCount"
+                       class="text-2xl font-bold text-slate-900 mt-2">
+
+                        0
+
+                    </p>
+
+                </div>
+
+                <div class="w-11 h-11 rounded-xl
+                            bg-purple-50 text-purple-600
+                            flex items-center justify-center">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Short Answer -->
+
+        <div class="stat-card bg-white rounded-2xl
+                    border border-slate-200
+                    p-5 shadow-sm">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+
+                    <p class="text-sm font-medium text-slate-500">
+                        Short Answer
+                    </p>
+
+                    <p id="shortAnswerCount"
+                       class="text-2xl font-bold text-slate-900 mt-2">
+
+                        0
+
+                    </p>
+
+                </div>
+
+                <div class="w-11 h-11 rounded-xl
+                            bg-orange-50 text-orange-600
+                            flex items-center justify-center">
+
+                    <i class="fa-solid fa-align-left"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         SEARCH & FILTER
+    ========================== -->
+
+    <div class="bg-white rounded-2xl
+                border border-slate-200
+                shadow-sm p-4 mb-6">
+
+        <div class="flex flex-col lg:flex-row
+                    gap-3">
+
+            <!-- Search -->
+
+            <div class="relative flex-1">
+
+                <i class="fa-solid fa-magnifying-glass
+                          absolute left-4 top-1/2
+                          -translate-y-1/2
+                          text-slate-400">
+                </i>
+
+                <input
+                    id="searchInput"
+                    type="text"
+                    placeholder="Search questions..."
+                    class="form-input pl-11">
+
+            </div>
+
+
+            <!-- Course -->
+
+            <div class="relative lg:w-64">
+
+                <i class="fa-solid fa-book
+                          absolute left-4 top-1/2
+                          -translate-y-1/2
+                          text-slate-400">
+                </i>
+
+                <select
+                    id="courseFilter"
+                    class="form-input pl-11">
+
+                    <option value="">
+                        All Courses
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Type -->
+
+            <div class="relative lg:w-60">
+
+                <i class="fa-solid fa-filter
+                          absolute left-4 top-1/2
+                          -translate-y-1/2
+                          text-slate-400">
+                </i>
+
+                <select
+                    id="typeFilter"
+                    class="form-input pl-11">
+
+                    <option value="">
+                        All Types
+                    </option>
+
+                    <option value="MCQ">
+                        MCQ
+                    </option>
+
+                    <option value="TRUE_FALSE">
+                        True / False
+                    </option>
+
+                    <option value="SHORT_ANSWER">
+                        Short Answer
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         QUESTION TABLE
+    ========================== -->
+
+    <div class="bg-white rounded-2xl
+                border border-slate-200
+                shadow-sm overflow-hidden">
+
+        <!-- Table Header -->
+
+        <div class="px-5 py-4
+                    border-b border-slate-200
+                    flex flex-col sm:flex-row
+                    sm:items-center
+                    sm:justify-between
+                    gap-2">
+
+            <div>
+
+                <h2 class="font-bold text-slate-900">
+                    Questions
+                </h2>
+
+                <p class="text-sm text-slate-500 mt-1">
+                    Manage questions and answer options
+                </p>
+
+            </div>
+
+            <div class="text-sm text-slate-500">
+
+                <i class="fa-solid fa-circle-info mr-1"></i>
+
+                Select an action to manage a question
+
+            </div>
+
+        </div>
+
+
+        <!-- Table -->
+
+        <div class="overflow-x-auto">
+
+            <table class="w-full min-w-[850px]">
+
+                <thead class="bg-slate-50">
+
+                <tr>
+
+                    <th class="px-6 py-4
+                               text-left
+                               text-xs
+                               uppercase
+                               tracking-wider
+                               font-semibold
+                               text-slate-500">
+
+                        #
+
+                    </th>
+
+                    <th class="px-6 py-4
+                               text-left
+                               text-xs
+                               uppercase
+                               tracking-wider
+                               font-semibold
+                               text-slate-500">
+
+                        Question
+
+                    </th>
+
+                    <th class="px-6 py-4
+                               text-left
+                               text-xs
+                               uppercase
+                               tracking-wider
+                               font-semibold
+                               text-slate-500">
+
+                        Type
+
+                    </th>
+
+                    <th class="px-6 py-4
+                               text-left
+                               text-xs
+                               uppercase
+                               tracking-wider
+                               font-semibold
+                               text-slate-500">
+
+                        Mark
+
+                    </th>
+
+                    <th class="px-6 py-4
+                               text-left
+                               text-xs
+                               uppercase
+                               tracking-wider
+                               font-semibold
+                               text-slate-500">
+
+                        Status
+
+                    </th>
+
+                    <th class="px-6 py-4
+                               text-center
+                               text-xs
+                               uppercase
+                               tracking-wider
+                               font-semibold
+                               text-slate-500">
+
+                        Actions
+
+                    </th>
+
+                </tr>
+
+                </thead>
+
+
+                <tbody id="questionTableBody"
+                       class="divide-y divide-slate-100">
+
+                    <!-- JavaScript will insert questions -->
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ADD QUESTION MODAL
+====================================================== -->
+
+<div id="questionModal"
+     class="fixed inset-0
+            bg-slate-950/60
+            backdrop-blur-sm
+            hidden
+            items-center
+            justify-center
+            z-50
+            p-4">
+
+    <div class="bg-white rounded-2xl
+                shadow-2xl
+                w-full max-w-3xl
+                max-h-[92vh]
+                overflow-y-auto">
+
+        <!-- Modal Header -->
+
+        <div class="sticky top-0
+                    bg-white
+                    border-b border-slate-200
+                    px-6 py-5
+                    flex justify-between
+                    items-center">
+
+            <div class="flex items-center gap-3">
+
+                <div class="w-10 h-10
+                            rounded-xl
+                            bg-indigo-50
+                            text-indigo-600
+                            flex items-center
+                            justify-center">
+
+                    <i class="fa-solid fa-plus"></i>
+
+                </div>
+
+                <div>
+
+                    <h2 class="text-xl font-bold text-slate-900">
+                        Add Question
+                    </h2>
+
+                    <p class="text-sm text-slate-500 mt-1">
+                        Create a new question for your course
+                    </p>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                onclick="closeQuestionForm()"
+                class="w-9 h-9
+                       rounded-lg
+                       text-slate-400
+                       hover:bg-slate-100
+                       hover:text-slate-700">
+
+                <i class="fa-solid fa-xmark text-lg"></i>
+
+            </button>
+
+        </div>
+
+
+        <!-- Form -->
+
+        <form id="questionForm"
+              class="p-6">
+
+            <!-- Course -->
+
+            <div class="mb-5">
+
+                <label class="block text-sm font-semibold
+                              text-slate-700 mb-2">
+
+                    Course
+
+                </label>
+
+                <select
+                    id="questionCourse"
+                    class="form-input"
+                    required>
+
+                    <option value="">
+                        Select Course
+                    </option>
+
+                    <option value="1">
+                        Web Development Bootcamp
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Question -->
+
+            <div class="mb-5">
+
+                <label class="block text-sm font-semibold
+                              text-slate-700 mb-2">
+
+                    Question
+
+                </label>
+
+                <textarea
+                    id="questionText"
+                    rows="4"
+                    placeholder="Enter your question..."
+                    class="form-input resize-none"
+                    required></textarea>
+
+            </div>
+
+
+            <!-- Type + Mark -->
+
+            <div class="grid grid-cols-1
+                        md:grid-cols-2
+                        gap-4 mb-5">
+
+                <div>
+
+                    <label class="block text-sm font-semibold
+                                  text-slate-700 mb-2">
+
+                        Question Type
+
+                    </label>
+
+                    <select
+                        id="questionType"
+                        class="form-input"
+                        onchange="changeQuestionType()"
+                        required>
+
+                        <option value="">
+                            Select Type
+                        </option>
+
+                        <option value="MCQ">
+                            MCQ
+                        </option>
+
+                        <option value="TRUE_FALSE">
+                            True / False
+                        </option>
+
+                        <option value="SHORT_ANSWER">
+                            Short Answer
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div>
+
+                    <label class="block text-sm font-semibold
+                                  text-slate-700 mb-2">
+
+                        Default Mark
+
+                    </label>
+
+                    <input
+                        id="defaultMark"
+                        type="number"
+                        min="0"
+                        step="0.5"
+                        value="1"
+                        class="form-input"
+                        required>
+
+                </div>
+
+            </div>
+
+
+            <!-- Explanation -->
+
+            <div class="mb-5">
+
+                <label class="block text-sm font-semibold
+                              text-slate-700 mb-2">
+
+                    Explanation
+
+                    <span class="font-normal text-slate-400">
+                        (Optional)
+                    </span>
+
+                </label>
+
+                <textarea
+                    id="explanation"
+                    rows="3"
+                    placeholder="Explanation shown after grading..."
+                    class="form-input resize-none"></textarea>
+
+            </div>
+
+
+            <!-- Options -->
+
+            <div id="optionsSection"
+                 class="hidden mb-5">
+
+                <div class="bg-slate-50
+                            border border-slate-200
+                            rounded-xl
+                            p-5">
+
+                    <div class="flex items-center gap-3 mb-4">
+
+                        <div class="w-9 h-9
+                                    rounded-lg
+                                    bg-indigo-100
+                                    text-indigo-600
+                                    flex items-center
+                                    justify-center">
+
+                            <i class="fa-solid fa-list-check"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h3 class="font-semibold text-slate-900">
+                                Answer Options
+                            </h3>
+
+                            <p class="text-sm text-slate-500">
+                                Select the correct answer
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div id="optionsContainer">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Buttons -->
+
+            <div class="flex flex-col-reverse
+                        sm:flex-row
+                        justify-end
+                        gap-3
+                        pt-4
+                        border-t border-slate-100">
+
+                <button
+                    type="button"
+                    onclick="closeQuestionForm()"
+                    class="px-5 py-3
+                           border border-slate-300
+                           rounded-xl
+                           text-slate-700
+                           font-medium
+                           hover:bg-slate-50">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="px-5 py-3
+                           bg-indigo-600
+                           hover:bg-indigo-700
+                           text-white
+                           rounded-xl
+                           font-semibold
+                           shadow-lg
+                           shadow-indigo-200">
+
+                    <i class="fa-solid fa-save mr-2"></i>
+
+                    Save Question
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     VIEW QUESTION MODAL
+====================================================== -->
+
+<div id="viewQuestionModal"
+     class="fixed inset-0
+            bg-slate-950/60
+            backdrop-blur-sm
+            hidden
+            items-center
+            justify-center
+            z-50
+            p-4">
+
+    <div class="bg-white rounded-2xl
+                shadow-2xl
+                w-full max-w-2xl
+                max-h-[92vh]
+                overflow-y-auto">
+
+        <!-- Header -->
+
+        <div class="sticky top-0
+                    bg-white
+                    border-b border-slate-200
+                    px-6 py-5
+                    flex justify-between
+                    items-center">
+
+            <div class="flex items-center gap-3">
+
+                <div class="w-10 h-10
+                            rounded-xl
+                            bg-blue-50
+                            text-blue-600
+                            flex items-center
+                            justify-center">
+
+                    <i class="fa-solid fa-eye"></i>
+
+                </div>
+
+                <div>
+
+                    <h2 class="text-xl font-bold text-slate-900">
+                        Question Details
+                    </h2>
+
+                    <p class="text-sm text-slate-500 mt-1">
+                        View question and answer options
+                    </p>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                onclick="closeViewQuestion()"
+                class="w-9 h-9
+                       rounded-lg
+                       text-slate-400
+                       hover:bg-slate-100
+                       hover:text-slate-700">
+
+                <i class="fa-solid fa-xmark text-lg"></i>
+
+            </button>
+
+        </div>
+
+
+        <div class="p-6">
+
+            <!-- Question -->
+
+            <div class="mb-5">
+
+                <label class="block text-xs
+                              uppercase
+                              tracking-wider
+                              font-semibold
+                              text-slate-400 mb-2">
+
+                    Question
+
+                </label>
+
+                <div id="viewQuestionText"
+                     class="bg-slate-50
+                            border border-slate-200
+                            rounded-xl
+                            p-5
+                            text-slate-800
+                            leading-relaxed">
+
+                </div>
+
+            </div>
+
+
+            <!-- Type + Mark -->
+
+            <div class="grid grid-cols-2
+                        gap-4 mb-5">
+
+                <div class="bg-indigo-50
+                            border border-indigo-100
+                            rounded-xl p-4">
+
+                    <p class="text-xs
+                              uppercase
+                              tracking-wider
+                              font-semibold
+                              text-indigo-500">
+
+                        Question Type
+
+                    </p>
+
+                    <p id="viewQuestionType"
+                       class="font-bold
+                              text-indigo-900
+                              mt-2">
+
+                    </p>
+
+                </div>
+
+
+                <div class="bg-emerald-50
+                            border border-emerald-100
+                            rounded-xl p-4">
+
+                    <p class="text-xs
+                              uppercase
+                              tracking-wider
+                              font-semibold
+                              text-emerald-500">
+
+                        Mark
+
+                    </p>
+
+                    <p id="viewQuestionMark"
+                       class="font-bold
+                              text-emerald-900
+                              mt-2">
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Options -->
+
+            <div id="viewOptionsSection"
+                 class="mb-5">
+
+                <h3 class="font-semibold
+                           text-slate-900 mb-3">
+
+                    Answer Options
+
+                </h3>
+
+                <div id="viewOptionsContainer">
+                </div>
+
+            </div>
+
+
+            <!-- Explanation -->
+
+            <div>
+
+                <label class="block text-xs
+                              uppercase
+                              tracking-wider
+                              font-semibold
+                              text-slate-400 mb-2">
+
+                    Explanation
+
+                </label>
+
+                <div id="viewExplanation"
+                     class="bg-slate-50
+                            border border-slate-200
+                            rounded-xl
+                            p-4
+                            text-slate-700
+                            leading-relaxed">
+
+                </div>
+
+            </div>
+
+
+            <!-- Close -->
+
+            <div class="flex justify-end mt-6
+                        pt-5
+                        border-t border-slate-100">
+
+                <button
+                    type="button"
+                    onclick="closeViewQuestion()"
+                    class="px-5 py-3
+                           bg-slate-800
+                           hover:bg-slate-900
+                           text-white
+                           rounded-xl
+                           font-medium">
+
+                    Close
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     EDIT QUESTION MODAL
+====================================================== -->
+
+<div id="editQuestionModal"
+     class="fixed inset-0
+            bg-slate-950/60
+            backdrop-blur-sm
+            hidden
+            items-center
+            justify-center
+            z-50
+            p-4">
+
+    <div class="bg-white rounded-2xl
+                shadow-2xl
+                w-full max-w-3xl
+                max-h-[92vh]
+                overflow-y-auto">
+
+        <!-- Header -->
+
+        <div class="sticky top-0
+                    bg-white
+                    border-b border-slate-200
+                    px-6 py-5
+                    flex justify-between
+                    items-center">
+
+            <div class="flex items-center gap-3">
+
+                <div class="w-10 h-10
+                            rounded-xl
+                            bg-amber-50
+                            text-amber-600
+                            flex items-center
+                            justify-center">
+
+                    <i class="fa-solid fa-pen"></i>
+
+                </div>
+
+                <div>
+
+                    <h2 class="text-xl font-bold text-slate-900">
+                        Edit Question
+                    </h2>
+
+                    <p class="text-sm text-slate-500 mt-1">
+                        Update question and answer options
+                    </p>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                onclick="closeEditQuestion()"
+                class="w-9 h-9
+                       rounded-lg
+                       text-slate-400
+                       hover:bg-slate-100
+                       hover:text-slate-700">
+
+                <i class="fa-solid fa-xmark text-lg"></i>
+
+            </button>
+
+        </div>
+
+
+        <!-- Form -->
+
+        <form id="editQuestionForm"
+              class="p-6">
+
+            <!-- Course -->
+
+            <div class="mb-5">
+
+                <label class="block text-sm font-semibold
+                              text-slate-700 mb-2">
+
+                    Course
+
+                </label>
+
+                <select
+                    id="editQuestionCourse"
+                    class="form-input"
+                    required>
+
+                    <option value="">
+                        Select Course
+                    </option>
+
+                    <option value="1">
+                        Web Development Bootcamp
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Question -->
+
+            <div class="mb-5">
+
+                <label class="block text-sm font-semibold
+                              text-slate-700 mb-2">
+
+                    Question
+
+                </label>
+
+                <textarea
+                    id="editQuestionText"
+                    rows="4"
+                    class="form-input resize-none"
+                    required></textarea>
+
+            </div>
+
+
+            <!-- Type + Mark -->
+
+            <div class="grid grid-cols-1
+                        md:grid-cols-2
+                        gap-4 mb-5">
+
+                <div>
+
+                    <label class="block text-sm font-semibold
+                                  text-slate-700 mb-2">
+
+                        Question Type
+
+                    </label>
+
+                    <select
+                        id="editQuestionType"
+                        class="form-input"
+                        onchange="changeEditQuestionType()"
+                        required>
+
+                        <option value="">
+                            Select Type
+                        </option>
+
+                        <option value="MCQ">
+                            MCQ
+                        </option>
+
+                        <option value="TRUE_FALSE">
+                            True / False
+                        </option>
+
+                        <option value="SHORT_ANSWER">
+                            Short Answer
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div>
+
+                    <label class="block text-sm font-semibold
+                                  text-slate-700 mb-2">
+
+                        Default Mark
+
+                    </label>
+
+                    <input
+                        id="editDefaultMark"
+                        type="number"
+                        min="0"
+                        step="0.5"
+                        class="form-input"
+                        required>
+
+                </div>
+
+            </div>
+
+
+            <!-- Explanation -->
+
+            <div class="mb-5">
+
+                <label class="block text-sm font-semibold
+                              text-slate-700 mb-2">
+
+                    Explanation
+
+                    <span class="font-normal text-slate-400">
+                        (Optional)
+                    </span>
+
+                </label>
+
+                <textarea
+                    id="editExplanation"
+                    rows="3"
+                    class="form-input resize-none"></textarea>
+
+            </div>
+
+
+            <!-- Options -->
+
+            <div id="editOptionsSection"
+                 class="hidden mb-5">
+
+                <div class="bg-slate-50
+                            border border-slate-200
+                            rounded-xl
+                            p-5">
+
+                    <div class="flex items-center gap-3 mb-4">
+
+                        <div class="w-9 h-9
+                                    rounded-lg
+                                    bg-indigo-100
+                                    text-indigo-600
+                                    flex items-center
+                                    justify-center">
+
+                            <i class="fa-solid fa-list-check"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h3 class="font-semibold text-slate-900">
+                                Answer Options
+                            </h3>
+
+                            <p class="text-sm text-slate-500">
+                                Select the correct answer
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div id="editOptionsContainer">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Buttons -->
+
+            <div class="flex flex-col-reverse
+                        sm:flex-row
+                        justify-end
+                        gap-3
+                        pt-4
+                        border-t border-slate-100">
+
+                <button
+                    type="button"
+                    onclick="closeEditQuestion()"
+                    class="px-5 py-3
+                           border border-slate-300
+                           rounded-xl
+                           text-slate-700
+                           font-medium
+                           hover:bg-slate-50">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="px-5 py-3
+                           bg-indigo-600
+                           hover:bg-indigo-700
+                           text-white
+                           rounded-xl
+                           font-semibold
+                           shadow-lg
+                           shadow-indigo-200">
+
+                    <i class="fa-solid fa-save mr-2"></i>
+
+                    Update Question
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     YOUR EXISTING JAVASCRIPT
+====================================================== -->
+
+<script>
+
+    /*
+     * =========================
+     * Load Questions
+     * =========================
+     */
+
+    function loadQuestions() {
+
+        fetch('/api/questions')
+
+            .then(response => {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        'Failed to load questions'
+                    );
+
+                }
+
+                return response.json();
+
+            })
+
+            .then(data => {
+
+                console.log("Questions:", data);
+
+                renderQuestions(data);
+
+            })
+
+            .catch(error => {
+
+                console.error(
+                    "Error loading questions:",
+                    error
+                );
+
+                const tableBody =
+                    document.getElementById(
+                        'questionTableBody'
+                    );
+
+                tableBody.innerHTML = `
+
+                    <tr>
+
+                        <td colspan="6"
+                            class="text-center py-12">
+
+                            <div class="flex flex-col
+                                        items-center
+                                        text-slate-400">
+
+                                <i class="fa-solid fa-triangle-exclamation
+                                          text-3xl mb-3">
+                                </i>
+
+                                <p class="font-medium">
+                                    Failed to load questions.
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            });
+
+    }
+
+
+    /*
+     * =========================
+     * Render Questions
+     * =========================
+     */
+
+    function renderQuestions(questions) {
+
+        const tableBody =
+            document.getElementById(
+                'questionTableBody'
+            );
+
+        tableBody.innerHTML = '';
+
+
+        /*
+         * Update statistics
+         */
+
+        const totalCount =
+            document.getElementById(
+                'totalQuestionCount'
+            );
+
+        const mcqCount =
+            document.getElementById(
+                'mcqCount'
+            );
+
+        const trueFalseCount =
+            document.getElementById(
+                'trueFalseCount'
+            );
+
+        const shortAnswerCount =
+            document.getElementById(
+                'shortAnswerCount'
+            );
+
+
+        totalCount.textContent =
+            questions.length;
+
+        mcqCount.textContent =
+            questions.filter(
+                q => q.questionType === 'MCQ'
+            ).length;
+
+        trueFalseCount.textContent =
+            questions.filter(
+                q => q.questionType === 'TRUE_FALSE'
+            ).length;
+
+        shortAnswerCount.textContent =
+            questions.filter(
+                q => q.questionType === 'SHORT_ANSWER'
+            ).length;
+
+
+        /*
+         * No questions
+         */
+
+        if (questions.length === 0) {
+
+            tableBody.innerHTML = `
+
+                <tr>
+
+                    <td colspan="6"
+                        class="py-16">
+
+                        <div class="flex flex-col
+                                    items-center
+                                    justify-center
+                                    text-center">
+
+                            <div class="w-16 h-16
+                                        rounded-2xl
+                                        bg-slate-100
+                                        flex items-center
+                                        justify-center
+                                        text-slate-400
+                                        mb-4">
+
+                                <i class="fa-solid fa-inbox text-2xl"></i>
+
+                            </div>
+
+                            <h3 class="font-semibold
+                                       text-slate-800">
+
+                                No questions found
+
+                            </h3>
+
+                            <p class="text-sm
+                                      text-slate-500
+                                      mt-1">
+
+                                Create your first question
+                                to get started.
+
+                            </p>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        /*
+         * Loop questions
+         */
+
+        questions.forEach((question, index) => {
+
+            const row =
+                document.createElement('tr');
+
+            row.className =
+                'question-row hover:bg-slate-50';
+
+
+            /*
+             * Type badge
+             */
+
+            let typeClass = '';
+            let typeIcon = '';
+
+            if (question.questionType === 'MCQ') {
+
+                typeClass =
+                    'bg-blue-50 text-blue-700 border border-blue-100';
+
+                typeIcon =
+                    'fa-list-check';
+
+            }
+
+            else if (
+                question.questionType === 'TRUE_FALSE'
+            ) {
+
+                typeClass =
+                    'bg-purple-50 text-purple-700 border border-purple-100';
+
+                typeIcon =
+                    'fa-circle-check';
+
+            }
+
+            else if (
+                question.questionType === 'SHORT_ANSWER'
+            ) {
+
+                typeClass =
+                    'bg-orange-50 text-orange-700 border border-orange-100';
+
+                typeIcon =
+                    'fa-align-left';
+
+            }
+
+            else {
+
+                typeClass =
+                    'bg-slate-100 text-slate-700';
+
+                typeIcon =
+                    'fa-question';
+
+            }
+
+
+            /*
+             * Status
+             */
+
+            let statusHtml = '';
+
+            if (question.isActive) {
+
+                statusHtml = `
+
+                    <span class="inline-flex
+                                 items-center
+                                 gap-1.5
+                                 px-2.5 py-1
+                                 rounded-full
+                                 bg-emerald-50
+                                 text-emerald-700
+                                 border border-emerald-100
+                                 text-xs
+                                 font-semibold">
+
+                        <span class="w-1.5 h-1.5
+                                     rounded-full
+                                     bg-emerald-500">
+                        </span>
+
+                        Active
+
+                    </span>
+
+                `;
+
+            }
+
+            else {
+
+                statusHtml = `
+
+                    <span class="inline-flex
+                                 items-center
+                                 gap-1.5
+                                 px-2.5 py-1
+                                 rounded-full
+                                 bg-red-50
+                                 text-red-700
+                                 border border-red-100
+                                 text-xs
+                                 font-semibold">
+
+                        <span class="w-1.5 h-1.5
+                                     rounded-full
+                                     bg-red-500">
+                        </span>
+
+                        Inactive
+
+                    </span>
+
+                `;
+
+            }
+
+
+            /*
+             * Row
+             */
+
+            row.innerHTML = `
+
+                <!-- Number -->
+
+                <td class="px-6 py-5">
+
+                    <span class="text-sm
+                                 font-semibold
+                                 text-slate-400">
+
+                        ${index + 1}
+
+                    </span>
+
+                </td>
+
+
+                <!-- Question -->
+
+                <td class="px-6 py-5">
+
+                    <div class="max-w-md">
+
+                        <div class="font-semibold
+                                    text-slate-800
+                                    leading-relaxed">
+
+                            ${question.questionText}
+
+                        </div>
+
+                        <div class="text-xs
+                                    text-slate-400
+                                    mt-1">
+
+                            Question ID:
+                            #${question.questionId}
+
+                        </div>
+
+                    </div>
+
+                </td>
+
+
+                <!-- Type -->
+
+                <td class="px-6 py-5">
+
+                    <span class="inline-flex
+                                 items-center
+                                 gap-2
+                                 px-3 py-1.5
+                                 rounded-full
+                                 text-xs
+                                 font-semibold
+                                 ${typeClass}">
+
+                        <i class="fa-solid ${typeIcon}"></i>
+
+                        ${
+                            question.questionType ===
+                            'TRUE_FALSE'
+                            ? 'True / False'
+                            : question.questionType ===
+                              'SHORT_ANSWER'
+                            ? 'Short Answer'
+                            : 'MCQ'
+                        }
+
+                    </span>
+
+                </td>
+
+
+                <!-- Mark -->
+
+                <td class="px-6 py-5">
+
+                    <span class="inline-flex
+                                 items-center
+                                 gap-1
+                                 font-semibold
+                                 text-slate-700">
+
+                        ${question.defaultMark}
+
+                        <span class="text-xs
+                                     font-normal
+                                     text-slate-400">
+
+                            pts
+
+                        </span>
+
+                    </span>
+
+                </td>
+
+
+                <!-- Status -->
+
+                <td class="px-6 py-5">
+
+                    ${statusHtml}
+
+                </td>
+
+
+                <!-- Actions -->
+
+                <td class="px-6 py-5">
+
+                    <div class="flex
+                                justify-center
+                                items-center
+                                gap-2">
+
+
+                        <!-- View -->
+
+                        <button
+                            onclick="viewQuestion(${question.questionId})"
+                            class="action-btn
+                                   bg-blue-50
+                                   text-blue-600
+                                   hover:bg-blue-600
+                                   hover:text-white"
+                            title="View Question">
+
+                            <i class="fa-solid fa-eye"></i>
+
+                        </button>
+
+
+                        <!-- Edit -->
+
+                        <button
+                            onclick="editQuestion(${question.questionId})"
+                            class="action-btn
+                                   bg-amber-50
+                                   text-amber-600
+                                   hover:bg-amber-500
+                                   hover:text-white"
+                            title="Edit Question">
+
+                            <i class="fa-solid fa-pen"></i>
+
+                        </button>
+
+
+                        <!-- Delete -->
+
+                        <button
+                            onclick="deleteQuestion(${question.questionId})"
+                            class="action-btn
+                                   bg-red-50
+                                   text-red-600
+                                   hover:bg-red-600
+                                   hover:text-white"
+                            title="Delete Question">
+
+                            <i class="fa-solid fa-trash"></i>
+
+                        </button>
+
+                    </div>
+
+                </td>
+
+            `;
+
+
+            tableBody.appendChild(row);
+
+        });
+
+    }
+
+
+    /*
+     * =========================
+     * Render View Options
+     * =========================
+     */
+
+    function renderViewOptions(options) {
+
+        const container =
+            document.getElementById(
+                'viewOptionsContainer'
+            );
+
+        container.innerHTML = '';
+
+
+        if (!options || options.length === 0) {
+
+            container.innerHTML = `
+
+                <div class="text-slate-500
+                            bg-slate-50
+                            border border-slate-200
+                            rounded-xl
+                            p-4">
+
+                    No answer options.
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        options.forEach(option => {
+
+            const optionDiv =
+                document.createElement('div');
+
+
+            optionDiv.className =
+                'flex items-center gap-3 border rounded-xl p-4 mb-3';
+
+
+            if (option.isCorrect) {
+
+                optionDiv.classList.add(
+                    'border-emerald-300',
+                    'bg-emerald-50'
+                );
+
+            }
+
+            else {
+
+                optionDiv.classList.add(
+                    'border-slate-200',
+                    'bg-white'
+                );
+
+            }
+
+
+            optionDiv.innerHTML = `
+
+                <div class="w-10 h-10
+                            flex items-center
+                            justify-center
+                            rounded-xl
+                            font-bold
+                            ${
+                                option.isCorrect
+                                ? 'bg-emerald-100 text-emerald-700'
+                                : 'bg-slate-100 text-slate-600'
+                            }">
+
+                    ${option.optionLabel}
+
+                </div>
+
+
+                <div class="flex-1
+                            text-slate-800
+                            font-medium">
+
+                    ${option.optionText}
+
+                </div>
+
+
+                ${
+                    option.isCorrect
+                    ?
+                    `
+
+                    <span class="inline-flex
+                                 items-center
+                                 gap-1
+                                 px-2.5 py-1
+                                 rounded-full
+                                 bg-emerald-100
+                                 text-emerald-700
+                                 text-xs
+                                 font-semibold">
+
+                        <i class="fa-solid fa-check"></i>
+
+                        Correct
+
+                    </span>
+
+                    `
+                    :
+                    ''
+                }
+
+            `;
+
+            container.appendChild(optionDiv);
+
+        });
+
+    }
+
+
+    /*
+     * =========================
+     * Close View
+     * =========================
+     */
+
+    function closeViewQuestion() {
+
+        const modal =
+            document.getElementById(
+                'viewQuestionModal'
+            );
+
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+
+        document.getElementById(
+            'viewQuestionText'
+        ).textContent = '';
+
+        document.getElementById(
+            'viewQuestionType'
+        ).textContent = '';
+
+        document.getElementById(
+            'viewQuestionMark'
+        ).textContent = '';
+
+        document.getElementById(
+            'viewExplanation'
+        ).textContent = '';
+
+        document.getElementById(
+            'viewOptionsContainer'
+        ).innerHTML = '';
+
+    }
+
+
+    /*
+     * =========================
+     * Open Question Form
+     * =========================
+     */
+
+    function openQuestionForm() {
+
+        const modal =
+            document.getElementById(
+                'questionModal'
+            );
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+    }
+
+
+    /*
+     * =========================
+     * Close Question Form
+     * =========================
+     */
+
+    function closeQuestionForm() {
+
+        const modal =
+            document.getElementById(
+                'questionModal'
+            );
+
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+
+        document
+            .getElementById('questionForm')
+            .reset();
+
+        document
+            .getElementById('optionsSection')
+            .classList.add('hidden');
+
+        document
+            .getElementById('optionsContainer')
+            .innerHTML = '';
+
+    }
+
+
+    /*
+     * =========================
+     * Change Question Type
+     * =========================
+     */
+
+    function changeQuestionType() {
+
+        const type =
+            document.getElementById(
+                'questionType'
+            ).value;
+
+        const optionsSection =
+            document.getElementById(
+                'optionsSection'
+            );
+
+        const optionsContainer =
+            document.getElementById(
+                'optionsContainer'
+            );
+
+        optionsContainer.innerHTML = '';
+
+
+        if (!type) {
+
+            optionsSection.classList.add(
+                'hidden'
+            );
+
+            return;
+
+        }
+
+
+        if (type === 'MCQ') {
+
+            optionsSection.classList.remove(
+                'hidden'
+            );
+
+            createOption('A');
+            createOption('B');
+            createOption('C');
+            createOption('D');
+
+        }
+
+
+        else if (
+            type === 'TRUE_FALSE'
+        ) {
+
+            optionsSection.classList.remove(
+                'hidden'
+            );
+
+            createOption('A', 'True');
+            createOption('B', 'False');
+
+        }
+
+
+        else if (
+            type === 'SHORT_ANSWER'
+        ) {
+
+            optionsSection.classList.add(
+                'hidden'
+            );
+
+        }
+
+    }
+
+
+    /*
+     * =========================
+     * Create Option
+     * =========================
+     */
+
+    function createOption(
+        label,
+        defaultText = ''
+    ) {
+
+        const optionsContainer =
+            document.getElementById(
+                'optionsContainer'
+            );
+
+        const optionDiv =
+            document.createElement('div');
+
+        optionDiv.className =
+            'flex items-center gap-3 mb-3';
+
+
+        optionDiv.innerHTML = `
+
+            <input
+                type="radio"
+                name="correctOption"
+                value="${label}"
+                class="w-4 h-4
+                       text-indigo-600
+                       focus:ring-indigo-500"
+                required>
+
+
+            <div class="w-10 h-10
+                        flex items-center
+                        justify-center
+                        bg-white
+                        border border-slate-200
+                        rounded-xl
+                        font-bold
+                        text-slate-600">
+
+                ${label}
+
+            </div>
+
+
+            <input
+                type="text"
+                id="option_${label}"
+                value="${defaultText}"
+                placeholder="Option ${label}"
+                class="form-input"
+                required>
+
+        `;
+
+        optionsContainer.appendChild(
+            optionDiv
+        );
+
+    }
+
+
+    /*
+     * =========================
+     * Submit Question
+     * =========================
+     */
+
+    document
+        .getElementById('questionForm')
+        .addEventListener(
+            'submit',
+            function (event) {
+
+                event.preventDefault();
+
+
+                const courseId =
+                    document.getElementById(
+                        'questionCourse'
+                    ).value;
+
+                const questionText =
+                    document.getElementById(
+                        'questionText'
+                    ).value;
+
+                const questionType =
+                    document.getElementById(
+                        'questionType'
+                    ).value;
+
+                const defaultMark =
+                    document.getElementById(
+                        'defaultMark'
+                    ).value;
+
+                const explanation =
+                    document.getElementById(
+                        'explanation'
+                    ).value;
+
+
+                const question = {
+
+                    courseId:
+                        Number(courseId),
+
+                    questionText:
+                        questionText,
+
+                    questionType:
+                        questionType,
+
+                    defaultMark:
+                        Number(defaultMark),
+
+                    explanation:
+                        explanation,
+
+                    isActive:
+                        true,
+
+                    createdBy:
+                        1
+
+                };
+
+
+                console.log(
+                    "Question:",
+                    question
+                );
+
+
+                fetch(
+                    '/api/questions',
+                    {
+
+                        method: 'POST',
+
+                        headers: {
+
+                            'Content-Type':
+                                'application/json'
+
+                        },
+
+                        body:
+                            JSON.stringify(
+                                question
+                            )
+
+                    }
+                )
+
+                .then(response => {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            'Failed to save question'
+                        );
+
+                    }
+
+                    return response.json();
+
+                })
+
+                .then(questionId => {
+
+                    console.log(
+                        "Created Question ID:",
+                        questionId
+                    );
+
+
+                    if (
+                        questionType === 'MCQ' ||
+                        questionType === 'TRUE_FALSE'
+                    ) {
+
+                        return saveOptions(
+                            questionId
+                        );
+
+                    }
+
+                    return null;
+
+                })
+
+                .then(() => {
+
+                    alert(
+                        'Question saved successfully!'
+                    );
+
+                    closeQuestionForm();
+
+                    loadQuestions();
+
+                })
+
+                .catch(error => {
+
+                    console.error(
+                        'Error saving question:',
+                        error
+                    );
+
+                    alert(
+                        'Failed to save question.'
+                    );
+
+                });
+
+            }
+        );
+
+
+    /*
+     * =========================
+     * Save Options
+     * =========================
+     */
+
+    function saveOptions(questionId) {
+
+        const questionType =
+            document.getElementById(
+                'questionType'
+            ).value;
+
+
+        let labels = [];
+
+
+        if (questionType === 'MCQ') {
+
+            labels =
+                ['A', 'B', 'C', 'D'];
+
+        }
+
+        else if (
+            questionType === 'TRUE_FALSE'
+        ) {
+
+            labels =
+                ['A', 'B'];
+
+        }
+
+
+        const correctOption =
+            document.querySelector(
+                'input[name="correctOption"]:checked'
+            );
+
+
+        if (!correctOption) {
+
+            throw new Error(
+                'Please select correct answer'
+            );
+
+        }
+
+
+        const correctLabel =
+            correctOption.value;
+
+
+        const requests =
+            labels.map(label => {
+
+                const optionText =
+                    document.getElementById(
+                        `option_${label}`
+                    ).value;
+
+
+                const option = {
+
+                    optionLabel:
+                        label,
+
+                    optionText:
+                        optionText,
+
+                    isCorrect:
+                        label === correctLabel
+
+                };
+
+
+                return fetch(
+                    `/api/questions/${questionId}/options`,
+                    {
+
+                        method: 'POST',
+
+                        headers: {
+
+                            'Content-Type':
+                                'application/json'
+
+                        },
+
+                        body:
+                            JSON.stringify(
+                                option
+                            )
+
+                    }
+                )
+
+                .then(response => {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            `Failed to save option ${label}`
+                        );
+
+                    }
+
+                    return response.json();
+
+                });
+
+            });
+
+
+        return Promise.all(
+            requests
+        );
+
+    }
+
+
+    /*
+     * =========================
+     * View Question
+     * =========================
+     */
+
+    function viewQuestion(questionId) {
+
+        console.log(
+            "View Question ID:",
+            questionId
+        );
+
+        const modal =
+            document.getElementById(
+                'viewQuestionModal'
+            );
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+
+        fetch(
+            `/api/questions/${questionId}`
+        )
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'Failed to load question'
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(question => {
+
+            document.getElementById(
+                'viewQuestionText'
+            ).textContent =
+                question.questionText;
+
+            document.getElementById(
+                'viewQuestionType'
+            ).textContent =
+                question.questionType;
+
+            document.getElementById(
+                'viewQuestionMark'
+            ).textContent =
+                question.defaultMark;
+
+            document.getElementById(
+                'viewExplanation'
+            ).textContent =
+                question.explanation ||
+                'No explanation';
+
+
+            return fetch(
+                `/api/questions/${questionId}/options`
+            );
+
+        })
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'Failed to load options'
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(options => {
+
+            renderViewOptions(
+                options
+            );
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Error:",
+                error
+            );
+
+            alert(
+                "Failed to load question details."
+            );
+
+        });
+
+    }
+
+
+    /*
+     * =========================
+     * Edit Question
+     * =========================
+     */
+
+    function editQuestion(questionId) {
+
+        console.log(
+            "Edit Question ID:",
+            questionId
+        );
+
+        const modal =
+            document.getElementById(
+                'editQuestionModal'
+            );
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+
+        fetch(
+            `/api/questions/${questionId}`
+        )
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'Failed to load question'
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(question => {
+
+            document
+                .getElementById(
+                    'editQuestionForm'
+                )
+                .dataset.questionId =
+                    questionId;
+
+
+            document.getElementById(
+                'editQuestionCourse'
+            ).value =
+                question.courseId;
+
+
+            document.getElementById(
+                'editQuestionText'
+            ).value =
+                question.questionText;
+
+
+            document.getElementById(
+                'editQuestionType'
+            ).value =
+                question.questionType;
+
+
+            document.getElementById(
+                'editDefaultMark'
+            ).value =
+                question.defaultMark;
+
+
+            document.getElementById(
+                'editExplanation'
+            ).value =
+                question.explanation || '';
+
+
+            return fetch(
+                `/api/questions/${questionId}/options`
+            );
+
+        })
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'Failed to load options'
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(options => {
+
+            renderEditOptions(
+                options
+            );
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Error loading question:",
+                error
+            );
+
+            alert(
+                "Failed to load question."
+            );
+
+            closeEditQuestion();
+
+        });
+
+    }
+
+
+    /*
+     * =========================
+     * Render Edit Options
+     * =========================
+     */
+
+    function renderEditOptions(
+        options
+    ) {
+
+        const type =
+            document.getElementById(
+                'editQuestionType'
+            ).value;
+
+        const section =
+            document.getElementById(
+                'editOptionsSection'
+            );
+
+        const container =
+            document.getElementById(
+                'editOptionsContainer'
+            );
+
+
+        container.innerHTML = '';
+
+
+        if (
+            type === 'SHORT_ANSWER'
+        ) {
+
+            section.classList.add(
+                'hidden'
+            );
+
+            return;
+
+        }
+
+
+        section.classList.remove(
+            'hidden'
+        );
+
+
+        let labels = [];
+
+
+        if (type === 'MCQ') {
+
+            labels =
+                ['A', 'B', 'C', 'D'];
+
+        }
+
+        else if (
+            type === 'TRUE_FALSE'
+        ) {
+
+            labels =
+                ['A', 'B'];
+
+        }
+
+
+        labels.forEach(label => {
+
+            const existingOption =
+                options.find(
+                    option =>
+                        option.optionLabel ===
+                        label
+                );
+
+
+            const optionText =
+                existingOption
+                    ? existingOption.optionText
+                    : '';
+
+
+            const isCorrect =
+                existingOption
+                    ? existingOption.isCorrect
+                    : false;
+
+
+            const optionDiv =
+                document.createElement(
+                    'div'
+                );
+
+
+            optionDiv.className =
+                'flex items-center gap-3 mb-3';
+
+
+            optionDiv.innerHTML = `
+
+                <input
+                    type="radio"
+                    name="editCorrectOption"
+                    value="${label}"
+                    class="w-4 h-4
+                           text-indigo-600"
+                    ${isCorrect ? 'checked' : ''}
+                    required>
+
+
+                <div class="w-10 h-10
+                            flex items-center
+                            justify-center
+                            bg-white
+                            border border-slate-200
+                            rounded-xl
+                            font-bold
+                            text-slate-600">
+
+                    ${label}
+
+                </div>
+
+
+                <input
+                    type="text"
+                    id="editOption_${label}"
+                    value="${optionText}"
+                    placeholder="Option ${label}"
+                    class="form-input"
+                    required>
+
+            `;
+
+
+            container.appendChild(
+                optionDiv
+            );
+
+        });
+
+    }
+
+
+    /*
+     * =========================
+     * Change Edit Type
+     * =========================
+     */
+
+    function changeEditQuestionType() {
+
+        const type =
+            document.getElementById(
+                'editQuestionType'
+            ).value;
+
+        const section =
+            document.getElementById(
+                'editOptionsSection'
+            );
+
+        const container =
+            document.getElementById(
+                'editOptionsContainer'
+            );
+
+
+        container.innerHTML = '';
+
+
+        if (type === 'MCQ') {
+
+            section.classList.remove(
+                'hidden'
+            );
+
+            createEditOption('A');
+            createEditOption('B');
+            createEditOption('C');
+            createEditOption('D');
+
+        }
+
+        else if (
+            type === 'TRUE_FALSE'
+        ) {
+
+            section.classList.remove(
+                'hidden'
+            );
+
+            createEditOption(
+                'A',
+                'True'
+            );
+
+            createEditOption(
+                'B',
+                'False'
+            );
+
+        }
+
+        else {
+
+            section.classList.add(
+                'hidden'
+            );
+
+        }
+
+    }
+
+
+    /*
+     * =========================
+     * Create Edit Option
+     * =========================
+     */
+
+    function createEditOption(
+        label,
+        defaultText = ''
+    ) {
+
+        const container =
+            document.getElementById(
+                'editOptionsContainer'
+            );
+
+
+        const optionDiv =
+            document.createElement(
+                'div'
+            );
+
+
+        optionDiv.className =
+            'flex items-center gap-3 mb-3';
+
+
+        optionDiv.innerHTML = `
+
+            <input
+                type="radio"
+                name="editCorrectOption"
+                value="${label}"
+                class="w-4 h-4
+                       text-indigo-600"
+                required>
+
+
+            <div class="w-10 h-10
+                        flex items-center
+                        justify-center
+                        bg-white
+                        border border-slate-200
+                        rounded-xl
+                        font-bold
+                        text-slate-600">
+
+                ${label}
+
+            </div>
+
+
+            <input
+                type="text"
+                id="editOption_${label}"
+                value="${defaultText}"
+                placeholder="Option ${label}"
+                class="form-input"
+                required>
+
+        `;
+
+
+        container.appendChild(
+            optionDiv
+        );
+
+    }
+
+
+    /*
+     * =========================
+     * Close Edit
+     * =========================
+     */
+
+    function closeEditQuestion() {
+
+        const modal =
+            document.getElementById(
+                'editQuestionModal'
+            );
+
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+
+
+        document
+            .getElementById(
+                'editQuestionForm'
+            )
+            .reset();
+
+
+        document
+            .getElementById(
+                'editOptionsContainer'
+            )
+            .innerHTML = '';
+
+
+        document
+            .getElementById(
+                'editOptionsSection'
+            )
+            .classList.add(
+                'hidden'
+            );
+
+    }
+
+
+    /*
+     * =========================
+     * Edit Submit
+     * =========================
+     */
+
+    document
+        .getElementById(
+            'editQuestionForm'
+        )
+        .addEventListener(
+            'submit',
+            function (event) {
+
+                event.preventDefault();
+
+
+                const questionId =
+                    this.dataset.questionId;
+
+
+                const courseId =
+                    document.getElementById(
+                        'editQuestionCourse'
+                    ).value;
+
+
+                const questionText =
+                    document.getElementById(
+                        'editQuestionText'
+                    ).value;
+
+
+                const questionType =
+                    document.getElementById(
+                        'editQuestionType'
+                    ).value;
+
+
+                const defaultMark =
+                    document.getElementById(
+                        'editDefaultMark'
+                    ).value;
+
+
+                const explanation =
+                    document.getElementById(
+                        'editExplanation'
+                    ).value;
+
+
+                const question = {
+
+                    courseId:
+                        Number(courseId),
+
+                    questionText:
+                        questionText,
+
+                    questionType:
+                        questionType,
+
+                    defaultMark:
+                        Number(defaultMark),
+
+                    explanation:
+                        explanation,
+
+                    isActive:
+                        true
+
+                };
+
+
+                fetch(
+                    `/api/questions/${questionId}`,
+                    {
+
+                        method: 'PUT',
+
+                        headers: {
+
+                            'Content-Type':
+                                'application/json'
+
+                        },
+
+                        body:
+                            JSON.stringify(
+                                question
+                            )
+
+                    }
+                )
+
+                .then(response => {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            'Failed to update question'
+                        );
+
+                    }
+
+                    return response.json();
+
+                })
+
+                .then(result => {
+
+                    if (
+                        questionType === 'MCQ' ||
+                        questionType === 'TRUE_FALSE'
+                    ) {
+
+                        return updateOptions(
+                            questionId,
+                            questionType
+                        );
+
+                    }
+
+                    return null;
+
+                })
+
+                .then(() => {
+
+                    alert(
+                        'Question updated successfully!'
+                    );
+
+                    closeEditQuestion();
+
+                    loadQuestions();
+
+                })
+
+                .catch(error => {
+
+                    console.error(
+                        'Error updating question:',
+                        error
+                    );
+
+                    alert(
+                        'Failed to update question.'
+                    );
+
+                });
+
+            }
+        );
+
+
+    /*
+     * =========================
+     * Update Options
+     * =========================
+     */
+
+    function updateOptions(
+        questionId,
+        questionType
+    ) {
+
+        let labels = [];
+
+
+        if (questionType === 'MCQ') {
+
+            labels =
+                ['A', 'B', 'C', 'D'];
+
+        }
+
+        else if (
+            questionType === 'TRUE_FALSE'
+        ) {
+
+            labels =
+                ['A', 'B'];
+
+        }
+
+
+        const correctOption =
+            document.querySelector(
+                'input[name="editCorrectOption"]:checked'
+            );
+
+
+        if (!correctOption) {
+
+            throw new Error(
+                'Please select correct answer'
+            );
+
+        }
+
+
+        const correctLabel =
+            correctOption.value;
+
+
+        return fetch(
+            `/api/questions/${questionId}/options`,
+            {
+
+                method: 'DELETE'
+
+            }
+        )
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'Failed to delete old options'
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(() => {
+
+            const requests =
+                labels.map(label => {
+
+                    const optionText =
+                        document.getElementById(
+                            `editOption_${label}`
+                        ).value;
+
+
+                    const option = {
+
+                        optionLabel:
+                            label,
+
+                        optionText:
+                            optionText,
+
+                        isCorrect:
+                            label ===
+                            correctLabel
+
+                    };
+
+
+                    return fetch(
+                        `/api/questions/${questionId}/options`,
+                        {
+
+                            method: 'POST',
+
+                            headers: {
+
+                                'Content-Type':
+                                    'application/json'
+
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    option
+                                )
+
+                        }
+                    )
+
+                    .then(response => {
+
+                        if (!response.ok) {
+
+                            throw new Error(
+                                `Failed to save option ${label}`
+                            );
+
+                        }
+
+                        return response.json();
+
+                    });
+
+                });
+
+
+            return Promise.all(
+                requests
+            );
+
+        });
+
+    }
+
+
+    /*
+     * =========================
+     * Delete Question
+     * =========================
+     */
+
+    function deleteQuestion(
+        questionId
+    ) {
+
+        const confirmDelete =
+            confirm(
+                "Are you sure you want to delete this question?"
+            );
+
+
+        if (!confirmDelete) {
+
+            return;
+
+        }
+
+
+        fetch(
+            `/api/questions/${questionId}`,
+            {
+
+                method: 'DELETE'
+
+            }
+        )
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'Failed to delete question'
+                );
+
+            }
+
+            return response.text();
+
+        })
+
+        .then(data => {
+
+            console.log(
+                "Delete result:",
+                data
+            );
+
+            alert(
+                "Question deleted successfully!"
+            );
+
+            loadQuestions();
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Error deleting question:",
+                error
+            );
+
+            alert(
+                "Failed to delete question."
+            );
+
+        });
+
+    }
+
+
+    /*
+     * =========================
+     * Search
+     * =========================
+     */
+
+    document
+        .getElementById(
+            'searchInput'
+        )
+        .addEventListener(
+            'input',
+            function () {
+
+                const searchText =
+                    this.value.toLowerCase();
+
+
+                const rows =
+                    document.querySelectorAll(
+                        '#questionTableBody tr'
+                    );
+
+
+                rows.forEach(row => {
+
+                    const questionText =
+                        row.innerText.toLowerCase();
+
+
+                    if (
+                        questionText.includes(
+                            searchText
+                        )
+                    ) {
+
+                        row.style.display =
+                            '';
+
+                    }
+
+                    else {
+
+                        row.style.display =
+                            'none';
+
+                    }
+
+                });
+
+            }
+        );
+
+
+    /*
+     * =========================
+     * Type Filter
+     * =========================
+     */
+
+    document
+        .getElementById(
+            'typeFilter'
+        )
+        .addEventListener(
+            'change',
+            function () {
+
+                const selectedType =
+                    this.value;
+
+
+                const rows =
+                    document.querySelectorAll(
+                        '#questionTableBody tr'
+                    );
+
+
+                rows.forEach(row => {
+
+                    if (!selectedType) {
+
+                        row.style.display =
+                            '';
+
+                        return;
+
+                    }
+
+
+                    const rowText =
+                        row.innerText;
+
+
+                    if (
+                        rowText.includes(
+                            selectedType
+                        )
+                    ) {
+
+                        row.style.display =
+                            '';
+
+                    }
+
+                    else {
+
+                        row.style.display =
+                            'none';
+
+                    }
+
+                });
+
+            }
+        );
+
+
+    /*
+     * =========================
+     * Page Load
+     * =========================
+     */
+
+    document.addEventListener(
+        'DOMContentLoaded',
+        function () {
+
+            loadQuestions();
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>
+

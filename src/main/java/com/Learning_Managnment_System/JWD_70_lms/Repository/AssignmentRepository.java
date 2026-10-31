@@ -21,16 +21,12 @@ public class AssignmentRepository {
 	private final JdbcTemplate jdbcTemplate;
     private final AssignmentRowMapper assignmentRowMapper;
 
-    public AssignmentRepository(
-            JdbcTemplate jdbcTemplate,
-            AssignmentRowMapper assignmentRowMapper) {
-
+    public AssignmentRepository( JdbcTemplate jdbcTemplate,AssignmentRowMapper assignmentRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.assignmentRowMapper = assignmentRowMapper;
     }
 
     public int save(AssignmentBean assignment) {
-
         String sql = """
             INSERT INTO assignments
             (
@@ -54,8 +50,7 @@ public class AssignmentRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-           PreparedStatement ps = connection.prepareStatement(
-                sql,Statement.RETURN_GENERATED_KEYS);
+           PreparedStatement ps = connection.prepareStatement( sql,Statement.RETURN_GENERATED_KEYS);
 
             ps.setObject(1, assignment.getBatchId());
             ps.setObject(2, assignment.getLessonId());

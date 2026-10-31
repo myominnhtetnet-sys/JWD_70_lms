@@ -1,6 +1,7 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import com.Learning_Managnment_System.JWD_70_lms.Mapper.BatchDetailMappers.*;
@@ -9,11 +10,8 @@ import com.Learning_Managnment_System.JWD_70_lms.model.BatchDetailBean.*;
 @Repository
 public class BatchDetailRepository {
 	
-    private final JdbcTemplate jdbcTemplate;
-
-    public BatchDetailRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+	@Autowired
+    private JdbcTemplate jdbcTemplate;
 
     public List<BatchInfo> findAllBatches() {
         String sql = "SELECT batch_id, batch_code, title FROM batches ORDER BY start_date DESC";
@@ -26,7 +24,7 @@ public class BatchDetailRepository {
         });
     }
 
-    // 1. Enrolled Students (🌟 roles ဇယားနှင့် join ၍ role_name = 'Student' သို့မဟုတ် role_id = 3 ဖြင့် စစ်ထုတ်ခြင်း)
+    // 1. Enrolled Students 
     public List<StudentInfo> findStudentsByBatchId(Long batchId) {
         String sql = """
             SELECT e.enrollment_id, e.user_id, u.full_name, u.email, e.payment_status, e.status, e.enrolled_at
@@ -66,7 +64,7 @@ public class BatchDetailRepository {
         );
     }
 
-    // 3. Student Progress per Batch (🌟 roles ဇယားနှင့် join ၍ Student များကိုသာ စစ်ထုတ်ခြင်း)
+    // 3. Student Progress per Batch 
     public List<StudentProgress> findStudentProgressByBatchId(Long batchId) {
         String sql = """
             SELECT e.enrollment_id, u.full_name,

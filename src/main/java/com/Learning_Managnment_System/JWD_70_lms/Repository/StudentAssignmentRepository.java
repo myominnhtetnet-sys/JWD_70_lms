@@ -167,4 +167,45 @@ public class StudentAssignmentRepository {
             }
         }
     }
+    
+    public int updateUngradedSubmission(int submissionId, String answerText, String attachmentPath) {
+        if (attachmentPath != null) {
+            String sql = "UPDATE submissions SET answer_text = ?, attachment = ?, submitted_at = NOW() WHERE submission_id = ? AND status != 'GRADED'";
+            return jdbcTemplate.update(sql, answerText, attachmentPath, submissionId);
+        } else {
+            String sql = "UPDATE submissions SET answer_text = ?, submitted_at = NOW() WHERE submission_id = ? AND status != 'GRADED'";
+            return jdbcTemplate.update(sql, answerText, submissionId);
+        }
+    }
+
+    /**
+     * Look up the system internal database identity row using a verified user session email address string.
+     */
+    public Integer findUserIdByEmail(String email) {
+        String sql = "SELECT user_id FROM learning_db.users WHERE email = ? LIMIT 1";
+        return jdbcTemplate.queryForObject(sql, Integer.class, email);
+    }
+    
+    /**
+     * 🟢 DATABASE LOOKUP:
+     * Pulls the exact file string reference name assigned to an assignment row.
+     */
+    public String findTeacherFileByAssignmentId(int assignmentId) {
+        String sql = "SELECT teacher_attachment FROM learning_db.assignments WHERE assignment_id = ? LIMIT 1";
+        try {
+            return jdbcTemplate.queryForObject(sql, String.class, assignmentId);
+        } catch (Exception e) {
+            return null; 
+        }
+    }
+
+    public String findAttachmentPathByAssignmentId(int assignmentId) {
+        String sql = "SELECT attachment FROM learning_db.assignments WHERE assignment_id = ? LIMIT 1";
+        try {
+            return jdbcTemplate.queryForObject(sql, String.class, assignmentId);
+        } catch (Exception e) {
+            return null; // Graceful fallback if no file is linked to the task card
+        }
+    }
+    
 }

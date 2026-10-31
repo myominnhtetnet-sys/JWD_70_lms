@@ -7,7 +7,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.Admin_Repository;
+import com.Learning_Managnment_System.JWD_70_lms.Service.UserService;
 import com.Learning_Managnment_System.JWD_70_lms.model.AdminUserBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/admin")
@@ -15,21 +19,92 @@ public class Admin_Controller {
 
     @Autowired
     private Admin_Repository adminRepository;
+    
+    /**
+     * Admin ဟုတ်မဟုတ် စစ်ဆေးသည့် Helper Method
+     */
+    private boolean isNotAdmin(HttpSession session) {
+        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+        Object roleIdObj = session.getAttribute("roleId");
+        
+        int roleId = 0;
+        if (currentUser != null) {
+            roleId = currentUser.getRole_id();
+        } else if (roleIdObj != null) {
+            roleId = (int) roleIdObj;
+        }
+        
+        return roleId != 1; // 1 သည် Admin ဟု သတ်မှတ်သည်
+    }
+
+    /**
+     * 🟢 @ModelAttribute ဖြင့် Controller ရှိ Endpoint အားလုံးအတွက် 
+     * Login ဝင်ထားသော User ၏ အမည်နှင့် Role အမည်ကို Model သို့ အလိုအလျောက် ထည့်သွင်းပေးခြင်း
+     */
+    @ModelAttribute
+    public void addCommonAttributes(HttpSession session, Model model) {
+        String displayName = "Administrator";
+        int roleId = 1;
+
+        // 1. Session ထဲမှ "currentUser" (LoginBean) ရှိမရှိ စစ်ဆေးခြင်း
+        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+        if (currentUser != null) {
+            if (currentUser.getFull_name() != null) {
+                displayName = currentUser.getFull_name();
+            }
+            roleId = currentUser.getRole_id();
+        } 
+        // 2. သို့မဟုတ် သီးသန့် Session တင်ထားလျှင် ၎င်းတို့ကို ယူခြင်း
+        else {
+            if (session.getAttribute("fullName") != null) {
+                displayName = (String) session.getAttribute("fullName");
+            }
+            if (session.getAttribute("roleId") != null) {
+                roleId = (int) session.getAttribute("roleId");
+            }
+        }
+
+        // Database မှ role_id ကို အခြေခံ၍ Role Name ဖော်ထုတ်ခြင်း
+        String roleName = "User";
+        if (roleId == 1) {
+            roleName = "Administrator";
+        } else if (roleId == 2) {
+            roleName = "Instructor";
+        } else if (roleId == 3) {
+            roleName = "Student";
+        }
+
+        model.addAttribute("fullName", displayName);
+        model.addAttribute("loggedInRole", roleName);
+    }
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping({"", "/"})
-    public String show() {
-        return "admin";
+    
+    public String show(HttpSession session) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
+        return "redirect:/admin/dashboard";
     }
 
     @GetMapping("/dashboard")
-    public String adminDashboard(Model model) {
+    public String adminDashboard(HttpSession session, Model model) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
         List<AdminUserBean> users = adminRepository.getAllUsers();
         model.addAttribute("users", users);
         return "dashboard";
     }
 
     @GetMapping("/users")
-    public String listUsers(Model model) {
+    public String listUsers(HttpSession session, Model model) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
         List<AdminUserBean> users = adminRepository.getAllUsers();
         model.addAttribute("users", users);
         return "users";
@@ -38,7 +113,11 @@ public class Admin_Controller {
     @GetMapping("/users/search")
     public String searchUsers(
             @RequestParam("keyword") String keyword,
+            HttpSession session,
             Model model) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
         List<AdminUserBean> users = adminRepository.searchUsers(keyword);
         model.addAttribute("users", users);
         model.addAttribute("keyword", keyword);
@@ -46,7 +125,10 @@ public class Admin_Controller {
     }
 
     @GetMapping("/users/add")
-    public String showAddUserForm(Model model) {
+    public String showAddUserForm(HttpSession session, Model model) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
         model.addAttribute("user", new AdminUserBean());
         return "admin/user_form";
     }
@@ -54,7 +136,11 @@ public class Admin_Controller {
     @PostMapping("/users/add")
     public String addUser(
             AdminUserBean user,
+            HttpSession session,
             RedirectAttributes redirectAttributes) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
 
         if (user.getFull_name() == null || user.getFull_name().trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Full name is required.");
@@ -89,8 +175,12 @@ public class Admin_Controller {
     @GetMapping("/users/view/{id}")
     public String viewUser(
             @PathVariable("id") int id,
+            HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
 
         AdminUserBean user = adminRepository.getUserById(id);
 
@@ -106,8 +196,12 @@ public class Admin_Controller {
     @GetMapping("/users/edit/{id}")
     public String showEditUserForm(
             @PathVariable("id") int id,
+            HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
 
         AdminUserBean user = adminRepository.getUserById(id);
 
@@ -120,17 +214,23 @@ public class Admin_Controller {
         return "admin/user_form";
     }
 
-    // 🟢 MODAL မာ EDIT DATA ပေါ်လာစေရန် ထည့်သွင်းထားသော JSON ENDPOINT
     @GetMapping("/users/edit-json/{id}")
     @ResponseBody
-    public AdminUserBean getUserJson(@PathVariable("id") int id) {
+    public AdminUserBean getUserJson(@PathVariable("id") int id, HttpSession session) {
+        if (isNotAdmin(session)) {
+            return null;
+        }
         return adminRepository.getUserById(id);
     }
 
     @PostMapping("/users/update")
     public String updateUser(
             AdminUserBean user,
+            HttpSession session,
             RedirectAttributes redirectAttributes) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
 
         if (user.getFull_name() == null || user.getFull_name().trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Full name is required.");
@@ -158,10 +258,15 @@ public class Admin_Controller {
         return "redirect:/admin/users";
     }
 
+    // 🟢 Suspend Method (Comment ဖြုတ်ပြီး ပြန်လည်ပြင်ဆင်ထားသည်)
     @PostMapping("/users/suspend")
     public String suspendUser(
             @RequestParam("userId") int userId,
+            HttpSession session,
             RedirectAttributes redirectAttributes) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
 
         int result = adminRepository.updateStatus(userId, "SUSPENDED");
 
@@ -177,7 +282,11 @@ public class Admin_Controller {
     @PostMapping("/users/activate")
     public String activateUser(
             @RequestParam("userId") int userId,
+            HttpSession session,
             RedirectAttributes redirectAttributes) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
 
         int result = adminRepository.updateStatus(userId, "ACTIVE");
 
@@ -193,7 +302,11 @@ public class Admin_Controller {
     @PostMapping("/users/delete")
     public String deleteUser(
             @RequestParam("userId") int userId,
+            HttpSession session,
             RedirectAttributes redirectAttributes) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
 
         int result = adminRepository.deleteUser(userId);
 
@@ -203,6 +316,21 @@ public class Admin_Controller {
             redirectAttributes.addFlashAttribute("error", "Unable to delete user.");
         }
 
+        return "redirect:/admin/users";
+    }
+
+    @GetMapping("/users/trash")
+    public String viewTrashInMain(Model model) {
+        List<AdminUserBean> deletedUsers = userService.getDeletedUsers();
+        model.addAttribute("deletedUsers", deletedUsers);
+        model.addAttribute("isTrashView", true); 
+        return "users";
+    }
+
+    @PostMapping("/users/restore")
+    public String restoreUser(@RequestParam("userId") int userId, RedirectAttributes redirectAttributes) {
+        userService.restoreUser(userId);
+        redirectAttributes.addFlashAttribute("success", "User restored successfully!");
         return "redirect:/admin/users";
     }
 }

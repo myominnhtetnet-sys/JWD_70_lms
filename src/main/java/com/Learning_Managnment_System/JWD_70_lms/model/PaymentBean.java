@@ -1,6 +1,5 @@
 package com.Learning_Managnment_System.JWD_70_lms.model;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +13,7 @@ public class PaymentBean {
     private int paymentMethodId;
     
     // Financial amount ကို precision မှန်ကန်စေရန် BigDecimal ဖြင့် သုံးထားပါသည်
-    private BigDecimal amount;
+    private double amount;
     
     private String transactionNo;
     private String paymentType; 

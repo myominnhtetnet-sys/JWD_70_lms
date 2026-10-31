@@ -1,6 +1,8 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,15 +15,12 @@ import com.Learning_Managnment_System.JWD_70_lms.model.BatchBean.*;
 @Controller
 @CrossOrigin(origins = "*")
 public class AnnouncementController {
-
-    private final AnnouncementService announcementService;
-    private final BatchService batchService;
-
-    // Constructor Injection (Best Practice)
-    public AnnouncementController(AnnouncementService announcementService, BatchService batchService) {
-        this.announcementService = announcementService;
-        this.batchService = batchService;
-    }
+	
+	@Autowired
+    private AnnouncementService announcementService;
+	
+	@Autowired
+    private BatchService batchService;
 
     // 1. HTML View Page ပြသရန် (URL: /admin/announcements)
     @GetMapping("/admin/announcements")

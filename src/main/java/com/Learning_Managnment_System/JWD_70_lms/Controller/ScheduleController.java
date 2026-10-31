@@ -20,14 +20,14 @@ public class ScheduleController {
 
     @GetMapping("/student/schedule")
     public String showSchedulePage(HttpSession session, Model model) {
-       
+        
         String email = (String) session.getAttribute("email");
         if (email == null) {
             return "redirect:/login";
         }
 
         Object studentIdObj = session.getAttribute("studentId");
-        int userId = (studentIdObj != null) ? Integer.parseInt(studentIdObj.toString()) : 1;
+        int userId = (studentIdObj != null) ? Integer.parseInt(studentIdObj.toString()) : 3;
 
         List<Map<String, Object>> batches = scheduleRepository.getStudentBatches(userId);
         List<Map<String, Object>> classSessions = scheduleRepository.getClassSessions(userId);

@@ -1,6 +1,8 @@
 package com.Learning_Managnment_System.JWD_70_lms.Service;
 
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.BatchRepository;
 import com.Learning_Managnment_System.JWD_70_lms.model.BatchBean.*;
@@ -8,22 +10,13 @@ import com.Learning_Managnment_System.JWD_70_lms.model.BatchBean.*;
 @Service
 public class BatchService {
 	
-	private final BatchRepository batchRepository;
-
-    public BatchService(BatchRepository batchRepository) {
-        this.batchRepository = batchRepository;
-    }
+	@Autowired
+	private BatchRepository batchRepository;
 
     public List<BatchInfo> getAllBatches() {
         return batchRepository.findAllBatches();
     }
-    
-	/*
-	 * public List<BatchInfo> getAllActiveBatches() { return
-	 * batchRepository.findAllBatches(); // (သို့) Active ဖြစ်တာတွေပဲ
-	 * သီးသန့်ထုတ်ချင်ရင် repo မှာ query အသစ်ရေးနိုင်ပါတယ်၊ လက်ရှိမှာတော့
-	 * getAllBatches() ကိုပဲ ပြန်ညွှန်းပေးလိုက်ပါတယ်) }
-	 */
+
     public BatchInfo getBatchById(Long batchId) {
         return batchRepository.findBatchById(batchId);
     }

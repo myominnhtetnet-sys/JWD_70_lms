@@ -2,6 +2,7 @@ package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -11,11 +12,8 @@ import com.Learning_Managnment_System.JWD_70_lms.model.AnnouncementBean;
 @Repository
 public class AnnouncementRepository {
 	
-	private final JdbcTemplate jdbcTemplate;
-
-    public AnnouncementRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
     // List Query ပတ်ရန်
     public List<AnnouncementBean> queryList(String sql, Object... params) {

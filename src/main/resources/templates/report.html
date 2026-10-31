@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<div th:replace="~{head :: head}"></div>
-
+<html lang="en" class="h-full">
 <body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
 
     <div id="app" class="min-h-screen flex flex-col">
@@ -14,125 +12,209 @@
             
             <!-- DYNAMIC SIDEBAR -->
             <div th:replace="~{nav :: nav}"></div>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f4f3ff',
+                            100: '#ebe9fe',
+                            500: '#6366f1',
+                            600: '#5046e6',
+                            700: '#4338ca'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="h-full bg-[#f8fafc] text-slate-800 antialiased dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200">
 
-<!-- =====================================================
-     LAYOUT WRAPPER (SIDEBAR + MAIN CONTENT)
-     ===================================================== -->
-<div class="flex min-h-screen">
+    <div class="min-h-full flex flex-col">
 
-    <!-- RIGHT CONTENT AREA -->
-    <div class="flex-1 flex flex-col min-w-0">
+        <!-- ==================== MAIN CONTENT AREA ==================== -->
+        <main class="flex-1 flex flex-col min-w-0 overflow-x-hidden">
 
-        <!-- Main Content Area -->
-        <main class="p-8 space-y-8 flex-1 overflow-y-auto">
-            <div class="max-w-7xl mx-auto space-y-8">
+            <!-- Top Header Bar -->
+            <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700/80 px-4 sm:px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4 sticky top-0 z-10 transition-colors">
+                
+               
 
-                <!-- Page Header Title & Actions -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center justify-between md:justify-end w-full md:w-auto space-x-2 sm:space-x-4">
+                    
+                    
+
+                    <!-- Divider -->
+                    <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block"></div>
+
+
+                  
+
+                   
+
+                </div>
+            </header>
+
+            <!-- Dashboard Content Container -->
+            <div class="p-4 sm:p-8 space-y-8 max-w-7xl w-full mx-auto">
+
+                <!-- Page Header & Action -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">System Reports</h1>
-                        <p class="text-sm text-slate-500 mt-1">Generate, view, and export comprehensive administrative and academic performance reports.</p>
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">System Reports</h1>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Generate, view, and export comprehensive administrative and academic performance reports.</p>
                     </div>
-
-                    <div class="flex items-center gap-3">
-                        <button onclick="openGenerateModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/20 transition flex items-center gap-2">
-                            <i class="fa-solid fa-plus text-xs"></i>
-                            Generate New Report
+                    
+                    <!-- Dark Mode Toggle -->
+                    <button id="themeToggle" class="p-2.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all" title="Toggle Theme">
+                        <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    </button>
+                    
+                <!-- Search Input -->
+                <div class="relative w-full md:w-80 lg:w-96">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </div>
+                    <input type="text" id="searchInput" placeholder="Search reports, students, logs..." class="w-full pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-slate-700/60 border border-transparent dark:border-slate-600/50 rounded-xl text-sm focus:bg-white dark:focus:bg-slate-800 focus:border-indigo-500 dark:focus:border-indigo-500 focus:outline-none transition-all placeholder-slate-400">
+                </div>
+                    <div>
+                        <button id="openModalBtn" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-5 py-3 bg-[#5243f6] hover:bg-indigo-600 text-white font-medium text-sm rounded-xl shadow-lg shadow-indigo-500/25 transition-all hover:scale-[1.02] active:scale-95">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Generate New Report</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Top Stats Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-
+                <!-- Stat Cards Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    
                     <!-- Stat Card 1 -->
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                        <div>
-                            <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Total Reports</span>
-                            <div class="text-2xl font-bold text-slate-900 mt-1">128</div>
-                            <p class="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
-                                <i class="fa-solid fa-arrow-trend-up"></i> +14 this month
-                            </p>
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm flex items-center justify-between transition-transform hover:-translate-y-1">
+                        <div class="space-y-1">
+                            <p class="text-xs font-bold tracking-wider text-slate-400 uppercase">Total Reports</p>
+                            <h3 id="statTotal" class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">128</h3>
+                            <div class="flex items-center space-x-1 text-emerald-500 text-xs font-semibold">
+                                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+                                <span>+14 this month</span>
+                            </div>
                         </div>
-                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
-                            <i class="fa-solid fa-file-shield"></i>
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                            <i data-lucide="file-badge" class="w-6 h-6"></i>
                         </div>
                     </div>
 
                     <!-- Stat Card 2 -->
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                        <div>
-                            <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Scheduled Jobs</span>
-                            <div class="text-2xl font-bold text-slate-900 mt-1">12</div>
-                            <p class="text-xs text-indigo-600 font-medium mt-1 flex items-center gap-1">
-                                <i class="fa-solid fa-clock"></i> Automated daily
-                            </p>
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm flex items-center justify-between transition-transform hover:-translate-y-1">
+                        <div class="space-y-1">
+                            <p class="text-xs font-bold tracking-wider text-slate-400 uppercase">Scheduled Jobs</p>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">12</h3>
+                            <div class="flex items-center space-x-1 text-indigo-500 text-xs font-semibold">
+                                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                                <span>Automated daily</span>
+                            </div>
                         </div>
-                        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
-                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                            <i data-lucide="history" class="w-6 h-6"></i>
                         </div>
                     </div>
 
                     <!-- Stat Card 3 -->
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                        <div>
-                            <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Storage Used</span>
-                            <div class="text-2xl font-bold text-slate-900 mt-1">1.4 GB</div>
-                            <p class="text-xs text-slate-400 font-medium mt-1">PDF & CSV exports</p>
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm flex items-center justify-between transition-transform hover:-translate-y-1">
+                        <div class="space-y-1">
+                            <p class="text-xs font-bold tracking-wider text-slate-400 uppercase">Storage Used</p>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">1.4 GB</h3>
+                            <p class="text-xs font-semibold text-slate-400">PDF & CSV exports</p>
                         </div>
-                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
-                            <i class="fa-solid fa-database"></i>
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                            <i data-lucide="database" class="w-6 h-6"></i>
                         </div>
                     </div>
 
                     <!-- Stat Card 4 -->
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                        <div>
-                            <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Export Success Rate</span>
-                            <div class="text-2xl font-bold text-slate-900 mt-1">99.9%</div>
-                            <p class="text-xs text-slate-400 font-medium mt-1">Zero failed queues</p>
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm flex items-center justify-between transition-transform hover:-translate-y-1">
+                        <div class="space-y-1">
+                            <p class="text-xs font-bold tracking-wider text-slate-400 uppercase">Export Success Rate</p>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">99.9%</h3>
+                            <p class="text-xs font-semibold text-slate-400">Zero failed queues</p>
                         </div>
-                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
-                            <i class="fa-solid fa-circle-check"></i>
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                            <i data-lucide="check-circle-2" class="w-6 h-6"></i>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- Reports Data Table Section -->
-                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-
-                    <!-- Table Filters & Header -->
-                    <div class="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex items-center gap-3">
-                            <h2 class="font-bold text-slate-800 text-base">Generated Reports Archive</h2>
-                            <span class="bg-slate-100 text-slate-600 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                                Active Archive
-                            </span>
+                <!-- Table Container Card -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-sm overflow-hidden">
+                    
+                    <!-- Table Header Controls -->
+                    <div class="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-center space-x-3">
+                            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Generated Reports Archive</h2>
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Active Archive</span>
                         </div>
-
-                        <!-- Filter Controls -->
-                        <div class="flex items-center gap-3">
-                            <select class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500/20">
-                                <option value="">All Categories</option>
-                                <option value="ACADEMIC">Academic Progress</option>
-                                <option value="FINANCIAL">Financial & Aid</option>
-                                <option value="ATTENDANCE">Student Attendance</option>
+                        
+                        <!-- Dropdown Filters -->
+                        <div class="flex flex-wrap items-center gap-3">
+                            <select id="categoryFilter" class="px-3.5 py-2 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="All">All Categories</option>
+                                <option value="Academic Progress">Academic Progress</option>
+                                <option value="Financial & Aid">Financial & Aid</option>
+                                <option value="Student Attendance">Student Attendance</option>
+                                <option value="Course Analytics">Course Analytics</option>
                             </select>
 
-                            <select class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500/20">
-                                <option value="">All Formats</option>
-                                <option value="PDF">PDF Document</option>
-                                <option value="CSV">CSV Spreadsheet</option>
+                            <select id="formatFilter" class="px-3.5 py-2 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="All">All Formats</option>
+                                <option value="PDF">PDF</option>
+                                <option value="CSV">CSV</option>
+                                <option value="XLSX">XLSX</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Responsive Table -->
+                    <!-- Data Table -->
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="bg-slate-50/70 border-b border-slate-100 text-[12px] font-semibold text-slate-400 uppercase tracking-wider">
+                                <tr class="border-b border-slate-100 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/50 text-[11px] font-bold tracking-wider text-slate-400 uppercase">
                                     <th class="py-3.5 px-6">Report ID</th>
                                     <th class="py-3.5 px-6">Report Title</th>
                                     <th class="py-3.5 px-6">Category</th>
@@ -142,129 +224,328 @@
                                     <th class="py-3.5 px-6 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100 text-sm">
-
-                                <tr class="hover:bg-slate-50/60 transition">
-                                    <td class="py-4 px-6 font-semibold text-slate-800">#RPT-501</td>
-                                    <td class="py-4 px-6 font-semibold text-slate-900">Q3 Scholarship Disbursement Summary</td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-indigo-50 text-indigo-700">Financial & Aid</span>
-                                    </td>
-                                    <td class="py-4 px-6 text-slate-600">Sarah Jenkins</td>
-                                    <td class="py-4 px-6 text-slate-500 text-xs">Oct 14, 2026</td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-rose-50 text-rose-700">
-                                            <i class="fa-solid fa-file-pdf"></i> PDF
-                                        </span>
-                                    </td>
-                                    <td class="py-4 px-6 text-right space-x-2">
-                                        <button class="bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white font-medium text-xs px-3 py-1.5 rounded-xl transition">
-                                            <i class="fa-solid fa-download"></i> Download
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <tr class="hover:bg-slate-50/60 transition">
-                                    <td class="py-4 px-6 font-semibold text-slate-800">#RPT-502</td>
-                                    <td class="py-4 px-6 font-semibold text-slate-900">JWD_70 Course Attendance Audit</td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700">Student Attendance</span>
-                                    </td>
-                                    <td class="py-4 px-6 text-slate-600">System Bot</td>
-                                    <td class="py-4 px-6 text-slate-500 text-xs">Oct 12, 2026</td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700">
-                                            <i class="fa-solid fa-file-excel"></i> CSV
-                                        </span>
-                                    </td>
-                                    <td class="py-4 px-6 text-right space-x-2">
-                                        <button class="bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white font-medium text-xs px-3 py-1.5 rounded-xl transition">
-                                            <i class="fa-solid fa-download"></i> Download
-                                        </button>
-                                    </td>
-                                </tr>
-
+                            <tbody id="tableBody" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-sm font-medium text-slate-700 dark:text-slate-200">
+                                <!-- Dynamic JS injection occurs here -->
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- Table Footer Pagination -->
-                    <div class="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                        <span>Showing 1 to 2 of 128 entries</span>
-                        <div class="flex items-center gap-1">
-                            <button class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Previous</button>
-                            <button class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-medium">1</button>
-                            <button class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">2</button>
-                            <button class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Next</button>
+                    <!-- Table Footer / Pagination -->
+                    <div class="p-4 sm:p-6 border-t border-slate-100 dark:border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <p id="showingEntriesText" class="text-xs text-slate-500 dark:text-slate-400 font-medium">Showing 1 to 2 of 128 entries</p>
+                        <div class="flex items-center space-x-1.5">
+                            <button class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all">Previous</button>
+                            <button class="w-8 h-8 rounded-lg bg-[#5243f6] text-white text-xs font-semibold flex items-center justify-center shadow-sm">1</button>
+                            <button class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center justify-center transition-all">2</button>
+                            <button class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all">Next</button>
                         </div>
                     </div>
 
                 </div>
 
             </div>
+
         </main>
     </div>
-</div>
 
-<!-- ================= GENERATE REPORT MODAL ================= -->
-<div id="generateModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 overflow-hidden transform transition-all">
-        
-        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-            <div>
-                <h3 class="font-bold text-slate-900 text-base">Generate New Report</h3>
-                <p class="text-xs text-slate-400">Configure parameters for instant compilation.</p>
+    <!-- ==================== GENERATE REPORT MODAL ==================== -->
+    <div id="modalOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700/80 w-full max-w-lg mx-4 overflow-hidden transform scale-95 transition-transform duration-200 max-h-[90vh] flex flex-col" id="modalBox">
+            
+            <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="p-2 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                        <i data-lucide="file-plus" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Generate New Report</h3>
+                </div>
+                <button id="closeModalBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
-            <button onclick="closeGenerateModal()" class="text-slate-400 hover:text-slate-600 text-lg w-8 h-8 rounded-xl flex items-center justify-center hover:bg-slate-100 transition">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+
+            <form id="generateReportForm" class="p-6 space-y-4 overflow-y-auto flex-1">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2">Report Title</label>
+                    <input type="text" id="modalReportTitle" required placeholder="e.g. Q4 Performance Assessment" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2">Category</label>
+                        <select id="modalCategory" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white">
+                            <option value="Financial & Aid">Financial & Aid</option>
+                            <option value="Student Attendance">Student Attendance</option>
+                            <option value="Academic Progress">Academic Progress</option>
+                            <option value="Course Analytics">Course Analytics</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2">Export Format</label>
+                        <select id="modalFormat" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white">
+                            <option value="PDF">PDF Document</option>
+                            <option value="CSV">CSV Spreadsheet</option>
+                            <option value="XLSX">Excel Workbook</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- File Upload Field -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2">Attach Document / File (Optional)</label>
+                    <label class="flex flex-col items-center justify-center w-full h-28 border-2 border-slate-300 dark:border-slate-600 border-dashed rounded-xl cursor-pointer bg-slate-50 dark:bg-slate-700/30 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-all">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
+                            <i data-lucide="upload-cloud" class="w-7 h-7 text-slate-400 mb-1"></i>
+                            <p id="fileNameDisplay" class="text-xs text-slate-500 dark:text-slate-400 font-medium"><span class="font-semibold text-[#5243f6]">Click to upload</span> or drag and drop</p>
+                            <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">PDF, CSV, XLSX, DOCX (Max 25MB)</p>
+                        </div>
+                        <input type="file" id="modalFile" class="hidden" />
+                    </label>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2">Generated By</label>
+                    <input type="text" id="modalGeneratedBy" value="Sarah Jenkins" class="w-full px-4 py-2.5 bg-slate-100 dark:bg-slate-700/30 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-500 dark:text-slate-400 cursor-not-allowed" readonly>
+                </div>
+
+                <div class="pt-4 flex items-center justify-end space-x-3">
+                    <button type="button" id="cancelModalBtn" class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#5243f6] hover:bg-indigo-600 text-white text-sm font-semibold shadow-lg shadow-indigo-500/25 transition-all">Generate</button>
+                </div>
+            </form>
+
         </div>
-
-        <form action="/admin/reports/generate" method="POST" class="p-6 space-y-4">
-            <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Report Title</label>
-                <input type="text" name="reportTitle" required placeholder="e.g. Monthly Enrollment & Revenue Audit" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium">
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Report Category</label>
-                <select name="category" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium">
-                    <option value="ACADEMIC">Academic Progress</option>
-                    <option value="FINANCIAL">Financial & Aid Disbursal</option>
-                    <option value="ATTENDANCE">Student Attendance</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Export Format</label>
-                <select name="format" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium">
-                    <option value="PDF">PDF Document</option>
-                    <option value="CSV">CSV Spreadsheet</option>
-                </select>
-            </div>
-
-            <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-                <button type="button" onclick="closeGenerateModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition">
-                    Cancel
-                </button>
-                <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-lg shadow-indigo-600/20 transition">
-                    Compile & Export
-                </button>
-            </div>
-        </form>
-
     </div>
-</div>
 
-<!-- Script to toggle modal -->
-<script>
-    function openGenerateModal() {
-        document.getElementById('generateModal').classList.remove('hidden');
-    }
-    function closeGenerateModal() {
-        document.getElementById('generateModal').classList.add('hidden');
-    }
-</script>
+    <!-- Toast Notification Container -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-sm font-medium pointer-events-none">
+        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400 dark:text-emerald-600"></i>
+        <span id="toastMsg">Report successfully generated!</span>
+    </div>
 
+    <!-- JavaScript Logic -->
+    <script>
+        // Initial Mock Data
+        let reportsData = [
+            {
+                id: '#RPT-501',
+                title: 'Q3 Scholarship Disbursement Summary',
+                category: 'Financial & Aid',
+                generatedBy: 'Sarah Jenkins',
+                dateCreated: 'Oct 14, 2026',
+                format: 'PDF'
+            },
+            {
+                id: '#RPT-502',
+                title: 'JWD_70 Course Attendance Audit',
+                category: 'Student Attendance',
+                generatedBy: 'System Bot',
+                dateCreated: 'Oct 12, 2026',
+                format: 'CSV'
+            }
+        ];
+
+        // Safe Lucide initialization
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+
+        // Theme Toggle Handler
+        const themeToggleBtn = document.getElementById('themeToggle');
+        themeToggleBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        // Role Buttons Active Toggle Logic
+        const roleBtns = document.querySelectorAll('.role-btn');
+        roleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                roleBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-[#5243f6]', 'text-white', 'shadow-sm');
+                    b.classList.add('text-slate-600', 'dark:text-slate-300');
+                });
+                btn.classList.add('active', 'bg-[#5243f6]', 'text-white', 'shadow-sm');
+                btn.classList.remove('text-slate-600', 'dark:text-slate-300');
+            });
+        });
+
+        // Toast Helper
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = message;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3000);
+        }
+
+        // Render Table Rows
+        function renderTable() {
+            const tableBody = document.getElementById('tableBody');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const categoryVal = document.getElementById('categoryFilter').value;
+            const formatVal = document.getElementById('formatFilter').value;
+
+            // Filter logic
+            const filteredData = reportsData.filter(item => {
+                const matchesSearch = item.title.toLowerCase().includes(searchVal) || 
+                                      item.id.toLowerCase().includes(searchVal) ||
+                                      item.generatedBy.toLowerCase().includes(searchVal);
+                const matchesCategory = categoryVal === 'All' || item.category === categoryVal;
+                const matchesFormat = formatVal === 'All' || item.format === formatVal;
+
+                return matchesSearch && matchesCategory && matchesFormat;
+            });
+
+            tableBody.innerHTML = '';
+
+            if (filteredData.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="py-8 text-center text-slate-400 font-medium">
+                            No matching reports found.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                filteredData.forEach(item => {
+                    let categoryBadgeClass = 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300';
+                    if (item.category === 'Student Attendance') {
+                        categoryBadgeClass = 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-300';
+                    } else if (item.category === 'Academic Progress') {
+                        categoryBadgeClass = 'bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-300';
+                    }
+
+                    let formatBadgeClass = 'bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-300';
+                    let formatIcon = 'file-text';
+                    if (item.format === 'CSV') {
+                        formatBadgeClass = 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-300';
+                        formatIcon = 'file-spreadsheet';
+                    } else if (item.format === 'XLSX') {
+                        formatBadgeClass = 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-300';
+                        formatIcon = 'table';
+                    }
+
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-slate-50/80 dark:hover:bg-slate-700/30 transition-colors';
+                    row.innerHTML = `
+                        <td class="py-4 px-6 font-semibold text-slate-900 dark:text-slate-100">${item.id}</td>
+                        <td class="py-4 px-6 font-semibold text-slate-800 dark:text-slate-200">${item.title}</td>
+                        <td class="py-4 px-6">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${categoryBadgeClass}">
+                                ${item.category}
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 text-slate-600 dark:text-slate-300">${item.generatedBy}</td>
+                        <td class="py-4 px-6 text-slate-500 dark:text-slate-400 text-xs">${item.dateCreated}</td>
+                        <td class="py-4 px-6">
+                            <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-bold ${formatBadgeClass}">
+                                <i data-lucide="${formatIcon}" class="w-3.5 h-3.5"></i>
+                                <span>${item.format}</span>
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 text-right">
+                            <button onclick="downloadReport('${item.id}')" class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-[#5243f6] dark:text-indigo-300 text-xs font-semibold transition-all">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                <span>Download</span>
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // Update Entries count & stat total
+            document.getElementById('showingEntriesText').innerText = `Showing 1 to ${filteredData.length} of ${reportsData.length + 126} entries`;
+            document.getElementById('statTotal').innerText = reportsData.length + 126;
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        // Search & Filter Listeners
+        document.getElementById('searchInput').addEventListener('input', renderTable);
+        document.getElementById('categoryFilter').addEventListener('change', renderTable);
+        document.getElementById('formatFilter').addEventListener('change', renderTable);
+
+        // Download Action Simulation
+        function downloadReport(id) {
+            showToast(`Downloading report ${id}...`);
+        }
+
+        // Modal Functionality
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalBox = document.getElementById('modalBox');
+        const openModalBtn = document.getElementById('openModalBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const cancelModalBtn = document.getElementById('cancelModalBtn');
+        const generateReportForm = document.getElementById('generateReportForm');
+        const modalFile = document.getElementById('modalFile');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+
+        // Update file name text when file selected
+        modalFile.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                fileNameDisplay.innerHTML = `<span class="font-semibold text-emerald-600 dark:text-emerald-400">${e.target.files[0].name}</span> selected`;
+            } else {
+                fileNameDisplay.innerHTML = `<span class="font-semibold text-[#5243f6]">Click to upload</span> or drag and drop`;
+            }
+        });
+
+        function openModal() {
+            modalOverlay.classList.remove('opacity-0', 'pointer-events-none');
+            modalBox.classList.remove('scale-95');
+            modalBox.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            modalOverlay.classList.add('opacity-0', 'pointer-events-none');
+            modalBox.classList.remove('scale-100');
+            modalBox.classList.add('scale-95');
+            generateReportForm.reset();
+            fileNameDisplay.innerHTML = `<span class="font-semibold text-[#5243f6]">Click to upload</span> or drag and drop`;
+        }
+
+        openModalBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelModalBtn.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        // Form Submit Handler
+        generateReportForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('modalReportTitle').value;
+            const category = document.getElementById('modalCategory').value;
+            const format = document.getElementById('modalFormat').value;
+
+            const newReport = {
+                id: `#RPT-${Math.floor(503 + Math.random() * 100)}`,
+                title: title,
+                category: category,
+                generatedBy: 'Sarah Jenkins',
+                dateCreated: 'Oct 23, 2026',
+                format: format
+            };
+
+            reportsData.unshift(newReport);
+            renderTable();
+
+            generateReportForm.reset();
+            closeModal();
+            showToast("New report generated successfully with file attachment!");
+        });
+
+        // Initial Render
+        renderTable();
+    </script>
 </body>
 </html>

@@ -2,6 +2,7 @@ package com.Learning_Managnment_System.JWD_70_lms.Service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.Learning_Managnment_System.JWD_70_lms.Repository.AuditLogRepository;
@@ -10,11 +11,8 @@ import com.Learning_Managnment_System.JWD_70_lms.model.AuditLogBean;
 @Service
 public class AuditLogService {
 	
-	private final AuditLogRepository repository;
-
-    public AuditLogService(AuditLogRepository repository) {
-        this.repository = repository;
-    }
+	@Autowired
+	private AuditLogRepository repository;
 
     // Audit Log အားလုံးကို Created At အလိုက် နောက်ဆုံးလုပ်ခဲ့တာကို အပေါ်ဆုံးထား၍ ဆွဲထုတ်မည်
     public List<AuditLogBean> getAllAuditLogs() {

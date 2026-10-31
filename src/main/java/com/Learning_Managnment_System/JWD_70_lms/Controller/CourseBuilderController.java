@@ -1,6 +1,7 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.jdbc.core.JdbcTemplate;
 import com.Learning_Managnment_System.JWD_70_lms.Service.CourseBuilderService;
 import com.Learning_Managnment_System.JWD_70_lms.model.CourseBuilderBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.InstructorBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.ModuleBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.LessonBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.MaterialBean;
 
 @Controller
 @RequestMapping("/admin/course-builder")
@@ -30,8 +35,16 @@ public class CourseBuilderController {
     // Course List Page
     @GetMapping
     public String showCourseListPage(Model model) {
-        model.addAttribute("courses", courseService.getAllCourses());
-        model.addAttribute("activeTab", "course-biulder"); 
+        List<CourseBuilderBean> courses = courseService.getAllCourses();
+        model.addAttribute("courses", courses);
+        
+        if (courses != null && !courses.isEmpty()) {
+            model.addAttribute("course", courses.get(0)); 
+        } else {
+            model.addAttribute("course", new CourseBuilderBean()); 
+        }
+
+        model.addAttribute("activeTab", "course-builder"); 
         return "Course_Builder"; 
     }
 
@@ -43,7 +56,7 @@ public class CourseBuilderController {
             return "redirect:/admin/course-builder";
         }
         model.addAttribute("course", course);
-        model.addAttribute("activeTab", "course-biulder");
+        model.addAttribute("activeTab", "course-builder");
         return "Course_Builder_Detail"; 
     }
 
@@ -60,6 +73,139 @@ public class CourseBuilderController {
     public List<?> getCategoriesApi() {
         String sql = "SELECT category_id, name FROM categories";
         return jdbcTemplate.queryForList(sql);
+    }
+
+    // 🟢 API: Get All Instructors for Dropdown
+    @GetMapping("/api/instructors")
+    @ResponseBody
+    public List<InstructorBean> getInstructorsApi() {
+        return courseService.getAllInstructors();
+    }
+
+    // --- 1. COURSE INSTRUCTORS APIS ---
+    @GetMapping("/api/{courseId}/instructors")
+    @ResponseBody
+    public List<InstructorBean> getCourseInstructorsApi(@PathVariable Long courseId) {
+        return courseService.getCourseInstructors(courseId);
+    }
+
+    @PostMapping("/api/instructors")
+    @ResponseBody
+    public ResponseEntity<?> assignInstructorApi(@RequestBody Map<String, Object> payload) {
+        try {
+            Long courseId = Long.valueOf(payload.get("courseId").toString());
+            Long instructorId = Long.valueOf(payload.get("instructorId").toString());
+            courseService.assignInstructor(courseId, instructorId);
+            return ResponseEntity.ok().body("Instructor assigned successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/api/{courseId}/instructors/{instructorId}")
+    @ResponseBody
+    public ResponseEntity<?> removeInstructorApi(@PathVariable Long courseId, @PathVariable Long instructorId) {
+        try {
+            courseService.removeInstructor(courseId, instructorId);
+            return ResponseEntity.ok().body("Instructor removed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed: " + e.getMessage());
+        }
+    }
+
+    // --- 2. COURSE MODULES APIS ---
+    @GetMapping("/api/{courseId}/modules")
+    @ResponseBody
+    public List<ModuleBean> getModulesApi(@PathVariable Long courseId) {
+        return courseService.getModules(courseId);
+    }
+
+    @PostMapping("/api/modules")
+    @ResponseBody
+    public ResponseEntity<?> createModuleApi(@RequestBody Map<String, Object> payload) {
+        try {
+            Long courseId = Long.valueOf(payload.get("courseId").toString());
+            String title = payload.get("title").toString();
+            courseService.createModule(courseId, title);
+            return ResponseEntity.ok().body("Module created successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/api/modules/{moduleId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteModuleApi(@PathVariable Long moduleId) {
+        try {
+            courseService.deleteModule(moduleId);
+            return ResponseEntity.ok().body("Module deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed: " + e.getMessage());
+        }
+    }
+
+    // --- 3. LESSONS APIS ---
+    @GetMapping("/api/{courseId}/lessons")
+    @ResponseBody
+    public List<LessonBean> getLessonsApi(@PathVariable Long courseId) {
+        return courseService.getLessons(courseId);
+    }
+
+    @PostMapping("/api/lessons")
+    @ResponseBody
+    public ResponseEntity<?> createLessonApi(@RequestBody Map<String, Object> payload) {
+        try {
+            Long courseId = Long.valueOf(payload.get("courseId").toString());
+            String title = payload.get("title").toString();
+            String url = payload.getOrDefault("url", "").toString();
+            courseService.createLesson(courseId, title, url);
+            return ResponseEntity.ok().body("Lesson created successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/api/lessons/{lessonId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteLessonApi(@PathVariable Long lessonId) {
+        try {
+            courseService.deleteLesson(lessonId);
+            return ResponseEntity.ok().body("Lesson deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed: " + e.getMessage());
+        }
+    }
+
+    // --- 4. MATERIALS APIS ---
+    @GetMapping("/api/{courseId}/materials")
+    @ResponseBody
+    public List<MaterialBean> getMaterialsApi(@PathVariable Long courseId) {
+        return courseService.getMaterials(courseId);
+    }
+
+    @PostMapping("/api/materials")
+    @ResponseBody
+    public ResponseEntity<?> createMaterialApi(@RequestBody Map<String, Object> payload) {
+        try {
+            Long courseId = Long.valueOf(payload.get("courseId").toString());
+            String title = payload.get("title").toString();
+            String filePath = payload.get("filePath").toString();
+            courseService.createMaterial(courseId, title, filePath);
+            return ResponseEntity.ok().body("Material uploaded successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/api/materials/{materialId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteMaterialApi(@PathVariable Long materialId) {
+        try {
+            courseService.deleteMaterial(materialId);
+            return ResponseEntity.ok().body("Material deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed: " + e.getMessage());
+        }
     }
 
     // API: Create Course
