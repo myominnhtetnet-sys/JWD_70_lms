@@ -1,428 +1,220 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - Payment Method</title>
     <!-- Combined CSS UI Framework Modules -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
+    <link rel="stylesheet" href="https://cloudflare.com">
     <style>
         body {
             background-color: #f8fafc !important;
             color: #1e293b;
         }
-        .checkout-wrapper {
-            max-width: 580px;
-            width: 100%;
-        }
         .payment-card {
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 32px;
+            max-width: 550px;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             background: #ffffff;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
         }
         .method-option {
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            transition: 0.2s;
         }
         .method-option:hover {
             border-color: #0d6efd;
             background-color: #f8f9fa;
         }
-        .method-option:has(input:checked) {
-            border-color: #0d6efd;
-            background-color: #f0f7ff;
-            box-shadow: 0 0 0 1px #0d6efd;
-        }
-        .form-control, .form-select {
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            padding: 10px 14px;
-            font-size: 14.5px;
-            transition: all 0.15s ease-in-out;
-        }
-        .form-control:focus, .form-select:focus {
-            border-color: #0d6efd;
-            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
-        }
-        .btn-submit {
-            background-color: #0d6efd;
-            border: none;
-            border-radius: 10px;
-            padding: 12px;
-            font-weight: 700;
-            font-size: 15px;
-            transition: all 0.15s ease;
-            color: #ffffff !important;
-        }
-        .btn-submit:hover {
-            background-color: #0b5ed7;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
-        }
-        .btn-dashboard-back {
-            display: inline-flex;
+        /* Custom Native Modal Overlay Layers Styles */
+        .history-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1050;
+            display: flex;
             align-items: center;
-            gap: 8px;
-            color: #64748b;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            transition: color 0.15s ease;
-            padding: 6px 12px;
-            border-radius: 8px;
+            justify-content: center;
+            padding: 1rem;
         }
-        .btn-dashboard-back:hover {
-            color: #1e293b;
-            background-color: #e2e8f0;
+        .history-modal-content {
+            background: #ffffff;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
-<body class="bg-slate-50 antialiased">
+<body class="bg-light">
 
-    <!-- Outer Side-by-Side Content Matrix Row Wrapper -->
-    <div class="flex min-h-screen w-full">
-
-       <!-- Sidebar Navigation Menu (Fixed Pure-CSS Collapsible Animation) -->
-        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar">
-            
-            <!-- 🟢 Pure CSS Toggle Checkbox Engine -->
-            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
-            
-            <!-- 🟢 Error-Free Scoped Structural Animation Layout Adjustments -->
-            <style>
-                #sidebar-content-box { width: 256px; }
-                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
-                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
-                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
-                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
-                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
-                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
-                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
-                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
-                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
-                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
-                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
-            </style>
-
-            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden">
-                <div>
-                    <!-- Logo & Collapse Button Trigger -->
-                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
-                        <!-- 🟢 FIXED: Centered the uncollapse bars icon perfectly inside the 72px header -->
-                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
-                            <i class="fa-solid fa-bars text-lg"></i>
-                        </label>
-
-                        <div class="flex items-center gap-3 hidden-on-collapse">
-                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
-                                <i class="fa-solid fa-graduation-cap text-lg"></i>
-                            </div>
-                            <div>
-                                <span class="text-base font-bold text-white tracking-wide block leading-none">LearnHub</span>
-                                <small class="text-[11px] font-medium text-slate-400">Student Portal</small>
-                            </div>
-                        </div>
-
-                        <!-- Interactive Collapse Arrow Button (visible on hover) -->
-                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
-                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
-                        </label>
-                    </div>
-
-                    <!-- Navigation Links -->
-                    <nav class="p-4 space-y-6">
-                        <div>
-                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Learning</div>
-                            <div class="space-y-1">
-                                <a th:href="@{/student}"  class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
-                                    <i class="fa-solid fa-border-all text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
-                                </a>
-                               
-                                <a th:href="@{/student/my-courses}"  class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                    <i class="fa-solid fa-book-open text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">My Courses</span>
-                                </a>
-                                
-                               <a th:href="@{/student/schedule}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                    <i class="fa-regular fa-calendar-check text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Schedule</span>
-                                </a>
-                               
-                                <a th:href="@{/student/assignments}"  class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition" >
-                                    <div class="flex items-center gap-3">
-                                        <i class="fa-regular fa-file-lines text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Assignments</span>
-                                    </div>
-                                </a>
-                              
-                                <a th:href="@{/student/exam-list}"   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                    <i class="fa-solid fa-square-check text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">My Exams</span>
-                                </a>
-                                <a th:href="@{/student/exam-results}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                    <i class="fa-solid fa-chart-simple text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">My Results</span>
-                                </a>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Account</div>
-                            <div class="space-y-1">
-                            
-                                <a th:href="@{/student/checkout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 shadow-sm transition">
-                                    <i class="fa-regular fa-credit-card text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Payments</span>
-                                </a>
-                                <a th:href="@{/student/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                                    <i class="fa-regular fa-user text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">My Profile</span>
-                                </a>
-                            </div>
-                        </div>
-                    </nav>
-                </div>
-
-                <div class="p-4 border-t border-slate-800">
-                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
-                        <i class="fa-solid fa-right-from-bracket text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
-                    </a>
-                </div>
-            </div>
-        </aside>
-
- <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-            
-            <!-- Top Header -->
-           <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shrink-0 z-40 shadow-sm">
-    <div>
-        <h2 class="text-lg font-bold text-slate-900 leading-tight">Payment History & Invoices</h2>
-        <p class="text-xs text-slate-400 font-medium">Manage your tuition fees, review billing history status, and download receipts safely.</p>
-    </div>
-
-    <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
-        <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
-            <span th:text="${fullName != null ? #strings.substring(fullName,0,2) : 'ST'}">ST</span>
-        </div>
-        <div class="hidden lg:block">
-            <b class="block text-xs font-bold text-slate-800 leading-none" th:text="${fullName != null ? fullName : 'Student'}">Student</b>
-            <small class="text-[11px] text-slate-400 font-medium">Student Portal</small>
-        </div>
-    </div>
-</header>
-
-               
-       <!-- Right Side Panel Column Main Display Content -->
-<main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 w-full text-xs bg-slate-50">
-    <div class="container-fluid max-w-4xl mx-auto w-full flex flex-col items-center">
+<div class="container">
+    <div class="payment-card">
         
-        <!-- Centered Layout Wrapper Matrix -->
-        <div class="checkout-wrapper w-full max-w-[540px] space-y-4">
-            
-            <!-- FLASH TOAST ALERT FEEDBACK NOTIFICATIONS -->
-            <div th:if="${successMessage != null}" class="p-3 text-xs font-semibold text-emerald-700 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center gap-2">
-                <i class="fa-solid fa-circle-check"></i> <span th:text="${successMessage}">Success Toast</span>
-            </div>
-            <div th:if="${errorMessage != null}" class="p-3 text-xs font-semibold text-rose-700 bg-rose-50 rounded-xl border border-rose-100 flex items-center gap-2">
-                <i class="fa-solid fa-circle-exclamation"></i> <span th:text="${errorMessage}">Error Toast</span>
-            </div>
-
-            <!-- Premium Modular Payment Selection Container Card -->
-            <div class="payment-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                <div class="mb-4 flex flex-col sm:flex-row justify-between sm:items-start gap-2">
-                    <div>
-                        <h3 class="text-base font-bold text-slate-900 m-0">Select Payment Method</h3>
-                        <p class="text-xs text-slate-400 mt-1">Choose your preferred transaction platform to complete enrollment checkouts securely.</p>
-                    </div>
-                    <!-- Trigger link to open the history modal framework layout -->
-                    <button type="button" onclick="togglePaymentHistoryModal(true)" class="shrink-0 text-xs font-bold text-indigo-600 hover:underline flex items-center gap-1 focus:outline-none cursor-pointer">
-                        <i class="fa-solid fa-clock-rotate-left"></i> View History
-                    </button>
-                </div>
-
-                <!-- Main Ledger Submission Form Row Layout Matrix Components -->
-                <form th:action="@{/student/checkout/submit}" method="POST" id="checkout-form">
-                    <!-- Explicit Spring Security CSRF Token Payload Injection -->
-                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-
-                    <div class="space-y-2.5">
-                        <!-- Method Option 1: KPay -->
-                        <label class="method-option w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50/50 cursor-pointer transition" for="method-kpay">
-                            <div class="flex items-center gap-3">
-                                <input type="radio" name="paymentMethod" value="KPAY" id="method-kpay" class="m-0 accent-indigo-600" checked />
-                                <div>
-                                    <div class="text-xs font-bold text-slate-900">KBZPay (KPay)</div>
-                                    <div class="text-[11px] text-slate-400 mt-0.5">Instant transfer via mobile wallet application</div>
-                                </div>
-                            </div>
-                        </label>
-
-                        <!-- Method Option 2: WavePay -->
-                        <label class="method-option w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50/50 cursor-pointer transition" for="method-wave">
-                            <div class="flex items-center gap-3">
-                                <input type="radio" name="paymentMethod" value="WAVEPAY" id="method-wave" class="m-0 accent-indigo-600" />
-                                <div>
-                                    <div class="text-xs font-bold text-slate-900">WaveMoney (WavePay)</div>
-                                    <div class="text-[11px] text-slate-400 mt-0.5">Secure payment via Wave mobile networks</div>
-                                </div>
-                            </div>
-                        </label>
-
-                        <!-- Method Option 3: CB Pay -->
-                        <label class="method-option w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50/50 cursor-pointer transition" for="method-cb">
-                            <div class="flex items-center gap-3">
-                                <input type="radio" name="paymentMethod" value="CBPAY" id="method-cb" class="m-0 accent-indigo-600" />
-                                <div>
-                                    <div class="text-xs font-bold text-slate-900">CB Pay</div>
-                                    <div class="text-[11px] text-slate-400 mt-0.5">Direct bank transfer channel protocols</div>
-                                </div>
-                            </div>
-                        </label>
-
-                        <!-- Method Option 4: AYA Pay -->
-                        <label class="method-option w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50/50 cursor-pointer transition" for="method-aya">
-                            <div class="flex items-center gap-3">
-                                <input type="radio" name="paymentMethod" value="AYAPAY" id="method-aya" class="m-0 accent-indigo-600" />
-                                <div>
-                                    <div class="text-xs font-bold text-slate-900">AYA Pay Wallet</div>
-                                    <div class="text-[11px] text-slate-400 mt-0.5">Quick digital banking payment gateway system</div>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- Structural Billing Fields Input Segment -->
-                    <div class="mt-4 space-y-3 text-start">
-                        <div class="form-group flex flex-col gap-1.5">
-                            <label for="transactionId" class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Transaction ID / Reference Number</label>
-                            <input type="text" id="transactionId" name="transactionId" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 transition" required placeholder="Enter the 10-20 digit reference code" />
-                        </div>
-
-                        <div class="form-group flex flex-col gap-1.5">
-                            <label for="phoneNumber" class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sender Mobile Number</label>
-                            <input type="tel" id="phoneNumber" name="phoneNumber" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 transition" required placeholder="09xxxxxxxxx" />
-                        </div>
-                    </div>
-
-                    <!-- Final Checkout Submission Trigger Button Action -->
-                    <div class="mt-5">
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl transition shadow-sm cursor-pointer text-center">
-                            Confirm & Submit Tuition Receipt
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-    </div>
-</main>
-
-<!-- PAYMENT HISTORY MODAL OVERLAY COMPONENT -->
-<div id="payment-history-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] flex flex-col shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
-        
-        <!-- Modal Header -->
-        <div class="flex justify-between items-center border-b border-slate-100 p-5 shrink-0">
+        <!-- Header Text Block & History Trigger button shortcut link -->
+        <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
-                <h3 class="text-base font-bold text-slate-900 m-0">Payment History & Invoices</h3>
-                <p class="text-xs text-slate-400 mt-0.5">Review the logging approval verification status of your tuition receipts.</p>
+                <h4 class="fw-bold m-0">Select Payment Method</h4>
+                <p class="text-muted small m-0 mt-1">ကျေးဇူးပြု၍ မိမိပေးချေလိုသော App ကို ရွေးချယ်၍ Ngwe လွှဲပေးပါရန်။</p>
             </div>
-            <button onclick="togglePaymentHistoryModal(false)" class="text-slate-400 hover:text-slate-600 text-2xl font-semibold p-1 cursor-pointer leading-none focus:outline-none">&times;</button>
-        </div>
-
-        <!-- Modal Body Content (Scrollable Invoices Table Grid) -->
-        <div class="p-5 overflow-y-auto min-h-[200px]">
-            <!-- Empty History State Check Placeholder -->
-            <div th:if="${paymentHistory == null or #lists.isEmpty(paymentHistory)}" class="text-center py-12 text-slate-400 border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
-                <div class="text-2xl mb-1.5">💳</div>
-                <p class="text-xs font-semibold text-slate-600">No payment records located</p>
-                <p class="text-[11px] text-slate-400 mt-0.5">Your submitted receipt invoices index logs will display here.</p>
-            </div>
-
-            <!-- Dynamic Invoices Table List Output Block -->
-            <div th:unless="${paymentHistory == null or #lists.isEmpty(paymentHistory)}" class="overflow-x-auto">
-                <table class="w-full text-left text-slate-600 border-collapse text-xs">
-                    <thead>
-                        <tr class="bg-slate-50 border-b border-slate-100 text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                            <th class="py-2.5 px-3">Method</th>
-                            <th class="py-2.5 px-3">Transaction Info</th>
-                            <th class="py-2.5 px-3">Amount</th>
-                            <th class="py-2.5 px-3 text-right">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-    <tr th:each="pay : ${paymentHistory}" class="hover:bg-slate-50/40 transition">
-        <!-- 1. Display Payment Type / Category description text -->
-        <td class="py-3 px-3 font-semibold text-slate-900" 
-            th:text="${pay.paymentType != null ? pay.paymentType : 'Course Fee'}">Full Course Fee</td>
-        
-        <td class="py-3 px-3 space-y-0.5">
-            <!-- 2. Display Transaction Reference Token -->
-            <div class="font-medium text-slate-800" th:text="${pay.transactionNo}">TXN-83A12901</div>
-            <div class="text-[10px] text-slate-400 flex items-center gap-1">
-                <i class="fa-regular fa-clock"></i>
-                <!-- 🟢 Formats your actual paymentDate variable accurately -->
-                <span th:text="${pay.paymentDate != null ? #temporals.format(pay.paymentDate, 'dd-MM-yyyy hh:mm a') : 'Recently'}">Date</span>
-            </div>
-        </td>
-        
-        <!-- 3. Renders the course pricing digits formatted with currency metrics -->
-        <td class="py-3 px-3 font-bold text-slate-900" 
-            th:text="${#numbers.formatDecimal(pay.amount, 1, 'COMMA', 2, 'POINT')} + ' MMK'">150,000.00 MMK</td>
-        
-        <td class="py-3 px-3 text-right">
-            <!-- 4. Dynamic status evaluations checking matching database string states safely -->
-            <span th:if="${#strings.equalsIgnoreCase(pay.status, 'PENDING')}" class="bg-amber-50 text-amber-600 font-bold px-2 py-0.5 rounded-full text-[10px] inline-block">⏳ Pending</span>
-            <span th:if="${#strings.equalsIgnoreCase(pay.status, 'SUCCESS') or #strings.equalsIgnoreCase(pay.status, 'APPROVED')}" class="bg-emerald-50 text-emerald-600 font-bold px-2 py-0.5 rounded-full text-[10px] inline-block">✓ Success</span>
-            <span th:if="${#strings.equalsIgnoreCase(pay.status, 'FAILED') or #strings.equalsIgnoreCase(pay.status, 'REJECTED')}" class="bg-rose-50 text-rose-600 font-bold px-2 py-0.5 rounded-full text-[10px] inline-block">✕ Declined</span>
-        </td>
-    </tr>
-</tbody>
-
-                </table>
-            </div>
-        </div>
-
-        <!-- Modal Footer Close Trigger Actions -->
-        <div class="border-t border-slate-100 p-4 flex justify-end shrink-0 bg-slate-50 rounded-b-2xl">
-            <button onclick="togglePaymentHistoryModal(false)" class="px-4 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer focus:outline-none">
-                Close View
+            <!-- 🟢 Clickable View History Text Shortcut Anchor Link Trigger -->
+            <button type="button" onclick="togglePaymentHistoryModal(true)" class="btn btn-link btn-sm p-0 fw-bold text-decoration-none text-primary focus-none">
+                <i class="fa-solid fa-clock-rotate-left me-1"></i> View History
             </button>
         </div>
+
+        <!-- Error Alert -->
+        <div th:if="${error}" class="alert alert-danger py-2 small mb-3" th:text="${error}"></div>
+
+        <form th:action="@{/student/process-payment}" method="post">
+            <!-- Explicit Spring Security CSRF Token Payload Injection -->
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            
+            <!-- Payment Methods List -->
+            <div class="mb-4">
+                <div th:each="method, iterStat : ${paymentMethods}" class="method-option d-flex align-items-center justify-content-between">
+                    <div>
+                        <input class="form-check-input me-2" type="radio" name="paymentMethodId" 
+                               th:id="'method-' + ${method['payment_method_id']}" 
+                               th:value="${method['payment_method_id']}" 
+                               th:checked="${iterStat.index == 0}" required>
+                        <label class="form-check-label fw-bold" 
+                               th:for="'method-' + ${method['payment_method_id']}" 
+                               th:text="${method['name']}"></label>
+                    </div>
+                    <div class="text-end text-muted small">
+                        <span th:text="${method['description']}"></span>
+                    </div>
+                </div>
+            </div>
+            <!-- Total Amount Input Field Area -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Total Amount (MMK)</label>
+                <input type="number" name="amount" class="form-control" placeholder="75000" required>
+            </div>
+
+            <!-- Payment Purpose Selection Dropdown -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Payment Purpose</label>
+                <select name="paymentType" class="form-select">
+                    <option value="Full Course Fee">Full Course Fee</option>
+                    <option value="Installment">Installment</option>
+                    <option value="Exam Fee">Exam Fee</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <!-- Note / Remark Multiline Textarea -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Note / Remark <span class="text-muted fw-normal">(Optional)</span></label>
+                <textarea name="note" class="form-control" rows="2" placeholder="အကြောင်းအရာ သို့မဟုတ် မှတ်ချက်ရေးပါ..."></textarea>
+            </div>
+
+            <!-- Submit Button Trigger -->
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Confirm & Submit Payment</button>
+        </form>
+    </div>
+</div>
+            <!-- PAYMENT HISTORY OVERLAY COMPONENT (HIDDEN BY DEFAULT) -->
+<div id="payment-history-modal" class="d-none history-modal-overlay">
+    <div class="history-modal-content">
+        
+        <!-- Modal Dialog Header -->
+        <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
+            <div>
+                <h5 class="fw-bold m-0" style="font-size: 16px;">Payment Submission History</h5>
+                <p class="text-muted m-0 mt-1" style="font-size: 12px;">Track your submitted tuition receipts and accounting verification states.</p>
+            </div>
+            <button type="button" onclick="togglePaymentHistoryModal(false)" class="border-0 bg-transparent text-muted fs-3 leading-none p-0 cursor-pointer focus:outline-none">&times;</button>
+        </div>
+
+        <!-- Modal Body (Scrollable Table Area) -->
+<div class="p-4 overflow-y-auto" style="flex: 1;">
+    <div th:if="${#lists.isEmpty(paymentHistory)}" class="text-center py-5 text-muted bg-light rounded-3 border border-dashed" style="font-size: 13px;">
+        No historical payment entries found for this student account.
+    </div>
+
+    <div th:unless="${#lists.isEmpty(paymentHistory)}" class="table-responsive">
+        <table class="table table-sm table-hover align-middle m-0" style="font-size: 13px;">
+            <thead>
+                <tr class="text-muted fw-bold text-uppercase border-bottom" style="font-size: 11px;">
+                    <th class="pb-2">Method</th>
+                    <th class="pb-2">Purpose</th>
+                    <th class="pb-2">Transaction ID</th>
+                    <th class="pb-2 text-end">Amount</th>
+                    <th class="pb-2 text-end">Status</th>
+                </tr>
+            </thead>
+            <tbody class="text-secondary border-0">
+                <tr th:each="payment : ${paymentHistory}">
+                    <td class="py-2.5 fw-bold text-dark" th:text="${payment.paymentMethodName != null ? payment.paymentMethodName : 'Wallet'}">KPay</td>
+                    <td class="py-2.5" th:text="${payment.paymentType}">Full Course Fee</td>
+                    <td class="py-2.5 font-monospace text-primary" th:text="${payment.transactionNo}">TXN-XXXXXXXX</td>
+                    <td class="py-2.5 text-end font-semibold text-dark" th:text="${#numbers.formatDecimal(payment.amount, 1, 'COMMA', 0, 'POINT') + ' MMK'}">75,000 MMK</td>
+                    <td class="py-2.5 text-end">
+                        <!-- 🟢 FIXED Badge style formatting looks up 'SUCCESS' and 'PENDING' enums correctly -->
+                        <span th:text="${payment.status}" 
+                              th:classappend="${payment.status == 'SUCCESS'} ? 'badge bg-success-subtle text-success-emphasis rounded-pill' : (${payment.status == 'PENDING'} ? 'badge bg-warning-subtle text-warning-emphasis rounded-pill' : 'badge bg-danger-subtle text-danger-emphasis rounded-pill')" style="font-size: 10px; font-weight: 700;">
+                            PENDING
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- UTILITY UI SWAP TOGGLE FUNCTION LOGIC -->
-<script>
+
+        <!-- Modal Actions Bar Footer -->
+        <div class="p-3 border-top d-flex justify-content-end bg-light rounded-bottom-4">
+            <button type="button" onclick="togglePaymentHistoryModal(false)" class="btn btn-secondary btn-sm px-4 fw-bold" style="border-radius: 8px;">
+                Close Logs
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- CLIENT SIDE POPUP INTERACTIVE ACTION SCRIPT MODULE -->
+<script th:inline="javascript">
+    /**
+     * Toggles the display classes of the structural history log pop-up panel.
+     * @param {boolean} show - Controls target DOM node class visibility list vectors.
+     */
     function togglePaymentHistoryModal(show) {
-        const modal = document.getElementById('payment-history-modal');
-        if (!modal) return;
+        const targetModalBox = document.getElementById("payment-history-modal");
+        if (!targetModalBox) return;
         
         if (show) {
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden'; // Freeze main layout scrollbar when overlay is active
+            targetModalBox.classList.remove("d-none");
+            document.body.style.overflow = "hidden"; // Locks main background content scroll layer
         } else {
-            modal.classList.add('hidden');
-            document.body.style.overflow = ''; // Restore background scrollbar
+            targetModalBox.classList.add("d-none");
+            document.body.style.overflow = "";        // Unlocks background workspace tracking bounds
         }
     }
 
-    // Auto dismiss modal overlay window backdrop box areas if clicked externally
-    window.addEventListener('click', function(event) {
-        const modal = document.getElementById('payment-history-modal');
-        if (event.target === modal) {
+    // Listens to manual device Escape keystrokes to dismiss window layer natively
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape") {
             togglePaymentHistoryModal(false);
         }
     });
 </script>
-
-
-
 </body>
 </html>
-                
+            

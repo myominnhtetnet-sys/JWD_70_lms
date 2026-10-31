@@ -1,5 +1,6 @@
 package com.Learning_Managnment_System.JWD_70_lms.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -56,36 +57,59 @@ public class PaymentRepository {
     }
     
     public List<PaymentBean> getPaymentsByUserId(int userId) {
-        String sql = "SELECT p.* FROM payments p " +
-                     "JOIN enrollments e ON p.enrollment_id = e.id " +
-                     "WHERE e.user_id = ? ORDER BY p.payment_id DESC"; // Mapped to payment_id column ranking
-                     
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            PaymentBean payment = new PaymentBean();
-            
-            // 🟢 Fully synchronized with your custom PaymentBean fields
-            payment.setPaymentId(rs.getInt("payment_id")); 
-            payment.setEnrollmentId(rs.getInt("enrollment_id"));
-            payment.setScheduleId(rs.getInt("schedule_id"));
-            payment.setPaymentMethodId(rs.getInt("payment_method_id"));
-            payment.setAmount(rs.getDouble("amount"));
-            payment.setTransactionNo(rs.getString("transaction_no"));
-            payment.setPaymentType(rs.getString("payment_type"));
-            payment.setNote(rs.getString("note"));
-            payment.setProofImage(rs.getString("proof_image"));
-            payment.setStatus(rs.getString("status"));
-            payment.setProcessedBy(rs.getObject("processed_by", Integer.class));
-            payment.setRemark(rs.getString("remark"));
-            
-            // Safe LocalDateTime conversion using your paymentDate property field
-            java.sql.Timestamp ts = rs.getTimestamp("payment_date");
-            if (ts != null) {
-                payment.setPaymentDate(ts.toLocalDateTime());
-            }
-            
-            return payment;
-        }, userId);
+        String sql = """
+            SELECT p.*, pm.name AS payment_method_name 
+            FROM payments p 
+            JOIN enrollments e ON p.enrollment_id = e.enrollment_id 
+            LEFT JOIN payment_methods pm ON p.payment_method_id = pm.payment_method_id
+            WHERE e.user_id = ? 
+            ORDER BY p.payment_id DESC
+            """;
+        try {            
+            return jdbcTemplate.query(sql, (rs, rowNum) -> {
+                PaymentBean payment = new PaymentBean();
+                
+                payment.setPaymentId(rs.getInt("payment_id")); 
+                payment.setEnrollmentId(rs.getInt("enrollment_id"));
+                payment.setScheduleId(rs.getInt("schedule_id"));
+                payment.setPaymentMethodId(rs.getInt("payment_method_id"));
+                payment.setAmount(rs.getDouble("amount"));
+                payment.setTransactionNo(rs.getString("transaction_no"));
+                payment.setProofImage(rs.getString("proof_image"));
+                payment.setStatus(rs.getString("status")); // 🟢 Reads 'PENDING','SUCCESS','FAILED','REFUNDED'
+                payment.setProcessedBy(rs.getObject("processed_by", Integer.class));
+                payment.setPaymentMethodName(rs.getString("payment_method_name"));
+                
+                String rawRemark = rs.getString("remark");
+                payment.setRemark(rawRemark);
+                
+                if (rawRemark != null && rawRemark.startsWith("[")) {
+                    int closingBrace = rawRemark.indexOf("]");
+                    if (closingBrace > -1) {
+                        payment.setPaymentType(rawRemark.substring(1, closingBrace));
+                        payment.setNote(rawRemark.substring(closingBrace + 1).trim());
+                    } else {
+                        payment.setPaymentType("Full Course Fee");
+                        payment.setNote(rawRemark);
+                    }
+                } else {
+                    payment.setPaymentType("Full Course Fee");
+                    payment.setNote(rawRemark != null ? rawRemark : "");
+                }
+                
+                java.sql.Timestamp ts = rs.getTimestamp("payment_date");
+                if (ts != null) {
+                    payment.setPaymentDate(ts.toLocalDateTime());
+                }
+                
+                return payment;
+            }, userId);
+        } catch (Exception e) {
+            System.err.println("REPOSITORY ERROR -> getPaymentsByUserId failed: " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
+
 
 
 }
