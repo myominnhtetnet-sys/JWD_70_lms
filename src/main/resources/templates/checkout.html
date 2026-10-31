@@ -231,10 +231,11 @@
             
                 <!-- Top Header -->
            <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shrink-0 z-40 shadow-sm">
-                <div>
-                    <h2 class="text-lg font-bold text-slate-900 leading-tight">My Exam History</h2>
-                    <p class="text-xs text-slate-400 font-medium">Track your submitted exam performance history profiles across all modules.</p>
-                </div>
+               <div>
+    <h2 class="text-lg font-bold text-slate-900 leading-tight">My Payment History</h2>
+    <p class="text-xs text-slate-400 font-medium">Track your submitted tuition fee receipts and accounting verification states across all modules.</p>
+</div>
+
 
                 <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
                     <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
@@ -252,7 +253,8 @@
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
                             <h4 class="fw-bold m-0">Select Payment Method</h4>
-                            <p class="text-muted small m-0 mt-1">ကျေးဇူးပြု၍ မိမိပေးချေလိုသော App ကို ရွေးချယ်၍ ငွေလွှဲပေးပါရန်။</p>
+                            <p class="text-muted small m-0 mt-1">Please select your preferred payment application and transfer the tuition fee.</p>
+
                         </div>
                         <!-- Clickable View History Trigger Anchor Link Button -->
                         <button type="button" onclick="togglePaymentHistoryModal(true)" class="btn btn-link btn-sm p-0 fw-bold text-decoration-none text-primary shadow-none">
@@ -266,6 +268,30 @@
                     <form th:action="@{/student/process-payment}" method="post">
                         <!-- Explicit Spring Security CSRF Token Payload Injection -->
                         <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        
+                         <!-- 🟢 BATCH / COURSE SELECTOR: String map braces format completely prevents SpEL map reference crashes -->
+                        <div class="mb-4 text-start">
+                            <label for="courseSelect" class="form-label fw-semibold text-xs text-secondary text-uppercase tracking-wider" style="font-size: 14px;">
+                                Select Enrolled Course / Batch
+                            </label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-white text-muted">
+                                    <i class="fa-solid fa-book-bookmark"></i>
+                                </span>
+                                <select id="courseSelect" name="courseId" class="form-select text-xs" 
+                                        onchange="window.location.href='/student/checkout?courseId=' + this.value" required>
+                                    
+                                    <option th:each="enroll : ${studentEnrollments}" 
+                                            th:value="${enroll['batch_id']}" 
+                                            th:text="${enroll['course_title'] + ' (' + enroll['batch_code'] + ')'}"
+                                            th:selected="${course != null and enroll['batch_id'] == course['batch_id']}">
+                                        Course Title (Batch Code)
+                                    </option>
+                                    <option th:if="${#lists.isEmpty(studentEnrollments)}" value="" disabled selected>No active course enrollments found</option>
+                                    
+                                </select>
+                            </div>
+                        </div>
                         
                         <!-- Payment Methods List Loop from Database -->
                         <div class="mb-4">
@@ -301,6 +327,8 @@
                                 <option value="Other">Other</option>
                             </select>
                         </div>
+                        
+                        
 
                         <!-- Note / Remark Multiline Textarea -->
                         <div class="mb-4 text-start">

@@ -194,10 +194,11 @@
             
                 <!-- Top Header -->
            <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shrink-0 z-40 shadow-sm">
-                <div>
-                    <h2 class="text-lg font-bold text-slate-900 leading-tight">My Exam History</h2>
-                    <p class="text-xs text-slate-400 font-medium">Track your submitted exam performance history profiles across all modules.</p>
-                </div>
+               <div>
+    <h2 class="text-lg font-bold text-slate-900 leading-tight">My Payment History</h2>
+    <p class="text-xs text-slate-400 font-medium">Track your submitted tuition fee receipts and accounting verification states across all modules.</p>
+</div>
+
 
                 <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
                     <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
@@ -222,26 +223,30 @@
                     <h4 class="fw-bold text-success mb-1">Payment Successful!</h4>
                     <p class="text-muted small mb-4">Your payment has been successfully completed.</p>
 
-                    <!-- Receipt Details Box -->
-                    <div class="border rounded p-3 bg-light text-start mb-0">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted small">Amount Paid:</span>
-                            <span class="fw-bold text-dark" id="lbl-amount" th:text="${amount != null ? #numbers.formatDecimal(amount, 1, 'COMMA', 0, 'POINT') + ' MMK' : '0 MMK'}">0 MMK</span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted small">Payment Purpose:</span>
-                            <span class="fw-semibold text-dark" id="lbl-purpose" th:text="${paymentType != null ? paymentType : '-'}">-</span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted small">Transaction No:</span>
-                            <span class="fw-semibold text-dark" id="lbl-txn" th:text="${transactionNo != null ? transactionNo : '-'}">-</span>
-                        </div>
-                        <div class="d-flex justify-content-between" th:if="${note != null and !#strings.isEmpty(note)}">
-                            <span class="text-muted small">Note:</span>
-                            <span class="fw-semibold text-dark" id="lbl-note" th:text="${note}"></span>
-                        </div>
-                    </div>
-                </div>
+                            <!-- Receipt Details Box -->
+        <div class="border rounded p-3 bg-light text-start mb-0">
+            <!-- 🟢 NEW: Enrolled Batch/Course Row Indicator -->
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">Course / Batch:</span>
+                <span class="fw-semibold text-dark" id="lbl-batch" th:text="${batchName != null ? batchName : '-'}">Full-Stack Developer Batch</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">Amount Paid:</span>
+                <span class="fw-bold text-dark" id="lbl-amount" th:text="${amount != null ? #numbers.formatDecimal(amount, 1, 'COMMA', 0, 'POINT') + ' MMK' : '0 MMK'}">0 MMK</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">Payment Purpose:</span>
+                <span class="fw-semibold text-dark" id="lbl-purpose" th:text="${paymentType != null ? paymentType : '-'}">-</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">Transaction No:</span>
+                <span class="fw-semibold text-dark" id="lbl-txn" th:text="${transactionNo != null ? transactionNo : '-'}">-</span>
+            </div>
+            <div class="d-flex justify-content-between" th:if="${note != null and !#strings.isEmpty(note)}">
+                <span class="text-muted small">Note:</span>
+                <span class="fw-semibold text-dark" id="lbl-note" th:text="${note}"></span>
+            </div>
+        </div>
 
                 <!-- Unified Back Action Buttons Group -->
                 <div style="max-width: 450px; width: 100%;" class="d-grid gap-2">
@@ -265,89 +270,85 @@
 
     <!-- JavaScript to generate and trigger direct PNG download -->
     <script th:inline="javascript">
-        function downloadReceiptImage() {
-            const canvas = document.getElementById('receiptCanvas');
-            const ctx = canvas.getContext('2d');
+    // 🟢 Updated canvas image engine scripts block to support the extra row height beautifully:
+    function downloadReceiptImage() {
+        const canvas = document.getElementById('receiptCanvas');
+        const ctx = canvas.getContext('2d');
 
-            // Fetch text values from the DOM safely
-            const amountVal = document.getElementById('lbl-amount').innerText;
-            const purposeVal = document.getElementById('lbl-purpose').innerText;
-            const txnVal = document.getElementById('lbl-txn').innerText;
-            const noteElem = document.getElementById('lbl-note');
-            const noteVal = noteElem ? noteElem.innerText : '';
+        const batchVal = document.getElementById('lbl-batch').innerText;
+        const amountVal = document.getElementById('lbl-amount').innerText;
+        const purposeVal = document.getElementById('lbl-purpose').innerText;
+        const txnVal = document.getElementById('lbl-txn').innerText;
+        const noteElem = document.getElementById('lbl-note');
+        const noteVal = noteElem ? noteElem.innerText : '';
 
-            // 1. Clear background
-            ctx.fillStyle = '#f8f9fa';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#f8f9fa';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // 2. Draw Receipt Card Box
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            ctx.roundRect(150, 50, 500, noteVal ? 520 : 480, 16);
-            ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(150, 50, 500, noteVal ? 540 : 500, 16);
+        ctx.fill();
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1;
+        ctx.stroke();
 
-            ctx.strokeStyle = '#e2e8f0';
-            ctx.lineWidth = 1;
-            ctx.stroke();
+        ctx.fillStyle = '#198754';
+        ctx.beginPath();
+        ctx.arc(400, 110, 30, 0, Math.PI * 2);
+        ctx.fill();
 
-            // 3. Draw Success Icon Checkmark
-            ctx.fillStyle = '#198754';
-            ctx.beginPath();
-            ctx.arc(400, 110, 30, 0, Math.PI * 2);
-            ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 24px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('✓', 400, 119);
 
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 24px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('✓', 400, 119);
+        ctx.fillStyle = '#198754';
+        ctx.font = 'bold 24px sans-serif';
+        ctx.fillText('Payment Successful!', 400, 175);
 
-            // 4. Header Titles
-            ctx.fillStyle = '#198754';
-            ctx.font = 'bold 24px sans-serif';
-            ctx.fillText('Payment Successful!', 400, 175);
+        ctx.fillStyle = '#6c757d';
+        ctx.font = '14px sans-serif';
+        ctx.fillText('Your payment has been successfully completed.', 400, 200);
 
+        ctx.fillStyle = '#f8f9fa';
+        ctx.beginPath();
+        ctx.roundRect(190, 230, 420, noteVal ? 260 : 210, 8);
+        ctx.fill();
+        ctx.strokeStyle = '#dee2e6';
+        ctx.stroke();
+
+        function drawRow(label, value, yPos) {
             ctx.fillStyle = '#6c757d';
             ctx.font = '14px sans-serif';
-            ctx.fillText('Your payment has been successfully completed.', 400, 200);
+            ctx.textAlign = 'left';
+            ctx.fillText(label, 215, yPos);
 
-            // 5. Details Inner Box
-            ctx.fillStyle = '#f8f9fa';
-            ctx.beginPath();
-            ctx.roundRect(190, 230, 420, noteVal ? 220 : 170, 8);
-            ctx.fill();
-            ctx.strokeStyle = '#dee2e6';
-            ctx.stroke();
-
-            // 6. Helper function for rows
-            function drawRow(label, value, yPos) {
-                ctx.fillStyle = '#6c757d';
-                ctx.font = '14px sans-serif';
-                ctx.textAlign = 'left';
-                ctx.fillText(label, 215, yPos);
-
-                ctx.fillStyle = '#212529';
-                ctx.font = 'bold 14px sans-serif';
-                ctx.textAlign = 'right';
-                ctx.fillText(value, 585, yPos);
-            }
-
-            drawRow('Amount Paid:', amountVal, 275);
-            drawRow('Payment Purpose:', purposeVal, 325);
-            drawRow('Transaction No:', txnVal, 375);
-            
-            if (noteVal) {
-                drawRow('Note:', noteVal, 425);
-            }
-
-            // 7. Trigger Download
-            const dataURL = canvas.toDataURL('image/png');
-            const link = document.createElement('a');
-            link.href = dataURL;
-            link.download = 'Payment-Receipt-' + txnVal.replace('TXN-', '') + '.png';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            ctx.fillStyle = '#212529';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText(value, 585, yPos);
         }
+
+        // 🟢 Canvas rows generation grid matrix markers mapping
+        drawRow('Course / Batch:', batchVal, 275);
+        drawRow('Amount Paid:', amountVal, 325);
+        drawRow('Payment Purpose:', purposeVal, 375);
+        drawRow('Transaction No:', txnVal, 425);
+        
+        if (noteVal) {
+            drawRow('Note:', noteVal, 475);
+        }
+
+        const dataURL = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = 'Payment-Receipt-' + txnVal.replace('TXN-', '') + '.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     </script>
 </body>
 </html>
