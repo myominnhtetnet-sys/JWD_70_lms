@@ -46,7 +46,7 @@ public class StudentController {
         return "redirect:/login";
     }
 
-    // 🔴 ပြင်ဆင်ရန်: "/student/profile" မှ "/profile" သို့ ပြောင်းပါ
+   
     @GetMapping("/profile")
     public String showProfilePage(HttpSession session, Model model) {
         String email = (String) session.getAttribute("email");
@@ -66,7 +66,7 @@ public class StudentController {
         return "profile";
     }
 
-    // 🔴 ပြင်ဆင်ရန်: "/student/profile/update" မှ "/profile/update" သို့ ပြောင်းပါ
+    
     @PostMapping("/profile/update")
     public String updateProfile(@RequestParam("fullName") String fullName,
                                 @RequestParam(value = "phone", required = false) String phone,
