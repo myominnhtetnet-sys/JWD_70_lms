@@ -1,743 +1,2008 @@
+
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<div th:replace="~{head :: head}"></div>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      class="h-full">
+
+<head th:replace="~{head :: head}"></head>
 
 <body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
 
-    <div id="app" class="min-h-screen flex flex-col">
-        
-        <!-- TOP HEADER BAR -->
-        <div th:replace="~{header :: header}"></div>
+<div id="app" class="min-h-screen flex flex-col">
 
-        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
-        <div class="flex-1 flex overflow-hidden">
-            
-            <!-- DYNAMIC SIDEBAR -->
-            <div th:replace="~{nav :: nav}"></div>
+    <!-- HEADER -->
+    <div th:replace="~{header :: header}"></div>
 
-            <!-- RIGHT CONTENT AREA -->
-            <main class="flex-1 overflow-y-auto p-8 bg-slate-50">
-                <div class="max-w-7xl mx-auto">
-                    
-                    <!-- HEADER SECTION -->
-                    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+    <div class="flex-1 flex overflow-hidden">
+
+        <!-- SIDEBAR -->
+        <div th:replace="~{nav :: nav}"></div>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 overflow-y-auto p-8 bg-slate-50">
+
+            <div class="max-w-7xl mx-auto">
+
+                <!-- PAGE HEADER -->
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+
+                    <div>
+                        <div class="text-sm text-slate-500 mb-2">
+                            Admin /
+                            <span class="text-indigo-600 font-medium">Discounts</span>
+                        </div>
+
+                        <h1 class="text-3xl font-extrabold text-slate-900">
+                            Discount Management
+                        </h1>
+
+                        <p class="text-slate-500 mt-1 text-sm">
+                            Create and manage discount codes, promotions and discount rules.
+                        </p>
+                    </div>
+
+                    <button type="button"
+                            onclick="openAddModal()"
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-full font-semibold text-sm flex items-center gap-2 shadow-sm">
+
+                        <i class="fa-solid fa-plus"></i>
+                        Add Discount
+                    </button>
+
+                </div>
+
+                <!-- STATISTICS -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
                         <div>
-                            <div class="text-sm text-slate-500 mb-2">Admin / <span class="text-indigo-600 font-medium">Discounts</span></div>
-                            <h1 class="text-3xl font-extrabold text-slate-900">Discount Management</h1>
-                            <p class="text-slate-500 mt-1 text-sm">Create and manage discount codes, promotions and discount rules.</p>
+                            <p class="text-sm font-medium text-slate-500">Total Discounts</p>
+                            <h2 id="totalDiscounts" class="text-3xl font-extrabold mt-2 text-slate-900">0</h2>
                         </div>
-                        <button type="button" onclick="openAddModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-full font-semibold text-sm flex items-center gap-2 transition shadow-sm">
-                            <i class="fa-solid fa-plus"></i> Add Discount
-                        </button>
-                    </div>
-
-                    <!-- STATISTICS -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
-                            <div>
-                                <p class="text-sm font-medium text-slate-500">Total Discounts</p>
-                                <h2 id="totalDiscounts" class="text-3xl font-extrabold mt-2 text-slate-900">0</h2>
-                            </div>
-                            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                                <i class="fa-solid fa-tags text-xl"></i>
-                            </div>
-                        </div>
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
-                            <div>
-                                <p class="text-sm font-medium text-slate-500">Active Discounts</p>
-                                <h2 id="activeDiscounts" class="text-3xl font-extrabold mt-2 text-slate-900">0</h2>
-                            </div>
-                            <div class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center">
-                                <i class="fa-solid fa-circle-check text-xl"></i>
-                            </div>
-                        </div>
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
-                            <div>
-                                <p class="text-sm font-medium text-slate-500">Inactive Discounts</p>
-                                <h2 id="inactiveDiscounts" class="text-3xl font-extrabold mt-2 text-slate-900">0</h2>
-                            </div>
-                            <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
-                                <i class="fa-solid fa-circle-xmark text-xl"></i>
-                            </div>
-                        </div>
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
-                            <div>
-                                <p class="text-sm font-medium text-slate-500">Discount Rules</p>
-                                <h2 id="totalRules" class="text-3xl font-extrabold mt-2 text-slate-900">0</h2>
-                            </div>
-                            <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                                <i class="fa-solid fa-list-check text-xl"></i>
-                            </div>
+                        <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <i class="fa-solid fa-tags text-xl"></i>
                         </div>
                     </div>
 
-                    <!-- FILTERS -->
-                    <div class="bg-white rounded-2xl border border-slate-200 p-5 mb-6 shadow-sm">
-                        <div class="flex flex-wrap gap-4 items-center">
-                            <div class="relative flex-1 min-w-[220px]">
-                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                <input id="discountSearch" type="text" placeholder="Search by discount code..." 
-                                       class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500">
-                            </div>
-                            <select id="typeFilter" class="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 w-[180px]">
-                                <option value="">All Types</option>
-                                <option value="FIXED_AMOUNT">Fixed Amount</option>
-                                <option value="PERCENTAGE">Percentage</option>
-                            </select>
-                            <select id="statusFilter" class="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 w-[150px]">
-                                <option value="">All Status</option>
-                                <option value="true">Active</option>
-                                <option value="false">Inactive</option>
-                            </select>
-                            <button type="button" onclick="loadDiscounts()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition shadow-sm">
-                                <i class="fa-solid fa-rotate"></i> Refresh
-                            </button>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
+                        <div>
+                            <p class="text-sm font-medium text-slate-500">Active Discounts</p>
+                            <h2 id="activeDiscounts" class="text-3xl font-extrabold mt-2 text-slate-900">0</h2>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center">
+                            <i class="fa-solid fa-circle-check text-xl"></i>
                         </div>
                     </div>
 
-                    <!-- DISCOUNTS TABLE CARD -->
-                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                        <div class="px-6 py-5 border-b border-slate-200 flex justify-between items-center">
-                            <div>
-                                <h2 class="font-bold text-lg text-slate-900">Discount Codes</h2>
-                                <p class="text-sm text-slate-500 mt-0.5">Manage your promotional discounts</p>
-                            </div>
-                            <div id="loadingText" class="text-sm text-slate-400 hidden flex items-center gap-2">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Loading...
-                            </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
+                        <div>
+                            <p class="text-sm font-medium text-slate-500">Inactive Discounts</p>
+                            <h2 id="inactiveDiscounts" class="text-3xl font-extrabold mt-2 text-slate-900">0</h2>
                         </div>
-                        
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50/50">
-                                        <th class="py-3 px-6">Discount</th>
-                                        <th class="py-3 px-4">Type</th>
-                                        <th class="py-3 px-4">Value</th>
-                                        <th class="py-3 px-4">Usage</th>
-                                        <th class="py-3 px-4">Status</th>
-                                        <th class="py-3 px-4">Rules</th>
-                                        <th class="py-3 px-6 text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="discountTableBody" class="divide-y divide-slate-100 text-sm">
-                                    <!-- Table rows will be populated dynamically -->
-                                </tbody>
-                            </table>
+                        <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
+                            <i class="fa-solid fa-circle-xmark text-xl"></i>
                         </div>
+                    </div>
 
-                        <div id="emptyState" class="hidden text-center py-16">
-                            <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
-                                <i class="fa-solid fa-tags text-2xl"></i>
-                            </div>
-                            <h3 class="font-bold text-slate-700 text-base">No discounts found</h3>
-                            <p class="text-sm text-slate-400 mt-1">Create your first discount to get started.</p>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
+                        <div>
+                            <p class="text-sm font-medium text-slate-500">Discount Rules</p>
+                            <h2 id="totalRules" class="text-3xl font-extrabold mt-2 text-slate-900">0</h2>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                            <i class="fa-solid fa-list-check text-xl"></i>
                         </div>
                     </div>
 
                 </div>
-            </main>
-        </div>
-    </div>
 
-    <!-- ADD / EDIT DISCOUNT MODAL -->
-    <div id="discountModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full overflow-hidden border border-slate-200">
-            <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                <div>
-                    <h2 id="modalTitle" class="text-lg font-bold text-slate-900">Add New Discount</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Create a promotional discount code.</p>
-                </div>
-                <button type="button" onclick="closeDiscountModal()" class="text-slate-400 hover:text-slate-600 text-lg">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <form id="discountForm" onsubmit="saveDiscount(event)">
-                <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
-                    <input type="hidden" id="discountId">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Discount Name *</label>
-                        <input id="name" type="text" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm" required placeholder="Early Bird Special 2026">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Discount Code *</label>
-                        <input id="code" type="text" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm uppercase" required placeholder="FLASH30">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Discount Type *</label>
-                        <select id="typeCode" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm bg-white" required>
-                            <option value="">Select discount type</option>
+                <!-- FILTERS -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-5 mb-6 shadow-sm">
+
+                    <div class="flex flex-wrap gap-4 items-center">
+
+                        <div class="relative flex-1 min-w-[220px]">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+
+                            <input id="discountSearch"
+                                   type="text"
+                                   placeholder="Search by discount code..."
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+
+                        <select id="typeFilter"
+                                class="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm w-[180px]">
+                            <option value="">All Types</option>
                             <option value="FIXED_AMOUNT">Fixed Amount</option>
                             <option value="PERCENTAGE">Percentage</option>
                         </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Discount Value *</label>
-                        <input id="discountValue" type="number" min="0" step="0.01" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm" required>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1">Usage Limit</label>
-                            <input id="usageLimit" type="number" min="0" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1">Usage Count</label>
-                            <input id="usageCount" type="number" min="0" value="0" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1">Start Date</label>
-                            <input id="startsAt" type="datetime-local" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1">End Date</label>
-                            <input id="endsAt" type="datetime-local" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
-                        </div>
-                    </div>
-                    <label class="flex items-center gap-3 bg-slate-50 rounded-xl p-4 border border-slate-200 cursor-pointer">
-                        <input id="isActive" type="checkbox" checked class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
-                        <span class="font-semibold text-sm text-slate-700">Active Discount</span>
-                    </label>
-                </div>
-                <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-3">
-                    <button type="button" onclick="closeDiscountModal()" class="px-5 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm font-medium hover:bg-slate-100 transition">Cancel</button>
-                    <button id="discountSubmitButton" type="submit" class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition shadow-sm">Save Discount</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- DISCOUNT RULES MODAL -->
-    <div id="rulesModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-xl w-full overflow-hidden border border-slate-200">
-            <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                <div>
-                    <h2 id="rulesModalTitle" class="text-lg font-bold text-slate-900">Discount Rules</h2>
-                    <p id="rulesModalSubtitle" class="text-xs text-slate-500 mt-0.5"></p>
-                </div>
-                <button type="button" onclick="closeRulesModal()" class="text-slate-400 hover:text-slate-600 text-lg">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="p-6 max-h-[70vh] overflow-y-auto">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-sm text-slate-800">Configured Rules</h3>
-                    <button type="button" onclick="openAddRuleForm()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 rounded-lg font-medium text-xs flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-plus"></i> Add Rule
-                    </button>
-                </div>
-
-                <!-- New Rule Form (Inline collapsible) -->
-                <form id="newRuleForm" onsubmit="saveNewRule(event)" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-4 mb-5 space-y-4">
-                    <h4 class="font-bold text-sm text-slate-800">New Discount Rule</h4>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Rule Type *</label>
-                        <select id="newRuleTypeCode" class="w-full bg-white px-3.5 py-2 rounded-lg border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-indigo-500" required>
-                            <option value="">Select Rule Type</option>
-                            <option value="MIN_SPEND">Minimum Spend</option>
-                            <option value="SPECIFIC_COURSE">Specific Course</option>
-                            <option value="SPECIFIC_CATEGORY">Specific Category</option>
-                            <option value="EARLY_BIRD">Early Bird</option>
+                        <select id="statusFilter"
+                                class="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm w-[150px]">
+                            <option value="">All Status</option>
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
                         </select>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Course ID</label><input id="newRuleCourseId" type="number" min="1" class="w-full bg-white px-3.5 py-2 rounded-lg border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Category ID</label><input id="newRuleCategoryId" type="number" min="1" class="w-full bg-white px-3.5 py-2 rounded-lg border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Minimum Spend</label><input id="newRuleMinAmount" type="number" min="0" step="0.01" class="w-full bg-white px-3.5 py-2 rounded-lg border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Days Before Start</label><input id="newRuleDaysBeforeStart" type="number" min="0" class="w-full bg-white px-3.5 py-2 rounded-lg border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                    </div>
-                    <div class="flex justify-end gap-2 pt-2">
-                        <button type="button" onclick="closeAddRuleForm()" class="px-3.5 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-xs font-medium hover:bg-slate-100 transition">Cancel</button>
-                        <button type="submit" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition">Save Rule</button>
-                    </div>
-                </form>
 
-                <div id="rulesContainer" class="space-y-3"></div>
-            </div>
-            <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex justify-end">
-                <button type="button" onclick="closeRulesModal()" class="px-5 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm font-medium hover:bg-slate-100 transition">Close</button>
-            </div>
-        </div>
-    </div>
+                        <button type="button"
+                                onclick="loadDiscounts()"
+                                class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-rotate"></i>
+                            Refresh
+                        </button>
 
-    <!-- DELETE DISCOUNT MODAL -->
-    <div id="deleteModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden border border-slate-200">
-            <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                <h2 class="text-lg font-bold text-slate-900">Delete Discount</h2>
-                <button type="button" onclick="closeDeleteModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-6 text-center">
-                <div class="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <i class="fa-solid fa-trash text-xl"></i>
+                    </div>
                 </div>
-                <h3 class="font-bold text-slate-800 text-base">Are you sure?</h3>
-                <p class="text-xs text-slate-500 mt-1">This discount will be permanently deleted.</p>
-                <input type="hidden" id="deleteDiscountId">
+
+                <!-- DISCOUNT TABLE -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+
+                    <div class="px-6 py-5 border-b border-slate-200 flex justify-between items-center">
+
+                        <div>
+                            <h2 class="font-bold text-lg text-slate-900">Discount Codes</h2>
+                            <p class="text-sm text-slate-500 mt-0.5">
+                                Manage your promotional discounts
+                            </p>
+                        </div>
+
+                        <div id="loadingText"
+                             class="text-sm text-slate-400 hidden items-center gap-2">
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                            Loading...
+                        </div>
+
+                    </div>
+
+                    <div class="overflow-x-auto">
+
+                        <table class="w-full text-left border-collapse">
+
+                            <thead>
+                            <tr class="border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase bg-slate-50/50">
+                                <th class="py-3 px-6">Discount</th>
+                                <th class="py-3 px-4">Type</th>
+                                <th class="py-3 px-4">Value</th>
+                                <th class="py-3 px-4">Usage</th>
+                                <th class="py-3 px-4">Status</th>
+                                <th class="py-3 px-6 text-right">Actions</th>
+                            </tr>
+                            </thead>
+
+                            <tbody id="discountTableBody"
+                                   class="divide-y divide-slate-100 text-sm">
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <div id="emptyState" class="hidden text-center py-16">
+
+                        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
+                            <i class="fa-solid fa-tags text-2xl"></i>
+                        </div>
+
+                        <h3 class="font-bold text-slate-700 text-base">
+                            No discounts found
+                        </h3>
+
+                        <p class="text-sm text-slate-400 mt-1">
+                            Create your first discount to get started.
+                        </p>
+
+                    </div>
+
+                </div>
+
             </div>
-            <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-2">
-                <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-medium hover:bg-slate-100 transition">Cancel</button>
-                <button type="button" onclick="confirmDelete()" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold transition shadow-sm">Delete</button>
-            </div>
-        </div>
+        </main>
     </div>
-    
-    <script>
+</div>
+
+<!-- ================================================= -->
+<!-- ADD / EDIT DISCOUNT MODAL -->
+<!-- ================================================= -->
+
+<div id="discountModal"
+     class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+
+    <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full overflow-hidden">
+
+        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+
+            <div>
+                <h2 id="modalTitle" class="text-lg font-bold text-slate-900">
+                    Add New Discount
+                </h2>
+                <p class="text-xs text-slate-500 mt-0.5">
+                    Create a promotional discount code.
+                </p>
+            </div>
+
+            <button type="button"
+                    onclick="closeDiscountModal()"
+                    class="text-slate-400 hover:text-slate-600 text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+        <form id="discountForm" onsubmit="saveDiscount(event)">
+
+            <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+
+                <input type="hidden" id="discountId">
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">
+                        Discount Name *
+                    </label>
+                    <input id="name"
+                           type="text"
+                           required
+                           placeholder="Early Bird Special 2026"
+                           class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">
+                        Discount Code *
+                    </label>
+                    <input id="code"
+                           type="text"
+                           required
+                           placeholder="FLASH30"
+                           class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm uppercase">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">
+                        Discount Type *
+                    </label>
+                    <select id="typeCode"
+                            onchange="handleTypeChange()"
+                            required
+                            class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm bg-white">
+                        <option value="">Select discount type</option>
+                        <option value="FIXED_AMOUNT">Fixed Amount</option>
+                        <option value="PERCENTAGE">Percentage</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">
+                        Discount Value *
+                    </label>
+                    <input id="discountValue"
+                           type="number"
+                           min="0"
+                           step="0.01"
+                           required
+                           placeholder="Enter value"
+                           class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">
+                        Usage Limit
+                    </label>
+                    <input id="usageLimit"
+                           type="number"
+                           min="0"
+                           placeholder="Leave empty for unlimited"
+                           class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">
+                            Start Date
+                        </label>
+                        <input id="startsAt"
+                               type="datetime-local"
+                               class="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">
+                            End Date
+                        </label>
+                        <input id="endsAt"
+                               type="datetime-local"
+                               class="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm">
+                    </div>
+
+                </div>
+
+                <label class="flex items-center gap-3 bg-slate-50 rounded-xl p-4 border border-slate-200 cursor-pointer">
+
+                    <input id="isActive"
+                           type="checkbox"
+                           checked
+                           class="w-4 h-4 text-indigo-600 rounded">
+
+                    <span class="font-semibold text-sm">
+                        Active Discount
+                    </span>
+
+                </label>
+
+            </div>
+
+            <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+
+                <button type="button"
+                        onclick="closeDiscountModal()"
+                        class="px-5 py-2 rounded-lg border border-slate-300 text-sm">
+                    Cancel
+                </button>
+
+                <button id="discountSubmitButton"
+                        type="submit"
+                        class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold">
+                    Save Discount
+                </button>
+
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- ================================================= -->
+<!-- DISCOUNT RULES MODAL -->
+<!-- ================================================= -->
+
+<div id="rulesModal"
+     class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+
+    <div class="bg-white rounded-2xl shadow-xl max-w-xl w-full overflow-hidden border border-slate-200">
+
+        <!-- HEADER -->
+        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+
+            <div>
+                <h2 id="rulesModalTitle"
+                    class="text-lg font-bold text-slate-900">
+                    Discount Rules
+                </h2>
+
+                <p id="rulesModalSubtitle"
+                   class="text-xs text-slate-500 mt-0.5">
+                </p>
+            </div>
+
+            <button type="button"
+                    onclick="closeRulesModal()"
+                    class="text-slate-400 hover:text-slate-600 text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+        <!-- BODY -->
+        <div class="p-6 max-h-[70vh] overflow-y-auto">
+
+            <!-- CONFIGURED RULES HEADER -->
+            <div class="mb-4 flex items-center justify-between gap-3">
+
+                <div>
+                    <h3 class="font-bold text-sm text-slate-800">
+                        Configured Rules
+                    </h3>
+
+                    <p class="text-xs text-slate-400 mt-1">
+                        Manage rules for this discount.
+                    </p>
+                </div>
+
+                <!-- ADD RULE BUTTON -->
+                <button type="button"
+                        id="addRuleButton"
+                        onclick="openAddRuleForm()"
+                        class="hidden bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 shadow-sm">
+
+                    <i class="fa-solid fa-plus"></i>
+                    Add Rule
+
+                </button>
+
+            </div>
+
+            <!-- ADD / EDIT RULE FORM -->
+            <form id="newRuleForm"
+                  onsubmit="saveNewRule(event)"
+                  class="hidden bg-slate-50 border border-slate-200 rounded-xl p-4 mb-5 space-y-4">
+
+                <h4 id="ruleFormTitle"
+                    class="font-bold text-sm text-slate-800">
+                    New Discount Rule
+                </h4>
+
+                <input type="hidden" id="editingRuleId">
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">
+                        Rule Type *
+                    </label>
+
+                    <select id="newRuleTypeCode"
+                            required
+                            class="w-full bg-white px-3.5 py-2 rounded-lg border border-slate-300 text-xs">
+
+                        <option value="">Select Rule Type</option>
+                        <option value="MIN_SPEND">Minimum Spend</option>
+                        <option value="SPECIFIC_COURSE">Specific Course</option>
+                        <option value="SPECIFIC_CATEGORY">Specific Category</option>
+                        <option value="EARLY_BIRD">Early Bird</option>
+
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">
+                            Course ID
+                        </label>
+
+                        <input id="newRuleCourseId"
+                               type="number"
+                               min="1"
+                               class="w-full bg-white px-3.5 py-2 rounded-lg border border-slate-300 text-xs">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">
+                            Category ID
+                        </label>
+
+                        <input id="newRuleCategoryId"
+                               type="number"
+                               min="1"
+                               class="w-full bg-white px-3.5 py-2 rounded-lg border border-slate-300 text-xs">
+                    </div>
+
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">
+                            Minimum Spend
+                        </label>
+
+                        <input id="newRuleMinAmount"
+                               type="number"
+                               min="0"
+                               step="0.01"
+                               class="w-full bg-white px-3.5 py-2 rounded-lg border border-slate-300 text-xs">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">
+                            Days Before Start
+                        </label>
+
+                        <input id="newRuleDaysBeforeStart"
+                               type="number"
+                               min="0"
+                               class="w-full bg-white px-3.5 py-2 rounded-lg border border-slate-300 text-xs">
+                    </div>
+
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+
+                    <button type="button"
+                            onclick="closeAddRuleForm()"
+                            class="px-3.5 py-1.5 rounded-lg border border-slate-300 text-xs">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            id="ruleSubmitButton"
+                            class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold">
+                        Save Rule
+                    </button>
+
+                </div>
+
+            </form>
+
+            <!-- RULE LIST -->
+            <div id="rulesContainer" class="space-y-3"></div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex justify-end">
+
+            <button type="button"
+                    onclick="closeRulesModal()"
+                    class="px-5 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm">
+                Close
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- ================================================= -->
+<!-- DELETE DISCOUNT MODAL -->
+<!-- ================================================= -->
+
+<div id="deleteModal"
+     class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+
+    <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden">
+
+        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center">
+
+            <h2 class="text-lg font-bold text-slate-900">
+                Delete Discount
+            </h2>
+
+            <button type="button"
+                    onclick="closeDeleteModal()"
+                    class="text-slate-400 text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+        <div class="p-6 text-center">
+
+            <div class="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                <i class="fa-solid fa-trash text-xl"></i>
+            </div>
+
+            <h3 class="font-bold text-slate-800 text-base">
+                Are you sure?
+            </h3>
+
+            <p class="text-xs text-slate-500 mt-1">
+                This discount will be permanently deleted.
+            </p>
+
+            <input type="hidden" id="deleteDiscountId">
+
+        </div>
+
+        <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+
+            <button type="button"
+                    onclick="closeDeleteModal()"
+                    class="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs">
+                Cancel
+            </button>
+
+            <button type="button"
+                    onclick="confirmDelete()"
+                    class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold">
+                Delete
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- ================================================= -->
+<!-- JAVASCRIPT -->
+<!-- ================================================= -->
+
+<script>
 "use strict";
+
+/* API CONFIGURATION */
 
 const API_BASE = "/api/v1/discounts";
 const RULES_API_BASE = "/api/v1/discount-rules";
 
 let discounts = [];
+let currentRules = [];
+
 let editingDiscountId = null;
 let currentDiscountId = null;
+let currentRuleId = null;
+let currentRulesEditMode = false;
+
+
+/* INITIALIZATION */
 
 document.addEventListener("DOMContentLoaded", () => {
+
     loadDiscounts();
-    
-    const searchInput = document.getElementById("discountSearch");
-    if (searchInput) searchInput.addEventListener("input", filterDiscounts);
 
-    const typeFilter = document.getElementById("typeFilter");
-    if (typeFilter) typeFilter.addEventListener("change", filterDiscounts);
+    document.getElementById("discountSearch")
+        .addEventListener("input", filterDiscounts);
 
-    const statusFilter = document.getElementById("statusFilter");
-    if (statusFilter) statusFilter.addEventListener("change", filterDiscounts);
+    document.getElementById("typeFilter")
+        .addEventListener("change", filterDiscounts);
 
-    // Modal Background คลิกလုပ်ရင် ပိတ်ရန် (Tailwind fixed modal backdrop)
+    document.getElementById("statusFilter")
+        .addEventListener("change", filterDiscounts);
+
     document.querySelectorAll(".fixed.inset-0").forEach(modal => {
+
         modal.addEventListener("click", event => {
-            if (event.target === modal) modal.classList.add("hidden");
+
+            if (event.target === modal) {
+
+                modal.classList.add("hidden");
+                modal.classList.remove("flex");
+
+            }
+
         });
+
     });
+
 });
 
+
+/* HELPERS */
+
 function escapeHtml(value) {
-    return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
 }
+
 
 function numberOrNull(value) {
-    if (value === null || value === undefined || value === "") return null;
+
+    if (value === null || value === undefined || value === "") {
+        return null;
+    }
+
     const num = Number(value);
+
     return Number.isFinite(num) ? num : null;
+
 }
 
-function getDiscountId(d) { return Number(d.discountId ?? d.discount_id ?? d.id); }
-function getRuleId(r) { return Number(r.discountRuleId ?? r.discount_rule_id ?? r.ruleId ?? r.rule_id ?? r.id); }
-function isActiveDiscount(d) { const v = d.isActive ?? d.is_active; return v === true || v === 1 || String(v).toLowerCase() === "true"; }
+
+function getDiscountId(d) {
+
+    return Number(d.discountId ?? d.discount_id ?? d.id);
+
+}
+
+
+function getRuleId(r) {
+
+    return Number(
+        r.discountRuleId ??
+        r.discount_rule_id ??
+        r.ruleId ??
+        r.rule_id ??
+        r.id
+    );
+
+}
+
+
+function isActiveDiscount(d) {
+
+    const value = d.isActive ?? d.is_active;
+
+    return value === true ||
+           value === 1 ||
+           String(value).toLowerCase() === "true";
+
+}
+
 
 function formatDiscountValue(d) {
-    const val = Number(d.discountValue ?? d.discount_value ?? 0);
-    return (d.typeCode ?? d.type_code) === "PERCENTAGE" ? val + "%" : new Intl.NumberFormat("en-US").format(val);
+
+    const value = Number(
+        d.discountValue ?? d.discount_value ?? 0
+    );
+
+    const type = d.typeCode ?? d.type_code;
+
+    return type === "PERCENTAGE"
+        ? value + "%"
+        : new Intl.NumberFormat("en-US").format(value);
+
 }
 
-function convertDateTime(val) {
-    if (!val) return "";
-    const text = String(val);
-    if (/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}/.test(text)) return text.replace(" ", "T").substring(0, 16);
+
+function convertDateTime(value) {
+
+    if (!value) return "";
+
+    const text = String(value);
+
+    if (/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}/.test(text)) {
+        return text.replace(" ", "T").substring(0, 16);
+    }
+
     const date = new Date(text);
+
     if (Number.isNaN(date.getTime())) return "";
+
     const pad = n => String(n).padStart(2, "0");
+
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+
 }
 
-async function readError(res) {
-    const text = await res.text();
-    try { return JSON.parse(text).message || JSON.parse(text).error || text; } catch { return text || `HTTP ${res.status}`; }
+
+async function readError(response) {
+
+    const text = await response.text();
+
+    try {
+
+        const data = JSON.parse(text);
+
+        return data.message || data.error || text;
+
+    } catch {
+
+        return text || `HTTP ${response.status}`;
+
+    }
+
 }
+
+
+/* LOAD DISCOUNTS */
 
 async function loadDiscounts() {
+
     const loading = document.getElementById("loadingText");
-    if (loading) loading.classList.remove("hidden");
+
+    loading.classList.remove("hidden");
+    loading.classList.add("flex");
+
     try {
-        const res = await fetch(API_BASE, { headers: { "Accept": "application/json" } });
-        if (!res.ok) throw new Error(await readError(res));
-        discounts = await res.json();
+
+        const response = await fetch(API_BASE, {
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(await readError(response));
+        }
+
+        const result = await response.json();
+
+        discounts = Array.isArray(result) ? result : [];
+
         await fetchAllRulesCounts();
+
         updateStatistics();
+
         filterDiscounts();
-    } catch (err) {
-        const tbody = document.getElementById("discountTableBody");
-        if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-red-500 font-medium">${escapeHtml(err.message)}</td></tr>`;
+
+    } catch (error) {
+
+        document.getElementById("discountTableBody").innerHTML = `
+            <tr>
+                <td colspan="6"
+                    class="text-center py-6 text-red-500 font-medium">
+                    ${escapeHtml(error.message)}
+                </td>
+            </tr>
+        `;
+
     } finally {
-        if (loading) loading.classList.add("hidden");
+
+        loading.classList.add("hidden");
+        loading.classList.remove("flex");
+
     }
+
 }
+
+
+/* LOAD RULE COUNTS */
 
 async function fetchAllRulesCounts() {
+
     try {
-        const res = await fetch(RULES_API_BASE, { headers: { "Accept": "application/json" } });
-        if (!res.ok) return;
-        const rules = await res.json();
-        if (!Array.isArray(rules)) return;
-        const counts = {};
-        rules.forEach(r => {
-            const id = Number(r.discountId ?? r.discount_id);
-            if (Number.isFinite(id)) counts[id] = (counts[id] || 0) + 1;
+
+        const response = await fetch(RULES_API_BASE, {
+            headers: {
+                "Accept": "application/json"
+            }
         });
-        discounts.forEach(d => d.rulesCount = counts[getDiscountId(d)] || 0);
-    } catch (e) { console.warn(e); }
+
+        if (!response.ok) return;
+
+        const rules = await response.json();
+
+        if (!Array.isArray(rules)) return;
+
+        const counts = {};
+
+        rules.forEach(rule => {
+
+            const discountId = Number(
+                rule.discountId ?? rule.discount_id
+            );
+
+            if (Number.isFinite(discountId)) {
+                counts[discountId] = (counts[discountId] || 0) + 1;
+            }
+
+        });
+
+        discounts.forEach(discount => {
+
+            discount.rulesCount =
+                counts[getDiscountId(discount)] || 0;
+
+        });
+
+    } catch (error) {
+
+        console.warn("Could not load rule counts:", error);
+
+    }
+
 }
+
+
+/* STATISTICS */
 
 function updateStatistics() {
+
     const total = discounts.length;
+
     const active = discounts.filter(isActiveDiscount).length;
-    const rules = discounts.reduce((sum, d) => sum + Number(d.rulesCount || 0), 0);
-    
+
+    const totalRules = discounts.reduce(
+        (sum, discount) => sum + Number(discount.rulesCount || 0),
+        0
+    );
+
     document.getElementById("totalDiscounts").textContent = total;
+
     document.getElementById("activeDiscounts").textContent = active;
-    document.getElementById("inactiveDiscounts").textContent = total - active;
-    document.getElementById("totalRules").textContent = rules;
+
+    document.getElementById("inactiveDiscounts").textContent =
+        total - active;
+
+    document.getElementById("totalRules").textContent = totalRules;
+
 }
+
+
+/* FILTER DISCOUNTS */
 
 function filterDiscounts() {
-    const searchInput = document.getElementById("discountSearch");
-    const typeFilter = document.getElementById("typeFilter");
-    const statusFilter = document.getElementById("statusFilter");
 
-    const search = searchInput ? searchInput.value.toLowerCase().trim() : "";
-    const type = typeFilter ? typeFilter.value : "";
-    const status = statusFilter ? statusFilter.value : "";
+    const search = document.getElementById("discountSearch")
+        .value.toLowerCase().trim();
 
-    const filtered = discounts.filter(d => {
-        const name = String(d.name || "").toLowerCase();
-        const code = String(d.code || "").toLowerCase();
-        const dType = d.typeCode ?? d.type_code ?? "";
-        return (!search || name.includes(search) || code.includes(search)) &&
-               (!type || dType === type) &&
-               (!status || String(isActiveDiscount(d)) === status);
+    const type = document.getElementById("typeFilter").value;
+
+    const status = document.getElementById("statusFilter").value;
+
+    const filtered = discounts.filter(discount => {
+
+        const name = String(discount.name || "").toLowerCase();
+
+        const code = String(discount.code || "").toLowerCase();
+
+        const discountType =
+            discount.typeCode ?? discount.type_code ?? "";
+
+        return (
+            (!search || name.includes(search) || code.includes(search)) &&
+            (!type || discountType === type) &&
+            (!status || String(isActiveDiscount(discount)) === status)
+        );
+
     });
+
     renderDiscounts(filtered);
+
 }
+
+
+/* RENDER DISCOUNTS */
 
 function renderDiscounts(data) {
-    const tbody = document.getElementById("discountTableBody");
-    const empty = document.getElementById("emptyState");
-    if (!tbody) return;
-    
-    tbody.innerHTML = "";
-    if (!data.length) {
-        if (empty) empty.classList.remove("hidden");
-        return;
-    }
-    if (empty) empty.classList.add("hidden");
 
-    data.forEach(d => {
-        const id = getDiscountId(d);
-        const active = isActiveDiscount(d);
-        const type = d.typeCode ?? d.type_code;
-        const usageCount = Number(d.usageCount ?? d.usage_count ?? 0);
-        const usageLimit = d.usageLimit ?? d.usage_limit ?? "∞";
+    const tbody = document.getElementById("discountTableBody");
+
+    const emptyState = document.getElementById("emptyState");
+
+    tbody.innerHTML = "";
+
+    if (!data.length) {
+
+        emptyState.classList.remove("hidden");
+
+        return;
+
+    }
+
+    emptyState.classList.add("hidden");
+
+    data.forEach(discount => {
+
+        const id = getDiscountId(discount);
+
+        const active = isActiveDiscount(discount);
+
+        const type =
+            discount.typeCode ?? discount.type_code ?? "";
+
+        const usageCount =
+            Number(discount.usageCount ?? discount.usage_count ?? 0);
+
+        const usageLimit =
+            discount.usageLimit ?? discount.usage_limit ?? "∞";
 
         const row = document.createElement("tr");
+
         row.className = "hover:bg-slate-50 transition";
+
         row.innerHTML = `
+
             <td class="py-4 px-6">
+
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+
+                    <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
                         <i class="fa-solid fa-tag"></i>
                     </div>
+
                     <div>
-                        <div class="font-bold text-slate-900">${escapeHtml(d.name || "-")}</div>
-                        <div class="text-xs text-slate-400 mt-0.5">Code: <span class="font-semibold text-slate-600">${escapeHtml(d.code || "-")}</span> | ID #${escapeHtml(id)}</div>
+
+                        <div class="font-bold text-slate-900">
+                            ${escapeHtml(discount.name || "-")}
+                        </div>
+
+                        <div class="text-xs text-slate-400 mt-0.5">
+                            Code:
+                            <span class="font-semibold text-slate-600">
+                                ${escapeHtml(discount.code || "-")}
+                            </span>
+                            | ID #${escapeHtml(id)}
+                        </div>
+
                     </div>
+
                 </div>
+
             </td>
+
             <td class="py-4 px-4">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${type === 'PERCENTAGE' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}">
+
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold
+                    ${type === "PERCENTAGE"
+                        ? "bg-purple-100 text-purple-700"
+                        : "bg-blue-100 text-blue-700"}">
+
                     ${escapeHtml(type)}
+
                 </span>
+
             </td>
-            <td class="py-4 px-4 font-bold text-slate-800">${escapeHtml(formatDiscountValue(d))}</td>
-            <td class="py-4 px-4 text-slate-600">${usageCount} / ${usageLimit}</td>
+
+            <td class="py-4 px-4 font-bold text-slate-800">
+                ${escapeHtml(formatDiscountValue(discount))}
+            </td>
+
+            <td class="py-4 px-4 text-slate-600">
+                ${usageCount} / ${escapeHtml(usageLimit)}
+            </td>
+
             <td class="py-4 px-4">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${active ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}">
-                    <span class="w-1.5 h-1.5 rounded-full ${active ? 'bg-emerald-500' : 'bg-slate-400'}"></span>
-                    ${active ? 'Active' : 'Inactive'}
+
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold
+                    ${active
+                        ? "bg-emerald-100 text-emerald-800"
+                        : "bg-slate-100 text-slate-600"}">
+
+                    <span class="w-1.5 h-1.5 rounded-full
+                        ${active ? "bg-emerald-500" : "bg-slate-400"}">
+                    </span>
+
+                    ${active ? "Active" : "Inactive"}
+
                 </span>
+
             </td>
-            <td class="py-4 px-4">
-                <button type="button" data-action="rules" data-id="${id}" class="text-indigo-600 font-semibold hover:text-indigo-800 text-xs flex items-center gap-1 bg-indigo-50 px-2.5 py-1 rounded-lg transition">
-                    <i class="fa-solid fa-list-check"></i> ${Number(d.rulesCount || 0)}
-                </button>
-            </td>
+
             <td class="py-4 px-6 text-right">
+
                 <div class="flex items-center justify-end gap-2">
-                    <button type="button" data-action="rules" data-id="${id}" class="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition" title="View Rules"><i class="fa-solid fa-eye text-xs"></i></button>
-                    <button type="button" data-action="edit" data-id="${id}" class="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition" title="Edit Discount"><i class="fa-solid fa-pen text-xs"></i></button>
-                    <button type="button" data-action="delete" data-id="${id}" class="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition" title="Delete Discount"><i class="fa-solid fa-trash text-xs"></i></button>
+
+                    <button type="button"
+                            data-action="view-rules"
+                            data-id="${id}"
+                            class="p-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100"
+                            title="View Rules">
+
+                        <i class="fa-solid fa-eye text-xs"></i>
+
+                    </button>
+
+                    <button type="button"
+                            data-action="edit-rule"
+                            data-id="${id}"
+                            class="p-2 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100"
+                            title="Edit Rules">
+
+                        <i class="fa-solid fa-list-check text-xs"></i>
+
+                    </button>
+
+                    <button type="button"
+                            data-action="edit-discount"
+                            data-id="${id}"
+                            class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100"
+                            title="Edit Discount">
+
+                        <i class="fa-solid fa-pen text-xs"></i>
+
+                    </button>
+
+                    <button type="button"
+                            data-action="delete"
+                            data-id="${id}"
+                            class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100"
+                            title="Delete Discount">
+
+                        <i class="fa-solid fa-trash text-xs"></i>
+
+                    </button>
+
                 </div>
+
             </td>
+
         `;
+
         tbody.appendChild(row);
+
     });
 
-    tbody.querySelectorAll("button[data-action]").forEach(btn => {
-        btn.addEventListener("click", () => {
-            const id = Number(btn.dataset.id);
-            if (btn.dataset.action === "rules") viewRules(id);
-            if (btn.dataset.action === "edit") editDiscount(id);
-            if (btn.dataset.action === "delete") openDeleteModal(id);
+
+    /* ACTION EVENTS */
+
+    tbody.querySelectorAll("button[data-action]").forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            const id = Number(button.dataset.id);
+
+            const action = button.dataset.action;
+
+            if (action === "view-rules") {
+                viewRules(id);
+            }
+
+            if (action === "edit-rule") {
+                editRuleForDiscount(id);
+            }
+
+            if (action === "edit-discount") {
+                editDiscount(id);
+            }
+
+            if (action === "delete") {
+                openDeleteModal(id);
+            }
+
         });
+
     });
+
 }
 
-function openAddModal() {
-    editingDiscountId = null;
-    document.getElementById("discountForm").reset();
-    document.getElementById("discountId").value = "";
-    document.getElementById("usageCount").value = "0";
-    document.getElementById("isActive").checked = true;
-    document.getElementById("modalTitle").textContent = "Add New Discount";
-    document.getElementById("discountSubmitButton").textContent = "Save Discount";
-    document.getElementById("discountModal").classList.remove("hidden");
-    document.getElementById("discountModal").classList.add("flex");
+
+/* DISCOUNT TYPE */
+
+function handleTypeChange() {
+
+    const type = document.getElementById("typeCode").value;
+
+    const valueInput = document.getElementById("discountValue");
+
+    if (type === "PERCENTAGE") {
+
+        valueInput.setAttribute("max", "100");
+
+    } else {
+
+        valueInput.removeAttribute("max");
+
+    }
+
 }
 
-function editDiscount(id) {
-    const d = discounts.find(item => getDiscountId(item) === Number(id));
-    if (!d) return;
-    editingDiscountId = getDiscountId(d);
-    document.getElementById("modalTitle").textContent = "Edit Discount";
-    document.getElementById("discountSubmitButton").textContent = "Update Discount";
-    document.getElementById("discountId").value = editingDiscountId;
-    document.getElementById("name").value = d.name || "";
-    document.getElementById("code").value = d.code || "";
-    document.getElementById("typeCode").value = d.typeCode ?? d.type_code ?? "";
-    document.getElementById("discountValue").value = d.discountValue ?? d.discount_value ?? "";
-    document.getElementById("usageLimit").value = d.usageLimit ?? d.usage_limit ?? "";
-    document.getElementById("usageCount").value = d.usageCount ?? d.usage_count ?? 0;
-    document.getElementById("isActive").checked = isActiveDiscount(d);
-    document.getElementById("startsAt").value = convertDateTime(d.startsAt ?? d.starts_at);
-    document.getElementById("endsAt").value = convertDateTime(d.endsAt ?? d.ends_at);
-    
-    document.getElementById("discountModal").classList.remove("hidden");
-    document.getElementById("discountModal").classList.add("flex");
-}
 
-function closeDiscountModal() { 
-    document.getElementById("discountModal").classList.add("hidden");
-    document.getElementById("discountModal").classList.remove("flex");
-}
+/* SAVE DISCOUNT */
 
 async function saveDiscount(event) {
+
     event.preventDefault();
-    const payload = {
-        name: document.getElementById("name").value.trim(),
-        code: document.getElementById("code").value.trim(),
-        typeCode: document.getElementById("typeCode").value,
-        discountValue: Number(document.getElementById("discountValue").value),
-        isActive: document.getElementById("isActive").checked,
-        usageLimit: numberOrNull(document.getElementById("usageLimit").value),
-        usageCount: numberOrNull(document.getElementById("usageCount").value) ?? 0,
-        startsAt: document.getElementById("startsAt").value || null,
-        endsAt: document.getElementById("endsAt").value || null
-    };
-    const isEditing = editingDiscountId !== null;
-    const url = isEditing ? `${API_BASE}/${editingDiscountId}` : API_BASE;
-    try {
-        const res = await fetch(url, {
-            method: isEditing ? "PUT" : "POST",
-            headers: { "Content-Type": "application/json", "Accept": "application/json" },
-            body: JSON.stringify(payload)
-        });
-        if (!res.ok) throw new Error(await readError(res));
-        closeDiscountModal();
-        loadDiscounts();
-    } catch (err) { alert("Failed to save discount: " + err.message); }
-}
 
-async function viewRules(id) {
-    const d = discounts.find(item => getDiscountId(item) === Number(id));
-    if (!d) return;
-    currentDiscountId = getDiscountId(d);
-    closeAddRuleForm();
-    document.getElementById("rulesModalTitle").textContent = d.name || d.code || "Discount Rules";
-    document.getElementById("rulesModalSubtitle").textContent = formatDiscountValue(d) + " • " + (isActiveDiscount(d) ? "Active" : "Inactive");
-    document.getElementById("rulesContainer").innerHTML = `<div class="text-center py-8 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Loading rules...</div>`;
-    
-    document.getElementById("rulesModal").classList.remove("hidden");
-    document.getElementById("rulesModal").classList.add("flex");
+    const typeCode = document.getElementById("typeCode").value;
 
-    try {
-        const res = await fetch(`${RULES_API_BASE}/discount/${currentDiscountId}`, { headers: { "Accept": "application/json" } });
-        if (!res.ok) throw new Error(await readError(res));
-        renderRules(await res.json());
-    } catch (err) {
-        document.getElementById("rulesContainer").innerHTML = `<div class="text-center py-6 text-red-500 text-xs">Failed to load rules: ${escapeHtml(err.message)}</div>`;
-    }
-}
+    const discountValue = Number(
+        document.getElementById("discountValue").value
+    );
 
-function renderRules(rules) {
-    const container = document.getElementById("rulesContainer");
-    container.innerHTML = "";
-    if (!rules.length) {
-        container.innerHTML = `<div class="text-center py-10"><i class="fa-solid fa-list text-3xl text-slate-300 mb-3"></i><p class="font-semibold text-slate-600 text-sm">No rules configured</p></div>`;
+    if (typeCode === "PERCENTAGE" && discountValue > 100) {
+
+        alert("Percentage discount value cannot exceed 100%.");
+
         return;
+
     }
 
-    rules.forEach((rule, index) => {
-        const rId = getRuleId(rule);
-        const card = document.createElement("div");
-        card.className = "bg-white border border-slate-200 rounded-xl p-4 shadow-sm";
-        card.id = `rule-card-${rId}`;
+    const startsAt = document.getElementById("startsAt").value;
 
-        const viewMode = document.createElement("div");
-        viewMode.id = `rule-view-${rId}`;
-        viewMode.innerHTML = `
-            <div class="flex items-center justify-between gap-3 mb-3">
-                <h3 class="font-bold text-slate-800 text-sm">Rule ${index + 1}</h3>
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-100 text-indigo-700">${escapeHtml(rule.ruleTypeCode ?? rule.rule_type_code ?? "Rule")}</span>
-            </div>
-            <div class="grid grid-cols-2 gap-2 mb-3 text-xs">
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><div class="text-slate-400">Course ID</div><div class="font-semibold text-slate-700 mt-0.5">${escapeHtml(rule.courseId ?? rule.course_id ?? '-')}</div></div>
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><div class="text-slate-400">Category ID</div><div class="font-semibold text-slate-700 mt-0.5">${escapeHtml(rule.categoryId ?? rule.category_id ?? '-')}</div></div>
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><div class="text-slate-400">Minimum Spend</div><div class="font-semibold text-slate-700 mt-0.5">${escapeHtml(rule.minAmount ?? rule.min_amount ?? '-')}</div></div>
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><div class="text-slate-400">Days Before Start</div><div class="font-semibold text-slate-700 mt-0.5">${escapeHtml(rule.daysBeforeStart ?? rule.days_before_start ?? '-')}</div></div>
-            </div>
-            <div class="flex justify-end gap-2">
-                <button type="button" class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs font-semibold transition" onclick="toggleRuleEdit(${rId}, true)">Edit</button>
-                <button type="button" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 text-xs font-semibold transition" onclick="deleteDiscountRule(${rId})">Delete</button>
-            </div>
-        `;
+    const endsAt = document.getElementById("endsAt").value;
 
-        const editMode = document.createElement("form");
-        editMode.id = `rule-edit-${rId}`;
-        editMode.className = "hidden space-y-3";
-        editMode.onsubmit = (e) => updateRule(e, rId);
-        editMode.innerHTML = `
-            <div class="flex items-center justify-between gap-3 mb-2">
-                <h3 class="font-bold text-slate-800 text-sm">Edit Rule ${index + 1}</h3>
-            </div>
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Rule Type *</label>
-                <select id="edit-type-${rId}" class="w-full bg-white px-3.5 py-2 rounded-lg border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-indigo-500" required>
-                    <option value="MIN_SPEND" ${rule.ruleTypeCode === 'MIN_SPEND' ? 'selected' : ''}>Minimum Spend</option>
-                    <option value="SPECIFIC_COURSE" ${rule.ruleTypeCode === 'SPECIFIC_COURSE' ? 'selected' : ''}>Specific Course</option>
-                    <option value="SPECIFIC_CATEGORY" ${rule.ruleTypeCode === 'SPECIFIC_CATEGORY' ? 'selected' : ''}>Specific Category</option>
-                    <option value="EARLY_BIRD" ${rule.ruleTypeCode === 'EARLY_BIRD' ? 'selected' : ''}>Early Bird</option>
-                </select>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-                <div><label class="block text-xs font-semibold text-slate-700 mb-1">Course ID</label><input id="edit-course-${rId}" type="number" min="1" class="w-full bg-white px-3 py-1.5 rounded-lg border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-indigo-500" value="${escapeHtml(rule.courseId ?? rule.course_id ?? '')}"></div>
-                <div><label class="block text-xs font-semibold text-slate-700 mb-1">Category ID</label><input id="edit-category-${rId}" type="number" min="1" class="w-full bg-white px-3 py-1.5 rounded-lg border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-indigo-500" value="${escapeHtml(rule.categoryId ?? rule.category_id ?? '')}"></div>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-                <div><label class="block text-xs font-semibold text-slate-700 mb-1">Minimum Spend</label><input id="edit-min-${rId}" type="number" min="0" step="0.01" class="w-full bg-white px-3 py-1.5 rounded-lg border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-indigo-500" value="${escapeHtml(rule.minAmount ?? rule.min_amount ?? '')}"></div>
-                <div><label class="block text-xs font-semibold text-slate-700 mb-1">Days Before Start</label><input id="edit-days-${rId}" type="number" min="0" class="w-full bg-white px-3.5 py-1.5 rounded-lg border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-indigo-500" value="${escapeHtml(rule.daysBeforeStart ?? rule.days_before_start ?? '')}"></div>
-            </div>
-            <div class="flex justify-end gap-2 pt-1">
-                <button type="button" class="px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-xs font-medium hover:bg-slate-100 transition" onclick="toggleRuleEdit(${rId}, false)">Cancel</button>
-                <button type="submit" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition">Update Rule</button>
-            </div>
-        `;
+    if (startsAt && endsAt && new Date(endsAt) < new Date(startsAt)) {
 
-        card.appendChild(viewMode);
-        card.appendChild(editMode);
-        container.appendChild(card);
-    });
-}
+        alert("End date cannot be earlier than start date.");
 
-function toggleRuleEdit(rId, isEditing) {
-    const viewEl = document.getElementById(`rule-view-${rId}`);
-    const editEl = document.getElementById(`rule-edit-${rId}`);
-    if (isEditing) {
-        viewEl.classList.add("hidden");
-        editEl.classList.remove("hidden");
-    } else {
-        editEl.classList.add("hidden");
-        viewEl.classList.remove("hidden");
+        return;
+
     }
-}
 
-function openAddRuleForm() { document.getElementById("newRuleForm").classList.remove("hidden"); }
-function closeAddRuleForm() { document.getElementById("newRuleForm").reset(); document.getElementById("newRuleForm").classList.add("hidden"); }
+    const data = {
 
-async function saveNewRule(e) {
-    e.preventDefault();
-    const payload = {
-        discountId: currentDiscountId,
-        ruleTypeCode: document.getElementById("newRuleTypeCode").value,
-        courseId: numberOrNull(document.getElementById("newRuleCourseId").value),
-        categoryId: numberOrNull(document.getElementById("newRuleCategoryId").value),
-        minAmount: numberOrNull(document.getElementById("newRuleMinAmount").value),
-        daysBeforeStart: numberOrNull(document.getElementById("newRuleDaysBeforeStart").value)
+        name: document.getElementById("name").value.trim(),
+
+        code: document.getElementById("code")
+            .value.trim().toUpperCase(),
+
+        typeCode: typeCode,
+
+        discountValue: discountValue,
+
+        usageLimit: numberOrNull(
+            document.getElementById("usageLimit").value
+        ),
+
+        startsAt: startsAt || null,
+
+        endsAt: endsAt || null,
+
+        isActive: document.getElementById("isActive").checked
+
     };
+
+    const isEdit = Boolean(editingDiscountId);
+
+    const url = isEdit
+        ? `${API_BASE}/${editingDiscountId}`
+        : API_BASE;
+
     try {
-        const res = await fetch(RULES_API_BASE, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Accept": "application/json" },
-            body: JSON.stringify(payload)
+
+        const response = await fetch(url, {
+
+            method: isEdit ? "PUT" : "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+
+            body: JSON.stringify(data)
+
         });
-        if (!res.ok) throw new Error(await readError(res));
-        closeAddRuleForm();
-        loadDiscounts();
-        viewRules(currentDiscountId);
-    } catch (err) { alert("Failed to save rule: " + err.message); }
+
+        if (!response.ok) {
+            throw new Error(await readError(response));
+        }
+
+        closeDiscountModal();
+
+        await loadDiscounts();
+
+        alert(isEdit
+            ? "Discount updated successfully."
+            : "Discount created successfully."
+        );
+
+    } catch (error) {
+
+        alert("Error saving discount: " + error.message);
+
+    }
+
 }
 
-async function updateRule(e, rId) {
-    e.preventDefault();
-    const payload = {
-        discountId: currentDiscountId,
-        ruleTypeCode: document.getElementById(`edit-type-${rId}`).value,
-        courseId: numberOrNull(document.getElementById(`edit-course-${rId}`).value),
-        categoryId: numberOrNull(document.getElementById(`edit-category-${rId}`).value),
-        minAmount: numberOrNull(document.getElementById(`edit-min-${rId}`).value),
-        daysBeforeStart: numberOrNull(document.getElementById(`edit-days-${rId}`).value)
-    };
-    try {
-        const res = await fetch(`${RULES_API_BASE}/${rId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json", "Accept": "application/json" },
-            body: JSON.stringify(payload)
-        });
-        if (!res.ok) throw new Error(await readError(res));
-        loadDiscounts();
-        viewRules(currentDiscountId);
-    } catch (err) { alert("Failed to update rule: " + err.message); }
+
+/* OPEN ADD DISCOUNT */
+
+function openAddModal() {
+
+    editingDiscountId = null;
+
+    document.getElementById("discountForm").reset();
+
+    document.getElementById("discountId").value = "";
+
+    document.getElementById("isActive").checked = true;
+
+    document.getElementById("modalTitle").textContent =
+        "Add New Discount";
+
+    document.getElementById("discountSubmitButton").textContent =
+        "Save Discount";
+
+    handleTypeChange();
+
+    showModal("discountModal");
+
 }
 
-async function deleteDiscountRule(rId) {
-    if (!confirm("Are you sure you want to delete this rule?")) return;
-    try {
-        const res = await fetch(`${RULES_API_BASE}/${rId}`, { method: "DELETE", headers: { "Accept": "application/json" } });
-        if (!res.ok) throw new Error(await readError(res));
-        loadDiscounts();
-        viewRules(currentDiscountId);
-    } catch (err) { alert("Failed to delete rule: " + err.message); }
+
+/* EDIT DISCOUNT */
+
+function editDiscount(id) {
+
+    const discount = discounts.find(
+        item => getDiscountId(item) === Number(id)
+    );
+
+    if (!discount) return;
+
+    editingDiscountId = getDiscountId(discount);
+
+    document.getElementById("modalTitle").textContent =
+        "Edit Discount";
+
+    document.getElementById("discountSubmitButton").textContent =
+        "Update Discount";
+
+    document.getElementById("discountId").value =
+        editingDiscountId;
+
+    document.getElementById("name").value =
+        discount.name || "";
+
+    document.getElementById("code").value =
+        discount.code || "";
+
+    document.getElementById("typeCode").value =
+        discount.typeCode ?? discount.type_code ?? "";
+
+    document.getElementById("discountValue").value =
+        discount.discountValue ?? discount.discount_value ?? "";
+
+    document.getElementById("usageLimit").value =
+        discount.usageLimit ?? discount.usage_limit ?? "";
+
+    document.getElementById("startsAt").value =
+        convertDateTime(discount.startsAt ?? discount.starts_at);
+
+    document.getElementById("endsAt").value =
+        convertDateTime(discount.endsAt ?? discount.ends_at);
+
+    document.getElementById("isActive").checked =
+        isActiveDiscount(discount);
+
+    handleTypeChange();
+
+    showModal("discountModal");
+
 }
 
-function closeRulesModal() { 
-    document.getElementById("rulesModal").classList.add("hidden");
-    document.getElementById("rulesModal").classList.remove("flex");
-    currentDiscountId = null; 
+
+/* DELETE DISCOUNT */
+
+function openDeleteModal(id) {
+
+    document.getElementById("deleteDiscountId").value = id;
+
+    showModal("deleteModal");
+
 }
 
-function openDeleteModal(id) { 
-    document.getElementById("deleteDiscountId").value = String(id); 
-    document.getElementById("deleteModal").classList.remove("hidden");
-    document.getElementById("deleteModal").classList.add("flex");
+
+function closeDeleteModal() {
+
+    hideModal("deleteModal");
+
 }
 
-function closeDeleteModal() { 
-    document.getElementById("deleteModal").classList.add("hidden");
-    document.getElementById("deleteModal").classList.remove("flex");
-}
 
 async function confirmDelete() {
+
     const id = document.getElementById("deleteDiscountId").value;
+
     if (!id) return;
+
     try {
-        const res = await fetch(`${API_BASE}/${encodeURIComponent(id)}`, { method: "DELETE", headers: { "Accept": "application/json" } });
-        if (!res.ok) throw new Error(await readError(res));
+
+        const response = await fetch(`${API_BASE}/${id}`, {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            throw new Error(await readError(response));
+        }
+
         closeDeleteModal();
-        loadDiscounts();
-    } catch (err) { alert("Failed to delete discount: " + err.message); }
+
+        await loadDiscounts();
+
+        alert("Discount deleted successfully.");
+
+    } catch (error) {
+
+        alert("Error deleting discount: " + error.message);
+
+    }
+
 }
+
+
+/* ================================================= */
+/* VIEW RULES */
+/* ================================================= */
+
+async function viewRules(discountId) {
+
+    currentDiscountId = discountId;
+
+    currentRuleId = null;
+
+    currentRulesEditMode = false;
+
+    const discount = discounts.find(
+        item => getDiscountId(item) === Number(discountId)
+    );
+
+    document.getElementById("rulesModalTitle").textContent =
+        "View Discount Rules";
+
+    document.getElementById("rulesModalSubtitle").textContent =
+        discount
+            ? `For discount: ${discount.name} (${discount.code})`
+            : "";
+
+    // Hide Add Rule button in view-only mode
+    document.getElementById("addRuleButton").classList.add("hidden");
+
+    closeAddRuleForm();
+
+    showModal("rulesModal");
+
+    await loadRules(discountId, false);
+
+}
+
+
+/* ================================================= */
+/* EDIT RULES */
+/* ================================================= */
+
+async function editRuleForDiscount(discountId) {
+
+    currentDiscountId = discountId;
+
+    currentRuleId = null;
+
+    currentRulesEditMode = true;
+
+    const discount = discounts.find(
+        item => getDiscountId(item) === Number(discountId)
+    );
+
+    document.getElementById("rulesModalTitle").textContent =
+        "Edit Discount Rules";
+
+    document.getElementById("rulesModalSubtitle").textContent =
+        discount
+            ? `Edit rules for: ${discount.name} (${discount.code})`
+            : "";
+
+    // SHOW ADD RULE BUTTON IN EDIT MODE
+    document.getElementById("addRuleButton").classList.remove("hidden");
+
+    closeAddRuleForm();
+
+    showModal("rulesModal");
+
+    await loadRules(discountId, true);
+
+}
+
+
+/* ================================================= */
+/* LOAD RULES */
+/* ================================================= */
+
+async function loadRules(discountId, editMode = false) {
+
+    const container = document.getElementById("rulesContainer");
+
+    currentRulesEditMode = editMode;
+
+    container.innerHTML = `
+
+        <div class="text-center py-6 text-slate-400">
+
+            <i class="fa-solid fa-spinner fa-spin"></i>
+
+            Loading rules...
+
+        </div>
+
+    `;
+
+    try {
+
+        const response = await fetch(RULES_API_BASE, {
+
+            headers: {
+                "Accept": "application/json"
+            }
+
+        });
+
+        if (!response.ok) {
+            throw new Error(await readError(response));
+        }
+
+        const allRules = await response.json();
+
+        currentRules = Array.isArray(allRules)
+            ? allRules.filter(rule =>
+                Number(rule.discountId ?? rule.discount_id) === Number(discountId)
+            )
+            : [];
+
+        renderRules(currentRules, editMode);
+
+    } catch (error) {
+
+        container.innerHTML = `
+
+            <div class="text-center py-6 text-red-500 text-sm">
+
+                <i class="fa-solid fa-circle-exclamation mr-1"></i>
+
+                ${escapeHtml(error.message)}
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* ================================================= */
+/* RENDER RULES */
+/* ================================================= */
+
+function renderRules(rules, editMode = false) {
+
+    const container = document.getElementById("rulesContainer");
+
+    container.innerHTML = "";
+
+    /*
+       IMPORTANT:
+       Do not hide the Add Rule button when there are no rules.
+       The user must still be able to create the first rule.
+    */
+
+    if (!rules.length) {
+
+        container.innerHTML = `
+
+            <div class="text-center py-8 text-slate-400">
+
+                <i class="fa-solid fa-list-check text-3xl mb-3"></i>
+
+                <p class="text-sm">
+                    No rules found for this discount.
+                </p>
+
+                <p class="text-xs mt-1">
+                    ${editMode
+                        ? "Click Add Rule to create your first rule."
+                        : "No discount rules have been configured yet."}
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    rules.forEach(rule => {
+
+        const id = getRuleId(rule);
+
+        const type =
+            rule.ruleTypeCode ??
+            rule.rule_type_code ??
+            rule.typeCode ??
+            rule.type_code ??
+            "Unknown";
+
+        const courseId =
+            rule.courseId ?? rule.course_id;
+
+        const categoryId =
+            rule.categoryId ?? rule.category_id;
+
+        const minAmount =
+            rule.minAmount ?? rule.min_amount;
+
+        const days =
+            rule.daysBeforeStart ?? rule.days_before_start;
+
+
+        const card = document.createElement("div");
+
+        card.className =
+            "border border-slate-200 rounded-xl p-4 bg-white";
+
+
+        card.innerHTML = `
+
+            <div class="flex items-start justify-between gap-3">
+
+                <div class="flex items-start gap-3">
+
+                    <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+
+                        <i class="fa-solid fa-list-check"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h4 class="font-bold text-sm text-slate-800">
+
+                            ${escapeHtml(type)}
+
+                        </h4>
+
+                        <p class="text-xs text-slate-400 mt-1">
+
+                            Rule ID: ${escapeHtml(id)}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                ${editMode ? `
+
+                    <button type="button"
+                            data-rule-edit="${id}"
+                            class="text-blue-600 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg"
+                            title="Edit this rule">
+
+                        <i class="fa-solid fa-pen"></i>
+
+                    </button>
+
+                ` : ""}
+
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-4 text-xs">
+
+                <div class="bg-slate-50 rounded-lg p-3">
+
+                    <span class="text-slate-400">
+                        Course ID
+                    </span>
+
+                    <p class="font-semibold mt-1">
+                        ${escapeHtml(courseId ?? "-")}
+                    </p>
+
+                </div>
+
+                <div class="bg-slate-50 rounded-lg p-3">
+
+                    <span class="text-slate-400">
+                        Category ID
+                    </span>
+
+                    <p class="font-semibold mt-1">
+                        ${escapeHtml(categoryId ?? "-")}
+                    </p>
+
+                </div>
+
+                <div class="bg-slate-50 rounded-lg p-3">
+
+                    <span class="text-slate-400">
+                        Minimum Spend
+                    </span>
+
+                    <p class="font-semibold mt-1">
+                        ${escapeHtml(minAmount ?? "-")}
+                    </p>
+
+                </div>
+
+                <div class="bg-slate-50 rounded-lg p-3">
+
+                    <span class="text-slate-400">
+                        Days Before Start
+                    </span>
+
+                    <p class="font-semibold mt-1">
+                        ${escapeHtml(days ?? "-")}
+                    </p>
+
+                </div>
+
+            </div>
+
+        `;
+
+        container.appendChild(card);
+
+    });
+
+
+    /* EDIT BUTTON EVENTS */
+
+    container.querySelectorAll("[data-rule-edit]").forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            const ruleId = Number(button.dataset.ruleEdit);
+
+            const rule = currentRules.find(
+                item => getRuleId(item) === ruleId
+            );
+
+            if (rule) {
+                openEditRuleForm(rule);
+            }
+
+        });
+
+    });
+
+}
+
+
+/* ================================================= */
+/* OPEN ADD RULE FORM */
+/* ================================================= */
+
+function openAddRuleForm() {
+
+    if (!currentDiscountId) {
+
+        alert("Please select a discount first.");
+
+        return;
+
+    }
+
+    currentRuleId = null;
+
+    const form = document.getElementById("newRuleForm");
+
+    form.reset();
+
+    document.getElementById("editingRuleId").value = "";
+
+    document.getElementById("ruleFormTitle").textContent =
+        "New Discount Rule";
+
+    document.getElementById("ruleSubmitButton").textContent =
+        "Save Rule";
+
+    form.classList.remove("hidden");
+
+    form.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest"
+    });
+
+}
+
+
+/* ================================================= */
+/* OPEN EDIT RULE FORM */
+/* ================================================= */
+
+function openEditRuleForm(rule) {
+
+    currentRuleId = getRuleId(rule);
+
+    document.getElementById("editingRuleId").value =
+        currentRuleId;
+
+    document.getElementById("ruleFormTitle").textContent =
+        "Edit Discount Rule";
+
+    document.getElementById("ruleSubmitButton").textContent =
+        "Update Rule";
+
+
+    document.getElementById("newRuleTypeCode").value =
+
+        rule.ruleTypeCode ??
+        rule.rule_type_code ??
+        rule.typeCode ??
+        rule.type_code ??
+        "";
+
+
+    document.getElementById("newRuleCourseId").value =
+
+        rule.courseId ??
+        rule.course_id ??
+        "";
+
+
+    document.getElementById("newRuleCategoryId").value =
+
+        rule.categoryId ??
+        rule.category_id ??
+        "";
+
+
+    document.getElementById("newRuleMinAmount").value =
+
+        rule.minAmount ??
+        rule.min_amount ??
+        "";
+
+
+    document.getElementById("newRuleDaysBeforeStart").value =
+
+        rule.daysBeforeStart ??
+        rule.days_before_start ??
+        "";
+
+
+    const form = document.getElementById("newRuleForm");
+
+    form.classList.remove("hidden");
+
+    form.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest"
+    });
+
+}
+
+
+/* ================================================= */
+/* CLOSE RULE FORM */
+/* ================================================= */
+
+function closeAddRuleForm() {
+
+    const form = document.getElementById("newRuleForm");
+
+    form.classList.add("hidden");
+
+    form.reset();
+
+    currentRuleId = null;
+
+    document.getElementById("editingRuleId").value = "";
+
+}
+
+
+/* ================================================= */
+/* SAVE / UPDATE RULE */
+/* ================================================= */
+
+async function saveNewRule(event) {
+
+    event.preventDefault();
+
+    if (!currentDiscountId) {
+
+        alert("Please select a discount first.");
+
+        return;
+
+    }
+
+    const isEdit = Boolean(currentRuleId);
+
+
+    const data = {
+
+        discountId: Number(currentDiscountId),
+
+        ruleTypeCode:
+            document.getElementById("newRuleTypeCode").value,
+
+        courseId:
+            numberOrNull(
+                document.getElementById("newRuleCourseId").value
+            ),
+
+        categoryId:
+            numberOrNull(
+                document.getElementById("newRuleCategoryId").value
+            ),
+
+        minAmount:
+            numberOrNull(
+                document.getElementById("newRuleMinAmount").value
+            ),
+
+        daysBeforeStart:
+            numberOrNull(
+                document.getElementById("newRuleDaysBeforeStart").value
+            )
+
+    };
+
+
+    const url = isEdit
+
+        ? `${RULES_API_BASE}/${currentRuleId}`
+
+        : RULES_API_BASE;
+
+
+    try {
+
+        const submitButton =
+            document.getElementById("ruleSubmitButton");
+
+        submitButton.disabled = true;
+
+        submitButton.textContent = isEdit
+            ? "Updating..."
+            : "Saving...";
+
+
+        const response = await fetch(url, {
+
+            method: isEdit ? "PUT" : "POST",
+
+            headers: {
+
+                "Content-Type": "application/json",
+
+                "Accept": "application/json"
+
+            },
+
+            body: JSON.stringify(data)
+
+        });
+
+
+        if (!response.ok) {
+
+            throw new Error(await readError(response));
+
+        }
+
+
+        /*
+           Save successful.
+           Close the form and reload the rules.
+        */
+
+        closeAddRuleForm();
+
+        await loadRules(currentDiscountId, true);
+
+        await loadDiscounts();
+
+
+        alert(isEdit
+
+            ? "Rule updated successfully."
+
+            : "Rule created successfully."
+
+        );
+
+
+    } catch (error) {
+
+        alert("Error saving rule: " + error.message);
+
+    } finally {
+
+        const submitButton =
+            document.getElementById("ruleSubmitButton");
+
+        submitButton.disabled = false;
+
+        submitButton.textContent = currentRuleId
+            ? "Update Rule"
+            : "Save Rule";
+
+    }
+
+}
+
+
+/* ================================================= */
+/* CLOSE RULE MODAL */
+/* ================================================= */
+
+function closeRulesModal() {
+
+    hideModal("rulesModal");
+
+    closeAddRuleForm();
+
+    currentDiscountId = null;
+
+    currentRuleId = null;
+
+    currentRules = [];
+
+}
+
+
+/* ================================================= */
+/* MODAL HELPERS */
+/* ================================================= */
+
+function showModal(id) {
+
+    const modal = document.getElementById(id);
+
+    modal.classList.remove("hidden");
+
+    modal.classList.add("flex");
+
+}
+
+
+function hideModal(id) {
+
+    const modal = document.getElementById(id);
+
+    modal.classList.add("hidden");
+
+    modal.classList.remove("flex");
+
+}
+
+
+/* CLOSE DISCOUNT MODAL */
+
+function closeDiscountModal() {
+
+    hideModal("discountModal");
+
+}
+
 </script>
 
 </body>

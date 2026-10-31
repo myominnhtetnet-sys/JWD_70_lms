@@ -5,25 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduPulse LMS - Scholarship Application Review</title>
 
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS & Font Awesome -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Font Awesome --><head th:replace="~{head :: head}"></head>
-
-<body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
-
-    <div id="app" class="min-h-screen flex flex-col overflow-hidden">
-        
-        <!-- TOP HEADER BAR -->
-        <div th:replace="~{header :: header}"></div>
-
-        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
-        <div class="flex-1 flex overflow-hidden">
-            
-            <!-- DYNAMIC SIDEBAR -->
-            <div th:replace="~{nav :: nav}"></div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Fragment Header Replacement (if exists) -->
+    <head th:replace="~{head :: head}"></head>
 
     <style>
         body {
@@ -34,395 +24,419 @@
     </style>
 </head>
 
-<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+<body class="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased transition-colors duration-200">
 
-<!-- =====================================================
-     LAYOUT WRAPPER (SIDEBAR + MAIN CONTENT)
-     ===================================================== -->
-<div class="flex min-h-screen">
-
-    <!-- RIGHT CONTENT AREA -->
-    <div class="flex-1 flex flex-col min-w-0">
-
-        <!-- TOP HEADER NAVBAR -->
-        <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-20">
-            <div class="relative w-96">
-                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                <input type="text" placeholder="Search courses, users, materials..." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-11 pr-4 outline-none text-sm">
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" class="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-500/20" alt="Avatar">
-                <div>
-                    <div class="font-bold text-sm text-slate-800">Sarah Jenkins</div>
-                    <div class="text-xs text-slate-500">Administrator</div>
-                </div>
-            </div>
-        </header>
-
-        <!-- MAIN CONTENT AREA -->
-        <main class="p-8 space-y-8 flex-1 overflow-y-auto">
-            <div class="max-w-7xl mx-auto space-y-8">
-
-                <!-- Page Header Title & Actions -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Scholarship Applications</h1>
-                        <p class="text-sm text-slate-500 mt-1">Review student applications, verify submitted documents, and approve financial aid allocations.</p>
-                    </div>
-
-                    <div class="flex items-center gap-3">
-                        <button type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/20 transition flex items-center gap-2">
-                            <i class="fa-solid fa-file-export text-xs"></i>
-                            Export Summary
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Top Stats Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                        <div>
-                            <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Pending Applications</span>
-                            <div class="text-2xl font-bold text-slate-900 mt-1">18</div>
-                            <p class="text-xs text-amber-600 font-medium mt-1 flex items-center gap-1">
-                                <i class="fa-solid fa-clock"></i> Action required
-                            </p>
-                        </div>
-                        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
-                            <i class="fa-solid fa-hourglass-half"></i>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                        <div>
-                            <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Approved This Month</span>
-                            <div class="text-2xl font-bold text-slate-900 mt-1">42</div>
-                            <p class="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
-                                <i class="fa-solid fa-arrow-trend-up"></i> +12% vs last month
-                            </p>
-                        </div>
-                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
-                            <i class="fa-solid fa-circle-check"></i>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                        <div>
-                            <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Approved Aid Pool</span>
-                            <div class="text-2xl font-bold text-slate-900 mt-1">$28,500</div>
-                            <p class="text-xs text-slate-400 font-medium mt-1">out of $50,000 budget</p>
-                        </div>
-                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
-                            <i class="fa-solid fa-sack-dollar"></i>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                        <div>
-                            <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Rejection Rate</span>
-                            <div class="text-2xl font-bold text-slate-900 mt-1">4.2%</div>
-                            <p class="text-xs text-slate-400 font-medium mt-1">Normal system baseline</p>
-                        </div>
-                        <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl">
-                            <i class="fa-solid fa-circle-xmark"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Applications Data Table Section -->
-                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-
-                    <!-- Table Filters & Header -->
-                    <div class="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex items-center gap-3">
-                            <h2 class="font-bold text-slate-800 text-base">Applications Queue</h2>
-                            <span class="bg-slate-100 text-slate-600 text-xs font-semibold px-2.5 py-0.5 rounded-full" 
-                                  th:text="${applications != null ? #lists.size(applications) + ' total' : '0 total'}">
-                                0 total
-                            </span>
-                        </div>
-
-                        <!-- Filter Controls -->
-                        <div class="flex items-center gap-3">
-                            <select id="statusFilter" onchange="filterTable()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500/20">
-                                <option value="">All Statuses</option>
-                                <option value="PENDING">Pending</option>
-                                <option value="APPROVED">Approved</option>
-                                <option value="REJECTED">Rejected</option>
-                            </select>
-
-                            <select id="scholarshipFilter" onchange="filterTable()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500/20">
-                                <option value="">All Scholarships</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Responsive Table -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse" id="applicationsTable">
-                            <thead>
-                                <tr class="bg-slate-50/70 border-b border-slate-100 text-[12px] font-semibold text-slate-400 uppercase tracking-wider">
-                                    <th class="py-3.5 px-6">App ID</th>
-                                    <th class="py-3.5 px-6">Student Info</th>
-                                    <th class="py-3.5 px-6">Scholarship Program</th>
-                                    <th class="py-3.5 px-6">Reason / Statement</th>
-                                    <th class="py-3.5 px-6">Document</th>
-                                    <th class="py-3.5 px-6">Status</th>
-                                    <th class="py-3.5 px-6">Approved Amount</th>
-                                    <th class="py-3.5 px-6 text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100 text-sm">
-
-                                <!-- Thymeleaf Iteration Loop -->
-                                <tr th:each="app : ${applications}" 
-                                    class="hover:bg-slate-50/60 transition group application-row"
-                                    th:data-status="${app.status != null ? app.status : 'PENDING'}"
-                                    th:data-scholarship="${app.scholarshipName}">
-                                    
-                                    <td class="py-4 px-6 font-semibold text-slate-800" th:text="${'#APP-' + app.applicationId}">
-                                        #APP-101
-                                    </td>
-
-                                    <td class="py-4 px-6">
-                                        <div class="font-semibold text-slate-900" th:text="${app.studentName}">Alex Morgan</div>
-                                        <div class="text-xs text-slate-400" th:text="${app.studentEmail}">alex.morgan@email.com</div>
-                                    </td>
-
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 scholarship-name-cell" 
-                                              th:text="${app.scholarshipName}">
-                                            STEM Excellence Grant
-                                        </span>
-                                    </td>
-
-                                    <td class="py-4 px-6 max-w-xs">
-                                        <p class="text-xs text-slate-600 truncate" th:text="${app.reason}">
-                                            Applying due to financial constraints while maintaining high academic marks in full-stack coursework.
-                                        </p>
-                                    </td>
-<!-- DOCUMENT COLUMN (Opens in SAME TAB) -->
-<td class="py-4 px-6">
-    <a th:if="${app.supportingDocument != null and !#strings.isEmpty(app.supportingDocument)}" 
-       th:href="@{'/admin/scholarship-applications-review/download/' + ${app.applicationId}}" 
-       class="inline-flex items-center gap-1.5 text-xs text-indigo-600 hover:text-indigo-800 font-semibold hover:underline transition">
-        <i class="fa-solid fa-paperclip"></i> View File
-    </a>
-    <span th:if="${app.supportingDocument == null or #strings.isEmpty(app.supportingDocument)}" class="text-xs text-slate-400 italic">None</span>
-</td>
-
-                                    <td class="py-4 px-6">
-                                        <span th:if="${app.status == 'PENDING' || app.status == null}" 
-                                              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 ring-1 ring-amber-600/20">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                                            Pending
-                                        </span>
-
-                                        <span th:if="${app.status == 'APPROVED'}" 
-                                              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                            Approved
-                                        </span>
-
-                                        <span th:if="${app.status == 'REJECTED'}" 
-                                              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-rose-50 text-rose-700 ring-1 ring-rose-600/20">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                                            Rejected
-                                        </span>
-                                    </td>
-
-                                    <td class="py-4 px-6 font-medium text-slate-800">
-                                        <span th:text="${app.approvedAmount != null ? '$' + #numbers.formatDecimal(app.approvedAmount, 1, 'COMMA', 2, 'POINT') : '-'}">$1,500.00</span>
-                                    </td>
-
-                                    <td class="py-4 px-6 text-right">
-                                        <button type="button" 
-                                                onclick="openReviewModal(this)"
-                                                th:data-id="${app.applicationId}"
-                                                th:data-student="${app.studentName}"
-                                                th:data-scholarship="${app.scholarshipName}"
-                                                th:data-reason="${app.reason}"
-                                                th:data-status="${app.status}"
-                                                th:data-amount="${app.approvedAmount}"
-                                                th:data-notes="${app.reviewNotes}"
-                                                th:data-doc="${app.supportingDocument}"
-                                                class="bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white font-medium text-xs px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 ml-auto">
-                                            <i class="fa-solid fa-pen-to-square"></i> Review
-                                        </button>
-                                    </td>
-                                </tr>
-
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Table Footer Pagination -->
-                    <div class="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                        <span>Showing entries</span>
-                        <div class="flex items-center gap-1">
-                            <button class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Previous</button>
-                            <button class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-medium">1</button>
-                            <button class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Next</button>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-        </main>
-    </div>
-</div>
-
-<!-- ================= REVIEW ACTION MODAL ================= -->
-<div id="reviewModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 overflow-hidden transform transition-all">
+    <div id="app" class="min-h-screen flex flex-col overflow-hidden">
         
-        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-            <div>
-                <h3 class="font-bold text-slate-900 text-base">Review Application</h3>
-                <p class="text-xs text-slate-400" id="modalSubTitle">Application #APP-101</p>
+        <!-- TOP HEADER BAR FRAGMENT -->
+        <div th:replace="~{header :: header}"></div>
+
+        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
+        <div class="flex-1 flex overflow-hidden min-h-screen">
+            
+            <!-- DYNAMIC SIDEBAR FRAGMENT -->
+            <div th:replace="~{nav :: nav}"></div>
+
+            <!-- RIGHT CONTENT AREA -->
+            <div class="flex-1 flex flex-col min-w-0">
+
+                <!-- TOP HEADER NAVBAR (FALLBACK / ADMIN BAR) -->
+                <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-20">
+                    <div class="relative w-96">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" placeholder="Search courses, users, materials..." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-11 pr-4 outline-none text-sm">
+                    </div>
+                    
+                    <div class="flex items-center gap-4">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" class="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-500/20" alt="Avatar">
+                        <div>
+                            <div class="font-bold text-sm text-slate-800">Sarah Jenkins</div>
+                            <div class="text-xs text-slate-500">Administrator</div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- MAIN CONTENT AREA -->
+                <main class="p-8 space-y-8 flex-1 overflow-y-auto">
+                    <div class="max-w-7xl mx-auto space-y-8">
+
+                        <!-- Page Header Title & Actions -->
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div>
+                                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Scholarship Applications</h1>
+                                <p class="text-sm text-slate-500 mt-1">Review student applications, verify submitted documents, and approve financial aid allocations.</p>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <button type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/20 transition flex items-center gap-2">
+                                    <i class="fa-solid fa-file-export text-xs"></i>
+                                    Export Summary
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Top Stats Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Pending Applications</span>
+                                    <div class="text-2xl font-bold text-slate-900 mt-1">18</div>
+                                    <p class="text-xs text-amber-600 font-medium mt-1 flex items-center gap-1">
+                                        <i class="fa-solid fa-clock"></i> Action required
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-hourglass-half"></i>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Approved This Month</span>
+                                    <div class="text-2xl font-bold text-slate-900 mt-1">42</div>
+                                    <p class="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
+                                        <i class="fa-solid fa-arrow-trend-up"></i> +12% vs last month
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Approved Aid Pool</span>
+                                    <div class="text-2xl font-bold text-slate-900 mt-1">$28,500</div>
+                                    <p class="text-xs text-slate-400 font-medium mt-1">out of $50,000 budget</p>
+                                </div>
+                                <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-sack-dollar"></i>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Rejection Rate</span>
+                                    <div class="text-2xl font-bold text-slate-900 mt-1">4.2%</div>
+                                    <p class="text-xs text-slate-400 font-medium mt-1">Normal system baseline</p>
+                                </div>
+                                <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Applications Data Table Section -->
+                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+
+                            <!-- Table Filters & Header -->
+                            <div class="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div class="flex items-center gap-3">
+                                    <h2 class="font-bold text-slate-800 text-base">Applications Queue</h2>
+                                    <span class="bg-slate-100 text-slate-600 text-xs font-semibold px-2.5 py-0.5 rounded-full" 
+                                          th:text="${applications != null ? #lists.size(applications) + ' total' : '0 total'}">
+                                        0 total
+                                    </span>
+                                </div>
+
+                                <!-- Filter Controls -->
+                                <div class="flex items-center gap-3">
+                                    <select id="statusFilter" onchange="filterTable()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500/20">
+                                        <option value="">All Statuses</option>
+                                        <option value="PENDING">Pending</option>
+                                        <option value="APPROVED">Approved</option>
+                                        <option value="REJECTED">Rejected</option>
+                                    </select>
+
+                                    <select id="scholarshipFilter" onchange="filterTable()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500/20">
+                                        <option value="">All Scholarships</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Responsive Table -->
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse" id="applicationsTable">
+                                    <thead>
+                                        <tr class="bg-slate-50/70 border-b border-slate-100 text-[12px] font-semibold text-slate-400 uppercase tracking-wider">
+                                            <th class="py-3.5 px-6">App ID</th>
+                                            <th class="py-3.5 px-6">Student Info</th>
+                                            <th class="py-3.5 px-6">Scholarship Program</th>
+                                            <th class="py-3.5 px-6">Reason / Statement</th>
+                                            <th class="py-3.5 px-6">Document</th>
+                                            <th class="py-3.5 px-6">Status</th>
+                                            <th class="py-3.5 px-6">Approved Amount</th>
+                                            <th class="py-3.5 px-6 text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 text-sm">
+
+                                        <!-- Thymeleaf Iteration Loop -->
+                                        <tr th:each="app : ${applications}" 
+                                            class="hover:bg-slate-50/60 transition group application-row"
+                                            th:data-status="${app.status != null ? app.status : 'PENDING'}"
+                                            th:data-scholarship="${app.scholarshipName}">
+                                            
+                                            <!-- Application ID -->
+                                            <td class="py-4 px-6 font-semibold text-slate-800" th:text="${'#APP-' + app.applicationId}">
+                                                #APP-101
+                                            </td>
+
+                                            <!-- Student Info -->
+                                            <td class="py-4 px-6">
+                                                <div class="font-semibold text-slate-900" th:text="${app.studentName != null ? app.studentName : 'Unassigned'}">Alex Morgan</div>
+                                                <div class="text-xs text-slate-400" th:text="${app.studentEmail != null ? app.studentEmail : '-'}">alex.morgan@email.com</div>
+                                            </td>
+
+                                            <!-- Scholarship Program -->
+                                            <td class="py-4 px-6">
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 scholarship-name-cell" 
+                                                      th:text="${app.scholarshipName != null and !#strings.isEmpty(app.scholarshipName) ? app.scholarshipName : '—'}">
+                                                    STEM Excellence Grant
+                                                </span>
+                                            </td>
+
+                                            <!-- Statement -->
+                                            <td class="py-4 px-6 max-w-xs">
+                                                <p class="text-xs text-slate-600 truncate" th:text="${app.reason != null ? app.reason : '-'}">
+                                                    Applying due to financial constraints...
+                                                </p>
+                                            </td>
+
+                                            <!-- DOCUMENT COLUMN (Displays Actual Document File Name) -->
+                                            <td class="py-4 px-6">
+                                                <a th:if="${app.supportingDocument != null and !#strings.isEmpty(app.supportingDocument)}" 
+                                                   th:href="@{/admin/scholarship-applications-review/download/{id}(id=${app.applicationId})}" 
+                                                   target="_blank"
+                                                   class="inline-flex items-center gap-1.5 text-xs text-indigo-600 hover:text-indigo-800 font-semibold hover:underline transition max-w-[150px] truncate"
+                                                   th:title="${app.supportingDocument}">
+                                                    <i class="fa-solid fa-file-lines text-indigo-500"></i>
+                                                    <span th:text="${app.supportingDocument}">document.pdf</span>
+                                                </a>
+                                                <span th:unless="${app.supportingDocument != null and !#strings.isEmpty(app.supportingDocument)}" 
+                                                      class="text-xs text-slate-400 italic">None</span>
+                                            </td>
+
+                                            <!-- Status Column -->
+                                            <td class="py-4 px-6">
+                                                <span th:if="${app.status == 'PENDING' || app.status == null}" 
+                                                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 ring-1 ring-amber-600/20">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                                    Pending
+                                                </span>
+
+                                                <span th:if="${app.status == 'APPROVED'}" 
+                                                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                    Approved
+                                                </span>
+
+                                                <span th:if="${app.status == 'REJECTED'}" 
+                                                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-rose-50 text-rose-700 ring-1 ring-rose-600/20">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                                    Rejected
+                                                </span>
+                                            </td>
+
+                                            <!-- Approved Amount Column -->
+                                            <td class="py-4 px-6 font-medium text-slate-800">
+                                                <span th:text="${app.approvedAmount != null ? '$' + #numbers.formatDecimal(app.approvedAmount, 1, 'COMMA', 2, 'POINT') : '-'}">$1,500.00</span>
+                                            </td>
+
+                                            <!-- Review Action -->
+                                            <td class="py-4 px-6 text-right">
+                                                <button type="button" 
+                                                        onclick="openReviewModal(this)"
+                                                        th:data-id="${app.applicationId}"
+                                                        th:data-student="${app.studentName}"
+                                                        th:data-scholarship="${app.scholarshipName}"
+                                                        th:data-reason="${app.reason}"
+                                                        th:data-status="${app.status}"
+                                                        th:data-amount="${app.approvedAmount}"
+                                                        th:data-notes="${app.reviewNotes}"
+                                                        th:data-doc="${app.supportingDocument}"
+                                                        th:data-doc-url="@{/admin/scholarship-applications-review/download/{id}(id=${app.applicationId})}"
+                                                        class="bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white font-medium text-xs px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 ml-auto">
+                                                    <i class="fa-solid fa-pen-to-square"></i> Review
+                                                </button>
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Table Footer Pagination -->
+                            <div class="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                                <span>Showing entries</span>
+                                <div class="flex items-center gap-1">
+                                    <button class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Previous</button>
+                                    <button class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-medium">1</button>
+                                    <button class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Next</button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </main>
             </div>
-            <button type="button" onclick="closeReviewModal()" class="text-slate-400 hover:text-slate-600 text-lg w-8 h-8 rounded-xl flex items-center justify-center hover:bg-slate-100 transition">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
         </div>
-
-        <form th:action="@{/admin/scholarship-applications-review/review}" method="POST" class="p-6 space-y-4">
-            <input type="hidden" id="modalApplicationId" name="applicationId">
-
-            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-400">Student Name:</span>
-                    <span class="font-semibold text-slate-800" id="modalStudentName">-</span>
-                </div>
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-400">Program:</span>
-                    <span class="font-semibold text-indigo-600" id="modalScholarshipName">-</span>
-                </div>
-                <div class="flex justify-between text-xs items-center pt-1 border-t border-slate-200/50">
-                    <span class="text-slate-400">Attachment:</span>
-                    <span id="modalDocContainer">
-                        <span class="text-slate-400 italic">No document attached</span>
-                    </span>
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Student Statement</label>
-                <div id="modalReason" class="p-3 bg-slate-50 rounded-xl text-xs text-slate-600 italic border border-slate-100 max-h-24 overflow-y-auto">
-                    -
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Application Status</label>
-                <select id="modalStatus" name="status" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium">
-                    <option value="PENDING">Pending</option>
-                    <option value="APPROVED">Approved</option>
-                    <option value="REJECTED">Rejected</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Approved Amount ($)</label>
-                <div class="relative">
-                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-semibold">$</span>
-                    <input type="number" step="0.01" id="modalApprovedAmount" name="approvedAmount" placeholder="0.00" class="w-full pl-8 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 font-semibold">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Reviewer Notes / Feedback</label>
-                <textarea id="modalReviewNotes" name="reviewNotes" rows="3" placeholder="Provide feedback or internal remarks for this decision..." class="w-full p-3 bg-slate-50 border border-slate-200 text-slate-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500/20"></textarea>
-            </div>
-
-            <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-                <button type="button" onclick="closeReviewModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition">
-                    Cancel
-                </button>
-                <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-lg shadow-indigo-600/20 transition">
-                    Save Decision
-                </button>
-            </div>
-        </form>
-
     </div>
-</div>
 
-<!-- JavaScript Handlers -->
-<script>
-    function openReviewModal(button) {
-        const id = button.getAttribute('data-id');
-        const student = button.getAttribute('data-student');
-        const scholarship = button.getAttribute('data-scholarship');
-        const reason = button.getAttribute('data-reason');
-        const status = button.getAttribute('data-status');
-        const amount = button.getAttribute('data-amount');
-        const notes = button.getAttribute('data-notes');
-        const doc = button.getAttribute('data-doc');
+    <!-- ================= REVIEW ACTION MODAL ================= -->
+    <div id="reviewModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 overflow-hidden transform transition-all">
+            
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-base">Review Application</h3>
+                    <p class="text-xs text-slate-400" id="modalSubTitle">Application #APP-101</p>
+                </div>
+                <button type="button" onclick="closeReviewModal()" class="text-slate-400 hover:text-slate-600 text-lg w-8 h-8 rounded-xl flex items-center justify-center hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
 
-        document.getElementById('modalApplicationId').value = id || '';
-        document.getElementById('modalSubTitle').textContent = 'Application #APP-' + id;
-        document.getElementById('modalStudentName').textContent = student || 'N/A';
-        document.getElementById('modalScholarshipName').textContent = scholarship || 'N/A';
-        document.getElementById('modalReason').textContent = reason || 'No statement provided.';
-        document.getElementById('modalStatus').value = status || 'PENDING';
-        document.getElementById('modalApprovedAmount').value = amount || '';
-        document.getElementById('modalReviewNotes').value = notes || '';
+            <form th:action="@{/admin/scholarship-applications-review/review}" method="POST" class="p-6 space-y-4">
+                <input type="hidden" id="modalApplicationId" name="applicationId">
 
-        const docContainer = document.getElementById('modalDocContainer');
-        if (doc && doc.trim() !== '') {
-            docContainer.innerHTML = `<a href="/admin/scholarship-applications-review/download/${id}" target="_blank" class="text-indigo-600 hover:underline font-semibold flex items-center gap-1"><i class="fa-solid fa-paperclip"></i> View Submitted Document</a>`;
-        } else {
-            docContainer.innerHTML = `<span class="text-slate-400 italic">No document attached</span>`;
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-400">Student Name:</span>
+                        <span class="font-semibold text-slate-800" id="modalStudentName">-</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-400">Program:</span>
+                        <span class="font-semibold text-indigo-600" id="modalScholarshipName">-</span>
+                    </div>
+                    <div class="flex justify-between text-xs items-center pt-1 border-t border-slate-200/50">
+                        <span class="text-slate-400">Attachment:</span>
+                        <span id="modalDocContainer">
+                            <span class="text-slate-400 italic">No document attached</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Student Statement</label>
+                    <div id="modalReason" class="p-3 bg-slate-50 rounded-xl text-xs text-slate-600 italic border border-slate-100 max-h-24 overflow-y-auto">
+                        -
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Application Status</label>
+                    <select id="modalStatus" name="status" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium">
+                        <option value="PENDING">Pending</option>
+                        <option value="APPROVED">Approved</option>
+                        <option value="REJECTED">Rejected</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Approved Amount ($)</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-semibold">$</span>
+                        <input type="number" step="0.01" id="modalApprovedAmount" name="approvedAmount" placeholder="0.00" class="w-full pl-8 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 font-semibold">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Reviewer Notes / Feedback</label>
+                    <textarea id="modalReviewNotes" name="reviewNotes" rows="3" placeholder="Provide feedback or internal remarks for this decision..." class="w-full p-3 bg-slate-50 border border-slate-200 text-slate-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500/20"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeReviewModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-lg shadow-indigo-600/20 transition">
+                        Save Decision
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- JavaScript Handlers -->
+    <script>
+        function openReviewModal(button) {
+            const id = button.getAttribute('data-id');
+            const student = button.getAttribute('data-student');
+            const scholarship = button.getAttribute('data-scholarship');
+            const reason = button.getAttribute('data-reason');
+            const status = button.getAttribute('data-status');
+            const amount = button.getAttribute('data-amount');
+            const notes = button.getAttribute('data-notes');
+            const doc = button.getAttribute('data-doc');
+            const docUrl = button.getAttribute('data-doc-url');
+
+            document.getElementById('modalApplicationId').value = id || '';
+            document.getElementById('modalSubTitle').textContent = 'Application #APP-' + id;
+            document.getElementById('modalStudentName').textContent = student || 'N/A';
+            document.getElementById('modalScholarshipName').textContent = scholarship || 'N/A';
+            document.getElementById('modalReason').textContent = reason || 'No statement provided.';
+            document.getElementById('modalStatus').value = status || 'PENDING';
+            document.getElementById('modalApprovedAmount').value = amount || '';
+            document.getElementById('modalReviewNotes').value = notes || '';
+
+            const docContainer = document.getElementById('modalDocContainer');
+            if (doc && doc.trim() !== '' && doc.trim() !== 'null') {
+                const targetUrl = docUrl || ('/admin/scholarship-applications-review/download/' + id);
+                docContainer.innerHTML = `<a href="${targetUrl}" target="_blank" class="text-indigo-600 hover:underline font-semibold flex items-center gap-1.5 max-w-[250px] truncate" title="${doc}"><i class="fa-solid fa-file-lines text-indigo-500"></i> ${doc}</a>`;
+            } else {
+                docContainer.innerHTML = `<span class="text-slate-400 italic">No document attached</span>`;
+            }
+
+            document.getElementById('reviewModal').classList.remove('hidden');
         }
 
-        document.getElementById('reviewModal').classList.remove('hidden');
-    }
+        function closeReviewModal() {
+            document.getElementById('reviewModal').classList.add('hidden');
+        }
 
-    function closeReviewModal() {
-        document.getElementById('reviewModal').classList.add('hidden');
-    }
+        document.addEventListener("DOMContentLoaded", function() {
+            const scholarshipFilter = document.getElementById('scholarshipFilter');
+            const rows = document.querySelectorAll('.application-row');
+            const uniqueScholarships = new Set();
 
-    document.addEventListener("DOMContentLoaded", function() {
-        const scholarshipFilter = document.getElementById('scholarshipFilter');
-        const rows = document.querySelectorAll('.application-row');
-        const uniqueScholarships = new Set();
+            rows.forEach(row => {
+                const sName = row.getAttribute('data-scholarship');
+                if (sName && sName.trim() !== '' && sName.trim() !== 'null') {
+                    uniqueScholarships.add(sName);
+                }
+            });
 
-        rows.forEach(row => {
-            const sName = row.getAttribute('data-scholarship');
-            if (sName) uniqueScholarships.add(sName);
+            uniqueScholarships.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                scholarshipFilter.appendChild(option);
+            });
         });
 
-        uniqueScholarships.forEach(name => {
-            const option = document.createElement('option');
-            option.value = name;
-            option.textContent = name;
-            scholarshipFilter.appendChild(option);
-        });
-    });
+        function filterTable() {
+            const statusVal = document.getElementById('statusFilter').value.toUpperCase();
+            const scholarshipVal = document.getElementById('scholarshipFilter').value;
+            const rows = document.querySelectorAll('.application-row');
 
-    function filterTable() {
-        const statusVal = document.getElementById('statusFilter').value.toUpperCase();
-        const scholarshipVal = document.getElementById('scholarshipFilter').value;
-        const rows = document.querySelectorAll('.application-row');
+            rows.forEach(row => {
+                const rowStatus = (row.getAttribute('data-status') || '').toUpperCase();
+                const rowScholarship = row.getAttribute('data-scholarship') || '';
 
-        rows.forEach(row => {
-            const rowStatus = (row.getAttribute('data-status') || '').toUpperCase();
-            const rowScholarship = row.getAttribute('data-scholarship') || '';
+                const matchesStatus = !statusVal || rowStatus === statusVal;
+                const matchesScholarship = !scholarshipVal || rowScholarship === scholarshipVal;
 
-            const matchesStatus = !statusVal || rowStatus === statusVal;
-            const matchesScholarship = !scholarshipVal || rowScholarship === scholarshipVal;
-
-            if (matchesStatus && matchesScholarship) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
-</script>
+                if (matchesStatus && matchesScholarship) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
 
 </body>
 </html>

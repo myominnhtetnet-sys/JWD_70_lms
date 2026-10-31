@@ -924,13 +924,13 @@
 <!-- Live Historical Reviews Feed List Display -->
 <div style="margin-top: 16px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
     
-    <!-- 🟢 FIXED: Safe lookup matching the String.valueOf() keys from the controller -->
+   
     <div th:if="${reviewsMap == null or reviewsMap[#strings.toString(course.course_id)] == null or #lists.isEmpty(reviewsMap[#strings.toString(course.course_id)])}" 
          style="padding: 20px; text-align: center; color: #64748b; font-size: 13px; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;">
         No student reviews submitted yet for this course.
     </div>
 
-    <!-- 🟢 FIXED: Loops natively over the exact course index sublist key -->
+  
     <ul th:unless="${reviewsMap == null or reviewsMap[#strings.toString(course.course_id)] == null or #lists.isEmpty(reviewsMap[#strings.toString(course.course_id)])}" 
         style="list-style-type: none; padding: 0; margin: 0;">
         <li th:each="rev : ${reviewsMap[#strings.toString(course.course_id)]}" class="review-item-card" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 10px;">

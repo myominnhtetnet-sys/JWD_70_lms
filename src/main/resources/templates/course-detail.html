@@ -143,6 +143,26 @@
 
         <!-- Tuition Display -->
         <div class="price-tag" th:text="${course.price != null ? 'Total Tuition: $' + #numbers.formatDecimal(course.price, 1, 2) : 'Free Registration'}">$0.00</div>
+        
+        
+  <!-- 🟢 SECURED: Form layout structure decouples route compilation variables -->
+<div class="enrollment-action-wrapper mt-4">
+    <form th:action="@{/courses/enroll}" method="POST" id="student-enrollment-form">
+        <!-- Core Security Handshake Verification Parameters Token -->
+        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        
+        <!-- Target Payload Course Primary Database Key -->
+        <input type="hidden" name="courseId" th:value="${course.course_id}" />
+
+        <!-- Submission Trigger Control Action Button -->
+        <button type="submit" class="w-100 btn btn-primary py-3 fw-bold flex items-center justify-center gap-2" style="border-radius: 12px !important; border: 0 !important; background-color: #4f46e5 !important;">
+            <i class="fa-solid fa-user-plus"></i> Enroll & Proceed to Payment
+        </button>
+    </form>
+</div>
+
+
+        
 
         <!-- ========================================== -->
         <!-- STUDENT REVIEWS LIST SECTION               -->
