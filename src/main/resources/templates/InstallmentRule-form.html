@@ -1,217 +1,687 @@
+
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>EduPulse LMS - Installment Rule Form</title>
 
-    <!-- Tailwind CSS Restored -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         body {
             background-color: #f8fafc;
             font-family: 'Inter', sans-serif;
         }
+
         .alert-bubble {
             background-color: #d1e7dd;
             color: #0f5132;
             border-radius: 10px;
             padding: 1rem 1.25rem;
         }
+
+        input, select {
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+        }
     </style>
 </head>
 
 <body class="min-h-screen bg-slate-50">
 
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <!-- =====================================================
-         HEADER
-         ===================================================== -->
+    <!-- HEADER -->
     <div class="flex items-center justify-between mb-6">
+
         <div>
-            <h1 class="text-2xl font-bold text-slate-900" 
-                th:text="${installmentRule.ruleId > 0} ? 'Edit Installment Rule' : 'New Installment Rule'">
+            <h1 class="text-2xl font-bold text-slate-900"
+                th:text="${installmentRule.ruleId > 0}
+                ? 'Edit Installment Rule'
+                : 'New Installment Rule'">
                 Installment Rule Form
             </h1>
-            <p class="text-slate-500 text-sm mt-1">Configure payment terms, late fees, and installment steps.</p>
+
+            <p class="text-slate-500 text-sm mt-1">
+                Configure payment terms, late fees, and installment steps.
+            </p>
         </div>
 
         <a th:href="@{/admin/installments/list}"
-           class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-full font-medium text-sm flex items-center gap-2 transition">
-            <i class="fa-solid fa-arrow-left"></i> Back to List
+           class="bg-slate-100 hover:bg-slate-200 text-slate-700
+                  px-4 py-2.5 rounded-full font-medium text-sm
+                  flex items-center gap-2 transition">
+
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to List
         </a>
+
     </div>
 
-    <!-- =====================================================
-         SUCCESS / ERROR MESSAGES
-         ===================================================== -->
-    <div th:if="${successMessage}" class="alert-bubble flex justify-between items-center mb-6 text-sm font-medium">
+
+    <!-- SUCCESS MESSAGE -->
+    <div th:if="${successMessage}"
+         class="alert-bubble flex justify-between items-center mb-6
+                text-sm font-medium">
+
         <div class="flex items-center gap-2">
             <i class="fa-solid fa-circle-check"></i>
-            <span th:text="${successMessage}">Success message.</span>
+            <span th:text="${successMessage}">Success</span>
         </div>
-        <button type="button" onclick="this.parentElement.remove()" class="text-slate-500 hover:text-slate-700 text-lg">
+
+        <button type="button"
+                onclick="this.parentElement.remove()">
             <i class="fa-solid fa-xmark"></i>
         </button>
+
     </div>
 
-    <div th:if="${errorMessage}" class="bg-red-100 text-red-800 rounded-xl px-5 py-4 mb-6 text-sm font-medium">
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-circle-exclamation"></i>
-            <span th:text="${errorMessage}">Error message.</span>
-        </div>
+
+    <!-- ERROR MESSAGE -->
+    <div th:if="${errorMessage}"
+         class="bg-red-100 text-red-800 rounded-xl px-5 py-4 mb-6 text-sm">
+
+        <i class="fa-solid fa-circle-exclamation mr-2"></i>
+        <span th:text="${errorMessage}">Error</span>
+
     </div>
 
-    <!-- =====================================================
-         MAIN FORM CARD (INSTALLMENT RULE)
-         ===================================================== -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
-        <h2 class="text-lg font-bold text-slate-900 mb-4">Rule Details</h2>
 
-        <form th:action="@{/admin/installments/save}" th:object="${installmentRule}" method="post">
-            <input type="hidden" th:field="*{ruleId}" />
+    <!-- ONE COMBINED FORM -->
+    <form id="installmentRuleForm"
+          th:action="@{/admin/installments/save}"
+          th:object="${installmentRule}"
+          method="post"
+          class="space-y-8">
 
+        <input type="hidden" th:field="*{ruleId}"/>
+
+
+        <!-- RULE DETAILS -->
+        <section class="bg-white rounded-2xl border border-slate-200
+                        shadow-sm p-6">
+
+            <div class="flex items-center gap-3 mb-6">
+
+                <div class="w-10 h-10 rounded-xl bg-indigo-50
+                            text-indigo-600 flex items-center justify-center">
+                    <i class="fa-solid fa-file-invoice"></i>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900">
+                        Rule Details
+                    </h2>
+
+                    <p class="text-xs text-slate-400">
+                        Configure your installment payment rule.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- RULE NAME AND COURSE ID -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Rule Name</label>
-                    <input type="text" th:field="*{name}" required
-                           placeholder="e.g. Standard 2-Part Installment"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
-                </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Course ID (Optional)</label>
-                    <input type="number" th:field="*{courseId}"
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-2">
+                        Rule Name
+                    </label>
+
+                    <input type="text"
+                           th:field="*{name}"
+                           required
+                           placeholder="e.g. Standard 3-Part Installment"
+                           class="w-full bg-slate-50 border border-slate-200
+                                  rounded-xl px-4 py-3 text-sm">
+                </div>
+
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-2">
+                        Course ID (Optional)
+                    </label>
+
+                    <input type="number"
+                           th:field="*{courseId}"
+                           min="1"
                            placeholder="Leave blank for global rule"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
+                           class="w-full bg-slate-50 border border-slate-200
+                                  rounded-xl px-4 py-3 text-sm">
                 </div>
+
             </div>
 
+
+            <!-- INSTALLMENT COUNT, LATE FEE, GRACE DAYS -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-5">
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Installment Count</label>
-                    <input type="number" th:field="*{installmentCount}" required min="1"
-                           placeholder="2"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
-                </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Late Fee</label>
-                    <input type="number" step="0.01" th:field="*{lateFee}" required min="0"
-                           placeholder="5000.00"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-2">
+                        Installment Count
+                    </label>
+
+                    <input type="number"
+                           id="installmentCount"
+                           th:field="*{installmentCount}"
+                           min="1"
+                           required
+                           placeholder="3"
+                           class="w-full bg-slate-50 border border-slate-200
+                                  rounded-xl px-4 py-3 text-sm">
                 </div>
 
+
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Grace Days</label>
-                    <input type="number" th:field="*{graceDays}" min="0"
-                           placeholder="5"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-2">
+                        Late Fee
+                    </label>
+
+                    <input type="number"
+                           step="0.01"
+                           min="0"
+                           th:field="*{lateFee}"
+                           required
+                           placeholder="10000.00"
+                           class="w-full bg-slate-50 border border-slate-200
+                                  rounded-xl px-4 py-3 text-sm">
                 </div>
+
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-2">
+                        Grace Days
+                    </label>
+
+                    <input type="number"
+                           min="0"
+                           th:field="*{graceDays}"
+                           placeholder="7"
+                           class="w-full bg-slate-50 border border-slate-200
+                                  rounded-xl px-4 py-3 text-sm">
+                </div>
+
             </div>
 
-            <div class="mb-6">
-                <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Status</label>
-                <select th:field="*{isActive}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+
+            <!-- STATUS -->
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase mb-2">
+                    Status
+                </label>
+
+                <select th:field="*{isActive}"
+                        class="w-full bg-slate-50 border border-slate-200
+                               rounded-xl px-4 py-3 text-sm">
+
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
+
                 </select>
             </div>
 
-            <div class="flex justify-end gap-3">
-                <a th:href="@{/admin/installments/list}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-full font-semibold text-sm transition">
-                    Cancel
-                </a>
-                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-full font-semibold text-sm transition shadow-sm">
-                    Save Rule
+        </section>
+
+
+        <!-- INSTALLMENT STEPS -->
+        <section class="bg-white rounded-2xl border border-slate-200
+                        shadow-sm p-6">
+
+            <div class="flex flex-col sm:flex-row sm:items-center
+                        justify-between gap-4 mb-5">
+
+                <div>
+                    <div class="flex items-center gap-3">
+
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50
+                                    text-indigo-600 flex items-center justify-center">
+                            <i class="fa-solid fa-list-ol"></i>
+                        </div>
+
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-900">
+                                Installment Steps / Items
+                            </h2>
+
+                            <p class="text-xs text-slate-400 mt-1">
+                                Configure percentage split and due offsets for each payment part.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <button type="button"
+                        onclick="addInstallmentRow()"
+                        class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600
+                               px-4 py-2.5 rounded-xl text-sm font-semibold
+                               transition whitespace-nowrap">
+
+                    <i class="fa-solid fa-plus mr-1"></i>
+                    Add Installment
+
                 </button>
+
             </div>
-        </form>
-    </div>
 
 
-    <!-- =====================================================
-         INSTALLMENT RULE ITEMS (STEPS BREAKDOWN)
-         Only visible when editing an existing rule
-         ===================================================== -->
-    <div th:if="${installmentRule.ruleId > 0}" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-        <div class="flex items-center justify-between mb-4">
-            <div>
-                <h2 class="text-lg font-bold text-slate-900">Installment Steps / Items</h2>
-                <p class="text-xs text-slate-400 mt-1">Configure percentage split and due offsets for each payment part.</p>
+            <!-- INSTALLMENT TABLE -->
+            <div class="overflow-x-auto">
+
+                <table class="w-full text-left">
+
+                    <thead>
+                    <tr class="border-b border-slate-200
+                               text-xs font-bold text-slate-500 uppercase">
+
+                        <th class="px-3 py-3">Installment Number</th>
+                        <th class="px-3 py-3">Percent of Fee (%)</th>
+                        <th class="px-3 py-3">Due After (Days)</th>
+                        <th class="px-3 py-3 text-right">Action</th>
+
+                    </tr>
+                    </thead>
+
+
+                    <tbody id="installmentRows"
+                           class="divide-y divide-slate-100">
+
+                    <!-- EXISTING INSTALLMENT ITEMS -->
+                    <tr th:each="item, stat : ${ruleItems}"
+                        class="installment-row">
+
+                        <td class="px-3 py-3">
+
+                            <input type="hidden"
+                                   th:name="|items[${stat.index}].ruleItemId|"
+                                   th:value="${item.ruleItemId}">
+
+                            <input type="number"
+                                   th:name="|items[${stat.index}].installmentNumber|"
+                                   th:value="${item.installmentNumber}"
+                                   min="1"
+                                   required
+                                   class="w-full min-w-24 border border-slate-200
+                                          rounded-lg px-3 py-2 text-sm">
+
+                        </td>
+
+
+                        <td class="px-3 py-3">
+
+                            <input type="number"
+                                   th:name="|items[${stat.index}].percentOfFee|"
+                                   th:value="${item.percentOfFee}"
+                                   step="0.01"
+                                   min="0.01"
+                                   max="100"
+                                   required
+                                   class="w-full min-w-28 border border-slate-200
+                                          rounded-lg px-3 py-2 text-sm">
+
+                        </td>
+
+
+                        <td class="px-3 py-3">
+
+                            <input type="number"
+                                   th:name="|items[${stat.index}].dueAfterDays|"
+                                   th:value="${item.dueAfterDays}"
+                                   min="0"
+                                   required
+                                   class="w-full min-w-24 border border-slate-200
+                                          rounded-lg px-3 py-2 text-sm">
+
+                        </td>
+
+
+                        <td class="px-3 py-3 text-right">
+
+                            <button type="button"
+                                    onclick="removeInstallmentRow(this)"
+                                    class="bg-red-50 hover:bg-red-100 text-red-600
+                                           px-3 py-2 rounded-lg text-xs font-semibold">
+
+                                <i class="fa-solid fa-trash-can"></i>
+                                Remove
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- DEFAULT FIRST ROW FOR NEW RULE -->
+                    <tr th:if="${#lists.isEmpty(ruleItems)}"
+                        class="installment-row">
+
+                        <td class="px-3 py-3">
+
+                            <input type="hidden"
+                                   name="items[0].ruleItemId"
+                                   value="0">
+
+                            <input type="number"
+                                   name="items[0].installmentNumber"
+                                   value="1"
+                                   min="1"
+                                   required
+                                   class="w-full min-w-24 border border-slate-200
+                                          rounded-lg px-3 py-2 text-sm">
+
+                        </td>
+
+                        <td class="px-3 py-3">
+
+                            <input type="number"
+                                   name="items[0].percentOfFee"
+                                   value="100"
+                                   step="0.01"
+                                   min="0.01"
+                                   max="100"
+                                   required
+                                   class="w-full min-w-28 border border-slate-200
+                                          rounded-lg px-3 py-2 text-sm">
+
+                        </td>
+
+                        <td class="px-3 py-3">
+
+                            <input type="number"
+                                   name="items[0].dueAfterDays"
+                                   value="0"
+                                   min="0"
+                                   required
+                                   class="w-full min-w-24 border border-slate-200
+                                          rounded-lg px-3 py-2 text-sm">
+
+                        </td>
+
+                        <td class="px-3 py-3 text-right">
+
+                            <button type="button"
+                                    onclick="removeInstallmentRow(this)"
+                                    class="bg-red-50 hover:bg-red-100 text-red-600
+                                           px-3 py-2 rounded-lg text-xs font-semibold">
+
+                                <i class="fa-solid fa-trash-can"></i>
+                                Remove
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
             </div>
+
+
+            <!-- TOTAL PERCENTAGE -->
+            <div class="flex justify-between items-center mt-5
+                        bg-slate-50 rounded-xl p-4">
+
+                <span class="text-sm font-semibold text-slate-600">
+                    Total Percentage
+                </span>
+
+                <span id="totalPercentage"
+                      class="text-lg font-bold text-indigo-600">
+                    100.00%
+                </span>
+
+            </div>
+
+            <p class="text-xs text-slate-400 mt-2">
+                The total percentage of all installments must equal 100%.
+            </p>
+
+        </section>
+
+
+        <!-- ONE SAVE BUTTON -->
+        <div class="flex justify-end gap-3">
+
+            <a th:href="@{/admin/installments/list}"
+               class="bg-slate-100 hover:bg-slate-200 text-slate-700
+                      px-6 py-3 rounded-full font-semibold text-sm transition">
+
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    id="saveRuleButton"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white
+                           px-7 py-3 rounded-full font-semibold text-sm
+                           shadow-sm transition">
+
+                <i class="fa-solid fa-floppy-disk mr-2"></i>
+                Save Rule
+
+            </button>
+
         </div>
 
-        <!-- Add/Edit Step Form -->
-        <form th:action="@{/admin/installments/items/save}" method="post" class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6">
-            <input type="hidden" name="ruleId" th:value="${installmentRule.ruleId}" />
-            <input type="hidden" name="ruleItemId" id="itemRuleItemId" value="0" />
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Installment Number</label>
-                    <input type="number" name="installmentNumber" id="itemInstallmentNumber" required min="1" placeholder="1"
-                           class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Percent of Fee (%)</label>
-                    <input type="number" step="0.01" name="percentOfFee" id="itemPercentOfFee" required min="0" max="100" placeholder="50.00"
-                           class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Due After (Days)</label>
-                    <input type="number" name="dueAfterDays" id="itemDueAfterDays" required min="0" placeholder="0"
-                           class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-2">
-                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold text-xs transition">
-                    Save Step
-                </button>
-            </div>
-        </form>
-
-        <!-- Steps Table -->
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                        <th class="pb-3 pr-4">Part #</th>
-                        <th class="pb-3 pr-4">Percentage</th>
-                        <th class="pb-3 pr-4">Due After (Days)</th>
-                        <th class="pb-3 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 text-sm">
-                    <tr th:each="item : ${ruleItems}" class="hover:bg-slate-50 transition">
-                        <td class="py-3 pr-4 font-bold text-slate-800" th:text="${item.installmentNumber}">1</td>
-                        <td class="py-3 pr-4 text-slate-700 font-semibold" th:text="${item.percentOfFee + '%'}">50.00%</td>
-                        <td class="py-3 pr-4 text-slate-500" th:text="${item.dueAfterDays + ' Days'}">0 Days</td>
-                        <td class="py-3 text-right whitespace-nowrap">
-                            <a th:href="@{/admin/installments/items/delete/{id}(id=${item.ruleItemId}, ruleId=${installmentRule.ruleId})}"
-                               onclick="return confirm('Delete this step?');"
-                               class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-50 text-red-600 hover:bg-red-100 text-xs font-semibold transition">
-                                <i class="fa-solid fa-trash-can"></i> Delete
-                            </a>
-                        </td>
-                    </tr>
-                    <tr th:if="${#lists.isEmpty(ruleItems)}">
-                        <td colspan="4" class="py-8 text-center text-slate-400 text-xs">
-                            No installment steps configured yet. Add your first step above.
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    </form>
 
 </div>
+
+
+<!-- JAVASCRIPT -->
+<script>
+
+    const rowsContainer = document.getElementById("installmentRows");
+
+    // ADD INSTALLMENT ROW
+    function addInstallmentRow() {
+
+        const index = rowsContainer.querySelectorAll(".installment-row").length;
+
+        const row = document.createElement("tr");
+
+        row.className = "installment-row";
+
+        row.innerHTML = `
+            <td class="px-3 py-3">
+                <input type="hidden"
+                       name="items[${index}].ruleItemId"
+                       value="0">
+
+                <input type="number"
+                       name="items[${index}].installmentNumber"
+                       value="${index + 1}"
+                       min="1"
+                       required
+                       class="w-full min-w-24 border border-slate-200
+                              rounded-lg px-3 py-2 text-sm">
+            </td>
+
+            <td class="px-3 py-3">
+                <input type="number"
+                       name="items[${index}].percentOfFee"
+                       value=""
+                       step="0.01"
+                       min="0.01"
+                       max="100"
+                       required
+                       placeholder="Percentage"
+                       class="w-full min-w-28 border border-slate-200
+                              rounded-lg px-3 py-2 text-sm">
+            </td>
+
+            <td class="px-3 py-3">
+                <input type="number"
+                       name="items[${index}].dueAfterDays"
+                       value=""
+                       min="0"
+                       required
+                       placeholder="Days"
+                       class="w-full min-w-24 border border-slate-200
+                              rounded-lg px-3 py-2 text-sm">
+            </td>
+
+            <td class="px-3 py-3 text-right">
+                <button type="button"
+                        onclick="removeInstallmentRow(this)"
+                        class="bg-red-50 hover:bg-red-100 text-red-600
+                               px-3 py-2 rounded-lg text-xs font-semibold">
+                    <i class="fa-solid fa-trash-can"></i>
+                    Remove
+                </button>
+            </td>
+        `;
+
+        rowsContainer.appendChild(row);
+
+        updateInstallmentNumbers();
+        updateTotalPercentage();
+    }
+
+
+    // REMOVE INSTALLMENT ROW
+    function removeInstallmentRow(button) {
+
+        const rows = rowsContainer.querySelectorAll(".installment-row");
+
+        if (rows.length <= 1) {
+            alert("At least one installment step is required.");
+            return;
+        }
+
+        button.closest(".installment-row").remove();
+
+        updateInstallmentNumbers();
+        updateTotalPercentage();
+    }
+
+
+    // UPDATE FIELD INDEXES AFTER ADD / REMOVE
+    function updateInstallmentNumbers() {
+
+        const rows = rowsContainer.querySelectorAll(".installment-row");
+
+        rows.forEach((row, index) => {
+
+            row.querySelectorAll("input").forEach(input => {
+
+                const field = input.name.split(".").pop();
+
+                input.name = `items[${index}].${field}`;
+
+            });
+
+            const numberInput = row.querySelector(
+                'input[name$=".installmentNumber"]'
+            );
+
+            if (numberInput) {
+                numberInput.value = index + 1;
+            }
+
+        });
+    }
+
+
+    // CALCULATE TOTAL PERCENTAGE
+    function updateTotalPercentage() {
+
+        let total = 0;
+
+        document.querySelectorAll(
+            'input[name$=".percentOfFee"]'
+        ).forEach(input => {
+
+            total += parseFloat(input.value) || 0;
+
+        });
+
+        document.getElementById("totalPercentage").textContent =
+            total.toFixed(2) + "%";
+
+    }
+
+
+    // UPDATE TOTAL WHEN PERCENTAGE CHANGES
+    rowsContainer.addEventListener("input", function(event) {
+
+        if (event.target.name.endsWith(".percentOfFee")) {
+            updateTotalPercentage();
+        }
+
+    });
+
+
+    // VALIDATE BEFORE SUBMIT
+    document.getElementById("installmentRuleForm")
+        .addEventListener("submit", function(event) {
+
+            const rows = rowsContainer.querySelectorAll(".installment-row");
+
+            const installmentCount = parseInt(
+                document.getElementById("installmentCount").value
+            );
+
+            if (rows.length !== installmentCount) {
+
+                event.preventDefault();
+
+                alert(
+                    "Installment Count must match the number of installment steps."
+                );
+
+                return;
+            }
+
+            let total = 0;
+
+            document.querySelectorAll(
+                'input[name$=".percentOfFee"]'
+            ).forEach(input => {
+
+                total += parseFloat(input.value) || 0;
+
+            });
+
+            if (Math.abs(total - 100) > 0.01) {
+
+                event.preventDefault();
+
+                alert(
+                    "The total installment percentage must equal 100%. Current total: "
+                    + total.toFixed(2) + "%"
+                );
+
+                return;
+            }
+
+            updateInstallmentNumbers();
+
+        });
+
+
+    // INITIALIZE
+    updateInstallmentNumbers();
+    updateTotalPercentage();
+
+</script>
 
 </body>
 </html>
