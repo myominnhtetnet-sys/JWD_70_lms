@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.Learning_Managnment_System.JWD_70_lms.Service.CourseService;
 import com.Learning_Managnment_System.JWD_70_lms.Service.ReviewService;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.CourseRepository;
+import com.Learning_Managnment_System.JWD_70_lms.Repository.StudentRepository;
 import com.Learning_Managnment_System.JWD_70_lms.model.CourseBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.Review;
@@ -33,6 +34,9 @@ public class CourseController {
 
     @Autowired
     private CourseRepository courseRepository; 
+    
+    @Autowired
+    private StudentRepository studentRepository;
 
     @InitBinder
     public void initBinder(WebDataBinder dataBinder) {
@@ -84,7 +88,6 @@ public class CourseController {
         
         if (courseOpt.isEmpty()) {
             System.out.println("⚠️ NOTICE: Course slug not resolved: " + slug);
-            // Bypasses the missing error/404 template crash completely by returning to catalog safely
             return "redirect:/courses/show"; 
         }
         
@@ -97,10 +100,6 @@ public class CourseController {
         return "course-detail"; 
     }
 
-    
-    /**
-     * 🟢 3. PROCESS TRANS-SUBMISSION OF AN INDIVIDUAL USER COURSE EVALUATION REVIEW
-     */
     @PostMapping("/{id}/review")
     public String saveCourseReview(
             @PathVariable("id") Long courseId,
@@ -147,5 +146,49 @@ public class CourseController {
         redirectAttributes.addFlashAttribute("successMessage", "Thank you! Your feedback has been published.");
 
         return "redirect:/courses/show#detailModal-" + courseId;
+    }
+    
+    
+    @PostMapping("/enroll") // Maps directly to POST /courses/enroll
+    public String enrollInCourse(
+            @RequestParam("courseId") int courseId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        String email = (String) session.getAttribute("email");
+
+        if (email == null) {
+            redirectAttributes.addFlashAttribute("error", "Your session has expired. Please log in to enroll.");
+            return "redirect:/login";
+        }
+
+        // Resolves user_id using your repository model maps safely on the fly
+        Map<String, Object> student = studentRepository.findByEmail(email);
+        if (student == null || student.get("user_id") == null) {
+            redirectAttributes.addFlashAttribute("error", "Student profile not found. Please log in again.");
+            return "redirect:/login";
+        }
+
+        int userId = Integer.parseInt(student.get("user_id").toString());
+        
+        session.setAttribute("studentId", userId);
+        session.setAttribute("userId", userId);
+
+        // Invoke fully decoupled service execution pipeline
+        CourseService.EnrollmentResult result = 
+        		courseService.enrollStudentInCourse(userId, courseId);
+
+        if ("SUCCESS".equals(result.getStatus())) {
+            redirectAttributes.addFlashAttribute("successMessage", result.getMessage());
+            return "redirect:/student/checkout?courseId=" + result.getTargetBatchId();
+        } 
+        
+        if ("DUPLICATE".equals(result.getStatus())) {
+            redirectAttributes.addFlashAttribute("error", result.getMessage());
+            return "redirect:/student/checkout?courseId=" + result.getTargetBatchId();
+        } 
+
+        redirectAttributes.addFlashAttribute("error", result.getMessage());
+        return "redirect:/courses/show";
     }
 }

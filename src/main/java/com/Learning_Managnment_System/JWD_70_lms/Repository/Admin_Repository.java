@@ -156,61 +156,61 @@ public class Admin_Repository {
     }
     
     
-    
-    
-    
-    
-
-    // 11. DASHBOARD STATISTICS
-    public int getTotalUsers() {
-        String sql = "SELECT COUNT(*) FROM users WHERE deleted_at IS NULL";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
-        return count != null ? count : 0;
-    }
-
-    public int getTotalStudents() {
-        String sql = "SELECT COUNT(*) FROM users u JOIN roles r ON u.role_id = r.role_id WHERE r.role_name = 'Student' AND u.deleted_at IS NULL";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
-        return count != null ? count : 0;
-    }
-
-    public int getTotalTeachers() {
-        String sql = "SELECT COUNT(*) FROM users u JOIN roles r ON u.role_id = r.role_id WHERE r.role_name = 'Teacher' AND u.deleted_at IS NULL";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
-        return count != null ? count : 0;
-    }
-
-    public int getTotalAdmins() {
-        String sql = "SELECT COUNT(*) FROM users u JOIN roles r ON u.role_id = r.role_id WHERE r.role_name = 'Admin' AND u.deleted_at IS NULL";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
-        return count != null ? count : 0;
-    }
-
-    // 12. ACTIVE COURSES
-    public int getActiveCourses() {
-        String sql = "SELECT COUNT(*) FROM courses WHERE status = 'ACTIVE'";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
-        return count != null ? count : 0;
-    }
-
-    // 13. TOTAL ENROLLMENTS
-    public int getTotalEnrollments() {
-        String sql = "SELECT COUNT(*) FROM enrollments";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
-        return count != null ? count : 0;
-    }
-
-    // 14. ACTIVE BATCHES
-    public int getActiveBatches() {
-        String sql = "SELECT COUNT(*) FROM batches WHERE status = 'ACTIVE'";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
-        return count != null ? count : 0;
-    }
-
-    // 15. UPCOMING BATCHES
-    public int getUpcomingBatches() {
-        String sql = "SELECT COUNT(*) FROM batches WHERE start_date > CURDATE()";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
-        return count != null ? count : 0;
-    }
+//    
+//    
+//    
+//    
+//
+//    // 11. DASHBOARD STATISTICS
+//    public int getTotalUsers() {
+//        String sql = "SELECT COUNT(*) FROM users WHERE deleted_at IS NULL";
+//        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+//        return count != null ? count : 0;
+//    }
+//
+//    public int getTotalStudents() {
+//        String sql = "SELECT COUNT(*) FROM users u JOIN roles r ON u.role_id = r.role_id WHERE r.role_name = 'Student' AND u.deleted_at IS NULL";
+//        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+//        return count != null ? count : 0;
+//    }
+//
+//    public int getTotalTeachers() {
+//        String sql = "SELECT COUNT(*) FROM users u JOIN roles r ON u.role_id = r.role_id WHERE r.role_name = 'Teacher' AND u.deleted_at IS NULL";
+//        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+//        return count != null ? count : 0;
+//    }
+//
+//    public int getTotalAdmins() {
+//        String sql = "SELECT COUNT(*) FROM users u JOIN roles r ON u.role_id = r.role_id WHERE r.role_name = 'Admin' AND u.deleted_at IS NULL";
+//        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+//        return count != null ? count : 0;
+//    }
+//
+//    // 12. ACTIVE COURSES
+//    public int getActiveCourses() {
+//        String sql = "SELECT COUNT(*) FROM courses WHERE status = 'ACTIVE'";
+//        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+//        return count != null ? count : 0;
+//    }
+//
+//    // 13. TOTAL ENROLLMENTS
+//    public int getTotalEnrollments() {
+//        String sql = "SELECT COUNT(*) FROM enrollments";
+//        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+//        return count != null ? count : 0;
+//    }
+//
+//    // 14. ACTIVE BATCHES
+//    public int getActiveBatches() {
+//        String sql = "SELECT COUNT(*) FROM batches WHERE status = 'ACTIVE'";
+//        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+//        return count != null ? count : 0;
+//    }
+//
+//    // 15. UPCOMING BATCHES
+//    public int getUpcomingBatches() {
+//        String sql = "SELECT COUNT(*) FROM batches WHERE start_date > CURDATE()";
+//        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+//        return count != null ? count : 0;
+//    }
 }
