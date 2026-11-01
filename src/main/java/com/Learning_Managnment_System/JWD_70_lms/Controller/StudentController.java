@@ -45,9 +45,34 @@ public class StudentController {
     }
 
     @PostMapping("/register")
-    public String processRegistration(@ModelAttribute("student") StudentBean student, RedirectAttributes redirectAttributes) {
-        studentService.registerStudent(student); 
-        redirectAttributes.addFlashAttribute("success", "Registration successful! Please login.");
+    public String processRegistration(@ModelAttribute("student") StudentBean student, 
+                                      @RequestParam(value = "profileImageFile", required = false) MultipartFile file, 
+                                      RedirectAttributes redirectAttributes) {
+        try {
+            if (file != null && !file.isEmpty()) {
+                String originalFileName = file.getOriginalFilename();
+                // 🟢 Space များနှင့် အထူးအက္ခရာများကို ဖယ်ရှားပြီး နာမည်သန့်သန့်ဖန်တီးခြင်း
+                String fileName = System.currentTimeMillis() + "_" + originalFileName.replaceAll("\\s+", "_");
+
+                String uploadDir = "src/main/resources/static/images/";
+                Path uploadPath = Paths.get(uploadDir);
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+                
+                Files.copy(file.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+                student.setProfileImage(fileName);
+            } else {
+                // ပုံမထည့်ခဲ့လျှင် Default ပုံ သတ်မှတ်ရန်
+                student.setProfileImage("student.jpg");
+            }
+
+            studentService.registerStudent(student); 
+            redirectAttributes.addFlashAttribute("success", "Registration successful! Please login.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Registration failed!");
+        }
         return "redirect:/login";
     }
 
@@ -66,7 +91,7 @@ public class StudentController {
             model.addAttribute("address", student.get("address"));
             model.addAttribute("studentId", student.get("id")); 
             model.addAttribute("profileImage", student.get("profile_image"));
-            model.addAttribute("timestamp", System.currentTimeMillis()); // 🟢 Cache buster timestamp
+            model.addAttribute("timestamp", System.currentTimeMillis());
         }
 
         return "profile";
@@ -108,7 +133,6 @@ public class StudentController {
         if (!file.isEmpty()) {
             try {
                 String originalFileName = file.getOriginalFilename();
-                // 🟢 Space များနှင့် အထူးအက္ခရာများကို ဖယ်ရှားပြီး နာမည်သန့်သန့်ဖန်တီးခြင်း
                 String fileName = System.currentTimeMillis() + "_" + originalFileName.replaceAll("\\s+", "_");
 
                 String uploadDir = "src/main/resources/static/images/";
