@@ -109,11 +109,18 @@
                                             <div class="font-medium text-slate-800 dark:text-slate-200" th:text="${i.courseName}">Course Name</div>
                                             <div class="text-xs text-slate-400" th:text="${i.batchName}">Batch Code</div>
                                         </td>
-                                        <td class="py-4 px-6 font-semibold text-slate-900 dark:text-white" th:text="${'Installment #' + i.installmentNumber}">#1</td>
-                                        <td class="py-4 px-6 text-rose-600 font-medium" th:text="${i.dueDate}">2026-10-05</td>
-                                        <td class="py-4 px-6 font-bold text-slate-900 dark:text-white" th:text="${i.amountDue != null ? #numbers.formatDecimal(i.amountDue, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
-                                        <td class="py-4 px-6 font-bold text-rose-600" th:text="${i.daysOverdue + ' Days'}">5 Days</td>
-                                        <td class="py-4 px-6 text-xs text-slate-500 dark:text-slate-400" th:text="${i.reminderSentAt != null ? i.reminderSentAt : '-'}">-</td>
+                                        <td class="py-4 px-6 font-semibold text-slate-900 dark:text-white whitespace-nowrap" th:text="${'Installment #' + i.installmentNumber}">#1</td>
+                                        
+                                        <!-- Due Date fixed with whitespace-nowrap -->
+                                        <td class="py-4 px-6 text-rose-600 font-medium whitespace-nowrap" th:text="${i.dueDate}">2026-10-05</td>
+                                        
+                                        <td class="py-4 px-6 font-bold text-slate-900 dark:text-white whitespace-nowrap" th:text="${i.amountDue != null ? #numbers.formatDecimal(i.amountDue, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
+                                        <td class="py-4 px-6 font-bold text-rose-600 whitespace-nowrap" th:text="${i.daysOverdue + ' Days'}">5 Days</td>
+                                        
+                                        <!-- Reminder Sent fixed with whitespace-nowrap and replace T -->
+                                        <td class="py-4 px-6 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap" 
+                                            th:text="${i.reminderSentAt != null ? #strings.replace(i.reminderSentAt, 'T', ' ') : '-'}">-</td>
+                                        
                                         <td class="py-4 px-6">
                                             <span th:if="${i.overdueStatus == 'OVERDUE'}" class="px-3 py-1 text-xs font-bold rounded-full border bg-amber-50 text-amber-600 border-amber-200 inline-block">OVERDUE</span>
                                             <span th:if="${i.overdueStatus == 'CRITICAL'}" class="px-3 py-1 text-xs font-bold rounded-full border bg-rose-50 text-rose-600 border-rose-200 inline-block">CRITICAL</span>

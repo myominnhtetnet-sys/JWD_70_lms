@@ -23,7 +23,7 @@ public class DashboardService {
         return map;
     }
 
-    // 2. Stats Cards Summary
+ // 2. Stats Cards Summary
     public Map<String, Object> getStatCardsSummary() {
         Map<String, Object> map = new HashMap<>();
         
@@ -36,13 +36,33 @@ public class DashboardService {
         Double outstandingFees = jdbcTemplate.queryForObject(
             "SELECT COALESCE(SUM(amount_due), 0) FROM installment_schedules WHERE status != 'PAID' AND due_date < CURRENT_DATE", Double.class);
         
+        // 1. စုစုပေါင်း Active/Upcoming Batches အရေအတွက်
         Integer activeBatches = jdbcTemplate.queryForObject(
             "SELECT COUNT(*) FROM batches WHERE status = 'ACTIVE' OR status = 'ONGOING' OR status = 'UPCOMING'", Integer.class);
+
+        // 2. Ongoing အရေအတွက်
+        Integer ongoingBatches = jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM batches WHERE status = 'ONGOING' OR status = 'ACTIVE'", Integer.class);
+
+        // 3. Upcoming အရေအတွက်
+        Integer upcomingBatches = jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM batches WHERE status = 'UPCOMING'", Integer.class);
+
+        // 4. Seats ပြည့်နေသော (Full) Batches အရေအတွက် (max_seats နဲ့ enrolled ကျောင်းသား အရေအတွက် ညီနေ거나 ကျော်နေသော batches များ)
+        Integer fullBatches = jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM batches b " +
+            "LEFT JOIN (SELECT batch_id, COUNT(*) as enrolled FROM enrollments WHERE status = 'ACTIVE' GROUP BY batch_id) e ON b.batch_id = e.batch_id " +
+            "WHERE (b.status = 'ACTIVE' OR b.status = 'ONGOING' OR b.status = 'UPCOMING') " +
+            "AND COALESCE(e.enrolled, 0) >= b.max_seats", Integer.class);
 
         map.put("monthlyRevenue", monthlyRevenue);
         map.put("activeStudents", activeStudents);
         map.put("outstandingFees", outstandingFees);
-        map.put("activeBatches", activeBatches);
+        map.put("activeBatches", activeBatches != null ? activeBatches : 0);
+        map.put("ongoingBatches", ongoingBatches != null ? ongoingBatches : 0);
+        map.put("upcomingBatches", upcomingBatches != null ? upcomingBatches : 0);
+        map.put("fullBatches", fullBatches != null ? fullBatches : 0);
+        
         return map;
     }
 
