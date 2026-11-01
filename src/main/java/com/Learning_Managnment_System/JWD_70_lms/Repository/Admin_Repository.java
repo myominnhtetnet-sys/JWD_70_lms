@@ -72,6 +72,22 @@ public class Admin_Repository {
             return null;
         }
     }
+    
+    
+ // Role ID ဖြင့် Users များ ရှာရန်
+    public List<AdminUserBean> getUsersByRoleId(int roleId) {
+        String sql = """
+            SELECT 
+                u.user_id, u.role_id, u.full_name, u.email, u.phone,
+                u.password_hash, u.dob, u.gender, u.address, r.role_name,
+                u.status, u.created_at, u.updated_at
+            FROM users u
+            JOIN roles r ON u.role_id = r.role_id
+            WHERE u.role_id = ? AND u.deleted_at IS NULL
+            ORDER BY u.user_id DESC
+            """;
+        return jdbcTemplate.query(sql, userMapper, roleId);
+    }
 
     // 4. CHECK EMAIL EXISTS
     public boolean emailExists(String email) {

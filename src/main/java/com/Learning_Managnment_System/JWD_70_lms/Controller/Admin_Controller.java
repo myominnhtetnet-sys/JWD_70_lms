@@ -95,16 +95,40 @@ public String showDashboard(Model model) {
     model.addAttribute("overdues", dashboardService.getOverdueInstallmentsList());
     return "dashboard";
 }
+//    
+//    @GetMapping("/users")
+//    public String listUsers(HttpSession session, Model model) {
+//        if (isNotAdmin(session)) {
+//            return "redirect:/login";
+//        }
+//        List<AdminUserBean> users = adminRepository.getAllUsers();
+//        model.addAttribute("users", users);
+//        return "users";
+//    }
+
+@GetMapping("/users")
+public String listUsers(
+        @RequestParam(required = false) Integer roleId,
+        HttpSession session, 
+        Model model) {
     
-    @GetMapping("/users")
-    public String listUsers(HttpSession session, Model model) {
-        if (isNotAdmin(session)) {
-            return "redirect:/login";
-        }
-        List<AdminUserBean> users = adminRepository.getAllUsers();
-        model.addAttribute("users", users);
-        return "users";
+    if (isNotAdmin(session)) {
+        return "redirect:/login";
     }
+
+    List<AdminUserBean> users;
+    
+    // 🟢 Role ID ပါလာပါက ၎င်းအလိုက် Filter လုပ်မည်၊ မပါပါက အားလုံးပြမည်
+    if (roleId != null) {
+        users = adminRepository.getUsersByRoleId(roleId);
+    } else {
+        users = adminRepository.getAllUsers();
+    }
+
+    model.addAttribute("users", users);
+    model.addAttribute("roleId", roleId); // 🟢 Dropdown တွင် ရွေးထားသောတန်ဖိုး မှန်ကန်စွာ ဆက်ပြနေစေရန်
+    return "users";
+}
 
     @GetMapping("/users/search")
     public String searchUsers(
