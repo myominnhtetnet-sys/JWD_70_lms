@@ -4,6 +4,7 @@ import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -11,41 +12,51 @@ public class LoginRepository {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    public LoginBean login(String email, String password) {
-        // 🟢 status ကိုပါ SELECT လုပ်ပေးရန် နှင့် deleted_at ကို သုံးရန်
-        String sql = """
-            SELECT  u.user_id,
-                    u.role_id,
-                    u.full_name,
-                    u.email,
-                    u.password_hash,
-                    u.status
-              FROM users u
-              JOIN roles r
-                ON u.role_id = r.role_id
-              WHERE u.email = ?
-              AND u.password_hash = ?
-              AND u.deleted_at IS NULL;
-              """;
 
+    public LoginBean login(String email, String rawInputPassword) {
+        // 🟢 FIXED: Query by email ONLY to retrieve the record safely
+        String sql = "SELECT role_id, user_id, full_name, email, password_hash, status FROM users WHERE email = ? LIMIT 1";
+        
         try {
-            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
-                LoginBean user = new LoginBean();
-                user.setUser_id(rs.getInt("user_id"));
-                user.setRole_id(rs.getInt("role_id"));
-                user.setFull_name(rs.getString("full_name"));
-                user.setEmail(rs.getString("email"));
-                user.setPassword_hash(rs.getString("password_hash"));
-                user.setStatus(rs.getString("status")); // 🟢 status mapping
+            // 🟢 FIXED: Inline Lambda replaces the missing LoginRowMapper
+            LoginBean user = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                LoginBean bean = new LoginBean();
+                bean.setRole_id(rs.getInt("role_id"));
+                bean.setUser_id(rs.getInt("user_id"));
+                bean.setFull_name(rs.getString("full_name"));
+                bean.setEmail(rs.getString("email"));
+                bean.setPassword_hash(rs.getString("password_hash"));
+                bean.setStatus(rs.getString("status"));
+                return bean;
+            }, email);
+            
+            // 2. Cryptographic Evaluation Matrix Check Block
+            if (user != null) {
+                // Check if account status profile is allowed access
+                if (user.getStatus() != null && !user.getStatus().equalsIgnoreCase("ACTIVE")) {
+                    System.err.println("🔒 LOGIN BLOCKED -> Account status is: " + user.getStatus());
+                    return null;
+                }
 
-                return user;
-            }, email, password);
-
+                // 🟢 FIXED: Compare the raw form input text with the database BCrypt hash cleanly
+                boolean isPasswordCorrect = passwordEncoder.matches(rawInputPassword, user.getPassword_hash());
+                
+                if (isPasswordCorrect) {
+                    return user; // Match verified! Return the data object to log in
+                }
+            }
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            System.err.println("🔍 LOGIN PIPELINE -> No user account registered under email: " + email);
         } catch (Exception e) {
-            System.out.println("LOGIN ERROR: " + e.getMessage());
-            return null;
+            System.err.println("❌ CRITICAL LOGIN REPO EXCEPTION -> " + e.getMessage());
+            e.printStackTrace();
         }
+        
+        return null; // Password incorrect, blocked, or user row not found
     }
 
     public boolean emailExists(String email) {
