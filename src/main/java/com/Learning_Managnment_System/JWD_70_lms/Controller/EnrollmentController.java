@@ -27,10 +27,6 @@ public class EnrollmentController {
     @Autowired
     private EnrollmentRepository enrollmentRepo;
 
-    // =====================================================
-    // ENROLLMENT DETAIL VIEW
-    // GET /admin/enrollments/detail/{id}
-    // =====================================================
     @GetMapping("/detail/{id}")
     public String viewEnrollmentDetail(@PathVariable("id") int id, Model model, RedirectAttributes redirectAttributes) {
         EnrollmentDetailBean detail = enrollmentRepo.getEnrollmentById(id);
