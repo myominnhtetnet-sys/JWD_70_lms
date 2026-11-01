@@ -94,4 +94,5 @@ public class ScholarshipApplicationsRespority {
         String sql = "DELETE FROM scholarship_applications WHERE application_id = ?";
         return jdbcTemplate.update(sql, applicationId);
     }
+    
 }
