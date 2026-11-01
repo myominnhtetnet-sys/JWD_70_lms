@@ -184,4 +184,34 @@ public class StudentExamRepository {
         String sql = "UPDATE learning_db.exam_attempts SET status = 'SUBMITTED', submitted_at = NOW() WHERE attempt_id = ?";
         jdbcTemplate.update(sql, attemptId);
     }
+    
+    public List<QuestionOptionBean> findOptionsByQuestionId(Long questionId) {
+        String sql = """
+            SELECT 
+                option_id, 
+                question_id, 
+                option_label, 
+                option_text, 
+                is_correct 
+            FROM learning_db.question_options 
+            WHERE question_id = ? 
+            ORDER BY option_label ASC
+            """;
+        try {
+            return jdbcTemplate.query(sql, (rs, rowNum) -> {
+                com.Learning_Managnment_System.JWD_70_lms.model.QuestionOptionBean opt = 
+                    new com.Learning_Managnment_System.JWD_70_lms.model.QuestionOptionBean();
+                opt.setOptionId(rs.getInt("option_id"));
+                opt.setQuestionId(rs.getLong("question_id"));
+                opt.setOptionLabel(rs.getString("option_label"));
+                opt.setOptionText(rs.getString("option_text"));
+                opt.setIsCorrect(rs.getBoolean("is_correct"));
+                return opt;
+            }, questionId);
+        } catch (Exception e) {
+            System.err.println("❌ REPOSITORY ERROR -> findOptionsByQuestionId failed: " + e.getMessage());
+            return new java.util.ArrayList<>();
+        }
+    }
+
 }
