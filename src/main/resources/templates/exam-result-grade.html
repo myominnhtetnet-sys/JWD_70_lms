@@ -6,9 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Grade Exam Answers</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> 
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         * {
@@ -37,322 +40,420 @@
             appearance: none;
             margin: 0;
         }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {width: 6px;height: 6px;}
+        ::-webkit-scrollbar-track {background: rgba(0,0,0,0.03);}
+        ::-webkit-scrollbar-thumb {background: rgba(0,0,0,0.15);border-radius: 3px;}
     </style>
 </head>
 
-<body class="min-h-screen bg-slate-50 text-slate-800">
+<body class="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased">
 
-    <!-- Header -->
-    <div th:replace="~{teacher :: header}"></div>
+    <div class="flex min-h-screen">
+        
+        <!-- SIDEBAR NAVIGATION MENU (Collapsible Dark Theme) -->
+        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar z-30">
+            
+            <!-- Pure CSS Toggle Checkbox Engine -->
+            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+            
+            <!-- Error-Free Scoped Structural Animation Layout Adjustments -->
+            <style>
+                #sidebar-content-box { width: 256px; }
+                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+            </style>
 
-    <div class="flex items-start">
+            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden overflow-y-auto">
+                <div>
+                    <!-- Logo & Collapse Button Trigger -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </label>
 
-        <!-- Sidebar -->
-        <div class="shrink-0">
-            <div th:replace="~{teacher :: sidebar}"></div>
-        </div>
+                        <div class="flex items-center gap-3 hidden-on-collapse">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
+                                <i class="fa-solid fa-chalkboard-user text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-base font-bold text-white tracking-wide block leading-none">EduPulse</span>
+                                <small class="text-[11px] font-medium text-slate-400">Teacher Portal</small>
+                            </div>
+                        </div>
+
+                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+                        </label>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-6">
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Teaching Portal</div>
+                            <div class="space-y-1">
+                                <a href="/teacher" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-house text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                                </a>
+                                <a href="/teacher/courses" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-300">
+                                    <i class="fa-solid fa-book-open text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Courses</span>
+                                </a>
+                                <a href="/teacher/batches" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-users text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Batches</span>
+                                </a>
+                                <a href="/teacher/attendance" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-calendar-check text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Check Attendance</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Assessments</div>
+                            <div class="space-y-1">
+                                <a href="/teacher/question-list" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-database text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Question Bank</span>
+                                </a>
+                                <a href="/teacher/assignments" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-clipboard-list text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Assignments</span>
+                                </a>
+                                <a href="/teacher/submissions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-check-double text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Grade Submissions</span>
+                                </a>
+                                <a href="/teacher/exams" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-file-pen text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exams</span>
+                                </a>
+                                <!-- Active Exam Results Link -->
+                                <a href="/teacher/exam-results" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 shadow-sm transition">
+                                    <i class="fa-solid fa-square-poll-vertical text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exam Results</span>
+                                </a>
+                                <a href="/teacher/final-grades" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-graduation-cap text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Final Grades</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Account Section -->
+<div class="pt-4 border-t border-slate-800">
+    <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Account</div>
+    <div class="space-y-1">
+        <a th:href="@{/teacher/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+            <i class="fa-regular fa-user text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Profile</span>
+        </a>
+    </div>
+</div>
+                    </nav>
+                </div>
+
+                <div class="p-4 border-t border-slate-800">
+                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
 
         <!-- Main Content -->
-        <main class="grade-content flex-1 min-w-0 px-4 py-4 lg:px-6">
+        <main class="grade-content flex-1 min-w-0 px-6 sm:px-10 py-6 bg-slate-50 overflow-y-auto">
 
-            <!-- Page Header -->
-            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                <div>
-                    <h1 class="text-xl font-bold text-slate-800">
+            <div class="w-full max-w-6xl mx-auto space-y-6">
+
+                <!-- Page Header (Back button removed) -->
+                <div class="mb-5">
+                    <h1 class="text-xl font-bold text-slate-900">
                         Grade Exam Answers
                     </h1>
-                    <p class="text-xs text-slate-500 mt-1">
+                    <p class="text-xs text-slate-600 mt-1">
                         Review answers and enter marks for short-answer questions
                     </p>
                 </div>
 
-                <a th:href="@{/teacher/exam-results}"
-                   class="inline-flex items-center gap-2 px-3 py-2
-                          bg-white border border-slate-200 rounded-md
-                          hover:bg-slate-100 text-xs font-semibold
-                          text-slate-700 transition">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    Back to Results
-                </a>
-            </div>
-
-            <!-- Error Message -->
-            <div th:if="${error}"
-                 class="mb-4 px-3 py-2.5 rounded-md bg-rose-50
-                        border border-rose-200 text-rose-700 text-sm"
-                 th:text="${error}">
-            </div>
-
-            <!-- Student Information -->
-            <section class="bg-white border border-slate-200 rounded-lg
-                            px-4 py-3 mb-4 shadow-sm">
-
-                <h2 class="text-sm font-bold text-slate-800 mb-3">
-                    <i class="fa-solid fa-user-graduate text-teal-600 mr-2"></i>
-                    Student Information
-                </h2>
-
-                <div class="grid grid-cols-2 xl:grid-cols-4 gap-x-4 gap-y-3">
-
-                    <div class="min-w-0">
-                        <p class="text-[11px] text-slate-500 mb-1">Student</p>
-                        <p class="text-sm font-semibold break-words"
-                           th:text="${attempt.studentName}"></p>
-                    </div>
-
-                    <div class="min-w-0">
-                        <p class="text-[11px] text-slate-500 mb-1">Exam</p>
-                        <p class="text-sm font-semibold break-words"
-                           th:text="${attempt.examTitle}"></p>
-                    </div>
-
-                    <div>
-                        <p class="text-[11px] text-slate-500 mb-1">Attempt</p>
-                        <p class="text-sm font-semibold"
-                           th:text="${attempt.attemptNo}"></p>
-                    </div>
-
-                    <div>
-                        <p class="text-[11px] text-slate-500 mb-1">
-                            Pass Mark / Total Mark
-                        </p>
-                        <p class="text-sm font-semibold text-teal-700"
-                           th:text="${attempt.passMark + ' / ' + attempt.totalMark}">
-                        </p>
-                    </div>
-
-                </div>
-            </section>
-
-            <!-- Grading Form -->
-            <form th:object="${gradingForm}"
-                  th:action="@{/teacher/exam-results/{id}/grade(id=${attempt.attemptId})}"
-                  method="post"
-                  class="space-y-3">
-
-                <!-- Instruction -->
-                <div class="flex items-start gap-2 px-3 py-2.5
-                            rounded-md bg-amber-50 border border-amber-200
-                            text-xs leading-5 text-amber-800">
-                    <i class="fa-solid fa-circle-info mt-0.5"></i>
-                    <p>
-                        Grade every short-answer question. MCQ and True/False
-                        marks are calculated automatically when you save.
-                    </p>
+                <!-- Error Message -->
+                <div th:if="${error}"
+                     class="mb-4 px-4 py-3 rounded-xl bg-rose-50
+                            border border-rose-200 text-rose-700 text-xs font-bold"
+                     th:text="${error}">
                 </div>
 
-                <!-- Question Cards -->
-                <div th:each="answer, stat : ${examAnswers}"
-                     class="bg-white border border-slate-200 rounded-lg
-                            px-4 py-3 shadow-sm">
+                <!-- Student Information -->
+                <section class="bg-white border border-slate-200 rounded-2xl
+                                px-5 sm:p-6 shadow-xs">
 
-                    <!-- Question Header -->
-                    <div class="flex flex-wrap items-center justify-between
-                                gap-2 mb-2">
+                    <h2 class="text-sm font-bold text-slate-800 mb-4 pb-3 border-b border-slate-200">
+                        <i class="fa-solid fa-user-graduate text-blue-600 mr-2"></i>
+                        Student Information
+                    </h2>
 
-                        <p class="text-[11px] font-bold uppercase
-                                  tracking-wide text-teal-700"
-                           th:text="${'Q' + stat.count + ' · ' + answer.questionType}">
-                            Q1 · SHORT_ANSWER
-                        </p>
+                    <div class="grid grid-cols-2 xl:grid-cols-4 gap-x-4 gap-y-4">
 
-                        <span class="text-xs text-slate-500">
-                            Full Mark:
-                            <strong class="text-slate-700"
-                                    th:text="${answer.maxMark}">20</strong>
-                        </span>
-                    </div>
-
-                    <!-- Question Text -->
-                    <h3 class="text-sm font-semibold text-slate-800
-                               leading-5 mb-3"
-                        th:text="${answer.questionText}">
-                        Question text
-                    </h3>
-
-                    <!-- Student Answer -->
-                    <div class="mb-3">
-                        <p class="text-[10px] font-bold tracking-wide
-                                  text-slate-500 mb-1">
-                            STUDENT ANSWER
-                        </p>
-
-                        <div class="answer-text bg-slate-50 border
-                                    border-slate-200 rounded-md px-3 py-2
-                                    text-sm text-slate-700"
-                             th:text="${answer.questionType == 'SHORT_ANSWER'
-                                ? (answer.answerText != null
-                                    ? answer.answerText
-                                    : 'No answer provided.')
-                                : (answer.selectedOptionText != null
-                                    ? answer.selectedOptionText
-                                    : 'No valid option selected.')}">
+                        <div class="min-w-0 bg-slate-50 border border-slate-200 rounded-xl p-3">
+                            <p class="text-[11px] font-bold uppercase text-slate-500 mb-1">Student</p>
+                            <p class="text-sm font-semibold break-words text-slate-900"
+                               th:text="${attempt.studentName}"></p>
                         </div>
+
+                        <div class="min-w-0 bg-slate-50 border border-slate-200 rounded-xl p-3">
+                            <p class="text-[11px] font-bold uppercase text-slate-500 mb-1">Exam</p>
+                            <p class="text-sm font-semibold break-words text-slate-900"
+                               th:text="${attempt.examTitle}"></p>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                            <p class="text-[11px] font-bold uppercase text-slate-500 mb-1">Attempt</p>
+                            <p class="text-sm font-semibold text-slate-900"
+                               th:text="${attempt.attemptNo}"></p>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                            <p class="text-[11px] font-bold uppercase text-slate-500 mb-1">
+                                Pass Mark / Total Mark
+                            </p>
+                            <p class="text-sm font-semibold text-blue-700"
+                               th:text="${attempt.passMark + ' / ' + attempt.totalMark}">
+                            </p>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- Grading Form -->
+                <form th:object="${gradingForm}"
+                      th:action="@{/teacher/exam-results/{id}/grade(id=${attempt.attemptId})}"
+                      method="post"
+                      class="space-y-4">
+
+                    <!-- Instruction -->
+                    <div class="flex items-start gap-2.5 px-4 py-3
+                                rounded-xl bg-blue-50 border border-blue-200
+                                text-xs font-semibold leading-relaxed text-blue-900">
+                        <i class="fa-solid fa-circle-info mt-0.5"></i>
+                        <p>
+                            Grade every short-answer question. MCQ and True/False
+                            marks are calculated automatically when you save.
+                        </p>
                     </div>
 
-                    <!-- MCQ / TRUE_FALSE Automatic Grading -->
-                    <div th:if="${answer.questionType != 'SHORT_ANSWER'}"
-                         class="flex flex-wrap items-center justify-between
-                                gap-2 border-t border-slate-100 pt-2">
+                    <!-- Question Cards -->
+                    <div th:each="answer, stat : ${examAnswers}"
+                         class="bg-white border border-slate-200 rounded-2xl
+                                px-5 py-4 shadow-xs space-y-3">
 
-                        <div>
-                            <p class="text-[10px] font-bold text-slate-500 mb-1">
-                                GRADING
+                        <!-- Question Header -->
+                        <div class="flex flex-wrap items-center justify-between
+                                    gap-2">
+
+                            <p class="text-xs font-bold uppercase
+                                      tracking-wide text-blue-600"
+                               th:text="${'Q' + stat.count + ' · ' + answer.questionType}">
+                                Q1 · SHORT_ANSWER
                             </p>
 
-                            <span th:if="${answer.optionCorrect == true
-                                          or answer.optionCorrect == 1}"
-                                  class="inline-flex items-center gap-1.5
-                                         text-xs font-semibold text-emerald-700">
-                                <i class="fa-solid fa-circle-check"></i>
-                                Correct Answer
-                            </span>
-
-                            <span th:if="${answer.optionCorrect == false
-                                          or answer.optionCorrect == 0
-                                          or answer.optionCorrect == null}"
-                                  class="inline-flex items-center gap-1.5
-                                         text-xs font-semibold text-rose-700">
-                                <i class="fa-solid fa-circle-xmark"></i>
-                                Incorrect / Unanswered
+                            <span class="text-xs text-slate-500 font-medium">
+                                Full Mark:
+                                <strong class="text-slate-800 font-bold"
+                                        th:text="${answer.maxMark}">20</strong>
                             </span>
                         </div>
 
-                        <p class="text-sm font-semibold text-slate-700">
-                            Automatic Mark:
-                            <span th:text="${(answer.optionCorrect == true
-                                              or answer.optionCorrect == 1)
-                                              ? answer.maxMark : 0}">
-                                0
-                            </span>
-                            <span class="text-slate-400 font-normal">/</span>
-                            <span th:text="${answer.maxMark}"
-                                  class="text-slate-500">5</span>
-                        </p>
-                    </div>
+                        <!-- Question Text -->
+                        <h3 class="text-sm font-bold text-slate-900
+                                   leading-relaxed"
+                            th:text="${answer.questionText}">
+                            Question text
+                        </h3>
 
-                    <!-- Short Answer Manual Grading -->
-                    <th:block th:if="${answer.questionType == 'SHORT_ANSWER'}">
+                        <!-- Student Answer -->
+                        <div class="space-y-1">
+                            <p class="text-xs font-bold uppercase text-slate-700">
+                                STUDENT ANSWER
+                            </p>
 
-                        <th:block th:each="entry, entryStat : *{answers}">
+                            <div class="answer-text bg-slate-50 border
+                                        border-slate-200 rounded-xl px-3.5 py-2.5
+                                        text-sm text-slate-800 font-medium"
+                                 th:text="${answer.questionType == 'SHORT_ANSWER'
+                                    ? (answer.answerText != null
+                                        ? answer.answerText
+                                        : 'No answer provided.')
+                                    : (answer.selectedOptionText != null
+                                        ? answer.selectedOptionText
+                                        : 'No valid option selected.')}">
+                            </div>
+                        </div>
 
-                            <div th:if="${entry.questionId == answer.questionId}"
-                                 class="mt-3 pt-3 border-t border-slate-100">
+                        <!-- MCQ / TRUE_FALSE Automatic Grading -->
+                        <div th:if="${answer.questionType != 'SHORT_ANSWER'}"
+                             class="flex flex-wrap items-center justify-between
+                                    gap-2 border-t border-slate-100 pt-3">
 
-                                <input type="hidden"
-                                       th:field="*{answers[__${entryStat.index}__].questionId}">
+                            <div>
+                                <p class="text-xs font-bold uppercase text-slate-700 mb-1">
+                                    GRADING
+                                </p>
 
-                                <div class="flex flex-wrap items-center
-                                            justify-between gap-2 mb-2">
+                                <span th:if="${answer.optionCorrect == true
+                                              or answer.optionCorrect == 1}"
+                                      class="inline-flex items-center gap-1.5
+                                             text-xs font-bold text-emerald-700">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    Correct Answer
+                                </span>
 
-                                    <label class="text-xs font-bold text-slate-700"
-                                           th:for="${'answers' + entryStat.index + '.mark'}">
-                                        <i class="fa-solid fa-pen-to-square
-                                                  text-teal-600 mr-1"></i>
-                                        Awarded Mark
-                                    </label>
+                                <span th:if="${answer.optionCorrect == false
+                                              or answer.optionCorrect == 0
+                                              or answer.optionCorrect == null}"
+                                      class="inline-flex items-center gap-1.5
+                                             text-xs font-bold text-rose-700">
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                    Incorrect / Unanswered
+                                </span>
+                            </div>
 
-                                    <span class="text-xs text-slate-500">
-                                        Maximum:
-                                        <strong th:text="${answer.maxMark}">20</strong>
-                                    </span>
+                            <p class="text-sm font-bold text-slate-800">
+                                Automatic Mark:
+                                <span th:text="${(answer.optionCorrect == true
+                                                  or answer.optionCorrect == 1)
+                                                  ? answer.maxMark : 0}" class="text-blue-600">
+                                    0
+                                </span>
+                                <span class="text-slate-400 font-normal">/</span>
+                                <span th:text="${answer.maxMark}"
+                                      class="text-slate-600 font-medium">5</span>
+                            </p>
+                        </div>
+
+                        <!-- Short Answer Manual Grading -->
+                        <th:block th:if="${answer.questionType == 'SHORT_ANSWER'}">
+
+                            <th:block th:each="entry, entryStat : *{answers}">
+
+                                <div th:if="${entry.questionId == answer.questionId}"
+                                     class="mt-3 pt-3 border-t border-slate-100 space-y-2">
+
+                                    <input type="hidden"
+                                           th:field="*{answers[__${entryStat.index}__].questionId}">
+
+                                    <div class="flex flex-wrap items-center
+                                                justify-between gap-2">
+
+                                        <label class="text-xs font-bold uppercase text-slate-700"
+                                               th:for="${'answers' + entryStat.index + '.mark'}">
+                                            <i class="fa-solid fa-pen-to-square
+                                                      text-blue-600 mr-1"></i>
+                                            Awarded Mark
+                                        </label>
+
+                                        <span class="text-xs text-slate-500 font-medium">
+                                            Maximum:
+                                            <strong class="text-slate-800 font-bold" th:text="${answer.maxMark}">20</strong>
+                                        </span>
+                                    </div>
+
+                                    <div class="flex items-center gap-2.5">
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               th:max="${answer.maxMark}"
+                                               th:field="*{answers[__${entryStat.index}__].mark}"
+                                               required
+                                               class="w-36 max-w-full border
+                                                      border-slate-300 rounded-xl
+                                                      px-3.5 py-2.5 text-sm font-medium
+                                                      focus:outline-none
+                                                      focus:ring-2 focus:ring-blue-500
+                                                      bg-slate-50"
+                                               placeholder="Enter mark">
+
+                                        <span class="text-xs text-slate-500 font-medium">
+                                            / <span th:text="${answer.maxMark}">20</span>
+                                            marks
+                                        </span>
+                                    </div>
+
+                                    <p class="text-xs text-slate-500 font-medium">
+                                        Enter a mark between 0 and
+                                        <span th:text="${answer.maxMark}">20</span>.
+                                    </p>
                                 </div>
 
-                                <div class="flex items-center gap-2">
-                                    <input type="number"
-                                           min="0"
-                                           step="0.01"
-                                           th:max="${answer.maxMark}"
-                                           th:field="*{answers[__${entryStat.index}__].mark}"
-                                           required
-                                           class="w-32 max-w-full border
-                                                  border-slate-300 rounded-md
-                                                  px-3 py-2 text-sm
-                                                  focus:outline-none
-                                                  focus:ring-2 focus:ring-teal-500
-                                                  focus:border-teal-500"
-                                           placeholder="Enter mark">
+                            </th:block>
 
-                                    <span class="text-xs text-slate-500">
-                                        / <span th:text="${answer.maxMark}">20</span>
-                                        marks
-                                    </span>
-                                </div>
+                            <!-- Explanation -->
+                            <div th:if="${answer.explanation != null
+                                          and !#strings.isEmpty(answer.explanation)}"
+                             class="mt-3 pt-3 border-t border-slate-100 space-y-1">
 
-                                <p class="text-[11px] text-slate-500 mt-1.5">
-                                    Enter a mark between 0 and
-                                    <span th:text="${answer.maxMark}">20</span>.
+                                <p class="text-xs font-bold uppercase text-slate-700">
+                                    Explanation
+                                </p>
+
+                                <p class="text-xs leading-relaxed text-slate-600
+                                          whitespace-pre-wrap break-words font-medium"
+                                   th:text="${answer.explanation}">
                                 </p>
                             </div>
 
                         </th:block>
 
-                        <!-- Explanation -->
-                        <div th:if="${answer.explanation != null
-                                      and !#strings.isEmpty(answer.explanation)}"
-                             class="mt-3 pt-2 border-t border-slate-100">
+                    </div>
 
-                            <p class="text-[11px] font-bold text-slate-500 mb-1">
-                                Explanation
-                            </p>
+                    <!-- Teacher Remark -->
+                    <section class="bg-white border border-slate-200
+                                    rounded-2xl px-5 sm:p-6 shadow-xs space-y-2">
 
-                            <p class="text-xs leading-5 text-slate-600
-                                      whitespace-pre-wrap break-words"
-                               th:text="${answer.explanation}">
-                            </p>
-                        </div>
+                        <label for="remark"
+                               class="block text-sm font-bold text-slate-800">
+                            <i class="fa-solid fa-comment-dots
+                                      text-blue-600 mr-2"></i>
+                            Teacher Remark
+                            <span class="text-xs font-normal text-slate-400">
+                                (Optional)
+                            </span>
+                        </label>
 
-                    </th:block>
+                        <textarea id="remark"
+                                  th:field="*{remark}"
+                                  rows="3"
+                                  class="w-full border border-slate-300
+                                         rounded-xl px-3.5 py-2.5 text-sm font-medium
+                                         focus:outline-none focus:ring-2
+                                         focus:ring-blue-500
+                                         bg-slate-50 resize-none"
+                                  placeholder="Enter feedback for the student..."></textarea>
+                    </section>
 
-                </div>
+                    <!-- Actions -->
+                    <div class="flex justify-end items-center gap-3 pt-2 pb-6">
 
-                <!-- Teacher Remark -->
-                <section class="bg-white border border-slate-200
-                                rounded-lg px-4 py-3 shadow-sm">
+                        <a th:href="@{/teacher/exam-results}"
+                           class="px-4 py-2.5 bg-slate-200 border border-slate-300
+                                  hover:bg-slate-300 rounded-xl
+                                  text-xs font-bold text-slate-800 transition cursor-pointer">
+                            Cancel
+                        </a>
 
-                    <label for="remark"
-                           class="block text-sm font-bold text-slate-800 mb-2">
-                        <i class="fa-solid fa-comment-dots
-                                  text-teal-600 mr-2"></i>
-                        Teacher Remark
-                        <span class="text-xs font-normal text-slate-400">
-                            (Optional)
-                        </span>
-                    </label>
+                        <button type="submit"
+                                class="inline-flex items-center gap-2 px-5 py-2.5
+                                       bg-blue-600 hover:bg-blue-700
+                                       text-white rounded-xl text-xs
+                                       font-bold shadow-xs transition cursor-pointer">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            Save Grades
+                        </button>
 
-                    <textarea id="remark"
-                              th:field="*{remark}"
-                              rows="3"
-                              class="w-full border border-slate-300
-                                     rounded-md px-3 py-2 text-sm
-                                     focus:outline-none focus:ring-2
-                                     focus:ring-teal-500
-                                     focus:border-teal-500"
-                              placeholder="Enter feedback for the student..."></textarea>
-                </section>
+                    </div>
 
-                <!-- Actions -->
-                <div class="flex justify-end items-center gap-2 pt-1">
+                </form>
 
-                    <a th:href="@{/teacher/exam-results}"
-                       class="px-4 py-2 bg-white border border-slate-200
-                              hover:bg-slate-100 rounded-md
-                              text-xs font-semibold text-slate-700 transition">
-                        Cancel
-                    </a>
-
-                    <button type="submit"
-                            class="inline-flex items-center gap-2 px-4 py-2
-                                   bg-teal-600 hover:bg-teal-700
-                                   text-white rounded-md text-xs
-                                   font-semibold shadow-sm transition">
-                        <i class="fa-solid fa-floppy-disk"></i>
-                        Save Grades
-                    </button>
-
-                </div>
-
-            </form>
+            </div>
 
         </main>
     </div>

@@ -2,157 +2,294 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${exam.examId == null ? 'Create Exam' : 'Edit Exam'}">  Create Exam </title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title th:text="${exam.examId == null ? 'Create Exam - Teacher Portal' : 'Edit Exam - Teacher Portal'}">Create Exam</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> 
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {width: 6px;height: 6px;}
+    ::-webkit-scrollbar-track {background: rgba(0,0,0,0.03);}
+    ::-webkit-scrollbar-thumb {background: rgba(0,0,0,0.15);border-radius: 3px;}
+    .fade-in {animation: fadeIn 0.25s ease-in-out;}
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
 </head>
 
-<body>
+<body class="bg-slate-50 text-slate-800 antialiased font-sans">
 
-<div class="exam-form-page">
-
-    <div class="exam-form-header">
-        <div>
-            <h1 th:text="${exam.examId == null ? 'Create Exam' : 'Edit Exam'}"> Create Exam </h1>
-            <p>Create and configure an examination.</p>
-        </div>
-    </div>
-
-    <div th:if="${error}" class="exam-error" th:text="${error}"> </div>
-
-    <div class="exam-form-card">
-
-        <form method="post" th:object="${exam}" th:action="${exam.examId == null} ? @{/teacher/exams/save} : @{/teacher/exams/update}">
-
-            <input type="hidden" th:if="${exam.examId != null}" th:field="*{examId}">
-
-            <div class="exam-form-grid">
+    <div class="flex min-h-screen">
+        
+        <!-- SIDEBAR NAVIGATION MENU (Collapsible Dark Theme) -->
+        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar z-30">
             
-                <div class="exam-form-group">
-                    <label for="courseId"> Course
-                        <span class="exam-required">*</span>
-                    </label>
-                    <select id="courseId" th:field="*{courseId}" required>
-                        <option value="">-- Select Course --</option>
-                        <option th:each="course : ${courses}" th:value="${course['course_id']}" th:text="${course['title']}"> </option>
-                    </select>
+            <!-- Pure CSS Toggle Checkbox Engine -->
+            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+            
+            <!-- Error-Free Scoped Structural Animation Layout Adjustments -->
+            <style>
+                #sidebar-content-box { width: 256px; }
+                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+            </style>
+
+            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden overflow-y-auto">
+                <div>
+                    <!-- Logo & Collapse Button Trigger -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </label>
+
+                        <div class="flex items-center gap-3 hidden-on-collapse">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
+                                <i class="fa-solid fa-chalkboard-user text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-base font-bold text-white tracking-wide block leading-none">EduPulse</span>
+                                <small class="text-[11px] font-medium text-slate-400">Teacher Portal</small>
+                            </div>
+                        </div>
+
+                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+                        </label>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-6">
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Teaching Portal</div>
+                            <div class="space-y-1">
+                                <a href="/teacher" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-house text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                                </a>
+                                <a href="/teacher/courses" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-300">
+                                    <i class="fa-solid fa-book-open text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Courses</span>
+                                </a>
+                                <a href="/teacher/batches" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-users text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Batches</span>
+                                </a>
+                                <a href="/teacher/attendance" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-calendar-check text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Check Attendance</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Assessments</div>
+                            <div class="space-y-1">
+                                <a href="/teacher/question-list" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-database text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Question Bank</span>
+                                </a>
+                                <a href="/teacher/assignments" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-clipboard-list text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Assignments</span>
+                                </a>
+                                <a href="/teacher/submissions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-check-double text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Grade Submissions</span>
+                                </a>
+                                <!-- Active Exam Link -->
+                                <a href="/teacher/exams" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 shadow-sm transition">
+                                    <i class="fa-solid fa-file-pen text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exams</span>
+                                </a>
+                                <a href="/teacher/exam-results" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-square-poll-vertical text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exam Results</span>
+                                </a>
+                                <a href="/teacher/final-grades" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-graduation-cap text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Final Grades</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Account Section -->
+<div class="pt-4 border-t border-slate-800">
+    <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Account</div>
+    <div class="space-y-1">
+        <a th:href="@{/teacher/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+            <i class="fa-regular fa-user text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Profile</span>
+        </a>
+    </div>
+</div>
+                    </nav>
                 </div>
 
-			<div class="exam-form-group">
-			    <label for="batchId"> Batch
-			        <span class="exam-required">*</span>
-			    </label>
-			
-			    <select id="batchId" th:field="*{batchId}" required>
-			        <option value="">-- Select Batch --</option>
-			        <option th:each="batch : ${batches}" th:value="${batch['batch_id']}" th:text="${batch['title']}"></option>
-			    </select>
-			</div>
+                <div class="p-4 border-t border-slate-800">
+                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
 
-                <div class="exam-form-group exam-full">
-                    <label for="title"> Exam Title
-                        <span class="exam-required">*</span>
-                    </label>
-                    <input type="text" id="title" th:field="*{title}" placeholder="Enter exam title" maxlength="255" required>
+        <!-- MAIN CONTENT WRAPPER -->
+        <main class="flex-1 min-w-0 px-6 sm:px-10 py-6 bg-slate-50 overflow-y-auto">
+
+            <div class="w-full max-w-6xl mx-auto space-y-6">
+
+                <div class="mb-5">
+                    <h1 class="text-xl font-bold text-slate-900" th:text="${exam.examId == null ? 'Create Exam' : 'Edit Exam'}">Create Exam</h1>
+                    <p class="text-xs text-slate-600 mt-1">Create and configure an examination.</p>
                 </div>
 
-                <!-- EXAM TYPE -->
-                <div class="exam-form-group">
-                    <label for="examType">Exam Type
-                        <span class="exam-required">*</span>
-                    </label>
-                    <select id="examType" th:field="*{examType}" required>
-                        <option value="">-- Select Exam Type --</option>
-                        <option value="QUIZ">Quiz</option>
-                        <option value="MIDTERM">Midterm</option>
-                        <option value="FINAL">Final</option>
-                    </select>
-                </div>
+                <div th:if="${error}" class="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl" th:text="${error}"></div>
 
-                <!-- DURATION -->
-                <div class="exam-form-group">
-                    <label for="durationMin"> Duration (Minutes)
-                        <span class="exam-required">*</span>
-                    </label>
-                    <input type="number" id="durationMin" th:field="*{durationMin}" min="1" step="1" placeholder="e.g. 60" required>
-                </div>
+                <form method="post" th:object="${exam}" th:action="${exam.examId == null} ? @{/teacher/exams/save} : @{/teacher/exams/update}" class="space-y-5">
 
-                <!-- TOTAL MARK -->
-                <div class="exam-form-group">
-                    <label for="totalMark"> Total Mark
-                        <span class="exam-required">*</span>
-                    </label>
-                    <input type="number" id="totalMark" th:field="*{totalMark}" min="0.01" step="0.01" placeholder="e.g. 100" required>
-                </div>
+                    <input type="hidden" th:if="${exam.examId != null}" th:field="*{examId}">
 
-                <!-- PASS MARK -->
-                <div class="exam-form-group">
-                    <label for="passMark"> Pass Mark
-                        <span class="exam-required">*</span>
-                    </label>
-                    <input type="number" id="passMark" th:field="*{passMark}" min="0" step="0.01" placeholder="e.g. 40" required>
-                </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 sm:p-6 w-full space-y-4">
 
-                <!-- START DATE -->
-                <div class="exam-form-group">
-                    <label for="startAt"> Start Date &amp; Time
-                        <span class="exam-required">*</span>
-                    </label>
-                    <input type="datetime-local" id="startAt" th:field="*{startAt}" required>
-                </div>
+                        <h2 class="text-base font-bold text-slate-800 pb-3 border-b border-slate-200">Exam Details</h2>
 
-                <!-- END DATE -->
-                <div class="exam-form-group">
-                    <label for="endAt"> End Date &amp; Time
-                        <span class="exam-required">*</span>
-                    </label>
-                    <input type="datetime-local" id="endAt" th:field="*{endAt}" required>
-                </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            
+                            <div class="space-y-1">
+                                <label for="courseId" class="block text-xs font-bold uppercase text-slate-700">Course
+                                    <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="courseId" th:field="*{courseId}" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">-- Select Course --</option>
+                                    <option th:each="course : ${courses}" th:value="${course['course_id']}" th:text="${course['title']}"> </option>
+                                </select>
+                            </div>
 
-                <!-- MAXIMUM ATTEMPTS -->
-                <div class="exam-form-group">
-                    <label for="maxAttempts">Maximum Attempts
-                        <span class="exam-required">*</span>
-                    </label>
-                    <input type="number" id="maxAttempts" th:field="*{maxAttempts}" min="1" step="1" placeholder="e.g. 2" required>
-                </div>
+                            <div class="space-y-1">
+                                <label for="batchId" class="block text-xs font-bold uppercase text-slate-700">Batch
+                                    <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="batchId" th:field="*{batchId}" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">-- Select Batch --</option>
+                                    <option th:each="batch : ${batches}" th:value="${batch['batch_id']}" th:text="${batch['title']}"></option>
+                                </select>
+                            </div>
 
-                <!-- STATUS -->
-                <div class="exam-form-group">
-                    <label for="status"> Status
-                        <span class="exam-required">*</span>
-                    </label>
-                    <select id="status" th:field="*{status}" required>
-                        <option value="">-- Select Status --</option>
-                        <option value="DRAFT">Draft</option>
-                        <option value="PUBLISHED">Published</option>
-                        <option value="CLOSED">Closed</option>
-                    </select>
-                </div>
+                            <div class="sm:col-span-2 space-y-1">
+                                <label for="title" class="block text-xs font-bold uppercase text-slate-700">Exam Title
+                                    <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="text" id="title" th:field="*{title}" placeholder="Enter exam title" maxlength="255" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                            </div>
 
-                <!-- SHUFFLE QUESTIONS -->
-                <div class="exam-checkbox-row exam-full">
-                    <input type="checkbox" id="shuffleQuestions" th:field="*{shuffleQuestions}">
-                    <label for="shuffleQuestions"> Shuffle Questions </label>
-                </div>
+                            <!-- EXAM TYPE -->
+                            <div class="space-y-1">
+                                <label for="examType" class="block text-xs font-bold uppercase text-slate-700">Exam Type
+                                    <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="examType" th:field="*{examType}" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">-- Select Exam Type --</option>
+                                    <option value="QUIZ">Quiz</option>
+                                    <option value="MIDTERM">Midterm</option>
+                                    <option value="FINAL">Final</option>
+                                </select>
+                            </div>
+
+                            <!-- DURATION -->
+                            <div class="space-y-1">
+                                <label for="durationMin" class="block text-xs font-bold uppercase text-slate-700">Duration (Minutes)
+                                    <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="number" id="durationMin" th:field="*{durationMin}" min="1" step="1" placeholder="e.g. 60" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                            </div>
+
+                            <!-- TOTAL MARK -->
+                            <div class="space-y-1">
+                                <label for="totalMark" class="block text-xs font-bold uppercase text-slate-700">Total Mark
+                                    <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="number" id="totalMark" th:field="*{totalMark}" min="0.01" step="0.01" placeholder="e.g. 100" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                            </div>
+
+                            <!-- PASS MARK -->
+                            <div class="space-y-1">
+                                <label for="passMark" class="block text-xs font-bold uppercase text-slate-700">Pass Mark
+                                    <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="number" id="passMark" th:field="*{passMark}" min="0" step="0.01" placeholder="e.g. 40" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                            </div>
+
+                            <!-- START DATE -->
+                            <div class="space-y-1">
+                                <label for="startAt" class="block text-xs font-bold uppercase text-slate-700">Start Date &amp; Time
+                                    <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="datetime-local" id="startAt" th:field="*{startAt}" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                            </div>
+
+                            <!-- END DATE -->
+                            <div class="space-y-1">
+                                <label for="endAt" class="block text-xs font-bold uppercase text-slate-700">End Date &amp; Time
+                                    <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="datetime-local" id="endAt" th:field="*{endAt}" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                            </div>
+
+                            <!-- MAXIMUM ATTEMPTS -->
+                            <div class="space-y-1">
+                                <label for="maxAttempts" class="block text-xs font-bold uppercase text-slate-700">Maximum Attempts
+                                    <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="number" id="maxAttempts" th:field="*{maxAttempts}" min="1" step="1" placeholder="e.g. 2" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                            </div>
+
+                            <!-- STATUS -->
+                            <div class="space-y-1">
+                                <label for="status" class="block text-xs font-bold uppercase text-slate-700">Status
+                                    <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="status" th:field="*{status}" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">-- Select Status --</option>
+                                    <option value="DRAFT">Draft</option>
+                                    <option value="PUBLISHED">Published</option>
+                                    <option value="CLOSED">Closed</option>
+                                </select>
+                            </div>
+
+                            <!-- SHUFFLE QUESTIONS -->
+                            <div class="sm:col-span-2 flex items-center h-10 pt-2">
+                                <label class="flex items-center gap-2.5 cursor-pointer">
+                                    <input type="checkbox" id="shuffleQuestions" th:field="*{shuffleQuestions}" class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
+                                    <span class="text-xs font-bold text-slate-700">Shuffle Questions</span>
+                                </label>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- FORM ACTION BUTTONS -->
+                    <div class="flex items-center justify-end gap-3 pt-2 pb-6">
+                        <a th:href="@{/teacher/exams}" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold transition cursor-pointer">Cancel</a>
+                        <button type="submit" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition cursor-pointer shadow-xs">
+                            <span th:if="${exam.examId == null}">Create Exam</span>
+                            <span th:if="${exam.examId != null}">Update Exam</span>
+                        </button>
+                    </div>
+
+                </form>
 
             </div>
 
-            <!-- FORM ACTION BUTTONS -->
-            <div class="exam-form-actions">
-                <a th:href="@{/teacher/exams}" class="exam-btn exam-btn-secondary"> Cancel</a>
-                <button type="submit" class="exam-btn exam-btn-primary">
-                    <span th:if="${exam.examId == null}"> Create Exam</span>
-                    <span th:if="${exam.examId != null}"> Update Exam</span>
-                </button>
-            </div>
-
-        </form>
+        </main>
 
     </div>
-
-</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {

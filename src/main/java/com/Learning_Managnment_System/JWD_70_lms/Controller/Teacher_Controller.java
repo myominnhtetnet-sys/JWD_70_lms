@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.Learning_Managnment_System.JWD_70_lms.Repository.Teacher_Repository;
+import com.Learning_Managnment_System.JWD_70_lms.Service.QuestionService;
 import com.Learning_Managnment_System.JWD_70_lms.model.AttendanceBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
 
@@ -28,6 +29,8 @@ public class Teacher_Controller {
 
     @Autowired
     private Teacher_Repository teacherRepository;
+    @Autowired
+    private QuestionService questionService;
 
     private boolean isNotTeacher(HttpSession session) {
         Object roleId = session.getAttribute("roleId");
@@ -40,7 +43,18 @@ public class Teacher_Controller {
 
         model.addAttribute("fullName", session.getAttribute("fullName"));
         model.addAttribute("batches", teacherRepository.getBatchesByInstructor(instructorId));
-        model.addAttribute("courses", teacherRepository.getCoursesByInstructor(instructorId));
+        
+        List<Map<String, Object>> coursesWithStats = teacherRepository.getCoursesWithStatsByInstructor(instructorId);
+        model.addAttribute("courses", coursesWithStats);
+
+        // Compute counts globally so they are never null on any view
+        long totalCount = coursesWithStats.size();
+        long publishedCount = coursesWithStats.stream().filter(c -> "PUBLISHED".equals(c.get("status"))).count();
+        long draftCount = coursesWithStats.stream().filter(c -> "DRAFT".equals(c.get("status"))).count();
+
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("publishedCount", publishedCount);
+        model.addAttribute("draftCount", draftCount);
     }
 
     // 1. Dashboard Route
@@ -48,24 +62,70 @@ public class Teacher_Controller {
     public String teacherDashboard(HttpSession session, Model model) {
         if (isNotTeacher(session)) return "redirect:/login";
         addCommonAttributes(session, model);
+        
+        // Fetch and pass the 3 most recent questions to the model
+        model.addAttribute("recentQuestions", questionService.getRecentQuestions(3));
+        
         model.addAttribute("activeView", "dashboard");
         return "teacher"; 
     }
 
-    // 2. Courses Route
+ // 2. Courses Route with explicit count variables matching Batches
     @GetMapping("/courses")
     public String myCourses(HttpSession session, Model model) {
         if (isNotTeacher(session)) return "redirect:/login";
         addCommonAttributes(session, model);
+        
+        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+        int instructorId = currentUser != null ? currentUser.getUser_id() : 2;
+        
+        List <Map<String, Object>> coursesWithStats = teacherRepository.getCoursesWithStatsByInstructor(instructorId);
+        
+        long totalCount = coursesWithStats.size();
+        long publishedCount = coursesWithStats.stream().filter(c -> "PUBLISHED".equals(c.get("status"))).count();
+        long draftCount = coursesWithStats.stream().filter(c -> "DRAFT".equals(c.get("status"))).count();
+        
+        model.addAttribute("courses", coursesWithStats);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("publishedCount", publishedCount);
+        model.addAttribute("draftCount", draftCount);
+        
         model.addAttribute("activeView", "courses");
         return "teacher"; 
     }
 
-    // 3. Batches Route
+ // 3. Batches Route with Course Filter support
     @GetMapping("/batches")
-    public String myBatches(HttpSession session, Model model) {
+    public String myBatches(@RequestParam(value = "courseId", required = false) Long courseId, HttpSession session, Model model) {
         if (isNotTeacher(session)) return "redirect:/login";
         addCommonAttributes(session, model);
+        
+        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+        int instructorId = currentUser != null ? currentUser.getUser_id() : 2;
+        
+        List <Map<String, Object>> batchesList = teacherRepository.getBatchesByInstructor(instructorId);
+        List <Map<String, Object>> coursesList = teacherRepository.getCoursesWithStatsByInstructor(instructorId);
+        
+        // Filter batches by courseId if selected
+        if (courseId != null) {
+            batchesList = batchesList.stream()
+                .filter(b -> b.get("course_id") != null && Long.valueOf(b.get("course_id").toString()).equals(courseId))
+                .toList();
+        }
+        
+        long totalBatchCount = batchesList.size();
+        long ongoingCount = batchesList.stream().filter(b -> "ONGOING".equals(b.get("status")) || "ACTIVE".equals(b.get("status"))).count();
+        long upcomingCount = batchesList.stream().filter(b -> "UPCOMING".equals(b.get("status")) || "SCHEDULED".equals(b.get("status"))).count();
+        long completedCount = batchesList.stream().filter(b -> "COMPLETED".equals(b.get("status")) || "FINISHED".equals(b.get("status"))).count();
+        
+        model.addAttribute("batches", batchesList);
+        model.addAttribute("coursesList", coursesList);
+        model.addAttribute("selectedCourseId", courseId);
+        model.addAttribute("totalBatchCount", totalBatchCount);
+        model.addAttribute("ongoingCount", ongoingCount);
+        model.addAttribute("upcomingCount", upcomingCount);
+        model.addAttribute("completedCount", completedCount);
+        
         model.addAttribute("activeView", "batches");
         return "teacher";
     }
@@ -78,10 +138,7 @@ public class Teacher_Controller {
         
         model.addAttribute("batchId", id);
         model.addAttribute("batch", teacherRepository.getBatchById(id));
-        
-        // Fetch students with their attendance and extracted status badges
         model.addAttribute("students", teacherRepository.getBatchAttendanceSummary(id));
-        
         model.addAttribute("activeView", "batch-detail"); 
         
         return "teacher";
@@ -102,6 +159,7 @@ public class Teacher_Controller {
         model.addAttribute("sessionList", sessionAttendance);
         model.addAttribute("batchId", batchId);
 
+        model.addAttribute("activeView", "batch-detail");
         return "student_progress"; 
     }
     
@@ -182,7 +240,6 @@ public class Teacher_Controller {
         return "redirect:/teacher/attendance?batchId=" + batchId + "&sessionId=" + sessionId;
     }
 
-    // Save Student Progress (Status choice + Teacher Note + Attendance per session)
     @PostMapping("/batches/student/save-progress")
     public String saveStudentProgress(@RequestParam("enrollmentId") Long enrollmentId,
                                       @RequestParam("batchId") Long batchId,
@@ -191,7 +248,6 @@ public class Teacher_Controller {
                                       HttpSession session, RedirectAttributes redirectAttributes) {
         if (isNotTeacher(session)) return "redirect:/login";
 
-        // Save combined status and note into status_reason column safely
         if (progressStatus != null) {
             teacherRepository.updateStudentProgressAndNote(enrollmentId, progressStatus, teacherNote);
         }
@@ -199,4 +255,74 @@ public class Teacher_Controller {
         redirectAttributes.addFlashAttribute("successMessage", "Student progress updated successfully!");
         return "redirect:/teacher/batches/" + batchId;
     }
+ // 5.1 Teacher Profile View
+    @GetMapping("/profile")
+    public String teacherProfile(HttpSession session, Model model) {
+        if (isNotTeacher(session)) return "redirect:/login";
+        addCommonAttributes(session, model);
+
+        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+        int instructorId = currentUser != null ? currentUser.getUser_id() : 2;
+
+        Map<String, Object> profile = teacherRepository.getTeacherById(instructorId);
+        if (profile != null) {
+            model.addAttribute("fullName", profile.get("full_name"));
+            model.addAttribute("email", profile.get("email"));
+            model.addAttribute("phone", profile.get("phone"));
+            model.addAttribute("address", profile.get("address"));
+        }
+        model.addAttribute("teacherId", instructorId);
+        model.addAttribute("activeView", "profile");
+
+        return "teacher_profile";
+    }
+
+    // 5.2 Update Personal Info Submission
+    @PostMapping("/profile/update")
+    public String updateTeacherProfile(@RequestParam("fullName") String fullName,
+                                     @RequestParam(value = "phone", required = false) String phone,
+                                     @RequestParam(value = "address", required = false) String address,
+                                     HttpSession session, RedirectAttributes redirectAttributes) {
+        if (isNotTeacher(session)) return "redirect:/login";
+
+        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+        int instructorId = currentUser != null ? currentUser.getUser_id() : 2;
+
+        teacherRepository.updateTeacherProfile(instructorId, fullName, phone, address);
+        
+        // Update session name if changed
+        session.setAttribute("fullName", fullName);
+
+        redirectAttributes.addFlashAttribute("success", "Profile updated successfully!");
+        return "redirect:/teacher/profile";
+    }
+
+    // 5.3 Change Password Submission
+    @PostMapping("/profile/change-password")
+    public String changeTeacherPassword(@RequestParam("currentPassword") String currentPassword,
+                                      @RequestParam("newPassword") String newPassword,
+                                      @RequestParam("confirmPassword") String confirmPassword,
+                                      HttpSession session, RedirectAttributes redirectAttributes) {
+        if (isNotTeacher(session)) return "redirect:/login";
+
+        if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("error", "New passwords do not match!");
+            return "redirect:/teacher/profile";
+        }
+
+        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+        int instructorId = currentUser != null ? currentUser.getUser_id() : 2;
+
+        Map<String, Object> profile = teacherRepository.getTeacherById(instructorId);
+        String dbPassword = profile != null ? (String) profile.get("password") : "";
+
+        if (dbPassword != null && dbPassword.equals(currentPassword)) {
+            teacherRepository.updateTeacherPassword(instructorId, newPassword);
+            redirectAttributes.addFlashAttribute("success", "Password updated successfully!");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Current password is incorrect!");
+        }
+
+        return "redirect:/teacher/profile";
+    }	
 }

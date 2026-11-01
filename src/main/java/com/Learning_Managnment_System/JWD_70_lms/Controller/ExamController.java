@@ -98,33 +98,47 @@ public class ExamController {
 			return "redirect:/teacher/exams";
 		}
 	}
-
 	@GetMapping("/view/{id}")
 	public String viewExam(
-			@PathVariable("id") Long examId, Model model,
-			RedirectAttributes redirectAttributes, HttpSession session) {
+	        @PathVariable("id") Long examId,
+	        Model model,
+	        RedirectAttributes redirectAttributes,
+	        HttpSession session) {
 
-		addCommonAttributes(session, model);
-		try {
-			ExamBean exam = examService.getExamById(examId);
-			List<ExamQuestionBean> questions = examService.getSelectedQuestions(examId);
+	    addCommonAttributes(session, model);
 
-			BigDecimal selectedTotalMark = questions.stream()
-					.map(ExamQuestionBean::getMark)
-					.filter(mark -> mark != null)
-					.reduce(BigDecimal.ZERO, BigDecimal::add);
+	    try {
+	        ExamBean exam = examService.getExamById(examId);
 
-			model.addAttribute("exam", exam);
-			model.addAttribute("questions", questions);
-			model.addAttribute("questionCount", questions.size());
-			model.addAttribute("selectedTotalMark", selectedTotalMark);
+	        List<ExamQuestionBean> questions =
+	                examService.getSelectedQuestions(examId);
 
-			return "exam-detail";
+	        BigDecimal selectedTotalMark = questions.stream()
+	                .map(ExamQuestionBean::getMark)
+	                .filter(mark -> mark != null)
+	                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-		} catch (IllegalArgumentException e) {
-			redirectAttributes.addFlashAttribute("error", e.getMessage());
-			return "redirect:/teacher/exams";
-		}
+	        // Get Course Name
+	        String courseName = getCourseName(exam.getCourseId());
+
+	        // Get Batch Name
+	        String batchName = getBatchName(exam.getBatchId());
+
+	        model.addAttribute("exam", exam);
+	        model.addAttribute("questions", questions);
+	        model.addAttribute("questionCount", questions.size());
+	        model.addAttribute("selectedTotalMark", selectedTotalMark);
+
+	        // Add Course and Batch Name
+	        model.addAttribute("courseName", courseName);
+	        model.addAttribute("batchName", batchName);
+
+	        return "exam-detail";
+
+	    } catch (IllegalArgumentException e) {
+	        redirectAttributes.addFlashAttribute("error", e.getMessage());
+	        return "redirect:/teacher/exams";
+	    }
 	}
 
 	@PostMapping("/save")
@@ -311,5 +325,25 @@ public class ExamController {
 			redirectAttributes.addFlashAttribute("error", e.getMessage());
 			return "redirect:/teacher/exams";
 		}
+	}
+	
+	private String getCourseName(Long courseId) {
+	    String sql = """
+	        SELECT title
+	        FROM courses
+	        WHERE course_id = ?
+	    """;
+
+	    return jdbcTemplate.queryForObject(sql, String.class, courseId);
+	}
+
+	private String getBatchName(Long batchId) {
+	    String sql = """
+	        SELECT title
+	        FROM batches
+	        WHERE batch_id = ?
+	    """;
+
+	    return jdbcTemplate.queryForObject(sql, String.class, batchId);
 	}
 }

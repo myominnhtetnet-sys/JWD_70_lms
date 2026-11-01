@@ -1,180 +1,288 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Assignment Form</title>
-<link rel="stylesheet" th:href="@{/css/style.css}">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${assignment.assignmentId == null ? 'Create Assignment - Teacher Portal' : 'Edit Assignment - Teacher Portal'}">Assignment Form</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
 <style>
-* {box-sizing: border-box;}
-.form-grid {display: grid;grid-template-columns: repeat(2, minmax(0, 1fr));gap: 18px 24px;align-items: start;}
-.form-group {display: flex;flex-direction: column;min-width: 0;gap: 8px;}
-.form-group.full {grid-column: 1/-1;}
-
-.late-deadline-row {grid-column: 1/-1;display: grid;grid-template-columns: repeat(2, minmax(0, 1fr));gap: 24px;align-items: end;}
-.late-submit-field {display: flex;align-items: center;min-height: 42px;}
-.late-submit-label {display: flex;align-items: center;gap: 8px;}
-.late-submit-label input {width: auto;margin: 0;}
-
-.form-section {margin-bottom: 28px;}
-.form-section h3 {margin-bottom: 18px;}
-.form-group input, .form-group select, .form-group textarea {width: 100%;max-width: 100%;}
-.form-group textarea {resize: vertical;}
-.form-actions {display: flex;justify-content: flex-end;align-items: center;gap: 12px;margin-top: 24px;}
-
-@media ( max-width : 600px) {
-	.form-grid {grid-template-columns: 1fr;}
-	.form-group.full {grid-column: auto;}
-	.late-deadline-row {grid-column: auto;grid-template-columns: 1fr;gap: 18px;}
-	.form-actions {flex-wrap: wrap;}
-}
-.form-container .form-grid {display: grid !important;grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;column-gap: 24px;row-gap: 18px;width: 100%;	align-items: start;}
-.form-container .form-grid>.form-group {grid-column: auto !important;width: 100%;min-width: 0;}
-.form-container .form-grid>.form-group.full {grid-column: 1/-1 !important;}
-.form-container .form-grid>.late-deadline-row {grid-column: 1/-1 !important;display: grid !important;grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;gap: 24px;}
-
-@media ( max-width : 600px) {
-	.form-container .form-grid {grid-template-columns: minmax(0, 1fr) !important;}
-	.form-container .form-grid>.form-group.full {grid-column: auto !important;}
-	.form-container .form-grid>.late-deadline-row {grid-template-columns: minmax(0, 1fr) !important;}
-}
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.03);
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,0.15);
+        border-radius: 3px;
+    }
+    .fade-in {
+        animation: fadeIn 0.25s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
 </head>
 
-<body>
+<body class="bg-slate-50 text-slate-800 antialiased font-sans">
 
-	<div class="container form-container">
-		<div class="form-header">
-			<h2 th:text="${assignment.assignmentId == null ? 'Create Assignment' : 'Edit Assignment'}"> Assignment Form</h2>
-			<p>Manage assignment information and submission settings.</p>
-		</div>
+    <div class="flex min-h-screen">
+        
+        <!-- SIDEBAR NAVIGATION MENU (Collapsible Dark Theme) -->
+        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar z-30">
+            
+            <!-- Pure CSS Toggle Checkbox Engine -->
+            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+            
+            <!-- Error-Free Scoped Structural Animation Layout Adjustments -->
+            <style>
+                #sidebar-content-box { width: 256px; }
+                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+            </style>
 
-		<div class="form-card">
+            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden overflow-y-auto">
+                <div>
+                    <!-- Logo & Collapse Button Trigger -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </label>
 
-			<div class="error-box" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+                        <div class="flex items-center gap-3 hidden-on-collapse">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
+                                <i class="fa-solid fa-chalkboard-user text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-base font-bold text-white tracking-wide block leading-none">EduPulse</span>
+                                <small class="text-[11px] font-medium text-slate-400">Teacher Portal</small>
+                            </div>
+                        </div>
 
-			<form th:object="${assignment}"
-			 th:action="${assignment.assignmentId == null ? '/teacher/assignments/save' : '/teacher/assignments/update'}"
-				method="post" enctype="multipart/form-data">
+                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+                        </label>
+                    </div>
 
-				<input type="hidden" th:field="*{assignmentId}">
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-6">
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Teaching Portal</div>
+                            <div class="space-y-1">
+                                <a href="/teacher" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-house text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                                </a>
+                                <a href="/teacher/courses" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-300">
+                                    <i class="fa-solid fa-book-open text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Courses</span>
+                                </a>
+                                <a href="/teacher/batches" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-users text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Batches</span>
+                                </a>
+                                <a href="/teacher/attendance" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-calendar-check text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Check Attendance</span>
+                                </a>
+                            </div>
+                        </div>
 
-				<div class="form-section">
-					<h3>Basic Information</h3>
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Assessments</div>
+                            <div class="space-y-1">
+                                <a href="/teacher/question-list" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-database text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Question Bank</span>
+                                </a>
+                                <!-- Active Assignment Link -->
+                                <a href="/teacher/assignments" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 shadow-sm transition">
+                                    <i class="fa-solid fa-clipboard-list text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Assignments</span>
+                                </a>
+                                <a href="/teacher/submissions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-check-double text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Grade Submissions</span>
+                                </a>
+                                <a href="/teacher/exams" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-file-pen text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exams</span>
+                                </a>
+                                <a href="/teacher/exam-results" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-square-poll-vertical text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exam Results</span>
+                                </a>
+                                <a href="/teacher/final-grades" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-graduation-cap text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Final Grades</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Account Section -->
+<div class="pt-4 border-t border-slate-800">
+    <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Account</div>
+    <div class="space-y-1">
+        <a th:href="@{/teacher/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+            <i class="fa-regular fa-user text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Profile</span>
+        </a>
+    </div>
+</div>
+                    </nav>
+                </div>
 
-					<div class="form-grid">
-						<div class="form-group">
-							<label for="batchId">Batch</label> <select id="batchId" th:field="*{batchId}" required>
-								<option value="">-- Select Batch --</option>
-								<option th:each="batch : ${batches}" th:value="${batch['batch_id']}" th:text="${batch['title']}"></option>
-							</select>
-						</div>
+                <div class="p-4 border-t border-slate-800">
+                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
 
-						<div class="form-group">
-							<label for="lessonId">Lesson</label> <select id="lessonId" th:field="*{lessonId}" required>
-								<option value="">-- Select Lesson --</option>
-								<option th:each="lesson : ${lessons}" th:value="${lesson.lessonId}" th:text="${lesson.title}"></option>
-							</select>
-						</div>
+        <!-- Main Content Area -->
+        <!-- Changed px-4 sm:px-8 to px-6 sm:px-10 and max-w-4xl to max-w-6xl to widen the content area -->
+        <main class="flex-1 min-w-0 px-6 sm:px-10 py-6 bg-slate-50 overflow-y-auto">
 
-						<div class="form-group full">
-							<label for="title">Assignment Title</label> <input type="text" id="title" th:field="*{title}" placeholder="Enter assignment title" required>
-						</div>
+            <div class="w-full max-w-6xl mx-auto space-y-6">
 
-						<div class="form-group full">
-							<label for="description">Description</label>
-							<textarea id="description" th:field="*{description}" rows="4" placeholder="Enter assignment description"> </textarea>
-						</div>
+                <!-- Page Header -->
+                <div class="mb-5">
+                    <h1 class="text-xl font-bold text-slate-900" th:text="${assignment.assignmentId == null ? 'Create Assignment' : 'Edit Assignment'}">Assignment Form</h1>
+                    <p class="text-xs text-slate-600 mt-1">Manage assignment information and submission settings.</p>
+                </div>
 
-						<div class="form-group full">
-							<label for="attachmentFile">Attachment</label> 
-							<input type="file" id="attachmentFile" name="attachmentFile" accept=".pdf,.zip,.doc,.docx"> 
-							<small> Allowed file types: PDF, ZIP, DOC, DOCX </small>
+                <div th:if="${errorMessage}" class="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl" th:text="${errorMessage}"></div>
 
-							<div th:if="${assignment.attachment != null and !assignment.attachment.isEmpty()}" style="margin-top: 8px;">
-								<strong>Current File:</strong> 
-								<a th:href="@{${assignment.attachment}}" th:text="${assignment.attachment}" target="_blank"> </a>
-							</div>
-						</div>
+                <form th:object="${assignment}"
+                      th:action="${assignment.assignmentId == null ? '/teacher/assignments/save' : '/teacher/assignments/update'}"
+                      method="post" enctype="multipart/form-data" class="space-y-5">
 
-					</div>
-				</div>
+                    <input type="hidden" th:field="*{assignmentId}">
 
-				<div class="form-section">
-					<h3>Marking</h3>
-					<div class="form-grid">
-						<div class="form-group">
-							<label for="totalMark">Total Mark</label> 
-							<input type="number" id="totalMark" step="0.01" min="0" th:field="*{totalMark}" required>
-						</div>
-						<div class="form-group">
-							<label for="passMark">Pass Mark</label> 
-							<input type="number" id="passMark" step="0.01" min="0" th:field="*{passMark}" required>
-						</div>
-					</div>
-				</div>
+                    <!-- Basic Information Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs w-full">
+                        <h2 class="text-base font-bold text-slate-800 pb-3 mb-4 border-b border-slate-200">Basic Information</h2>
 
-				<div class="form-section">
-					<h3>Assignment Schedule</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label for="batchId" class="block text-xs font-bold uppercase text-slate-700">Batch</label>
+                                <select id="batchId" th:field="*{batchId}" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">-- Select Batch --</option>
+                                    <option th:each="batch : ${batches}" th:value="${batch['batch_id']}" th:text="${batch['title']}"></option>
+                                </select>
+                            </div>
 
-					<div class="form-grid">
-						<div class="form-group">
-							<label for="startAt">Start At</label> 
-							<input type="datetime-local" id="startAt" th:field="*{startAt}" required>
-						</div>
+                            <div class="space-y-1">
+                                <label for="lessonId" class="block text-xs font-bold uppercase text-slate-700">Lesson</label>
+                                <select id="lessonId" th:field="*{lessonId}" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">-- Select Lesson --</option>
+                                    <option th:each="lesson : ${lessons}" th:value="${lesson.lessonId}" th:text="${lesson.title}"></option>
+                                </select>
+                            </div>
 
-						<!-- DUE AT -->
-						<div class="form-group">
-							<label for="dueAt">Due At</label> <input type="datetime-local"
-								id="dueAt" th:field="*{dueAt}" required>
-						</div>
+                            <div class="sm:col-span-2 space-y-1">
+                                <label for="title" class="block text-xs font-bold uppercase text-slate-700">Assignment Title</label>
+                                <input type="text" id="title" th:field="*{title}" placeholder="Enter assignment title" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                            </div>
 
-						<div class="late-deadline-row">
-							<div class="form-group late-deadline-field">
-								<label for="lateDeadline">Late Deadline</label> 
-								<input type="datetime-local" id="lateDeadline" name="lateDeadline" th:value="${assignment.lateDeadline}">
-							</div>
+                            <div class="sm:col-span-2 space-y-1">
+                                <label for="description" class="block text-xs font-bold uppercase text-slate-700">Description</label>
+                                <textarea id="description" th:field="*{description}" rows="4" placeholder="Enter assignment description" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none font-medium"></textarea>
+                            </div>
 
-							<div class="late-submit-field">
-								<input type="hidden" name="allowLateSubmit" value="false">
-								<label class="late-submit-label">
-								<input type="checkbox" name="allowLateSubmit" value="true" th:checked="${assignment.allowLateSubmit}"> 
-								<span>Allow	Late Submit</span>
-								</label>
-							</div>
+                            <div class="sm:col-span-2 space-y-1">
+                                <label for="attachmentFile" class="block text-xs font-bold uppercase text-slate-700">Attachment</label> 
+                                <input type="file" id="attachmentFile" name="attachmentFile" accept=".pdf,.zip,.doc,.docx" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"> 
+                                <small class="text-xs text-slate-500 block mt-1">Allowed file types: PDF, ZIP, DOC, DOCX</small>
 
-						</div>
+                                <div th:if="${assignment.attachment != null and !assignment.attachment.isEmpty()}" class="mt-2 text-xs">
+                                    <span class="text-slate-600 font-medium">Current File:</span> 
+                                    <a th:href="@{${assignment.attachment}}" th:text="${assignment.attachment}" target="_blank" class="text-blue-600 hover:underline font-semibold ml-1"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-					</div>
-				</div>
+                    <!-- Marking Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs w-full">
+                        <h2 class="text-base font-bold text-slate-800 pb-3 mb-4 border-b border-slate-200">Marking</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label for="totalMark" class="block text-xs font-bold uppercase text-slate-700">Total Mark</label> 
+                                <input type="number" id="totalMark" step="0.01" min="0" th:field="*{totalMark}" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                            </div>
+                            <div class="space-y-1">
+                                <label for="passMark" class="block text-xs font-bold uppercase text-slate-700">Pass Mark</label> 
+                                <input type="number" id="passMark" step="0.01" min="0" th:field="*{passMark}" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                            </div>
+                        </div>
+                    </div>
 
-				<div class="form-section">
-					<h3>Status </h3>
-					<div class="form-grid">
-						<div class="form-group"> 
-							<select id="status" th:field="*{status}" required>
-								<option value="DRAFT">DRAFT</option>
-								<option value="PUBLISHED">PUBLISHED</option>
-								<option value="CLOSED">CLOSED</option>
-							</select>
-						</div>
-						<!-- <div class="form-group">
-							<label for="createdBy">Created By</label> 
-							<input type="number" id="createdBy" th:field="*{createdBy}" required>
-						</div> -->
-					</div>
-				</div>
+                    <!-- Assignment Schedule Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs w-full">
+                        <h2 class="text-base font-bold text-slate-800 pb-3 mb-4 border-b border-slate-200">Assignment Schedule</h2>
 
-				<div class="form-actions">
-					<a class="btn-secondary" th:href="@{/teacher/assignments}"> Cancel </a>
-					<button type="submit" class="btn-primary" th:text="${assignment.assignmentId == null ? 'Save Assignment' : 'Update Assignment'}">Save Assignment</button>
-				</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+                            <div class="space-y-1">
+                                <label for="startAt" class="block text-xs font-bold uppercase text-slate-700">Start At</label> 
+                                <input type="datetime-local" id="startAt" th:field="*{startAt}" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                            </div>
 
-			</form>
+                            <div class="space-y-1">
+                                <label for="dueAt" class="block text-xs font-bold uppercase text-slate-700">Due At</label> 
+                                <input type="datetime-local" id="dueAt" th:field="*{dueAt}" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                            </div>
 
-		</div>
-	</div>
+                            <div class="space-y-1">
+                                <label for="lateDeadline" class="block text-xs font-bold uppercase text-slate-700">Late Deadline</label> 
+                                <input type="datetime-local" id="lateDeadline" name="lateDeadline" th:value="${assignment.lateDeadline}" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                            </div>
+
+                            <div class="flex items-center h-10 pt-2">
+                                <input type="hidden" name="allowLateSubmit" value="false">
+                                <label class="flex items-center gap-2.5 cursor-pointer">
+                                    <input type="checkbox" name="allowLateSubmit" value="true" th:checked="${assignment.allowLateSubmit}" class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"> 
+                                    <span class="text-xs font-bold text-slate-700">Allow Late Submit</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status & Created By Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs w-full">
+                        <h2 class="text-base font-bold text-slate-800 pb-3 mb-4 border-b border-slate-200">Status</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label for="status" class="block text-xs font-bold uppercase text-slate-700">Status</label> 
+                                <select id="status" th:field="*{status}" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="DRAFT">DRAFT</option>
+                                    <option value="PUBLISHED">PUBLISHED</option>
+                                    <option value="CLOSED">CLOSED</option>
+                                </select>
+                            </div>
+                           
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex items-center justify-end gap-3 pt-2">
+                        <a class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold transition cursor-pointer" th:href="@{/teacher/assignments}"> Cancel </a>
+                        <button type="submit" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition cursor-pointer shadow-xs" th:text="${assignment.assignmentId == null ? 'Save Assignment' : 'Update Assignment'}">Save Assignment</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </main>
+    </div>
 </body>
 </html>

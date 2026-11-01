@@ -26,10 +26,24 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/courses")
 public class AdminCourseController {
 	
-	@Autowired
+    @Autowired
     private AdminCourseService courseService;
 	
     private static final String UPLOAD_DIR = "uploads/";
+
+    private boolean isNotAdmin(HttpSession session) {
+        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+        Object roleIdObj = session.getAttribute("roleId");
+        
+        int roleId = 0;
+        if (currentUser != null) {
+            roleId = currentUser.getRole_id();
+        } else if (roleIdObj != null) {
+            roleId = (int) roleIdObj;
+        }
+        
+        return roleId != 1; 
+    }
 
     @ModelAttribute
     public void addCommonAttributes(HttpSession session, Model model) {
@@ -66,14 +80,20 @@ public class AdminCourseController {
 
     // 1. HTML View Page
     @GetMapping
-    public String getCourseListPage(Model model) {
+    public String getCourseListPage(HttpSession session, Model model) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
         return "Course_Management"; 
     }
 
     // 2. API: All Courses List as JSON
     @GetMapping("/api/list")
     @ResponseBody
-    public ResponseEntity<List<AdminCourseBean>> getAllCoursesApi() {
+    public ResponseEntity<?> getAllCoursesApi(HttpSession session) {
+        if (isNotAdmin(session)) {
+            return ResponseEntity.status(401).body("{\"error\": \"Unauthorized access\"}");
+        }
         List<AdminCourseBean> courses = courseService.getAllCoursesForAdmin();
         return ResponseEntity.ok(courses);
     }
@@ -81,14 +101,20 @@ public class AdminCourseController {
     // 3. API: Categories list
     @GetMapping("/api/categories")
     @ResponseBody
-    public ResponseEntity<List<CategoryBean>> getCategoriesApi() {
+    public ResponseEntity<?> getCategoriesApi(HttpSession session) {
+        if (isNotAdmin(session)) {
+            return ResponseEntity.status(401).body("{\"error\": \"Unauthorized access\"}");
+        }
         List<CategoryBean> categories = courseService.getAllCategories(); 
         return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/api/{id}")
     @ResponseBody
-    public ResponseEntity<AdminCourseBean> getCourseByIdApi(@PathVariable("id") Integer id) {
+    public ResponseEntity<?> getCourseByIdApi(@PathVariable("id") Integer id, HttpSession session) {
+        if (isNotAdmin(session)) {
+            return ResponseEntity.status(401).body("{\"error\": \"Unauthorized access\"}");
+        }
         System.out.println("Received Request for Course ID: " + id);
         AdminCourseBean course = courseService.getCourseById(id);
         if (course != null) {
@@ -102,7 +128,11 @@ public class AdminCourseController {
     @ResponseBody
     public ResponseEntity<?> createCourseApi(
             @RequestPart("course") AdminCourseBean course,
-            @RequestPart(value = "image", required = false) MultipartFile image) {
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            HttpSession session) {
+        if (isNotAdmin(session)) {
+            return ResponseEntity.status(401).body("{\"error\": \"Unauthorized access\"}");
+        }
         try {
             if (image != null && !image.isEmpty()) {
                 String fileName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
@@ -128,7 +158,11 @@ public class AdminCourseController {
     @ResponseBody
     public ResponseEntity<?> updateCourseApi(
             @RequestPart("course") AdminCourseBean course,
-            @RequestPart(value = "image", required = false) MultipartFile image) {
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            HttpSession session) {
+        if (isNotAdmin(session)) {
+            return ResponseEntity.status(401).body("{\"error\": \"Unauthorized access\"}");
+        }
         try {
             if (course.getCategoryId() == null) {
                 return ResponseEntity.badRequest().body("{\"error\": \"Category ID cannot be null\"}");
@@ -155,7 +189,10 @@ public class AdminCourseController {
 
     @DeleteMapping("/api/delete/{id}")
     @ResponseBody
-    public ResponseEntity<?> deleteCourseApi(@PathVariable("id") Integer id) {
+    public ResponseEntity<?> deleteCourseApi(@PathVariable("id") Integer id, HttpSession session) {
+        if (isNotAdmin(session)) {
+            return ResponseEntity.status(401).body("{\"error\": \"Unauthorized access\"}");
+        }
         try {
             courseService.deleteCourse(id);
             return ResponseEntity.ok().body("{\"message\": \"Course deleted successfully\"}");
