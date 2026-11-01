@@ -2,6 +2,7 @@ package com.Learning_Managnment_System.JWD_70_lms.Service;
 
 import com.Learning_Managnment_System.JWD_70_lms.Repository.StudentExamRepository;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.QuestionOptionBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamAttemptBean;
 import org.springframework.stereotype.Service;
@@ -102,7 +103,7 @@ public class StudentExamService {
         if (questions != null) {
             for (ExamQuestionBean q : questions) {
                 if (q.getQuestionId() != null) {
-                    List<com.Learning_Managnment_System.JWD_70_lms.model.QuestionOptionBean> options = 
+                    List<QuestionOptionBean> options = 
                         examRepository.findOptionsByQuestionId(q.getQuestionId());
                     q.setOptions(options); // 👈 Maps the database choices array into the parent question object model
                 }

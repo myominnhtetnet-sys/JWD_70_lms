@@ -95,25 +95,54 @@ public class PublicCertificateController {
 //
 //        return "certificate-detail"; 
 //    }
-    @GetMapping("/verify-certificate")
+    @GetMapping("/verify-certificate") // 🟢 Matches your HTML th:action path exactly
     public String showVerificationForm(
             @RequestParam(value = "code", required = false) String certificateCode, 
             Model model) {
         
-        if (certificateCode != null && !certificateCode.trim().isEmpty()) {
-            model.addAttribute("searchedCode", certificateCode.trim());
-            
-            Optional<Map<String, Object>> certOpt = Optional.empty();
-            
-            if (certOpt.isPresent()) {
-                model.addAttribute("cert", certOpt.get());
+        // 1. Initialize safe fallback default parameters for your template
+        model.addAttribute("searchedCode", certificateCode != null ? certificateCode.trim() : "");
+        model.addAttribute("isValidated", false);
+        model.addAttribute("cert", null);
+
+        // 2. If it's a raw page load without a search parameter query string, exit cleanly
+        if (certificateCode == null || certificateCode.trim().isEmpty()) {
+            return "certificate-verify"; // Refers to templates/certificate-verify.html
+        }
+
+        // 3. 🟢 FIXED: Direct Database Extraction. Uses case-insensitive LOWER() matching to avoid key drops
+        String sql = """
+            SELECT 
+                c.certificate_code,
+                COALESCE(DATE_FORMAT(c.issued_at, '%Y-%m-%d'), 'Flexible Window') AS issued_at,
+                c.status,
+                u.full_name,
+                b.title AS course_title
+            FROM certificates c
+            JOIN enrollments e ON c.enrollment_id = e.enrollment_id
+            JOIN users u ON e.user_id = u.user_id
+            LEFT JOIN batches b ON e.batch_id = b.batch_id
+            WHERE LOWER(c.certificate_code) = LOWER(?)
+            LIMIT 1
+            """;
+
+        try {
+            System.out.println("🔍 LOG CHECK -> Verifying certificate serial string token: " + certificateCode);
+            List<Map<String, Object>> results = jdbcTemplate.queryForList(sql, certificateCode.trim());
+
+            if (results != null && !results.isEmpty()) {
+                // Expose discovered row parameters to Thymeleaf variables context
+                model.addAttribute("cert", results.get(0));
                 model.addAttribute("isValidated", true);
+                model.addAttribute("successMessage", "✅ Certification verified! Credential status is authentic and active.");
             } else {
                 model.addAttribute("error", "🚨 No certificate record found matching this validation key token.");
-                model.addAttribute("isValidated", false);
             }
+        } catch (Exception e) {
+            System.err.println("❌ REPOSITORY SEARCH ERROR -> " + e.getMessage());
+            model.addAttribute("error", "An internal system database processing error occurred.");
         }
         
-        return "certificate-verify";
+        return "certificate-verify"; // 🟢 Returns your target template name safely
     }
 }
