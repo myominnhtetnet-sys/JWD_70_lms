@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample Pages</title>
+<style>
+:root {
+  --bg: #f4f6fb; --surface: #ffffff; --surface-2: #f1f4f9; --line: #e4e8f0;
+  --text: #182033; --muted: #5d6779; --faint: #8b94a6;
+  --brand: #3156d3; --brand-2: #5b7cf0; --brand-soft: #e9eefd;
+  --ok: #18804f; --ok-soft: #e3f5ec; --warn: #a76100; --warn-soft: #fdf1dd;
+  --bad: #c0352b; --bad-soft: #fdeceb; --info: #0f7c90; --info-soft: #e1f4f7;
+  --shadow: 0 1px 2px rgba(16,24,40,.04), 0 2px 8px rgba(16,24,40,.05);
+  --radius: 14px;
+  --sans: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f131b; --surface: #171c26; --surface-2: #1f2532; --line: #2b3242;
+    --text: #e7eaf1; --muted: #a4adbf; --faint: #737d90;
+    --brand: #7c9bff; --brand-2: #9db3ff; --brand-soft: #222c47;
+    --ok: #5fd39a; --ok-soft: #173327; --warn: #f2b84b; --warn-soft: #3a2e15;
+    --bad: #ff8b80; --bad-soft: #3d1f1d; --info: #5fd0e2; --info-soft: #14333a;
+    --shadow: none; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f131b; --surface: #171c26; --surface-2: #1f2532; --line: #2b3242;
+  --text: #e7eaf1; --muted: #a4adbf; --faint: #737d90;
+  --brand: #7c9bff; --brand-2: #9db3ff; --brand-soft: #222c47;
+  --ok: #5fd39a; --ok-soft: #173327; --warn: #f2b84b; --warn-soft: #3a2e15;
+  --bad: #ff8b80; --bad-soft: #3d1f1d; --info: #5fd0e2; --info-soft: #14333a;
+  --shadow: none; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 var(--sans); }
+a { color: var(--brand); text-decoration: none; }
+button { font: inherit; color: inherit; }
+svg { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.num { font-variant-numeric: tabular-nums; }
+.app { display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 100vh; }
+.sidebar { background: var(--surface); border-right: 1px solid var(--line); padding: 18px 14px; position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; }
+.logo { display: flex; align-items: center; gap: 10px; padding: 4px 8px 18px; font-weight: 700; font-size: 16px; }
+.logo-mark { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--brand), var(--brand-2)); display: grid; place-items: center; color: #fff; }
+.logo-mark svg { width: 20px; height: 20px; }
+.logo small { display: block; font-weight: 500; font-size: 11px; color: var(--faint); letter-spacing: .02em; }
+.nav-label { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--faint); font-weight: 600; margin: 14px 10px 6px; }
+.nav a { display: flex; align-items: center; gap: 11px; padding: 9px 10px; border-radius: 9px; color: var(--muted); font-weight: 500; margin-bottom: 2px; white-space: nowrap; }
+.nav a:hover { background: var(--surface-2); color: var(--text); }
+.nav a.active { background: var(--brand-soft); color: var(--brand); font-weight: 600; }
+.nav .pill { margin-left: auto; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 99px; background: var(--bad-soft); color: var(--bad); }
+.main { min-width: 0; }
+.topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 14px; padding: 14px 28px; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.menu-btn { display: none; border: 0; background: none; padding: 6px; border-radius: 8px; cursor: pointer; }
+.crumb { font-weight: 650; font-size: 17px; }
+.crumb small { display: block; font-weight: 400; font-size: 12px; color: var(--faint); }
+.search { margin-left: auto; display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 7px 12px; width: 260px; color: var(--faint); }
+.search input { border: 0; outline: 0; background: none; color: var(--text); font: inherit; width: 100%; }
+.icon-btn { position: relative; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; width: 38px; height: 38px; display: grid; place-items: center; cursor: pointer; color: var(--muted); }
+.user { display: flex; align-items: center; gap: 10px; padding-left: 6px; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; color: #fff; display: grid; place-items: center; font-weight: 700; flex: none; }
+.avatar.sm { width: 36px; height: 36px; font-size: 12px; }
+.av-teacher { background: linear-gradient(135deg, #2fb39a, #0f6e7e); }
+.user b { display: block; font-size: 13px; line-height: 1.2; }
+.user small { color: var(--faint); font-size: 12px; }
+.content { padding: 24px 28px 40px; max-width: 1360px; }
+.grid { display: grid; gap: 18px; }
+.g-main-rev { grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 20px; min-width: 0; }
+.card-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+.card-h h2 { font-size: 15px; margin: 0; }
+.meta { color: var(--faint); font-size: 12.5px; }
+.btn { display: inline-flex; align-items: center; gap: 7px; border: 0; border-radius: 10px; padding: 9px 15px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.btn-primary { background: var(--brand); color: #fff; }
+.btn-soft { background: var(--brand-soft); color: var(--brand); }
+.btn-sm { padding: 6px 11px; font-size: 13px; border-radius: 8px; }
+.chip { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px; border-radius: 99px; white-space: nowrap; }
+.t-brand { background: var(--brand-soft); color: var(--brand); }
+.t-ok { background: var(--ok-soft); color: var(--ok); }
+.t-warn { background: var(--warn-soft); color: var(--warn); }
+.t-bad { background: var(--bad-soft); color: var(--bad); }
+.t-info { background: var(--info-soft); color: var(--info); }
+.bar { height: 7px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+.bar > span { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--brand), var(--brand-2)); }
+.bar-row { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); min-width: 130px; }
+.bar-row .bar { flex: 1; }
+.table-wrap { overflow-x: auto; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 900px; }
+.tbl th { text-align: left; font-size: 12px; font-weight: 600; color: var(--faint); padding: 0 12px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.tbl td { padding: 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl th:first-child, .tbl td:first-child { padding-left: 0; }
+.tbl th:last-child, .tbl td:last-child { padding-right: 0; }
+.tbl .r { text-align: right; }
+.tbl td:first-child { white-space: nowrap; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: #182033; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 13px; opacity: 0; pointer-events: none; transition: .25s; z-index: 50; box-shadow: 0 8px 24px rgba(0,0,0,.2); max-width: calc(100vw - 32px); }
+.toast.show { opacity: 1; transform: translateX(-50%); }
+.scrim { display: none; }
+@media (max-width: 1100px) { .g-main-rev { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 900px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .sidebar { position: fixed; left: 0; top: 0; z-index: 30; width: 260px; transform: translateX(-100%); transition: transform .25s; }
+  body.nav-open .sidebar { transform: none; }
+  body.nav-open .scrim { display: block; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 20; }
+  .menu-btn { display: block; }
+  .search { display: none; }
+}
+@media (max-width: 640px) {
+  .topbar { padding: 12px 16px; }
+  .content { padding: 16px 16px 32px; }
+  .user div { display: none; }
+}
+
+/* ---------- sample-pages additions ---------- */
+.av-admin { background: linear-gradient(135deg, #7d66ea, #3f2f9e); }
+.switcher { position: sticky; top: 0; z-index: 40; background: var(--text); color: var(--bg); }
+.sw-inner { display: flex; align-items: center; gap: 14px; padding: 8px 16px; flex-wrap: wrap; }
+.sw-inner > b { font-size: 13px; white-space: nowrap; }
+.sw-tabs { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
+.sw { border: 0; background: transparent; color: var(--bg); opacity: .7; padding: 6px 11px; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.sw.on { opacity: 1; background: color-mix(in srgb, var(--bg) 18%, transparent); }
+.switcher .icon-btn { width: 32px; height: 32px; background: transparent; border-color: color-mix(in srgb, var(--bg) 30%, transparent); color: var(--bg); }
+.app { min-height: calc(100vh - 48px); }
+.sidebar { top: 48px; height: calc(100vh - 48px); }
+.topbar { top: 48px; }
+.screen { display: none; } .screen.on { display: block; }
+.explain { background: var(--warn-soft); color: var(--text); border: 1px dashed color-mix(in srgb, var(--warn) 50%, transparent); border-radius: 12px; padding: 10px 14px; font-size: 13px; margin-bottom: 18px; }
+.explain code, .lock-note code { font-family: ui-monospace, Consolas, monospace; font-size: 12px; background: var(--surface); padding: 0 5px; border-radius: 5px; }
+.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.seg { display: inline-flex; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg-btn { border: 0; background: none; padding: 6px 12px; border-radius: 7px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; }
+.seg-btn.on { background: var(--brand-soft); color: var(--brand); }
+.cnt { font-size: 11px; background: var(--surface-2); border-radius: 99px; padding: 0 6px; margin-left: 3px; }
+.sel { border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 9px; padding: 7px 10px; font: inherit; font-size: 13px; }
+.course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+.c-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+.c-thumb { height: 110px; display: grid; place-items: center; color: #fff; font-size: 30px; font-weight: 800; }
+.th-java { background: linear-gradient(135deg, #e76f51, #f4a261); }
+.th-spring { background: linear-gradient(135deg, #2a9d8f, #57cc99); }
+.th-py { background: linear-gradient(135deg, #3a6ea5, #6fa8dc); }
+.c-body { padding: 14px 16px 6px; flex: 1; }
+.c-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.c-body h3 { margin: 0 0 2px; font-size: 16px; }
+.c-stats { display: grid; grid-template-columns: repeat(4, auto); justify-content: space-between; gap: 6px; margin-top: 12px; font-size: 12px; color: var(--muted); }
+.c-stats b { display: block; font-size: 16px; color: var(--text); }
+.c-acts { display: flex; gap: 8px; padding: 12px 16px 16px; }
+.c-acts .btn { flex: 1; justify-content: center; }
+.crumbs { font-size: 13px; color: var(--faint); margin-bottom: 12px; }
+.cb-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 18px; flex-wrap: wrap; }
+.cb-tab { border: 0; background: none; padding: 9px 14px; font-weight: 600; color: var(--muted); border-bottom: 2px solid transparent; cursor: pointer; font-size: 13.5px; }
+.cb-tab.on { color: var(--brand); border-bottom-color: var(--brand); }
+.cb-tab.locked { color: var(--faint); cursor: not-allowed; }
+.mods { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.mods li { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); }
+.mods li.on { background: var(--brand-soft); outline: 1px solid color-mix(in srgb, var(--brand) 30%, transparent); }
+.mods b { display: block; font-size: 13.5px; }
+.drag { color: var(--faint); letter-spacing: -2px; cursor: grab; }
+.tbl-plain { min-width: 520px !important; }
+.tbl-plain td, .tbl-plain th { padding-left: 8px; padding-right: 8px; }
+.lock-note { margin-top: 14px; font-size: 12.5px; color: var(--muted); background: var(--surface-2); border-radius: 10px; padding: 9px 12px; }
+.feed { display: grid; gap: 14px; max-width: 820px; }
+.ann-card { position: relative; }
+.ann-card.unread { border-left: 3px solid var(--brand); }
+.udot { position: absolute; top: 18px; right: 18px; width: 9px; height: 9px; border-radius: 50%; background: var(--brand); }
+.ann-h { display: flex; align-items: center; gap: 10px; padding-right: 20px; }
+.ann-h > div { flex: 1; min-width: 0; }
+.ann-card h3 { margin: 10px 0 4px; font-size: 15px; }
+.ann-card p { margin: 0; color: var(--muted); font-size: 13.5px; }
+.public { min-height: calc(100vh - 48px); background: var(--bg); }
+.pub-top { display: flex; align-items: center; gap: 22px; padding: 14px 28px; background: var(--surface); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pub-nav { display: flex; gap: 18px; }
+.pub-nav a { color: var(--muted); font-weight: 600; font-size: 13.5px; }
+.pub-nav a.on { color: var(--brand); }
+.pub-acts { margin-left: auto; display: flex; gap: 8px; }
+.pub-body { padding: 36px 16px 60px; }
+.verify { max-width: 560px; margin: 0 auto; text-align: center; padding: 30px 28px; }
+.v-ic { width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 12px; display: grid; place-items: center; background: var(--brand-soft); color: var(--brand); }
+.v-ic svg { width: 28px; height: 28px; }
+.verify h1 { margin: 0 0 4px; font-size: 22px; }
+.v-form { display: flex; gap: 8px; margin: 18px 0 8px; }
+.v-form input { flex: 1; min-width: 0; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); border-radius: 10px; padding: 10px 12px; font: inherit; font-family: ui-monospace, Consolas, monospace; text-transform: uppercase; }
+.v-form input:focus { outline: 2px solid var(--brand); outline-offset: -1px; }
+.v-try { font-size: 12.5px; color: var(--faint); }
+.v-result { margin-top: 18px; text-align: left; }
+.res { border-radius: 12px; padding: 16px; border: 1px solid; }
+.res.ok { background: var(--ok-soft); border-color: color-mix(in srgb, var(--ok) 35%, transparent); }
+.res.bad { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 35%, transparent); }
+.res-h { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; margin-bottom: 10px; }
+.res.ok .res-h { color: var(--ok); } .res.bad .res-h { color: var(--bad); }
+.res dl { display: grid; grid-template-columns: 130px 1fr; gap: 6px 12px; margin: 0; font-size: 13.5px; }
+.res dt { color: var(--muted); } .res dd { margin: 0; font-weight: 600; }
+.res p { margin: 0; font-size: 13.5px; color: var(--muted); }
+@media (max-width: 900px) { .sidebar { top: 0; height: 100vh; } .switcher { position: static; } .topbar { top: 0; } .app, .public { min-height: 100vh; } }
+@media (max-width: 640px) { .sw-inner > b { display: none; } .res dl { grid-template-columns: 1fr; gap: 0 0; } .res dd { margin-bottom: 6px; } .v-form { flex-direction: column; } .pub-top { padding: 12px 16px; } .pub-nav { display: none; } }
+</style>
+</head>
+<body>
+<div class="switcher">
+  <div class="sw-inner">
+    <b>Sample page designs</b>
+    <div class="sw-tabs" role="tablist">
+      <button class="sw on" data-screen="s22" role="tab">2.2 My Courses</button>
+      <button class="sw" data-screen="s18" role="tab">1.8 Course Builder (teacher mode)</button>
+      <button class="sw" data-screen="s23" role="tab">2.3 My Batches</button>
+      <button class="sw" data-screen="s213" role="tab">2.13 Announcements Feed</button>
+      <button class="sw" data-screen="s35" role="tab">3.5 Certificate Verification</button>
+    </div>
+    <button class="icon-btn" id="themeBtn" aria-label="Toggle theme"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg></button>
+  </div>
+</div>
+
+<!-- ============ shared teacher frame (sidebar) ============ -->
+<div class="app" id="teacherFrame">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <span class="logo-mark"><svg viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg></span>
+      <span>LearnHub<small>Teacher Portal</small></span>
+    </div>
+    <nav class="nav">
+      <div class="nav-label">Teaching</div>
+      <a href="#" data-page="Teacher Dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Dashboard</a>
+      <a href="#" id="nav-s22" data-go="s22"><svg viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2.5Z"/><path d="M8 7h8"/></svg>My Courses</a>
+      <a href="#" id="nav-s23" data-go="s23"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16 14.2A5 5 0 0 1 21.5 19"/></svg>My Batches</a>
+      <a href="#" data-page="Take Attendance"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 15l2 2 4-4"/></svg>Take Attendance</a>
+      <div class="nav-label">Assessment</div>
+      <a href="#" data-page="Assignments"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z"/><path d="M14 3v6h6"/></svg>Assignments</a>
+      <a href="#" data-page="Grade Submissions"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Grade Submissions<span class="pill">7</span></a>
+      <a href="#" data-page="Question Bank"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg>Question Bank</a>
+      <a href="#" data-page="Exams"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Exams</a>
+      <a href="#" data-page="Final Grades"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="m8.5 14-1.5 7 5-3 5 3-1.5-7"/></svg>Final Grades</a>
+      <div class="nav-label">Account</div>
+      <a href="#" id="nav-s213" data-go="s213"><svg viewBox="0 0 24 24"><path d="M3 11v2a1 1 0 0 0 1 1h3l6 4V6L7 10H4a1 1 0 0 0-1 1Z"/><path d="M17 8a5 5 0 0 1 0 8"/></svg>Announcements<span class="pill">2</span></a>
+      <a href="#" data-page="Notifications"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>Notifications</a>
+      <a href="#" data-page="My Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>My Profile</a>
+    </nav>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <div class="crumb" id="crumb">My Courses<small>Teacher portal</small></div>
+      <label class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input placeholder="Search…"></label>
+      <div class="user"><span class="avatar av-teacher">DK</span><div><b>Daw Khin</b><small>Instructor</small></div></div>
+    </header>
+
+    <main class="content">
+
+      <!-- ================= 2.2 MY COURSES ================= -->
+      <section class="screen on" id="s22" data-title="My Courses">
+        <div class="explain"><b>2.2 My Courses</b> — a <u>list page</u> of the courses this teacher teaches (from <code>course_instructors</code>). No editing here: <b>Edit content</b> opens the shared <b>1.8 Course Builder</b>, <b>Batches</b> opens <b>2.3 My Batches</b> filtered to that course.</div>
+        <div class="toolbar">
+          <div class="seg"><button class="seg-btn on">All <span class="cnt">3</span></button><button class="seg-btn">Published <span class="cnt">2</span></button><button class="seg-btn">Draft <span class="cnt">1</span></button></div>
+        </div>
+        <div class="course-grid">
+          <article class="card c-card">
+            <div class="c-thumb th-java">Java</div>
+            <div class="c-body">
+              <div class="c-top"><span class="chip t-ok">Published</span><span class="meta">Programming</span></div>
+              <h3>Java Programming</h3>
+              <div class="meta">Primary instructor · last edited 28 Sep</div>
+              <div class="c-stats num"><span><b>4</b> modules</span><span><b>24</b> lessons</span><span><b>2</b> batches</span><span><b>24</b> students</span></div>
+            </div>
+            <div class="c-acts"><button class="btn btn-primary btn-sm" data-go="s18">Edit content</button><button class="btn btn-soft btn-sm" data-go="s23">Batches (2)</button></div>
+          </article>
+          <article class="card c-card">
+            <div class="c-thumb th-spring">SB</div>
+            <div class="c-body">
+              <div class="c-top"><span class="chip t-ok">Published</span><span class="meta">Programming</span></div>
+              <h3>Web Development with Spring Boot</h3>
+              <div class="meta">Primary instructor · last edited 12 Sep</div>
+              <div class="c-stats num"><span><b>5</b> modules</span><span><b>30</b> lessons</span><span><b>1</b> batch</span><span><b>16</b> students</span></div>
+            </div>
+            <div class="c-acts"><button class="btn btn-primary btn-sm" data-go="s18">Edit content</button><button class="btn btn-soft btn-sm" data-go="s23">Batches (1)</button></div>
+          </article>
+          <article class="card c-card">
+            <div class="c-thumb th-py">Py</div>
+            <div class="c-body">
+              <div class="c-top"><span class="chip" style="background:var(--surface-2);color:var(--muted)">Draft</span><span class="meta">Programming</span></div>
+              <h3>Python Programming</h3>
+              <div class="meta">Co-instructor · content in progress</div>
+              <div class="c-stats num"><span><b>3</b> modules</span><span><b>12</b> lessons</span><span><b>0</b> my batches</span><span><b>0</b> students</span></div>
+            </div>
+            <div class="c-acts"><button class="btn btn-primary btn-sm" data-go="s18">Edit content</button><button class="btn btn-soft btn-sm" data-go="s23">Batches (0)</button></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ================= 1.8 COURSE BUILDER (teacher mode) ================= -->
+      <section class="screen" id="s18" data-title="Course Builder">
+        <div class="explain"><b>1.8 Course Builder</b> — built once by the <u>Admin team</u>. Opened from 2.2 by a teacher it is in <b>teacher mode</b>: course info, price, status and instructors are <b>locked</b>; the teacher edits only <b>modules, lessons and materials</b>.</div>
+        <div class="crumbs"><a href="#" data-go="s22">My Courses</a> / <span>Java Programming</span></div>
+        <div class="cb-tabs">
+          <button class="cb-tab locked">Course info 🔒</button>
+          <button class="cb-tab locked">Price &amp; status 🔒</button>
+          <button class="cb-tab locked">Instructors 🔒</button>
+          <button class="cb-tab on">Modules &amp; lessons</button>
+          <button class="cb-tab">Materials</button>
+        </div>
+        <div class="grid g-main-rev">
+          <div class="card">
+            <div class="card-h"><h2>Modules</h2><button class="btn btn-soft btn-sm" data-page="Add module">+ Module</button></div>
+            <ol class="mods">
+              <li class="on"><span class="drag">⋮⋮</span><div><b>1. Java Basics</b><span class="meta">4 lessons</span></div></li>
+              <li><span class="drag">⋮⋮</span><div><b>2. Control Flow</b><span class="meta">7 lessons</span></div></li>
+              <li><span class="drag">⋮⋮</span><div><b>3. Object-Oriented Programming</b><span class="meta">7 lessons</span></div></li>
+              <li><span class="drag">⋮⋮</span><div><b>4. Collections &amp; Exceptions</b><span class="meta">6 lessons</span></div></li>
+            </ol>
+          </div>
+          <div class="card">
+            <div class="card-h"><h2>Module 1 · Java Basics — lessons</h2><button class="btn btn-primary btn-sm" data-page="Add lesson">+ Lesson</button></div>
+            <div class="table-wrap">
+              <table class="tbl tbl-plain">
+                <thead><tr><th>#</th><th>Lesson</th><th>Type</th><th class="r">Length</th><th>Preview</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                  <tr><td class="num">1</td><td><b>Install JDK &amp; IDE</b></td><td>Video</td><td class="r num">18 min</td><td><span class="chip t-info">Free</span></td><td><span class="chip t-ok">Published</span></td><td class="r"><button class="btn btn-soft btn-sm" data-page="Edit lesson">Edit</button></td></tr>
+                  <tr><td class="num">2</td><td><b>Variables and Data Types</b></td><td>Video</td><td class="r num">25 min</td><td>—</td><td><span class="chip t-ok">Published</span></td><td class="r"><button class="btn btn-soft btn-sm" data-page="Edit lesson">Edit</button></td></tr>
+                  <tr><td class="num">3</td><td><b>Operators &amp; Expressions</b></td><td>Video</td><td class="r num">25 min</td><td>—</td><td><span class="chip t-ok">Published</span></td><td class="r"><button class="btn btn-soft btn-sm" data-page="Edit lesson">Edit</button></td></tr>
+                  <tr><td class="num">4</td><td><b>Reading Input</b></td><td>Text</td><td class="r num">10 min</td><td>—</td><td><span class="chip" style="background:var(--surface-2);color:var(--muted)">Draft</span></td><td class="r"><button class="btn btn-soft btn-sm" data-page="Edit lesson">Edit</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="lock-note">🔒 Locked tabs are shown but cannot be changed by teachers. An Admin opening the same page sees every tab unlocked.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2.3 MY BATCHES ================= -->
+      <section class="screen" id="s23" data-title="My Batches">
+        <div class="explain"><b>2.3 My Batches</b> — a <u>list page</u> of the batches this teacher teaches (from <code>batch_instructors</code>). <b>Open</b> goes to the shared <b>1.10 Batch Detail</b> (students, class sessions, progress, announcements).</div>
+        <div class="toolbar">
+          <div class="seg"><button class="seg-btn on">Ongoing <span class="cnt">2</span></button><button class="seg-btn">Upcoming <span class="cnt">1</span></button><button class="seg-btn">Completed <span class="cnt">3</span></button></div>
+          <select class="sel"><option>All courses</option><option>Java Programming</option><option>Web Development with Spring Boot</option></select>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead><tr><th>Batch</th><th>Course</th><th>Schedule</th><th class="r">Students</th><th>Classes held</th><th>Next class</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                <tr><td><b>SPRING-2026-01</b><div class="meta">1 Sep – 15 Nov</div></td><td>Web Development with Spring Boot</td><td class="meta">Tue / Thu / Fri 4–6 PM · Zoom</td><td class="r num">16 / 20</td>
+                  <td><div class="bar-row"><div class="bar"><span style="width:90%"></span></div><span class="num">27 / 30</span></div></td><td class="meta">Tue 27 Oct, 4 PM</td><td><span class="chip t-ok">Ongoing</span></td><td class="r"><button class="btn btn-primary btn-sm" data-page="1.10 Batch Detail – SPRING-2026-01">Open</button></td></tr>
+                <tr><td><b>JAVA-2026-01</b><div class="meta">1 Oct – 24 Dec</div></td><td>Java Programming</td><td class="meta">Mon / Wed / Fri 7–9 PM · Google Meet</td><td class="r num">18 / 20</td>
+                  <td><div class="bar-row"><div class="bar"><span style="width:28%"></span></div><span class="num">10 / 36</span></div></td><td class="meta">Mon 26 Oct, 7 PM</td><td><span class="chip t-ok">Ongoing</span></td><td class="r"><button class="btn btn-primary btn-sm" data-page="1.10 Batch Detail – JAVA-2026-01">Open</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2.13 ANNOUNCEMENTS FEED ================= -->
+      <section class="screen" id="s213" data-title="Announcements">
+        <div class="explain"><b>2.13 Announcements Feed</b> — a <u>read-only</u> page for <b>every role</b>. It shows school-wide announcements (<code>batch_id</code> is NULL) plus announcements for the user's own batches. Writing happens in <b>1.20 Announcement CRUD</b> (admin) and the <b>Batch Detail → Announcements tab</b> (teacher).</div>
+        <div class="toolbar">
+          <div class="seg"><button class="seg-btn on">All</button><button class="seg-btn">Unread <span class="cnt">2</span></button><button class="seg-btn">School-wide</button><button class="seg-btn">JAVA-2026-01</button><button class="seg-btn">SPRING-2026-01</button></div>
+          <button class="btn btn-soft btn-sm" data-page="Mark all as read">Mark all as read</button>
+        </div>
+        <div class="feed">
+          <article class="card ann-card unread">
+            <span class="udot" title="Unread"></span>
+            <div class="ann-h"><span class="avatar sm av-admin">DM</span><div><b>Daw Moe</b> <span class="meta">Administrator · 2 hrs ago</span></div><span class="chip t-brand">Everyone</span></div>
+            <h3>System maintenance on Sunday 1 November</h3>
+            <p>LearnHub will be offline from 10 PM to 12 AM. Assignment deadlines that night move to Monday 9 AM.</p>
+          </article>
+          <article class="card ann-card unread">
+            <span class="udot" title="Unread"></span>
+            <div class="ann-h"><span class="avatar sm av-teacher">DK</span><div><b>Daw Khin</b> <span class="meta">Instructor · yesterday</span></div><span class="chip t-bad">JAVA-2026-01</span></div>
+            <h3>Quiz 2 on Wednesday</h3>
+            <p>Quiz 2 covers Modules 1–2 (20 min, 10 questions). Open it from My Exams at 7:30 PM.</p>
+          </article>
+          <article class="card ann-card">
+            <div class="ann-h"><span class="avatar sm av-teacher">DK</span><div><b>Daw Khin</b> <span class="meta">Instructor · 20 Oct</span></div><span class="chip t-info">SPRING-2026-01</span></div>
+            <h3>Final project brief uploaded</h3>
+            <p>The brief is in Module 5 materials. Proposal due 2 Nov; final demo in the last class.</p>
+          </article>
+          <article class="card ann-card">
+            <div class="ann-h"><span class="avatar sm av-admin">DM</span><div><b>Daw Moe</b> <span class="meta">Administrator · 28 Sep</span></div><span class="chip t-brand">Everyone</span></div>
+            <h3>Women in Tech 2026 — results announced</h3>
+            <p>Congratulations to all 5 scholarship recipients! Awards are applied to your fees automatically.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- ================= 3.5 CERTIFICATE VERIFICATION (public, no sidebar) ================= -->
+<div class="public" id="publicFrame" hidden>
+  <header class="pub-top">
+    <div class="logo" style="padding:0"><span class="logo-mark"><svg viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg></span><span>LearnHub</span></div>
+    <nav class="pub-nav"><a href="#" data-page="3.1 Home">Home</a><a href="#" data-page="3.2 Course Catalog">Courses</a><a href="#" class="on">Verify certificate</a></nav>
+    <div class="pub-acts"><button class="btn btn-soft btn-sm" data-page="1.2 Login">Log in</button><button class="btn btn-primary btn-sm" data-page="3.4 Register">Sign up</button></div>
+  </header>
+  <div class="pub-body">
+    <div class="explain" style="max-width:640px;margin:0 auto 18px"><b>3.5 Certificate Verification</b> — public, <u>no login</u>. Anyone (for example an employer) types the code printed on a certificate. The page only <b>reads</b> the <code>certificates</code> table: it never creates or changes anything.</div>
+    <div class="card verify">
+      <div class="v-ic"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+      <h1>Verify a certificate</h1>
+      <p class="meta">Enter the certificate code printed at the bottom of the certificate.</p>
+      <form id="vForm" class="v-form">
+        <input id="vCode" placeholder="e.g. LMS-CB-2026-0142" autocomplete="off" spellcheck="false">
+        <button class="btn btn-primary" type="submit">Verify</button>
+      </form>
+      <div class="v-try">Try: <a href="#" data-code="LMS-CB-2026-0142">valid</a> · <a href="#" data-code="LMS-SPR-2026-0007">revoked</a> · <a href="#" data-code="LMS-FAKE-1234">fake</a></div>
+      <div id="vResult" class="v-result" aria-live="polite"></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  var root = document.documentElement, toast = document.getElementById('toast'), timer;
+  try { var t = localStorage.getItem('lms-proto-theme'); if (t) root.dataset.theme = t; } catch (e) {}
+  document.getElementById('themeBtn').onclick = function () {
+    var dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.dataset.theme = dark ? 'light' : 'dark';
+    try { localStorage.setItem('lms-proto-theme', root.dataset.theme); } catch (e) {}
+  };
+  document.getElementById('menuBtn').onclick = function () { document.body.classList.add('nav-open'); };
+  document.getElementById('scrim').onclick = function () { document.body.classList.remove('nav-open'); };
+
+  function show(id) {
+    var isPublic = id === 's35';
+    document.getElementById('publicFrame').hidden = !isPublic;
+    document.getElementById('teacherFrame').style.display = isPublic ? 'none' : '';
+    document.querySelectorAll('.screen').forEach(function (s) { s.classList.toggle('on', s.id === id); });
+    document.querySelectorAll('.sw').forEach(function (b) { b.classList.toggle('on', b.dataset.screen === id); });
+    document.querySelectorAll('.nav a').forEach(function (a) { a.classList.remove('active'); });
+    var nav = document.getElementById('nav-' + (id === 's18' ? 's22' : id));
+    if (nav) nav.classList.add('active');
+    var scr = document.getElementById(id);
+    if (scr && scr.dataset.title) document.getElementById('crumb').firstChild.nodeValue = scr.dataset.title;
+    document.body.classList.remove('nav-open');
+    window.scrollTo(0, 0);
+    try { history.replaceState(null, '', '#' + id); } catch (e) {}
+  }
+  document.querySelectorAll('.sw').forEach(function (b) { b.onclick = function () { show(b.dataset.screen); }; });
+  document.addEventListener('click', function (e) {
+    var go = e.target.closest('[data-go]');
+    if (go) { e.preventDefault(); show(go.dataset.go); return; }
+    var el = e.target.closest('[data-page]');
+    if (!el) return;
+    e.preventDefault();
+    toast.textContent = 'Prototype: this opens “' + el.dataset.page + '”';
+    toast.classList.add('show');
+    clearTimeout(timer); timer = setTimeout(function () { toast.classList.remove('show'); }, 2200);
+  });
+  document.querySelectorAll('.seg').forEach(function (g) {
+    g.addEventListener('click', function (e) {
+      var b = e.target.closest('.seg-btn'); if (!b) return;
+      g.querySelectorAll('.seg-btn').forEach(function (x) { x.classList.toggle('on', x === b); });
+    });
+  });
+
+  // ---- 3.5 certificate check (sample rows of the certificates table) ----
+  var CERTS = {
+    'LMS-CB-2026-0142':   { status: 'ISSUED', name: 'Aye Aye', course: 'Computer Basics', batch: 'CB-2026-02', grade: 'A', issued: '30 Aug 2026' },
+    'LMS-SPR-2026-0007':  { status: 'REVOKED', name: 'Kyaw Min', course: 'Web Development with Spring Boot', reason: 'Issued by mistake — exam result corrected' }
+  };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  function verify(code) {
+    code = code.trim().toUpperCase();
+    var out = document.getElementById('vResult'), c = CERTS[code];
+    if (!code) { out.innerHTML = ''; return; }
+    if (c && c.status === 'ISSUED') {
+      out.innerHTML = '<div class="res ok"><div class="res-h">✔ Valid certificate</div><dl>' +
+        '<dt>Certificate code</dt><dd>' + esc(code) + '</dd><dt>Student</dt><dd>' + esc(c.name) + '</dd>' +
+        '<dt>Course</dt><dd>' + esc(c.course) + '</dd><dt>Batch</dt><dd>' + esc(c.batch) + '</dd>' +
+        '<dt>Grade</dt><dd>' + esc(c.grade) + '</dd><dt>Issued on</dt><dd>' + esc(c.issued) + '</dd></dl></div>';
+    } else if (c) {
+      out.innerHTML = '<div class="res bad"><div class="res-h">✖ Certificate revoked</div><dl>' +
+        '<dt>Certificate code</dt><dd>' + esc(code) + '</dd><dt>Student</dt><dd>' + esc(c.name) + '</dd>' +
+        '<dt>Course</dt><dd>' + esc(c.course) + '</dd><dt>Reason</dt><dd>' + esc(c.reason) + '</dd></dl></div>';
+    } else {
+      out.innerHTML = '<div class="res bad"><div class="res-h">✖ Not found</div><p>No certificate exists with code <b>' + esc(code) +
+        '</b>. Check the code for typing mistakes. If it is correct, this certificate was not issued by LearnHub.</p></div>';
+    }
+  }
+  document.getElementById('vForm').onsubmit = function (e) { e.preventDefault(); verify(document.getElementById('vCode').value); };
+  document.querySelectorAll('[data-code]').forEach(function (a) {
+    a.onclick = function (e) { e.preventDefault(); document.getElementById('vCode').value = a.dataset.code; verify(a.dataset.code); };
+  });
+
+  var start = (location.hash || '').slice(1);
+  show(document.getElementById(start) ? start : 's22');
+})();
+</script>
+</body>
+</html>

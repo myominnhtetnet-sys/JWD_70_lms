@@ -15,19 +15,30 @@ public class Teacher_Repository {
 
     // Get active batches assigned to this instructor
     public List<Map<String, Object>> getBatchesByInstructor(int instructorId) {
-        String sql = "SELECT b.batch_id, b.batch_code, b.title, b.start_date, b.end_date, " +
-                     "b.schedule_note, b.max_seats, b.status, c.title AS course_title " +
-                     "FROM batches b " +
-                     "JOIN batch_instructors bi ON b.batch_id = bi.batch_id " +
-                     "JOIN courses c ON b.course_id = c.course_id " +
-                     "WHERE bi.instructor_id = ?";
-        return jdbcTemplate.queryForList(sql, instructorId);
-    }
+    	String sql = "SELECT b.batch_id, b.batch_code, b.title, b.start_date, b.end_date, " +
+                "b.schedule_note, b.max_seats, b.status, b.course_id, c.title AS course_title " +
+                "FROM batches b " +
+                "JOIN batch_instructors bi ON b.batch_id = bi.batch_id " +
+                "JOIN courses c ON b.course_id = c.course_id " +
+                "WHERE bi.instructor_id = ?";
+   return jdbcTemplate.queryForList(sql, instructorId);
+}
 
-    // Get courses assigned to this instructor
-    public List<Map<String, Object>> getCoursesByInstructor(int instructorId) {
+    public List<Map<String, Object>> getCoursesWithStatsByInstructor(int instructorId) {
         String sql = "SELECT c.course_id, c.title, c.slug, c.level, c.status, c.short_description, " +
-                     "COALESCE(ci.is_primary, 0) AS is_primary " +
+                     "COALESCE(ci.is_primary, 0) AS is_primary, " +
+                     "CASE " +
+                     "  WHEN c.title LIKE '%Java%' THEN 'Java' " +
+                     "  WHEN c.title LIKE '%Spring%' THEN 'SB' " +
+                     "  WHEN c.title LIKE '%Python%' THEN 'Py' " +
+                     "  WHEN c.title LIKE '%Flutter%' THEN 'Flu' " +
+                     "  WHEN c.title LIKE '%Web%' THEN 'Web' " +
+                     "  ELSE LEFT(c.title, 4) " +
+                     "END AS display_code, " +
+                     "(SELECT COUNT(*) FROM course_modules cm WHERE cm.course_id = c.course_id) AS module_count, " +
+                     "(SELECT COUNT(*) FROM lessons l JOIN course_modules cm ON l.module_id = cm.module_id WHERE cm.course_id = c.course_id) AS lesson_count, " +
+                     "(SELECT COUNT(*) FROM batches b WHERE b.course_id = c.course_id) AS batch_count, " +
+                     "(SELECT COUNT(DISTINCT e.user_id) FROM enrollments e JOIN batches b ON e.batch_id = b.batch_id WHERE b.course_id = c.course_id AND e.status = 'ACTIVE') AS student_count " +
                      "FROM courses c " +
                      "JOIN course_instructors ci ON c.course_id = ci.course_id " +
                      "WHERE ci.instructor_id = ?";
@@ -185,5 +196,26 @@ public class Teacher_Repository {
         String combined = progressStatus + "|" + (teacherNote != null ? teacherNote : "");
         String sql = "UPDATE enrollments SET status_reason = ? WHERE enrollment_id = ?";
         jdbcTemplate.update(sql, combined, enrollmentId);
+    }
+ // 1. Fetch teacher/user profile details by ID
+    public Map<String, Object> getTeacherById(int instructorId) {
+        String sql = "SELECT * FROM users WHERE user_id = ?";
+        try {
+            return jdbcTemplate.queryForMap(sql, instructorId);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // 2. Update teacher's personal information
+    public void updateTeacherProfile(int instructorId, String fullName, String phone, String address) {
+        String sql = "UPDATE users SET full_name = ?, phone = ?, address = ? WHERE user_id = ?";
+        jdbcTemplate.update(sql, fullName, phone, address, instructorId);
+    }
+
+    // 3. Update teacher's password
+    public void updateTeacherPassword(int instructorId, String newPassword) {
+        String sql = "UPDATE users SET password = ? WHERE user_id = ?";
+        jdbcTemplate.update(sql, newPassword, instructorId);
     }
 }
