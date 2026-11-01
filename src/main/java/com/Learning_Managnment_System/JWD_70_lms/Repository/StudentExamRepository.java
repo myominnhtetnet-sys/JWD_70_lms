@@ -106,91 +106,24 @@ public class StudentExamRepository {
         return jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", (rs, rowNum) -> rs.getInt(1));
     }
 
-    /**
-     * Retrieves strictly unique question records matching the sanitized sequence string.
-     * 🟢 DECISIVE DEDUPLICATION FIX: Targets the base questions table directly using DISTINCT.
-     * Supplies mock placeholders for exam_id and sort_order to satisfy ExamQuestionRowMapper 
-     * without compromising unique record entity reduction.
-     */
-    public List<ExamQuestionBean> findQuestionsBySequence(String sequence) {
-        if (sequence == null || sequence.trim().isEmpty()) {
-            return new ArrayList<>();
-        }
+    public List<ExamQuestionBean> findQuestionsBySequence(String cleanDeduplicatedSequence) {
+        // 🟢 FIXED: Explicitly INNER JOIN onto 'exam_questions' to fetch the actual mapped 'mark' field parameter!
+        // 🟢 FIXED: Uses SQL FIELD() mapping ordering to preserve your shuffled list placement array vectors seamlessly
+        String sql = "SELECT eq.exam_id, eq.question_id, q.question_text, q.question_type, eq.mark, eq.sort_order " +
+                     "FROM exam_questions eq " +
+                     "INNER JOIN questions q ON eq.question_id = q.question_id " +
+                     "WHERE q.question_id IN (" + cleanDeduplicatedSequence + ") " +
+                     "ORDER BY FIELD(q.question_id, " + cleanDeduplicatedSequence + ")";
 
-        // Clean out any malicious character inputs to protect from SQL injection risks
-        String sanitizedSequence = sequence.replaceAll("[^0-9,]", "");
-        if (sanitizedSequence.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        // 🟢 FIXED SQL: Added mock fields for exam_id and sort_order to satisfy row mapper requirements
-        String sql = "SELECT DISTINCT " +
-                     "    0 AS exam_id, " +
-                     "    q.question_id, " +
-                     "    q.question_text, " +
-                     "    q.question_type, " +
-                     "    1.0 AS mark, " + 
-                     "    1 AS sort_order " +
-                     "FROM learning_db.questions q " +
-                     "WHERE q.question_id IN (" + sanitizedSequence + ") " +
-                     "ORDER BY FIELD(q.question_id, " + sanitizedSequence + ")";
-
-        List<ExamQuestionBean> questions;
         try {
-            questions = jdbcTemplate.query(sql, new ExamQuestionRowMapper());
+            // Re-uses your strongly-typed ExamQuestionRowMapper class to bind your properties accurately
+            return jdbcTemplate.query(sql, new com.Learning_Managnment_System.JWD_70_lms.Mapper.ExamQuestionRowMapper());
         } catch (Exception e) {
-            // Backup Fallback Query: Guarantees execution alignment if map structures fluctuate
-            String fallbackSql = "SELECT DISTINCT " +
-                                 "    0 AS exam_id, " +
-                                 "    question_id, " +
-                                 "    question_text, " +
-                                 "    question_type, " +
-                                 "    1.0 AS mark, " + 
-                                 "    1 AS sort_order " +
-                                 "FROM learning_db.questions " +
-                                 "WHERE question_id IN (" + sanitizedSequence + ") " +
-                                 "ORDER BY FIELD(question_id, " + sanitizedSequence + ")";
-            
-            questions = jdbcTemplate.query(fallbackSql, new ExamQuestionRowMapper());
+            System.err.println("REPOSITORY ERROR -> findQuestionsBySequence query crashed: " + e.getMessage());
+            return java.util.Collections.emptyList();
         }
-
-        // Hydration Cycle: Append child options lists arrays for each question entry dynamically
-        for (ExamQuestionBean q : questions) {
-            List<QuestionOptionBean> options = new ArrayList<>();
-            
-            try {
-                String optionsSql = "SELECT option_id, question_id, option_label, option_text FROM learning_db.question_options WHERE question_id = ? ORDER BY option_id ASC";
-                options = jdbcTemplate.query(optionsSql, (rs, rowNum) -> {
-                    QuestionOptionBean opt = new QuestionOptionBean();
-                    opt.setOptionId(rs.getInt("option_id"));
-                    opt.setQuestionId(rs.getInt("question_id"));
-                    opt.setOptionLabel(rs.getString("option_label"));
-                    opt.setOptionText(rs.getString("option_text"));
-                    return opt;
-                }, q.getQuestionId());
-            } catch (Exception ex) {
-                options = new ArrayList<>();
-            }
-            
-            // TRUE/FALSE PROTECTION GATING: Automatically seeds selections if target tables return empty
-            if ("TRUE_FALSE".equals(q.getQuestionType()) && options.isEmpty()) {
-                String[] tfTexts = {"True", "False"};
-                String[] tfLabels = {"A", "B"};
-                for (int i = 0; i < 2; i++) {
-                    QuestionOptionBean tfOpt = new QuestionOptionBean();
-                    tfOpt.setOptionId(i + 1); 
-                    tfOpt.setQuestionId(q.getQuestionId());
-                    tfOpt.setOptionLabel(tfLabels[i]);
-                    tfOpt.setOptionText(tfTexts[i]);
-                    options.add(tfOpt);
-                }
-            }
-            
-            q.setOptions(options);
-        }
-        
-        return questions;
     }
+
 
     public ExamAttemptBean findAttemptResultSummary(int attemptId) {
         String sql = """
