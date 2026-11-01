@@ -50,6 +50,12 @@ public class StudentRepository {
         String sql = "UPDATE users SET full_name = ?, phone = ?, address = ?, updated_at = ? WHERE email = ?";
         return jdbcTemplate.update(sql, fullName, phone, address, LocalDateTime.now(), email);
     }
+    
+ // Profile Image Update ပြုလုပ်ရန်
+    public int updateProfileImage(String email, String profileImage) {
+        String sql = "UPDATE users SET profile_image = ?, updated_at = ? WHERE email = ?";
+        return jdbcTemplate.update(sql, profileImage, LocalDateTime.now(), email);
+    }
 
    
     public int updatePassword(String email, String newPasswordHash) {

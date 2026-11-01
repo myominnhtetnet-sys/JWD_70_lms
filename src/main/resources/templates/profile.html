@@ -15,13 +15,10 @@
 
     <div class="flex min-h-screen">
         
-               <!-- Sidebar Navigation Menu (Collapsible Framework via Pure-CSS Animation) -->
+        <!-- Sidebar Navigation Menu -->
         <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar">
-            
-            <!-- 🟢 Pure CSS Toggle Checkbox Engine -->
             <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
             
-            <!-- 🟢 Error-Free Scoped Structural Layout Adjustments -->
             <style>
                 #sidebar-content-box { width: 256px; }
                 .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
@@ -39,13 +36,10 @@
 
             <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden">
                 <div>
-                    <!-- Logo & Collapse Button Trigger -->
                     <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
-                        <!-- 🟢 Centered uncollapse bars icon (visible strictly when collapsed) -->
                         <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
                             <i class="fa-solid fa-bars text-lg"></i>
                         </label>
-
                         <div class="flex items-center gap-3 hidden-on-collapse">
                             <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
                                 <i class="fa-solid fa-graduation-cap text-lg"></i>
@@ -55,14 +49,11 @@
                                 <small class="text-[11px] font-medium text-slate-400">Student Portal</small>
                             </div>
                         </div>
-
-                        <!-- Interactive Collapse Arrow Button (visible on hover) -->
                         <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
                             <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
                         </label>
                     </div>
 
-                    <!-- Navigation Links -->
                     <nav class="p-4 space-y-6">
                         <div>
                             <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Menu</div>
@@ -70,7 +61,6 @@
                                 <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
                                     <i class="fa-solid fa-border-all text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
                                 </a>
-                                
                                 <a th:href="@{/student/awards}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
                                     <i class="fa-solid fa-graduation-cap text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Grades & Certificates</span>
                                 </a>
@@ -80,11 +70,9 @@
                         <div>
                             <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Account</div>
                             <div class="space-y-1">
-                                <!-- Scholarships Menu Link -->
                                 <a th:href="@{/student/scholarship}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
                                     <i class="fa-solid fa-user-graduate text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Scholarships</span>
                                 </a>
-                                <!-- Active Profile Menu Link -->
                                 <a th:href="@{/student/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600/90 shadow-sm transition">
                                     <i class="fa-regular fa-user text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">My Profile</span>
                                 </a>
@@ -93,7 +81,6 @@
                     </nav>
                 </div>
 
-                <!-- Logout Action Panel Area -->
                 <div class="p-4 border-t border-slate-800 space-y-3">
                     <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
                         <i class="fa-solid fa-right-from-bracket text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
@@ -102,20 +89,21 @@
             </div>
         </aside>
 
-
         <!-- Main Content Area -->
-       <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-            <!-- Top Header -->
-           <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shrink-0 z-40 shadow-sm">
+        <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+            <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shrink-0 z-40 shadow-sm">
                 <div>
                     <h2 class="text-lg font-bold text-slate-900 leading-tight">My Profile</h2>
                     <p class="text-xs text-slate-400 font-medium">Student Management Portal</p>
                 </div>
-
                 <div class="flex items-center gap-3">
                     <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
-                        <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
-                            <span th:text="${fullName != null ? #strings.substring(fullName,0,2) : 'ST'}">ST</span>
+                        <!-- Top Header Avatar -->
+                        <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm overflow-hidden relative">
+                            <img th:if="${profileImage != null and profileImage != '' and profileImage != 'student.jpg'}" 
+                                 th:src="@{'/images/' + ${profileImage}(v=${timestamp})}" 
+                                 alt="User" class="w-full h-full object-cover absolute inset-0 z-10">
+                            <span th:unless="${profileImage != null and profileImage != '' and profileImage != 'student.jpg'}" th:text="${fullName != null ? #strings.substring(fullName,0,2) : 'ST'}">ST</span>
                         </div>
                         <div class="hidden lg:block">
                             <b class="block text-xs font-bold text-slate-800 leading-none" th:text="${fullName != null ? fullName : 'Student'}">Student</b>
@@ -125,9 +113,8 @@
                 </div>
             </header>
 
-          <main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 w-full text-xs bg-slate-50">
+            <main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 w-full text-xs bg-slate-50">
                 
-                <!-- Flash Alert Messages -->
                 <div th:if="${success}" class="p-4 bg-emerald-100 text-emerald-700 rounded-xl text-xs font-semibold">
                     <span th:text="${success}"></span>
                 </div>
@@ -135,11 +122,30 @@
                     <span th:text="${error}"></span>
                 </div>
 
-                <!-- Profile Header Card -->
+                <!-- Profile Header Card with Edit Pencil Icon -->
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center gap-6">
-                    <div class="w-24 h-24 rounded-full bg-indigo-500 text-white font-bold text-2xl flex items-center justify-center shadow-md">
-                        <span th:text="${fullName != null ? #strings.substring(fullName,0,2) : 'ST'}">ST</span>
+                    <div class="relative">
+                        <!-- Profile Image Circle -->
+                        <div class="w-24 h-24 rounded-full bg-indigo-500 text-white font-bold text-2xl flex items-center justify-center shadow-md overflow-hidden relative">
+                            <img th:if="${profileImage != null and profileImage != '' and profileImage != 'student.jpg'}" 
+                                 th:src="@{'/images/' + ${profileImage}(v=${timestamp})}" 
+                                 alt="Profile" class="w-full h-full object-cover absolute inset-0 z-10">
+                            
+                            <span th:unless="${profileImage != null and profileImage != '' and profileImage != 'student.jpg'}" 
+                                  th:text="${fullName != null ? #strings.substring(fullName,0,2) : 'ST'}">ST</span>
+                        </div>
+
+                        <!-- Edit Pencil Icon Button at bottom -->
+                        <label for="profileImageInput" class="absolute bottom-0 right-0 w-8 h-8 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer transition z-20" title="Change Profile Picture">
+                            <i class="fa-solid fa-pen text-xs"></i>
+                        </label>
+
+                        <!-- Hidden File Upload Form -->
+                        <form id="profilePicForm" th:action="@{/student/profile/update-image}" method="post" enctype="multipart/form-data">
+                            <input type="file" id="profileImageInput" name="profileImage" class="hidden" accept="image/*" onchange="document.getElementById('profilePicForm').submit();">
+                        </form>
                     </div>
+
                     <div class="text-center sm:text-left space-y-1">
                         <h1 class="text-xl font-bold text-slate-900" th:text="${fullName != null ? fullName : 'Student Name'}">Student Name</h1>
                         <p class="text-xs text-slate-500" th:text="${email}">student@gmail.com</p>

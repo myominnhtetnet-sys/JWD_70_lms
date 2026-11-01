@@ -100,7 +100,7 @@ public class Admin_Controller {
         model.addAttribute("overdues", dashboardService.getOverdueInstallmentsList());
         return "dashboard";
     }
-    
+
     @GetMapping("/users")
     public String listUsers(
             @RequestParam(required = false) Integer roleId,
@@ -120,10 +120,9 @@ public class Admin_Controller {
         }
 
         model.addAttribute("users", users);
-        model.addAttribute("roleId", roleId); 
+        model.addAttribute("roleId", roleId);
         return "users";
     }
-
     @GetMapping("/users/search")
     public String searchUsers(
             @RequestParam("keyword") String keyword,
@@ -255,7 +254,7 @@ public class Admin_Controller {
             redirectAttributes.addFlashAttribute("error", "Full name is required.");
             return "redirect:/admin/users";
         }
-
+        
         if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Email is required.");
             return "redirect:/admin/users";
