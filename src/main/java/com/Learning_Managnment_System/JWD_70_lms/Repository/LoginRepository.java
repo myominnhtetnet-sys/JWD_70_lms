@@ -65,20 +65,23 @@ public class LoginRepository {
         return count != null && count > 0;
     }
 
-    public int updatePassword(String email, String newPassword) {
+    public int updatePassword(String email, String secureHashedPassword) {
         String sql = """
                 UPDATE users
                 SET password_hash = ?,
                     updated_at = NOW()
                 WHERE email = ?
                 """;
-        return jdbcTemplate.update(sql, newPassword, email);
+        return jdbcTemplate.update(sql, secureHashedPassword, email);
     }
     
-    public int resetPassword(String email, String newPassword) {
+    
+ // =====================================================
+    public int resetPassword(String email, String secureHashedPassword) {
         String sql = "UPDATE users SET password_hash = ? WHERE email = ?";
-        return jdbcTemplate.update(sql, newPassword, email);
+        return jdbcTemplate.update(sql, secureHashedPassword, email);
     }
+
 
     public LoginBean findByEmail(String email) {
         String sql = "SELECT * FROM users WHERE email = ? AND deleted_at IS NULL";
@@ -87,5 +90,8 @@ public class LoginRepository {
         } catch (Exception e) {
             return null;
         }
+    }
+    public PasswordEncoder getPasswordEncoder() {
+        return this.passwordEncoder;
     }
 }

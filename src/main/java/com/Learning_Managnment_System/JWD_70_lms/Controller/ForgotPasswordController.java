@@ -391,11 +391,14 @@ public class ForgotPasswordController {
             return "reset_password";
         }
 
-        // Update database
+        // 🟢 FIXED: Fetch the shared encoding bean from LoginRepository and hash the plain text password string before saving
+        String secureHashedPassword = loginRepo.getPasswordEncoder().encode(newPassword.trim());
+
+        // 🟢 FIXED: Update database using the securely generated hash string instead of the raw text
         int result =
                 loginRepo.resetPassword(
                         email,
-                        newPassword
+                        secureHashedPassword
                 );
 
         // Success
@@ -420,4 +423,5 @@ public class ForgotPasswordController {
 
         return "reset_password";
     }
+
 }
