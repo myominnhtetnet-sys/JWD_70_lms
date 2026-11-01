@@ -13,10 +13,8 @@
         <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
         <div class="flex-1 flex overflow-hidden h-full">
             
-            <!-- 🟢 2. DYNAMIC SIDEBAR (Fixed Width & Independent Scroll) -->
-            <aside class="w-64 flex-shrink-0 h-full overflow-y-auto bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700/60 z-20">
-                <div th:replace="~{nav :: nav}"></div>
-            </aside>
+            <!-- 🟢 2. DYNAMIC SIDEBAR (nav.html ထဲတွင် <aside> ပါပြီးသားဖြစ်၍ တိုက်ရိုက်ခေါ်သုံးပါ) -->
+            <div th:replace="~{nav :: nav}"></div>
 
             <!-- 🟢 3. MAIN CONTENT (Independent Scroll) -->
             <main class="flex-1 h-full overflow-y-auto bg-slate-50 dark:bg-slate-900/50 p-6 lg:p-8">
