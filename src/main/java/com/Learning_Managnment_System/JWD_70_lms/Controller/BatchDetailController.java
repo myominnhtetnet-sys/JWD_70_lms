@@ -19,10 +19,6 @@ public class BatchDetailController {
 	@Autowired
     private BatchDetailService batchDetailService;
 
-    /**
-     * 🟢 @ModelAttribute ဖြင့် Batch Detail Page များကို ဝင်ရောက်သည့်အခါတိုင်း 
-     * Login ဝင်ထားသော User ၏ အမည်နှင့် Role ကို Header ထဲသို့ အလိုအလျောက် ပို့ပေးခြင်း
-     */
     @ModelAttribute
     public void addCommonAttributes(HttpSession session, Model model) {
         String displayName = "Administrator";

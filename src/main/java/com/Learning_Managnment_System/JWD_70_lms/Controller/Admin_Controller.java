@@ -83,17 +83,6 @@ public class Admin_Controller {
         return "redirect:/admin/dashboard";
     }
 
-//    @GetMapping("/dashboard")
-//    public String adminDashboard(HttpSession session, Model model) {
-//        if (isNotAdmin(session)) {
-//            return "redirect:/login";
-//        }
-//        List<AdminUserBean> users = adminRepository.getAllUsers();
-//        model.addAttribute("users", users);
-//        return "dashboard";
-//    }
-
-
 @Autowired
 private DashboardService dashboardService;
 @GetMapping("/dashboard")

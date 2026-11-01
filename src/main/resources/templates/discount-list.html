@@ -1,25 +1,30 @@
 
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
-      class="h-full">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-full">
 
 <head th:replace="~{head :: head}"></head>
 
-<body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
+<body class="h-full overflow-hidden font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
 
-<div id="app" class="min-h-screen flex flex-col">
+<div id="app" class="h-screen flex flex-col overflow-hidden">
 
     <!-- HEADER -->
     <div th:replace="~{header :: header}"></div>
 
-    <div class="flex-1 flex overflow-hidden">
+    <!-- BODY LAYOUT -->
+    <div class="flex flex-1 min-h-0 overflow-hidden">
 
         <!-- SIDEBAR -->
-        <div th:replace="~{nav :: nav}"></div>
+        <aside id="sidebar"
+               class="h-full shrink-0 overflow-y-auto overflow-x-hidden">
+
+            <div th:replace="~{nav :: nav}"></div>
+
+        </aside>
 
         <!-- MAIN CONTENT -->
-        <main class="flex-1 overflow-y-auto p-8 bg-slate-50">
+        <main id="mainContent"
+              class="flex-1 min-w-0 min-h-0 h-full overflow-y-auto overflow-x-hidden p-8 bg-slate-50">
 
             <div class="max-w-7xl mx-auto">
 
@@ -47,6 +52,7 @@
 
                         <i class="fa-solid fa-plus"></i>
                         Add Discount
+
                     </button>
 
                 </div>
@@ -127,8 +133,10 @@
                         <button type="button"
                                 onclick="loadDiscounts()"
                                 class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+
                             <i class="fa-solid fa-rotate"></i>
                             Refresh
+
                         </button>
 
                     </div>
@@ -197,9 +205,9 @@
 
             </div>
         </main>
+
     </div>
 </div>
-
 <!-- ================================================= -->
 <!-- ADD / EDIT DISCOUNT MODAL -->
 <!-- ================================================= -->
@@ -2004,6 +2012,7 @@ function closeDiscountModal() {
 }
 
 </script>
+
 
 </body>
 </html>
