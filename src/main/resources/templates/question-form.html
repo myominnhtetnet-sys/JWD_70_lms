@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <head>
 <meta charset="UTF-8">
@@ -7,6 +7,7 @@
 <title id="pageTitle">Create Question</title>
 <!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> 
 <!-- FontAwesome Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <!-- Google Fonts: Inter -->
@@ -25,158 +26,252 @@
 </style>
 </head>
 
-<body class="h-full font-sans text-slate-900 bg-slate-50 antialiased">
+<body class="bg-slate-50 text-slate-800 antialiased font-sans">
 
-    <div id="app" class="min-h-screen flex flex-col">
+    <div class="flex min-h-screen">
         
-        <!-- TOP HEADER BAR -->
-        <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
-            <div class="px-6 py-3.5 flex items-center justify-between gap-4">
-                
-                <!-- Left: Branding & User Profile -->
-                <div class="flex items-center gap-6 flex-1 max-w-xl">
-                    <div class="flex items-center gap-3 cursor-pointer">
-                        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-100">
-                            <i class="fa-solid font-bold text-lg">E</i>
+        <!-- SIDEBAR NAVIGATION MENU (Collapsible Dark Theme) -->
+        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar z-30">
+            
+            <!-- Pure CSS Toggle Checkbox Engine -->
+            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+            
+            <!-- Error-Free Scoped Structural Animation Layout Adjustments -->
+            <style>
+                #sidebar-content-box { width: 256px; }
+                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+            </style>
+
+            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden overflow-y-auto">
+                <div>
+                    <!-- Logo & Collapse Button Trigger -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </label>
+
+                        <div class="flex items-center gap-3 hidden-on-collapse">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
+                                <i class="fa-solid fa-chalkboard-user text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-base font-bold text-white tracking-wide block leading-none">EduPulse</span>
+                                <small class="text-[11px] font-medium text-slate-400">Teacher Portal</small>
+                            </div>
                         </div>
+
+                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+                        </label>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-6">
                         <div>
-                            <span class="font-extrabold text-base tracking-tight bg-gradient-to-r from-indigo-600 to-indigo-800 bg-clip-text text-transparent">EduPulse</span>
-                            <span class="text-xs px-2 py-0.5 ml-1 rounded-full bg-indigo-50 text-indigo-700 font-bold border border-indigo-200">LMS</span>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Teaching Portal</div>
+                            <div class="space-y-1">
+                                <a href="/teacher" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-house text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                                </a>
+                                <a href="/teacher/courses" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-300">
+                                    <i class="fa-solid fa-book-open text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Courses</span>
+                                </a>
+                                <a href="/teacher/batches" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-users text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">My Batches</span>
+                                </a>
+                                <a href="/teacher/attendance" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-calendar-check text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Check Attendance</span>
+                                </a>
+                            </div>
                         </div>
+
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Assessments</div>
+                            <div class="space-y-1">
+                                <!-- Active Question Bank Link -->
+                                <a href="/teacher/question-list" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 shadow-sm transition">
+                                    <i class="fa-solid fa-database text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Question Bank</span>
+                                </a>
+                                <a href="/teacher/assignments" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-clipboard-list text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Assignments</span>
+                                </a>
+                                <a href="/teacher/submissions" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-check-double text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Grade Submissions</span>
+                                </a>
+                                <a href="/teacher/exams" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-file-pen text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exams</span>
+                                </a>
+                                <a href="/teacher/exam-results" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-square-poll-vertical text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Exam Results</span>
+                                </a>
+                                <a href="/teacher/final-grades" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-graduation-cap text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Final Grades</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Account Section -->
+<div class="pt-4 border-t border-slate-800">
+    <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Account</div>
+    <div class="space-y-1">
+        <a th:href="@{/teacher/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+            <i class="fa-regular fa-user text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Profile</span>
+        </a>
+    </div>
+</div>
+                    </nav>
+                </div>
+
+                <div class="p-4 border-t border-slate-800">
+                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT WRAPPER -->
+        <main class="flex-1 min-w-0 px-6 sm:px-10 py-6 bg-slate-50 overflow-y-auto">
+
+            <div class="w-full max-w-6xl mx-auto space-y-6">
+
+                <div class="mb-5">
+                    <h1 id="pageTitle" class="text-xl font-bold text-slate-900">
+                        Create Question</h1>
+                    <p id="pageDescription" class="text-xs text-slate-600 mt-1">
+                        Manage question information and answer options.</p>
+                </div>
+
+
+                <form id="questionForm" class="space-y-5">
+
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 sm:p-6 w-full">
+
+                        <h2 class="text-base font-bold text-slate-800 pb-3 mb-4 border-b border-slate-200">
+                            Basic Information</h2>
+
+                        <div class="mb-4">
+                            <label for="courseId" class="block text-xs font-bold uppercase text-slate-700 mb-1">
+                                Course </label>
+                            <select id="courseId" name="courseId" required
+                                class="w-full px-3.5 py-2.5 text-sm border border-slate-300
+                                       rounded-xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                                <option value="">-- Select Course --</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="questionText" class="block text-xs font-bold uppercase text-slate-700 mb-1">
+                                Question </label>
+
+                            <textarea id="questionText" name="questionText" rows="2" required
+                                placeholder="Enter your question"
+                                class="w-full px-3.5 py-2.5 text-sm border border-slate-300
+                                         rounded-xl resize-none focus:outline-none
+                                         focus:ring-2 focus:ring-blue-500 bg-slate-50 font-medium"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="questionType" class="block text-xs font-bold uppercase text-slate-700 mb-1">
+                                    Question Type </label> 
+                                <select id="questionType" name="questionType"
+                                    required onchange="changeQuestionType()"
+                                    class="w-full px-3.5 py-2.5 text-sm
+                                           border border-slate-300 rounded-xl
+                                           bg-slate-50 focus:outline-none
+                                           focus:ring-2 focus:ring-blue-500 font-medium">
+                                    <option value="">-- Select Type --</option>
+                                    <option value="MCQ">Multiple Choice</option>
+                                    <option value="TRUE_FALSE">True / False</option>
+                                    <option value="SHORT_ANSWER">Short Answer</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="defaultMark"
+                                    class="block text-xs font-bold uppercase text-slate-700 mb-1">
+                                    Default Mark </label> 
+                                <input type="number" id="defaultMark"
+                                    name="defaultMark" step="0.01" min="0" required
+                                    placeholder="Enter mark"
+                                    class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl
+                                          focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 font-medium">
+                            </div>
+
+                        </div>
+
                     </div>
+
+                    <div id="optionsSection"
+                        class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 sm:p-6 w-full hidden">
+
+                        <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-200">
+                            <div>
+                                <h2 class="text-base font-bold text-slate-800"> Answer Options</h2>
+                                <p class="text-xs text-slate-500">Select the correct answer.</p>
+                            </div>
+                            <button type="button" id="addOptionButton" onclick="createOption()"
+                                class="px-3.5 py-2 text-xs bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-bold transition shadow-xs cursor-pointer">
+                                <i class="fa-solid fa-plus mr-1"></i> Add Option
+                            </button>
+                        </div>
+
+                        <div id="optionsContainer" class="space-y-3"></div>
+
                     </div>
+
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 sm:p-6 w-full">
+                        <h2 class="text-base font-bold text-slate-800 pb-3 mb-4 border-b border-slate-200">
+                            Explanation</h2>
+                        <label for="explanation" class="block text-xs font-bold uppercase text-slate-700 mb-1">
+                            Explanation 
+                            <span class="text-xs text-slate-400 font-normal">(Optional) </span>
+                        </label>
+
+                        <textarea id="explanation" name="explanation" rows="2"
+                            placeholder="Enter explanation..."
+                            class="w-full px-3.5 py-2.5 text-sm
+                                     border border-slate-300
+                                     rounded-xl resize-none
+                                     focus:outline-none focus:ring-2
+                                     focus:ring-blue-500 bg-slate-50 font-medium"></textarea>
                     </div>
-		</header>
 
-		<!-- MAIN CONTENT WRAPPER -->
-		<main class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-8 py-6">
+                    <div class="flex justify-end gap-3 pt-2 pb-6">
 
-			<div class="mb-5">
-				<h1 id="pageTitle" class="text-xl font-bold text-slate-900">
-					Create Question</h1>
-				<p id="pageDescription" class="text-xs text-slate-600 mt-1">
-					Manage question information and answer options.</p>
-			</div>
+                        <button type="button" onclick="goBack()"
+                            class="px-4 py-2.5 text-xs border border-slate-300
+                                   bg-slate-200 text-slate-800 font-bold rounded-xl hover:bg-slate-300 transition cursor-pointer">
+                            Cancel</button>
 
 
-			<form id="questionForm">
+                        <button type="submit" id="saveButton"
+                            class="px-5 py-2.5 text-xs bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition cursor-pointer shadow-xs">
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> 
+                            <span id="saveButtonText"> Save Question </span>
+                        </button>
 
-				<div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 mb-5 w-full">
+                    </div>
 
-					<h2 class="text-base font-bold text-slate-800 pb-3 mb-4 border-b border-slate-200">
-						Basic Information</h2>
+                </form>
 
-					<div class="mb-4">
-						<label for="courseId" class="block text-xs font-bold uppercase text-slate-700 mb-1">
-							Course </label>
-						<select id="courseId" name="courseId" required
-							class="w-full px-3.5 py-2.5 text-sm border border-slate-300
-								   rounded-xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium">
-							<option value="">-- Select Course --</option>
-						</select>
-					</div>
+            </div>
 
-					<div class="mb-4">
-						<label for="questionText" class="block text-xs font-bold uppercase text-slate-700 mb-1">
-							Question </label>
+        </main>
 
-						<textarea id="questionText" name="questionText" rows="2" required
-							placeholder="Enter your question"
-							class="w-full px-3.5 py-2.5 text-sm border border-slate-300
-									 rounded-xl resize-none focus:outline-none
-									 focus:ring-2 focus:ring-teal-500 bg-slate-50"></textarea>
-					</div>
+    </div>
 
-					<div class="grid grid-cols-2 gap-4">
-						<div>
-							<label for="questionType" class="block text-xs font-bold uppercase text-slate-700 mb-1">
-								Question Type </label> 
-							<select id="questionType" name="questionType"
-								required onchange="changeQuestionType()"
-								class="w-full px-3.5 py-2.5 text-sm
-									   border border-slate-300 rounded-xl
-									   bg-slate-50 focus:outline-none
-									   focus:ring-2 focus:ring-teal-500 font-medium">
-								<option value="">-- Select Type --</option>
-								<option value="MCQ">Multiple Choice</option>
-								<option value="TRUE_FALSE">True / False</option>
-								<option value="SHORT_ANSWER">Short Answer</option>
-							</select>
-						</div>
-
-						<div>
-							<label for="defaultMark"
-								class="block text-xs font-bold uppercase text-slate-700 mb-1">
-								Default Mark </label> 
-							<input type="number" id="defaultMark"
-								name="defaultMark" step="0.01" min="0" required
-								placeholder="Enter mark"
-								class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl
-									  focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50">
-						</div>
-
-					</div>
-
-				</div>
-
-				<div id="optionsSection"
-					class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 mb-5 w-full hidden">
-
-					<div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-200">
-						<div>
-							<h2 class="text-base font-bold text-slate-800"> Answer Options</h2>
-							<p class="text-xs text-slate-500">Select the correct answer.</p>
-						</div>
-						<button type="button" id="addOptionButton" onclick="createOption()"
-							class="px-3.5 py-2 text-xs bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 font-bold transition shadow-xs cursor-pointer">
-							<i class="fa-solid fa-plus mr-1"></i> Add Option
-						</button>
-					</div>
-
-					<div id="optionsContainer" class="space-y-3"></div>
-
-				</div>
-
-				<div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 mb-5 w-full">
-					<h2 class="text-base font-bold text-slate-800 pb-3 mb-4 border-b border-slate-200">
-						Explanation</h2>
-					<label for="explanation" class="block text-xs font-bold uppercase text-slate-700 mb-1">
-						Explanation 
-						<span class="text-xs text-slate-400 font-normal">(Optional) </span>
-					</label>
-
-					<textarea id="explanation" name="explanation" rows="2"
-						placeholder="Enter explanation..."
-						class="w-full px-3.5 py-2.5 text-sm
-								 border border-slate-300
-								 rounded-xl resize-none
-								 focus:outline-none focus:ring-2
-								 focus:ring-teal-500 bg-slate-50"></textarea>
-				</div>
-
-				<div class="flex justify-end gap-2 pb-6">
-
-					<button type="button" onclick="goBack()"
-						class="px-4 py-2 text-xs border border-slate-300
-							   bg-slate-200 text-slate-800 font-bold rounded-xl hover:bg-slate-300 transition cursor-pointer">
-						Cancel</button>
-
-
-					<button type="submit" id="saveButton"
-						class="px-5 py-2 text-xs bg-teal-600 text-white font-bold rounded-xl hover:bg-teal-700 transition cursor-pointer shadow-xs">
-						<i class="fa-solid fa-floppy-disk mr-1"></i> 
-						<span id="saveButtonText"> Save Question </span>
-					</button>
-
-				</div>
-
-			</form>
-
-		</main>
-
-	</div>
-
-	<script>
+    <script>
 
 let optionCount = 0;
 let questionId = null;
@@ -302,8 +397,8 @@ function createOption(text = "", isCorrect = false) {
     optionItem.className =
         "option-item flex items-center gap-3 " +
         "p-3 rounded-xl border border-slate-200 " +
-        "bg-slate-50 hover:border-teal-300 " +
-        "hover:bg-teal-50/30 transition";
+        "bg-slate-50 hover:border-blue-300 " +
+        "hover:bg-blue-50/30 transition";
 
     const radioWrapper = document.createElement("div");
     radioWrapper.className = "flex items-center";
@@ -313,10 +408,7 @@ function createOption(text = "", isCorrect = false) {
     radio.name = "correctOption";
     radio.value = optionCount;
     radio.checked = isCorrect;
-
-    radio.className =
-        "w-4 h-4 text-teal-600 border-slate-300 " +
-        "focus:ring-teal-500 cursor-pointer";
+    radio.className = "w-4 h-4 text-blue-600 " + "border-slate-300 " + "focus:ring-blue-500 cursor-pointer";
 
     radioWrapper.appendChild(radio);
 
@@ -328,10 +420,9 @@ function createOption(text = "", isCorrect = false) {
     input.type = "text";
 
     input.className =
-        "option-text flex-1 px-3.5 py-2 text-sm " +
-        "border border-slate-300 rounded-xl bg-white " +
-        "focus:outline-none focus:ring-2 " +
-        "focus:ring-teal-500 font-medium";
+        "option-text flex-1 px-3.5 py-2 " + "text-sm " +
+        "border border-slate-300 rounded-xl " +"bg-white focus:outline-none " +
+        "focus:ring-2 focus:ring-blue-500 " + "font-medium";
 
     input.placeholder = "Enter option " + optionCount;
     input.value = text;
