@@ -106,14 +106,29 @@ public class FinalGradeRepository {
     public List<Map<String, Object>> findSubmission(
             int assignmentId, int enrollmentId) {
 
-        return jdbc.queryForList("""
-            SELECT status, mark
+        String sql = """
+            SELECT
+                submission_id,
+                assignment_id,
+                enrollment_id,
+                attempt_no,
+                mark,
+                status,
+                submitted_at,
+                graded_at
             FROM submissions
             WHERE assignment_id = ?
               AND enrollment_id = ?
-            """, assignmentId, enrollmentId);
-    }
+            ORDER BY
+                attempt_no DESC,
+                submitted_at DESC,
+                submission_id DESC
+            """;
 
+        return jdbc.queryForList(
+            sql, assignmentId, enrollmentId
+        );
+    }
 
 public List<Map<String, Object>> findLatestAttempt(
         int examId,

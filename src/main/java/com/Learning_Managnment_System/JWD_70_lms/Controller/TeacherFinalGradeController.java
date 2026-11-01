@@ -79,6 +79,7 @@ public String list(
 					&& students.stream().allMatch(row -> row.get("gradeId") != null);
 
             model.addAttribute("canPublish", hasDraft && allCalculated);
+            
 
         } catch (IllegalArgumentException ex) {
             model.addAttribute("errorMessage", ex.getMessage());
