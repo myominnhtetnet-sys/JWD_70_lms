@@ -94,4 +94,9 @@ public class ScholarshipApplicationsRespority {
         String sql = "DELETE FROM scholarship_applications WHERE application_id = ?";
         return jdbcTemplate.update(sql, applicationId);
     }
+
+//	public void updateDocument(Long applicationId, String uniqueFilename) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 }
