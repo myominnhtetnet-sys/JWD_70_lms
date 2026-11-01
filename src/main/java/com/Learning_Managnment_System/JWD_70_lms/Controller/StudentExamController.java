@@ -113,11 +113,16 @@ public class StudentExamController {
         model.addAttribute("examId", examId);
         model.addAttribute("attemptId", attemptId);
         model.addAttribute("questions", questions);
-     // 🟢 10-SECOND CONSOLE TRACE PROBE
+     // 🟢 Update your debug print section inside StudentExamController.java:
         System.out.println("--- DEBUG ANALYSIS START ---");
         System.out.println("Total Question Model Beans passed to Thymeleaf UI: " + questions.size());
         for (ExamQuestionBean question : questions) {
-            System.out.println("Question ID: " + question.getQuestionId() + " | Text: " + question.getQuestionText());
+            // 🔍 ADDED: Print out what values are actually inside the Java properties right here
+            System.out.println("Question ID: " + question.getQuestionId() + 
+                               " | Java Double (questionMark): " + question.getQuestionMark() + 
+                               " | Java BigDecimal (mark): " + question.getMark() +
+                               " | Text: " + question.getQuestionText());
+            
             if (question.getOptions() != null) {
                 System.out.println("  -> Options Found: " + question.getOptions().size());
                 for (var opt : question.getOptions()) {
@@ -126,6 +131,7 @@ public class StudentExamController {
             }
         }
         System.out.println("--- DEBUG ANALYSIS END ---");
+
 
         return "my_exam";
     }

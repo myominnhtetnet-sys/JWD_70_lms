@@ -24,8 +24,6 @@ public class DiscountController {
         this.discountService = discountService;
     }
 
-    // --- Thymeleaf Web View Endpoint ---
-    // Access this via browser at: /api/v1/discounts/view
     @GetMapping("/view")
     public String getDiscountsPageView(Model model) {
         try {
@@ -36,8 +34,6 @@ public class DiscountController {
             e.printStackTrace();
             model.addAttribute("errorMessage", "Could not load discounts.");
         }
-        // This explicitly returns "discounts-list" to resolve your Thymeleaf error
-        // Make sure discounts-list.html exists in src/main/resources/templates/
         return "discount-list";
     }
 

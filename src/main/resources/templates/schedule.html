@@ -119,7 +119,7 @@
 
                 <div>
                     <h2 class="text-lg font-bold text-slate-900 leading-tight">My Schedule</h2>
-                    <p class="text-xs text-slate-400 font-medium">သင်တန်း အတန်းချိန်များနှင့် စာမေးပွဲ ဇယားများ</p>
+                   
                 </div>
                  <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
                     <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
@@ -137,7 +137,7 @@
                 <!-- Batches Section -->
                 <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
                     <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-bookmark text-indigo-600"></i> တက်ရောက်နေသော သင်တန်းများ (Enrolled Batches)
+                        <i class="fa-solid fa-bookmark text-indigo-600"></i> Enrolled Batches
                     </h3>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4" th:if="${batches != null and not #lists.isEmpty(batches)}">
@@ -154,14 +154,14 @@
                     </div>
 
                     <div th:if="${batches == null or #lists.isEmpty(batches)}" class="text-center text-slate-400 text-sm py-4">
-                        တက်ရောက်နေသော Batch မရှိသေးပါ။
+                        No Enrolled Batches
                     </div>
                 </div>
 
                 <!-- Class Sessions Section -->
                 <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
                     <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-day text-indigo-600"></i> အတန်းချိန် ဇယားများ (Class Sessions)
+                        <i class="fa-solid fa-calendar-day text-indigo-600"></i> Class Sessions
                     </h3>
 
                     <div class="overflow-x-auto">
@@ -184,45 +184,65 @@
                             </tbody>
                             <tbody class="divide-y divide-slate-100" th:if="${classSessions == null or #lists.isEmpty(classSessions)}">
                                 <tr>
-                                    <td colspan="4" class="p-4 text-center text-slate-400">အတန်းချိန် ဇယားများ မရှိသေးပါ။</td>
+                                    <td colspan="4" class="p-4 text-center text-slate-400">No Class Sessions</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Exams Section -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-square-check text-amber-500"></i> စာမေးပွဲ ဇယားများ (Exam Timetable)
-                    </h3>
+                <!-- Exams Timetable Subsection Component Layout Matrix -->
+<div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+        <i class="fa-solid fa-square-check text-amber-500"></i> Exam Timetable
+    </h3>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs text-slate-600">
-                            <thead class="bg-slate-50 text-slate-700 uppercase font-bold text-[11px] border-b border-slate-200">
-                                <tr>
-                                    <th class="p-3">Exam Title</th>
-                                    <th class="p-3">Course</th>
-                                    <th class="p-3">Date</th>
-                                    <th class="p-3">Duration</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100" th:if="${exams != null and not #lists.isEmpty(exams)}">
-                                <tr th:each="exam : ${exams}" class="hover:bg-slate-50/50">
-                                    <td class="p-3 font-bold text-slate-800" th:text="${exam['title']}">Exam Title</td>
-                                    <td class="p-3" th:text="${exam['course_name']}">Course</td>
-                                    <td class="p-3 font-semibold text-rose-500" th:text="${exam['exam_date']}">Date</td>
-                                    <td class="p-3" th:text="${exam['duration_minutes'] + ' Mins'}">Duration</td>
-                                </tr>
-                            </tbody>
-                            <tbody class="divide-y divide-slate-100" th:if="${exams == null or #lists.isEmpty(exams)}">
-                                <tr>
-                                    <td colspan="4" class="p-4 text-center text-slate-400">လက်ရှိ ဖြေဆိုရန် စာမေးပွဲ မရှိသေးပါ။</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-slate-600 border-collapse m-0">
+            <thead class="bg-slate-50 text-slate-700 uppercase font-bold text-[11px] border-b border-slate-200">
+                <tr>
+                    <th class="p-3">Exam Title</th>
+                    <th class="p-3">Course / Batch</th>
+                    <th class="p-3">Date</th>
+                    <th class="p-3">Duration</th>
+                    <th class="p-3 text-end">Action</th>
+                </tr>
+            </thead>
+            <!-- 🟢 FIXED: Map bracket syntax ensures total baseline compatibility regardless of explicit bean wrappers -->
+            <tbody class="divide-y divide-slate-100" th:if="${exams != null and not #lists.isEmpty(exams)}">
+                <tr th:each="exam : ${exams}" class="hover:bg-slate-50/50 transition-colors">
+                    
+                    <!-- Exam Title -->
+                    <td class="p-3 font-bold text-slate-800" th:text="${exam['title']}">Exam Title</td>
+                    
+                    <!-- Course / Batch Name Fallback Indicators -->
+                    <td class="p-3 text-slate-500 font-medium" th:text="${exam['course_title'] != null ? exam['course_title'] : 'Enrolled Program'}">Course</td>
+                    
+                    <!-- 🟢 FIXED: Points to 'formatted_start_at' to reflect your server side COALESCE string formatting safely -->
+                    <td class="p-3 font-semibold text-rose-500" th:text="${exam['formatted_start_at']}">2026-11-01</td>
+                    
+                    <!-- Duration -->
+                    <td class="p-3 font-mono font-medium text-slate-700" th:text="${exam['duration_min'] + ' Mins'}">30 Mins</td>
+                    
+                    <!-- Interactive Action Link to enter examination window -->
+                    <td class="p-3 text-end">
+                        <a th:href="@{/student/exam-take/{id}(id=${exam['exam_id']})}" class="inline-flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-2.5 py-1.5 rounded-md text-[11px] text-decoration-none transition shadow-none border-0">
+                            Take Exam <i class="fa-solid fa-chevron-right text-[9px] ms-0.5"></i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+            <!-- Fallback Blank State Layout Row UI Element -->
+            <tbody class="divide-y divide-slate-100" th:if="${exams == null or #lists.isEmpty(exams)}">
+                <tr>
+                    <td colspan="5" class="p-4 text-center text-slate-400 font-medium bg-slate-50/30">
+                        <i class="fa-regular fa-folder-open me-1"></i> No Scheduled Exams Currently Available
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
             </main>
         </div>

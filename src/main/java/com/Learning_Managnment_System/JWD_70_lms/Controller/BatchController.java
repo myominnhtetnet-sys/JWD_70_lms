@@ -32,10 +32,6 @@ public class BatchController {
         this.batchService = batchService;
     }
 
-    /**
-     * 🟢 @ModelAttribute ဖြင့် Batch Management စာမျက်နှာများသို့ ဝင်ရောက်သည့်အခါတိုင်း 
-     * Login ဝင်ထားသော User ၏ အမည်နှင့် Role ကို Header ထဲသို့ အလိုအလျောက် ပို့ပေးခြင်း
-     */
     @ModelAttribute
     public void addCommonAttributes(HttpSession session, Model model) {
         String displayName = "Administrator";
@@ -73,7 +69,7 @@ public class BatchController {
     public String showBatchManagePage(Model model) {
         model.addAttribute("batches", batchService.getAllBatches());
         model.addAttribute("activeTab", "batches_manage");
-        return "Batch_Create"; // Template နာမည်ကို Batch_Management သို့ ပြန်ပြင်ထားသည်
+        return "Batch_Create";
     }
 
     @GetMapping("/api")

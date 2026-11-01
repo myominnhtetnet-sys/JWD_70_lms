@@ -1,93 +1,556 @@
+
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${scholarship != null and scholarship.scholarshipId != null and scholarship.scholarshipId > 0} ? 'Edit Scholarship' : 'Add Scholarship'">Scholarship Form</title>
-    
-    <!-- Tailwind CSS Restored -->
+
+    <title th:text="${scholarship != null and scholarship.scholarshipId != null and scholarship.scholarshipId > 0}
+        ? 'Edit Scholarship' : 'Add Scholarship'">
+        Scholarship Form
+    </title>
+
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        input, select, textarea {
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+        }
+
+        .modal-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .modal-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .background-blur {
+            filter: blur(3px);
+            pointer-events: none;
+            user-select: none;
+        }
+    </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans p-8">
 
-    <div class="max-w-xl mx-auto">
-        
-        <!-- Error Alert for Duplicate Entries or Server Errors -->
-        <div th:if="${errorMessage}" class="mb-5 p-4 rounded-xl bg-red-100 text-red-800 border border-red-200 text-sm font-medium flex justify-between items-center shadow-sm">
-            <span th:text="${errorMessage}">A scholarship with this name already exists.</span>
-            <button type="button" onclick="this.parentElement.remove()" class="text-red-600 hover:text-red-800">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
+<body class="min-h-screen">
 
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            
-            <!-- Form Header -->
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                <h2 class="text-xl font-bold text-slate-900" 
-                    th:text="${scholarship != null and scholarship.scholarshipId != null and scholarship.scholarshipId > 0} ? 'Edit Scholarship' : 'Add New Scholarship'">
-                    Scholarship Form
-                </h2>
-                <a th:href="@{/admin/scholarships/list}" class="text-slate-400 hover:text-slate-600 transition">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </a>
+<!-- ===================================== -->
+<!-- BACKGROUND PAGE -->
+<!-- ===================================== -->
+
+<div class="min-h-screen background-blur" aria-hidden="true">
+
+    <div class="flex min-h-screen">
+
+        <!-- SIDEBAR -->
+        <aside class="hidden md:block w-64 bg-slate-900 text-white p-6">
+
+            <div class="text-xl font-extrabold mb-10">
+                <i class="fa-solid fa-graduation-cap text-indigo-400 mr-2"></i>
+                EduPulse <span class="text-indigo-400">LMS</span>
             </div>
 
-            <!-- Form Body -->
-            <form th:action="@{/admin/scholarships/save}" th:object="${scholarship}" method="post" class="p-6 space-y-5">
-                
-                <!-- Hidden Primary Key ID Field -->
-                <input type="hidden" th:field="*{scholarshipId}" />
+            <div class="space-y-6 text-sm">
 
-                <!-- Scholarship Title -->
+                <div class="text-slate-400 uppercase text-xs font-bold">
+                    Main Menu
+                </div>
+
                 <div>
-                    <label for="title" class="block text-sm font-semibold text-slate-700 mb-1">Scholarship Name / Title</label>
-                    <input type="text" id="title" th:field="*{name}" required 
-                           placeholder="e.g. STEM Merit Excellence Grant"
-                           class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+                    <i class="fa-solid fa-chart-line mr-3"></i>
+                    Dashboard
                 </div>
 
-                <!-- Coverage Percentage or Amount -->
                 <div>
-                    <label for="discountPercentage" class="block text-sm font-semibold text-slate-700 mb-1">Discount / Coverage Percentage (%)</label>
-                    <input type="number" id="discountPercentage" th:field="*{discountPercentage}" step="0.01" min="0" max="100" required
-                           placeholder="e.g. 50 (for 50% discount)"
-                           class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+                    <i class="fa-solid fa-users mr-3"></i>
+                    Users & Roles
                 </div>
 
-                <!-- Description & Eligibility Requirements -->
                 <div>
-                    <label for="description" class="block text-sm font-semibold text-slate-700 mb-1">Description & Requirements</label>
-                    <textarea id="description" th:field="*{description}" rows="3"
-                              placeholder="Describe eligibility rules, target academic criteria, and coverage..."
-                              class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm resize-none"></textarea>
+                    <i class="fa-solid fa-book mr-3"></i>
+                    Courses
                 </div>
 
-                <!-- Status -->
+                <div class="bg-indigo-600 rounded-lg p-3">
+                    <i class="fa-solid fa-graduation-cap mr-3"></i>
+                    Scholarships
+                </div>
+
                 <div>
-                    <label for="isActive" class="block text-sm font-semibold text-slate-700 mb-1">Status</label>
-                    <select id="isActive" th:field="*{isActive}" 
-                            class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white">
-                        <option value="true">Active</option>
-                        <option value="false">Inactive</option>
-                    </select>
+                    <i class="fa-solid fa-tags mr-3"></i>
+                    Discounts
                 </div>
 
-                <!-- Actions -->
-                <div class="pt-4 flex items-center justify-end space-x-3 border-t border-slate-100">
-                    <a th:href="@{/admin/scholarships/list}" class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-700 text-sm font-medium hover:bg-slate-50 transition">
-                        Cancel
-                    </a>
-                    <button type="submit" class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition shadow-sm">
-                        Save Scholarship
-                    </button>
+                <div>
+                    <i class="fa-solid fa-chart-pie mr-3"></i>
+                    Reports
                 </div>
 
-            </form>
-        </div>
+            </div>
+
+        </aside>
+
+
+        <!-- BACKGROUND CONTENT -->
+        <main class="flex-1 p-8 bg-slate-50">
+
+            <div class="flex justify-between items-center mb-8">
+
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-900">
+                        Scholarship Management
+                    </h1>
+
+                    <p class="text-sm text-slate-500 mt-2">
+                        Manage student scholarships and financial assistance.
+                    </p>
+                </div>
+
+                <button class="bg-indigo-600 text-white px-5 py-3 rounded-xl">
+                    <i class="fa-solid fa-plus mr-2"></i>
+                    Add Scholarship
+                </button>
+
+            </div>
+
+
+            <!-- BACKGROUND TABLE -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+
+                <h2 class="font-bold text-lg mb-6">
+                    Scholarship List
+                </h2>
+
+                <div class="grid grid-cols-4 gap-4 border-b pb-4
+                            text-xs font-bold text-slate-400">
+
+                    <span>SCHOLARSHIP NAME</span>
+                    <span>COVERAGE</span>
+                    <span>STATUS</span>
+                    <span>ACTIONS</span>
+
+                </div>
+
+                <div class="grid grid-cols-4 gap-4 items-center py-5 border-b">
+
+                    <span class="font-semibold text-slate-700">
+                        STEM Merit Excellence Grant
+                    </span>
+
+                    <span>50%</span>
+
+                    <span class="text-green-600 font-semibold">
+                        Active
+                    </span>
+
+                    <span class="text-indigo-500">
+                        <i class="fa-solid fa-eye mr-3"></i>
+                        <i class="fa-solid fa-pen"></i>
+                    </span>
+
+                </div>
+
+                <div class="grid grid-cols-4 gap-4 items-center py-5 border-b">
+
+                    <span class="font-semibold text-slate-700">
+                        Academic Excellence Grant
+                    </span>
+
+                    <span>75%</span>
+
+                    <span class="text-green-600 font-semibold">
+                        Active
+                    </span>
+
+                    <span class="text-indigo-500">
+                        <i class="fa-solid fa-eye mr-3"></i>
+                        <i class="fa-solid fa-pen"></i>
+                    </span>
+
+                </div>
+
+                <div class="grid grid-cols-4 gap-4 items-center py-5">
+
+                    <span class="font-semibold text-slate-700">
+                        Student Support Grant
+                    </span>
+
+                    <span>30%</span>
+
+                    <span class="text-slate-400">
+                        Inactive
+                    </span>
+
+                    <span class="text-indigo-500">
+                        <i class="fa-solid fa-eye mr-3"></i>
+                        <i class="fa-solid fa-pen"></i>
+                    </span>
+
+                </div>
+
+            </div>
+
+        </main>
 
     </div>
+
+</div>
+
+
+<!-- ===================================== -->
+<!-- MODAL OVERLAY -->
+<!-- ===================================== -->
+
+<div id="scholarshipModal"
+     class="fixed inset-0 z-50 flex items-center justify-center
+            bg-slate-900/50 backdrop-blur-sm p-3 sm:p-5">
+
+    <!-- MODAL CONTAINER -->
+    <div class="relative bg-white w-full max-w-2xl
+                rounded-2xl shadow-2xl border border-slate-200
+                overflow-hidden max-h-[95vh] flex flex-col">
+
+
+        <!-- ===================================== -->
+        <!-- MODAL HEADER -->
+        <!-- ===================================== -->
+
+        <div class="px-7 py-6 border-b border-slate-100
+                    bg-white flex items-center justify-between shrink-0">
+
+            <div>
+
+                <h2 class="text-2xl font-bold text-slate-900"
+                    th:text="${scholarship != null and scholarship.scholarshipId != null and scholarship.scholarshipId > 0}
+                    ? 'Edit Scholarship' : 'Add Scholarship'">
+
+                    Scholarship Form
+
+                </h2>
+
+                <p class="text-sm text-slate-500 mt-1">
+                    Create a scholarship for eligible students.
+                </p>
+
+            </div>
+
+
+            <!-- CLOSE BUTTON -->
+            <a th:href="@{/admin/scholarships/list}"
+               class="text-slate-400 hover:text-slate-700
+                      transition text-2xl"
+               aria-label="Close">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </a>
+
+        </div>
+
+
+        <!-- ===================================== -->
+        <!-- ERROR MESSAGE -->
+        <!-- ===================================== -->
+
+        <div th:if="${errorMessage}"
+             class="mx-7 mt-4 p-3 rounded-xl bg-red-50
+                    text-red-700 border border-red-200
+                    text-sm flex justify-between items-center">
+
+            <span>
+                <i class="fa-solid fa-circle-exclamation mr-2"></i>
+                <span th:text="${errorMessage}">
+                    Scholarship error
+                </span>
+            </span>
+
+            <button type="button"
+                    onclick="this.parentElement.remove()"
+                    class="text-red-500 hover:text-red-700">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <!-- ===================================== -->
+        <!-- FORM -->
+        <!-- ===================================== -->
+
+        <form th:action="@{/admin/scholarships/save}"
+              th:object="${scholarship}"
+              method="post"
+              id="scholarshipForm"
+              class="flex flex-col min-h-0 flex-1">
+
+
+            <!-- SCROLLABLE FORM BODY -->
+            <div class="modal-scroll overflow-y-auto px-7 py-6 space-y-5 flex-1">
+
+
+                <!-- SCHOLARSHIP NAME -->
+                <div>
+
+                    <label for="title"
+                           class="block text-sm font-semibold text-slate-700 mb-2">
+
+                        Scholarship Name / Title
+                        <span class="text-red-500">*</span>
+
+                    </label>
+
+                    <input type="text"
+                           id="title"
+                           th:field="*{name}"
+                           required
+                           maxlength="255"
+                           placeholder="e.g. STEM Merit Excellence Grant"
+                           class="w-full px-4 py-3 rounded-xl
+                                  border border-slate-300
+                                  focus:ring-2 focus:ring-indigo-500
+                                  focus:border-indigo-500
+                                  outline-none text-sm">
+
+                </div>
+
+
+                <!-- COVERAGE PERCENTAGE -->
+                <div>
+
+                    <label for="discountPercentage"
+                           class="block text-sm font-semibold text-slate-700 mb-2">
+
+                        Discount / Coverage Percentage (%)
+                        <span class="text-red-500">*</span>
+
+                    </label>
+
+                    <div class="relative">
+
+                        <input type="number"
+                               id="discountPercentage"
+                               th:field="*{discountPercentage}"
+                               step="0.01"
+                               min="0"
+                               max="100"
+                               required
+                               placeholder="e.g. 50"
+                               class="w-full px-4 py-3 pr-12 rounded-xl
+                                      border border-slate-300
+                                      focus:ring-2 focus:ring-indigo-500
+                                      focus:border-indigo-500
+                                      outline-none text-sm">
+
+                        <span class="absolute right-4 top-1/2
+                                     -translate-y-1/2 text-slate-400
+                                     font-semibold">
+
+                            %
+
+                        </span>
+
+                    </div>
+
+                    <p class="text-xs text-slate-400 mt-2">
+                        Enter a value between 0 and 100.
+                    </p>
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+                <div>
+
+                    <label for="description"
+                           class="block text-sm font-semibold text-slate-700 mb-2">
+
+                        Description & Requirements
+
+                    </label>
+
+                    <textarea id="description"
+                              th:field="*{description}"
+                              rows="4"
+                              placeholder="Describe eligibility rules, target academic criteria, and coverage..."
+                              class="w-full px-4 py-3 rounded-xl
+                                     border border-slate-300
+                                     focus:ring-2 focus:ring-indigo-500
+                                     focus:border-indigo-500
+                                     outline-none text-sm resize-none"></textarea>
+
+                </div>
+
+
+                <!-- STATUS -->
+                <div>
+
+                    <label for="isActive"
+                           class="block text-sm font-semibold text-slate-700 mb-2">
+
+                        Status
+
+                    </label>
+
+                    <div class="border border-slate-200 rounded-xl
+                                p-4 bg-slate-50">
+
+                        <select id="isActive"
+                                th:field="*{isActive}"
+                                class="w-full px-4 py-3 rounded-xl
+                                       border border-slate-300
+                                       bg-white text-sm">
+
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- VALIDATION MESSAGE -->
+                <div id="percentageError"
+                     class="hidden p-3 rounded-xl bg-red-50
+                            text-red-600 border border-red-200 text-sm">
+
+                    <i class="fa-solid fa-circle-exclamation mr-2"></i>
+                    Coverage percentage must be between 0 and 100.
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ===================================== -->
+            <!-- FIXED FOOTER -->
+            <!-- ===================================== -->
+
+            <div class="px-7 py-5 border-t border-slate-100
+                        bg-white flex justify-end items-center
+                        gap-3 shrink-0">
+
+                <!-- CANCEL -->
+                <a th:href="@{/admin/scholarships/list}"
+                   class="px-6 py-3 rounded-xl
+                          border border-slate-300
+                          text-slate-700 text-sm font-semibold
+                          hover:bg-slate-50 transition">
+
+                    Cancel
+
+                </a>
+
+
+                <!-- SAVE / UPDATE -->
+                <button type="submit"
+                        class="px-7 py-3 rounded-xl
+                               bg-indigo-600 hover:bg-indigo-700
+                               text-white text-sm font-bold
+                               shadow-sm transition">
+
+                    <i class="fa-solid fa-check mr-2"></i>
+
+                    <span th:text="${scholarship != null and scholarship.scholarshipId != null and scholarship.scholarshipId > 0}
+                    ? 'Update Scholarship' : 'Save Scholarship'">
+
+                        Save Scholarship
+
+                    </span>
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================== -->
+<!-- JAVASCRIPT VALIDATION -->
+<!-- ===================================== -->
+
+<script>
+
+    const scholarshipForm =
+        document.getElementById("scholarshipForm");
+
+    const percentageInput =
+        document.getElementById("discountPercentage");
+
+    const percentageError =
+        document.getElementById("percentageError");
+
+
+    scholarshipForm.addEventListener("submit", function(event) {
+
+        const percentage = parseFloat(percentageInput.value);
+
+        if (
+            !Number.isFinite(percentage) ||
+            percentage < 0 ||
+            percentage > 100
+        ) {
+
+            event.preventDefault();
+
+            percentageError.classList.remove("hidden");
+
+            percentageInput.focus();
+
+            return;
+        }
+
+        percentageError.classList.add("hidden");
+
+    });
+
+
+    percentageInput.addEventListener("input", function() {
+
+        const percentage = parseFloat(this.value);
+
+        if (
+            this.value !== "" &&
+            Number.isFinite(percentage) &&
+            percentage >= 0 &&
+            percentage <= 100
+        ) {
+
+            percentageError.classList.add("hidden");
+
+        }
+
+    });
+
+</script>
 
 </body>
 </html>

@@ -202,9 +202,9 @@
 
                         <!-- Policy Info Box -->
                         <div class="mt-4 p-3 bg-blue-50 border border-blue-200 text-blue-800 text-xs font-semibold rounded-xl leading-relaxed">
-                            <i class="fa-solid fa-circle-info mr-1"></i> Assignment 30% · Exam 60% · Attendance 10% · Pass mark 40[cite: 6]
+                            <i class="fa-solid fa-circle-info mr-1"></i> Assignment 30% · Exam 60% · Attendance 10% · Pass mark 40
                             <br>
-                            Close assessments and finish attendance before calculating. Published grades are locked on this page.[cite: 6]
+                            Close assessments and finish attendance before calculating. Published grades are locked on this page.
                         </div>
 
                         <p class="text-xs text-slate-400 mt-3" th:if="${#lists.isEmpty(batches)}">
@@ -220,65 +220,137 @@
 
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm">
-                                <thead class="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-700 font-bold">
-                                    <tr>
-                                        <th class="px-4 py-3">No.</th>
-                                        <th class="px-4 py-3">Student</th>
-                                        <th class="px-4 py-3">Assignment / 30</th>
-                                        <th class="px-4 py-3">Exam / 60</th>
-                                        <th class="px-4 py-3">Attendance / 10 %</th>
-                                        <th class="px-4 py-3">Final / 100</th>
-                                        <th class="px-4 py-3">Grade</th>
-                                        <th class="px-4 py-3">Result</th>
-                                        <th class="px-4 py-3">Status</th>
-                                    </tr>
-                                </thead>
+                               <thead class="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-700 font-bold">
+    <tr>
+        <th class="px-4 py-3">No.</th>
+        <th class="px-4 py-3">Student</th>
+        <th class="px-4 py-3">Assignment / 30</th>
+        <th class="px-4 py-3">Exam / 60</th>
+        <th class="px-4 py-3">Attendance / 10</th>
+        <th class="px-4 py-3">Final / 100</th>
+        <th class="px-4 py-3">Grade</th>
+        <th class="px-4 py-3">Result</th>
+        <th class="px-4 py-3">Status</th>
+    </tr>
+</thead>
 
                                 <tbody class="divide-y divide-slate-100">
-                                    <tr th:each="student, row : ${students}" class="hover:bg-slate-50/80 transition">
-                                        <td class="px-4 py-3 text-xs text-slate-500 font-medium" th:text="${row.count}"></td>
-                                        <td class="px-4 py-3 font-semibold text-slate-900" th:text="${student.studentName}"></td>
 
-                                        <td class="px-4 py-3 text-xs text-slate-500 font-medium" th:text="${student.gradeId == null ? '—' : student.assignmentScore}"></td>
-                                        <td class="px-4 py-3 text-xs text-slate-500 font-medium" th:text="${student.gradeId == null ? '—' : student.examScore}"></td>
-                                        <td class="px-4 py-3 text-xs text-slate-500 font-medium" th:text="${student.gradeId == null ? '—' : student.attendancePercent}"></td>
+    <tr th:each="student, row : ${students}"
+        class="hover:bg-slate-50/80 transition">
 
-                                        <td class="px-4 py-3 text-sm font-bold text-slate-800">
-                                            <span th:text="${student.gradeId == null ? '—' : student.totalScore}"></span>
-                                        </td>
+        <!-- No -->
+        <td class="px-4 py-3 text-xs text-slate-500 font-medium"
+            th:text="${row.count}">
+        </td>
 
-                                        <td class="px-4 py-3 text-xs font-bold text-slate-800" th:text="${student.gradeId == null ? '—' : student.gradeLetter}"></td>
+        <!-- Student Name -->
+        <td class="px-4 py-3 font-semibold text-slate-900"
+            th:text="${student.studentName}">
+        </td>
 
-                                        <td class="px-4 py-3">
-                                            <span th:if="${student.gradeId != null}"
-                                                  class="px-2.5 py-1 rounded-full text-[10px] font-bold border inline-block"
-                                                  th:classappend="${student.result == 'PASSED'} ? ' bg-emerald-50 text-emerald-700 border-emerald-200' : ' bg-rose-50 text-rose-700 border-rose-200'"
-                                                  th:text="${student.result}">
-                                            </span>
-                                            <span th:if="${student.gradeId == null}" class="text-xs text-slate-400">—</span>
-                                        </td>
+        <!-- Assignment / 30 -->
+        <td class="px-4 py-3 text-xs font-semibold text-blue-700"
+            th:text="${student.gradeId == null ? '—' :
+            #numbers.formatDecimal(student.assignmentScore * 0.30, 1, 2) + ' / 30'}">
+        </td>
 
-                                        <td class="px-4 py-3">
-                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border inline-block"
-                                                  th:classappend="${student.publishedAt != null} ? ' bg-emerald-50 text-emerald-700 border-emerald-200' : (${student.gradeId != null} ? ' bg-amber-50 text-amber-700 border-amber-200' : ' bg-slate-100 text-slate-600 border-slate-200')"
-                                                  th:text="${student.publishedAt != null ? 'Published' : (student.gradeId != null ? 'Draft' : 'Not calculated')}">
-                                            </span>
-                                        </td>
-                                    </tr>
+        <!-- Exam / 60 -->
+        <td class="px-4 py-3 text-xs font-semibold text-indigo-700"
+            th:text="${student.gradeId == null ? '—' :
+            #numbers.formatDecimal(student.examScore * 0.60, 1, 2) + ' / 60'}">
+        </td>
 
-                                    <tr th:if="${#lists.isEmpty(students)}">
-                                        <td colspan="9" class="px-6 py-12 text-center text-slate-500 text-sm font-medium"
-                                            th:text="${selectedBatchId == null ? 'Select a batch to view students.' : 'No ACTIVE or COMPLETED students in this batch.'}">[cite: 6]
-                                        </td>
-                                    </tr>
-                                </tbody>
+        <!-- Attendance / 10 -->
+        <td class="px-4 py-3 text-xs font-semibold text-emerald-700"
+            th:text="${student.gradeId == null ? '—' :
+            #numbers.formatDecimal(student.attendancePercent * 0.10, 1, 2) + ' / 10'}">
+        </td>
+
+        <!-- Final Score / 100 -->
+        <td class="px-4 py-3 text-sm font-bold text-slate-900">
+
+            <span th:text="${student.gradeId == null ? '—' :
+                #numbers.formatDecimal(student.totalScore, 1, 2) + ' / 100'}">
+            </span>
+
+        </td>
+
+        <!-- Grade Letter -->
+        <td class="px-4 py-3 text-xs font-bold text-slate-800"
+            th:text="${student.gradeId == null ? '—' : student.gradeLetter}">
+        </td>
+
+        <!-- Result -->
+        <td class="px-4 py-3">
+
+            <span th:if="${student.gradeId != null}"
+                  class="px-2.5 py-1 rounded-full text-[10px] font-bold border inline-block"
+                  th:classappend="${student.result == 'PASSED'} ?
+                  ' bg-emerald-50 text-emerald-700 border-emerald-200' :
+                  ' bg-rose-50 text-rose-700 border-rose-200'"
+                  th:text="${student.result}">
+            </span>
+
+            <span th:if="${student.gradeId == null}"
+                  class="text-xs text-slate-400">
+                —
+            </span>
+
+        </td>
+
+        <!-- Status -->
+        <td class="px-4 py-3">
+
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border inline-block"
+
+                  th:classappend="${student.publishedAt != null} ?
+                  ' bg-emerald-50 text-emerald-700 border-emerald-200' :
+                  (${student.gradeId != null} ?
+                  ' bg-amber-50 text-amber-700 border-amber-200' :
+                  ' bg-slate-100 text-slate-600 border-slate-200')"
+
+                  th:text="${student.publishedAt != null ?
+                  'Published' :
+                  (student.gradeId != null ? 'Draft' : 'Not calculated')}">
+            </span>
+
+        </td>
+
+    </tr>
+
+    <!-- Empty Students -->
+    <tr th:if="${#lists.isEmpty(students)}">
+
+        <td colspan="9"
+            class="px-6 py-12 text-center text-slate-500 text-sm font-medium"
+
+            th:text="${selectedBatchId == null ?
+            'Select a batch to view students.' :
+            'No ACTIVE or COMPLETED students in this batch.'}">
+        </td>
+
+    </tr>
+
+</tbody>
                             </table>
                         </div>
 
                         <!-- Footer Note -->
-                        <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 text-xs text-slate-400 font-medium">
-                            <i class="fa-solid fa-circle-info mr-1"></i> Attendance contributes up to 10 points. For example, 90% attendance contributes 9 points.[cite: 6]
-                        </div>
+                        <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 font-medium">
+
+    <i class="fa-solid fa-circle-info mr-1"></i>
+
+    Weighted Score:
+    Assignment (30%) + Exam (60%) + Attendance (10%).
+
+    <br>
+
+    Example: 80% Assignment = 24 points,
+    90% Exam = 54 points,
+    90% Attendance = 9 points.
+
+</div>
                     </div>
 
                 </div>

@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.CertificateRepository; // 👈 1. Import ထည့်ရန်
 import com.Learning_Managnment_System.JWD_70_lms.Repository.StudentRepository;
 
-import jakarta.servlet.http.HttpSession;
-
 @Controller
 public class PublicCertificateController {
 
@@ -105,7 +103,7 @@ public class PublicCertificateController {
         if (certificateCode != null && !certificateCode.trim().isEmpty()) {
             model.addAttribute("searchedCode", certificateCode.trim());
             
-            Optional<Map<String, Object>> certOpt = certificateRepository.verifyCertificateCode(certificateCode.trim());
+            Optional<Map<String, Object>> certOpt = Optional.empty();
             
             if (certOpt.isPresent()) {
                 model.addAttribute("cert", certOpt.get());

@@ -43,7 +43,7 @@ public class AdminUserBean {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int user_id;
+    private Integer user_id;
 
     private int role_id;
     private String role_name;

@@ -1,68 +1,76 @@
 <!DOCTYPE html>
-<html>
-<div th:replace="~{head :: head}"></div>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{head :: head}"></head>
 
+<!-- 🟢 1. body ကို h-screen နဲ့ overflow-hidden ပေးပြီး Viewport အပြင်မထွက်အောင် ထိန်းထားသည် -->
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans h-screen overflow-hidden flex flex-col">
+
+<!-- TOP HEADER BAR (Fixed Top) -->
 <div th:replace="~{header :: header}"></div>
 
-<div class="flex-1 flex overflow-hidden">
+<!-- Main Body Wrapper -->
+<div class="flex-1 flex overflow-hidden h-full">
 
-<div th:replace="~{nav :: nav}"></div>
+    <!-- 🟢 2. DYNAMIC SIDEBAR (Fixed Width & Independent Scroll) -->
+    <aside class="w-64 flex-shrink-0 h-full overflow-y-auto bg-white dark:bg-slate-800 border-r border-slate-200/80 dark:border-slate-700 z-20">
+        <div th:replace="~{nav :: nav}"></div>
+    </aside>
 
-<!-- ========================================== -->
-<!-- COURSE REVIEW MODERATION SECTION           -->
-<!-- ========================================== -->
-<div class="flex-1 p-6 overflow-y-auto">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-6 shadow-sm">
-        
-        <!-- Header Section -->
-        <div class="flex items-center justify-between pb-5 mb-5 border-b border-slate-100 dark:border-slate-700">
-            <div>
-                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                    <i class="fa-solid fa-comments text-amber-500"></i> Course Review Moderation
-                </h3>
-                <p class="text-xs text-slate-400 dark:text-slate-400 mt-1">Manage, review, and moderate student feedback</p>
-            </div>
+    <!-- ========================================== -->
+    <!-- COURSE REVIEW MODERATION SECTION           -->
+    <!-- ========================================== -->
+    <!-- 🟢 3. MAIN PAGE BODY (Independent Scroll) -->
+    <main class="flex-1 h-full overflow-y-auto p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-6 shadow-sm">
             
-            <div class="flex items-center gap-2">
-                <span class="px-3 py-1.5 text-xs font-medium bg-slate-50 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 rounded-xl shadow-xs">
-                    Total Reviews: <span class="text-indigo-600 dark:text-indigo-400 font-bold ml-1" id="totalReviewsBadge">0</span>
-                </span>
+            <!-- Header Section -->
+            <div class="flex items-center justify-between pb-5 mb-5 border-b border-slate-100 dark:border-slate-700">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-comments text-amber-500"></i> Course Review Moderation
+                    </h3>
+                    <p class="text-xs text-slate-400 dark:text-slate-400 mt-1">Manage, review, and moderate student feedback</p>
+                </div>
                 
-                <button onclick="loadReviewsFromDB()" 
-                    class="p-2 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl transition" title="Refresh Reviews">
-                    <i class="fa-solid fa-rotate-right"></i>
-                </button>
+                <div class="flex items-center gap-2">
+                    <span class="px-3 py-1.5 text-xs font-medium bg-slate-50 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 rounded-xl shadow-xs">
+                        Total Reviews: <span class="text-indigo-600 dark:text-indigo-400 font-bold ml-1" id="totalReviewsBadge">0</span>
+                    </span>
+                    
+                    <button onclick="loadReviewsFromDB()" 
+                        class="p-2 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl transition" title="Refresh Reviews">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                </div>
             </div>
+
+            <!-- Alert Notification Section -->
+            <div id="alertContainer"></div>
+
+            <!-- Table Responsive Wrapper -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-50/70 dark:bg-slate-700/40 uppercase text-[10px] text-slate-400 font-semibold tracking-wider">
+                        <tr>
+                            <th class="py-3 px-3 w-12 text-center rounded-l-lg">#</th>
+                            <th class="py-3 px-3">Course</th>
+                            <th class="py-3 px-3">Student</th>
+                            <th class="py-3 px-3">Rating</th>
+                            <th class="py-3 px-3">Comment</th>
+                            <th class="py-3 px-3 text-center">Status</th>
+                            <th class="py-3 px-3 text-center rounded-r-lg">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reviewTableBody" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-slate-600 dark:text-slate-300">
+                        <tr>
+                            <td colspan="7" class="py-8 text-center text-slate-400">Loading reviews...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
         </div>
-
-        <!-- Alert Notification Section -->
-        <div id="alertContainer"></div>
-
-        <!-- Table Responsive Wrapper -->
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs border-collapse">
-                <thead class="bg-slate-50/70 dark:bg-slate-700/40 uppercase text-[10px] text-slate-400 font-semibold tracking-wider">
-                    <tr>
-                        <th class="py-3 px-3 w-12 text-center rounded-l-lg">#</th>
-                        <th class="py-3 px-3">Course</th>
-                        <th class="py-3 px-3">Student</th>
-                        <th class="py-3 px-3">Rating</th>
-                        <th class="py-3 px-3">Comment</th>
-                        <th class="py-3 px-3 text-center">Status</th>
-                        <th class="py-3 px-3 text-center rounded-r-lg">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="reviewTableBody" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-slate-600 dark:text-slate-300">
-                    <tr>
-                        <td colspan="7" class="py-8 text-center text-slate-400">Loading reviews...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-    </div>
-</div>
+    </main>
 
 </div>
 

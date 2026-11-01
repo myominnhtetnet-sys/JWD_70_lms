@@ -1,15 +1,15 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
 <aside th:fragment="nav" id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex-shrink-0 border-r border-slate-800 flex flex-col justify-between transition-all duration-300 h-screen sticky top-0 left-0 z-30">
     <div id="sidebarScrollContainer" class="p-4 space-y-6 overflow-y-auto h-full scrollbar-thin scrollbar-thumb-slate-700">
         
-        <!-- ================= MAIN SECTION ================= -->
+        ================= MAIN SECTION =================
         <div>
             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2">Main</div>
             <nav class="space-y-1">
-                <!-- Dashboard -->
+                Dashboard
                 <a th:href="@{/admin/dashboard}" 
                    th:classappend="${#execInfo.processedTemplateName == 'dashboard'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
@@ -17,7 +17,7 @@
                     <span>Dashboard</span>
                 </a>
 
-                <!-- Users & Roles -->
+                Users & Roles
                 <a th:href="@{/admin/users}" 
                    th:classappend="${#execInfo.processedTemplateName == 'users'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
@@ -25,7 +25,7 @@
                     <span>Users & Roles</span>
                 </a>
                 
-                <!-- Enrollment -->   
+                Enrollment   
                 <a th:href="@{/admin/enrollments}" 
                    th:classappend="${#execInfo.processedTemplateName == 'enrollment'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
@@ -35,11 +35,11 @@
             </nav>
         </div>
 
-        <!-- ================= BATCH SECTION ================= -->
+        ================= BATCH SECTION =================
         <div>
             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2">Batch Management</div>
             <nav class="space-y-1">
-                <!-- Batch Management Sub-menu -->
+                Batch Management Sub-menu
                 
 <a th:href="@{/admin/batches/1/students}" 
    th:classappend="${#execInfo.processedTemplateName == 'Batch_Detail'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
@@ -48,7 +48,7 @@
     <span>Batches Overview</span>
 </a>
                
-                <!-- Create Batch -->   
+                Create Batch   
                 <a th:href="@{/admin/batches-manage}" 
                    th:classappend="${#execInfo.processedTemplateName == 'Batch_Create'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
@@ -58,7 +58,7 @@
             </nav>
         </div>
 
-        <!-- ================= COURSE SECTION ================= -->
+        ================= COURSE SECTION =================
         <div>
             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2">Academics & Courses</div>
             <nav class="space-y-1">
@@ -92,7 +92,7 @@
             </nav>
         </div>
 
-        <!-- ================= FINANCIAL & AID SECTION ================= -->
+        ================= FINANCIAL & AID SECTION =================
         <div>
             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2">Financial & Aid</div>
             <nav class="space-y-1">
@@ -140,7 +140,7 @@
             </nav>
         </div>
 
-        <!-- ================= SYSTEM & OTHERS SECTION ================= -->
+        ================= SYSTEM & OTHERS SECTION =================
         <div>
             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2">System & Operations</div>
             <nav class="space-y-1">
@@ -158,12 +158,12 @@
                     <span>Announcements</span>
                 </a>
 
-<!--                 <a th:href="@{/admin/analytics}" 
+                <a th:href="@{/admin/analytics}" 
                    th:classappend="${#execInfo.processedTemplateName == 'analytics'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
                     <i class="fa-solid fa-chart-line text-sm w-5 text-center group-hover:scale-110 transition-transform"></i>
                     <span>Analytics</span>
-                </a> -->
+                </a>
 
                 <a th:href="@{/admin/reports}"
                    th:classappend="${#execInfo.processedTemplateName == 'report'} ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-bold' : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'"
@@ -190,7 +190,7 @@
 
     </div>
 
-    <!-- Smooth AJAX Navigation & Scroll Persistence Script -->
+    Smooth AJAX Navigation & Scroll Persistence Script
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const sidebarContainer = document.getElementById('sidebarScrollContainer');
@@ -270,6 +270,314 @@
                 submenu.classList.toggle('hidden');
                 arrow.classList.toggle('rotate-180');
             }
+        }
+    </script>
+</aside>
+
+</body>
+</html> -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<aside th:fragment="nav" id="sidebar" class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen max-h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar z-30 flex flex-col">
+    
+    <!-- 🟢 Pure CSS Toggle Checkbox Engine -->
+    <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+    
+    <!-- 🟢 Error-Free Scoped Structural Animation Layout Adjustments -->
+    <style>
+        #sidebar-content-box { width: 256px; height: 100%; display: flex; flex-direction: column; }
+        .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+        .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+        .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+        .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+        .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+        .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+        .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+        .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+        .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+    </style>
+
+    <div id="sidebar-content-box" class="transition-all duration-300 overflow-hidden">
+        
+        <!-- Logo & Collapse Button Trigger (Fixed at top) -->
+        <div class="h-16 shrink-0 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+            <!-- Uncollapse bars icon (visible on collapse) -->
+            <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </label>
+
+            <!-- Brand Details (hidden on collapse) -->
+            <div class="flex items-center gap-3 hidden-on-collapse">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20 shrink-0">
+                    <i class="fa-solid fa-graduation-cap text-lg"></i>
+                </div>
+                <div>
+                    <span class="text-base font-bold text-white tracking-wide block leading-none">EduPulse</span>
+                    <small class="text-[11px] font-medium text-slate-400">Admin Portal</small>
+                </div>
+            </div>
+
+            <!-- Interactive Collapse Arrow Button (visible on hover) -->
+            <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+            </label>
+        </div>
+
+        <!-- Scrollable Navigation Links Container -->
+        <div id="sidebarScrollContainer" class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700">
+            <nav class="p-4 space-y-6">
+                
+                <!-- ================= MAIN SECTION ================= -->
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2 hidden-on-collapse">Main</div>
+                    <div class="space-y-1">
+                        <!-- Dashboard -->
+                        <a th:href="@{/admin/dashboard}" 
+                           th:classappend="${#execInfo.processedTemplateName == 'dashboard'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-chart-pie text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                        </a>
+
+                        <!-- Users & Roles -->
+                        <a th:href="@{/admin/users}" 
+                           th:classappend="${#execInfo.processedTemplateName == 'users'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-users text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Users & Roles</span>
+                        </a>
+                        
+                        <!-- Enrollment -->   
+                        <a th:href="@{/admin/enrollments}" 
+                           th:classappend="${#execInfo.processedTemplateName == 'enrollment'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-user-plus text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Enrollment</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ================= BATCH SECTION ================= -->
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2 hidden-on-collapse">Batch Management</div>
+                    <div class="space-y-1">
+                        <a th:href="@{/admin/batches/1/students}" 
+                           th:classappend="${#execInfo.processedTemplateName == 'Batch_Detail'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-layer-group text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Batches Overview</span>
+                        </a>
+                       
+                        <a th:href="@{/admin/batches-manage}" 
+                           th:classappend="${#execInfo.processedTemplateName == 'Batch_Create'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-folder-plus text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Create Batch</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ================= COURSE SECTION ================= -->
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2 hidden-on-collapse">Academics & Courses</div>
+                    <div class="space-y-1">
+                        <a th:href="@{/courses}" 
+                           th:classappend="${#execInfo.processedTemplateName == 'Course_Management'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-book-open text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Course Management</span>
+                        </a>
+                        
+                        <a th:href="@{/admin/course-builder}" 
+                           th:classappend="${#execInfo.processedTemplateName == 'Course_Builder'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-screwdriver-wrench text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Course Builder</span>
+                        </a>
+
+                        <a th:href="@{/admin/categories/list}"
+                           th:classappend="${#execInfo.processedTemplateName == 'category-list'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-layer-group text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Categories</span>
+                        </a>
+                        
+                        <a th:href="@{/admin/reviews}" 
+                           th:classappend="${#execInfo.processedTemplateName == 'Course_Review_Moderation'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-comments text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Course Reviews</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ================= FINANCIAL & AID SECTION ================= -->
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2 hidden-on-collapse">Financial & Aid</div>
+                    <div class="space-y-1">
+                        <a th:href="@{/api/v1/discounts/view}"
+                           th:classappend="${#execInfo.processedTemplateName == 'discount-list'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-tags text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Discounts</span>
+                        </a>
+
+                        <a th:href="@{/admin/installments}"
+                           th:classappend="${#execInfo.processedTemplateName == 'InstallmentRule-list'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-file-invoice-dollar text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Installment Rules</span>
+                        </a>
+                        
+                        <a th:href="@{/admin/overdue-installments}" 
+                           th:classappend="${#execInfo.processedTemplateName == 'overdue-installments'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-triangle-exclamation text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Overdue Installments</span>
+                        </a>
+
+                        <a th:href="@{/admin/payments-refunds}" 
+                           th:classappend="${#execInfo.processedTemplateName == 'payments-refunds'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-money-check-dollar text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Payments & Refunds</span>
+                        </a>
+                        
+                        <a th:href="@{/admin/scholarships}"
+                           th:classappend="${#execInfo.processedTemplateName == 'Scholarship-list'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-graduation-cap text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Scholarships</span>
+                        </a>
+
+                        <a th:href="@{/admin/scholarship-applications-review}"
+                           th:classappend="${#execInfo.processedTemplateName == 'scholarship-applications-review'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-file-lines text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Scholarship Apps</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ================= SYSTEM & OTHERS SECTION ================= -->
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2 hidden-on-collapse">System & Operations</div>
+                    <div class="space-y-1">
+                        <a th:href="@{/admin/certificates}" 
+                           th:classappend="${#execInfo.processedTemplateName == 'Certificate_Management'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-certificate text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Certificates</span>
+                        </a>
+
+                        <a th:href="@{/admin/announcements}" 
+                           th:classappend="${#execInfo.processedTemplateName == 'Announcements_Management'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-bullhorn text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Announcements</span>
+                        </a>
+
+                        <a th:href="@{/admin/analytics}" 
+                           th:classappend="${#execInfo.processedTemplateName == 'analytics'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-chart-line text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Analytics</span>
+                        </a>
+
+                        <a th:href="@{/admin/reports}"
+                           th:classappend="${#execInfo.processedTemplateName == 'report'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-chart-pie text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Reports</span>
+                        </a>
+
+                        <a th:href="@{/admin/audit-logs}" 
+                           th:classappend="${#execInfo.processedTemplateName == 'Audit_Logs'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-clock-rotate-left text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">Audit Logs</span>
+                        </a>
+
+                        <a th:href="@{/admin/settings}" 
+                           th:classappend="${#execInfo.processedTemplateName == 'Settings'} ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white'"
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group">
+                            <i class="fa-solid fa-gear text-sm w-5 text-center shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden-on-collapse whitespace-nowrap">System Settings</span>
+                        </a>
+                    </div>
+                </div>
+
+            </nav>
+        </div>
+    </div>
+
+    <!-- Smooth AJAX Navigation & Scroll Persistence Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebarContainer = document.getElementById('sidebarScrollContainer');
+            if (sidebarContainer) {
+                const savedScrollPosition = localStorage.getItem('sidebarScrollPosition');
+                if (savedScrollPosition) {
+                    sidebarContainer.scrollTop = savedScrollPosition;
+                }
+                sidebarContainer.addEventListener('scroll', function () {
+                    localStorage.setItem('sidebarScrollPosition', sidebarContainer.scrollTop);
+                });
+            }
+
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                sidebar.addEventListener('click', function (e) {
+                    const link = e.target.closest('a');
+                    if (!link || !link.href) return;
+
+                    if (link.getAttribute('target') === '_blank' || link.href.includes('/delete/') || link.getAttribute('onclick')) {
+                        return;
+                    }
+
+                    if (link.href.startsWith(window.location.origin)) {
+                        e.preventDefault();
+                        const url = link.href;
+
+                        fetch(url)
+                            .then(response => response.text())
+                            .then(html => {
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(html, 'text/html');
+                                const newMain = doc.querySelector('main');
+                                const currentMain = document.querySelector('main');
+
+                                if (newMain && currentMain) {
+                                    currentMain.innerHTML = newMain.innerHTML;
+                                    window.history.pushState({ path: url }, '', url);
+                                    updateActiveStates(url);
+                                } else {
+                                    window.location.href = url;
+                                }
+                            })
+                            .catch(err => {
+                                console.error('Navigation error:', err);
+                                window.location.href = url;
+                            });
+                    }
+                });
+            }
+        });
+
+        window.addEventListener('popstate', function () {
+            location.reload();
+        });
+
+        function updateActiveStates(currentUrl) {
+            document.querySelectorAll("#sidebar a").forEach(el => {
+                if (el.href === currentUrl) {
+                    el.className = "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group bg-indigo-600 text-white font-bold shadow-sm";
+                } else {
+                    el.className = "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition group text-slate-400 hover:bg-slate-800 hover:text-white";
+                }
+            });
         }
     </script>
 </aside>
