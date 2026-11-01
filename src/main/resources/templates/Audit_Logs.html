@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:replace="~{head :: head}"></head>
-<body class="bg-slate-100 dark:bg-[#0f1118] text-slate-800 dark:text-slate-100 font-sans antialiased min-h-screen">
 
-<div id="app" class="min-h-screen flex flex-col">
+<!-- 🟢 1. body ကို h-screen နဲ့ overflow-hidden ပေးပြီး Viewport အပြင်မထွက်အောင် ထိန်းထားသည် -->
+<body class="bg-slate-100 dark:bg-[#0f1118] text-slate-800 dark:text-slate-100 font-sans antialiased h-screen overflow-hidden flex flex-col">
+
+<div id="app" class="h-full flex flex-col overflow-hidden">
     
-    <!-- TOP HEADER BAR -->
+    <!-- TOP HEADER BAR (Fixed Top) -->
     <div th:replace="~{header :: header}"></div>
 
     <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
     <div class="flex-1 flex overflow-hidden">
         
-        <!-- DYNAMIC SIDEBAR -->
-        <div th:replace="~{nav :: nav}"></div>
+        <!-- 🟢 2. DYNAMIC SIDEBAR (Fixed Width & Independent Scroll) -->
+        <aside class="w-64 flex-shrink-0 h-full overflow-y-auto bg-white dark:bg-[#181d28] border-r border-slate-200/80 dark:border-[#293142] z-20">
+            <div th:replace="~{nav :: nav}"></div>
+        </aside>
 
-        <!-- Audit Logs Main Container -->
-        <main class="flex-1 p-6 lg:p-8 overflow-y-auto bg-slate-100 dark:bg-[#0f1118]">
+        <!-- 🟢 3. Audit Logs Main Container (Independent Scroll) -->
+        <main class="flex-1 h-full overflow-y-auto p-6 lg:p-8 bg-slate-100 dark:bg-[#0f1118]">
             <div class="max-w-7xl mx-auto bg-white dark:bg-[#181d28] rounded-2xl border border-slate-200/80 dark:border-[#293142] p-6 shadow-sm">
                 
                 <!-- Section Header -->
@@ -203,7 +207,6 @@ async function loadAuditLogsTable() {
     }
 }
 
-// Modal ထဲသို့ ဒေတာများနှင့် JSON များကို ပေးပို့ခြင်း
 function openAuditModal(userName, actionType, tableName, recordId, ipAddress, createdAt, safeOld, safeNew) {
     const modal = document.getElementById('auditDetailModal');
     const modalUser = document.getElementById('modal-user');

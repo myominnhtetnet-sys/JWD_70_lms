@@ -3,19 +3,21 @@
 <!-- Head Fragment -->
 <div th:replace="~{head :: head}"></div>
 
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans h-screen flex flex-col overflow-hidden">
 
-<!-- Header Fragment -->
+<!-- Header Fragment (Fixed Top) -->
 <div th:replace="~{header :: header}"></div>
 
-<!-- Main Body Wrapper -->
-<div class="flex-1 flex overflow-hidden">
+<!-- Main Body Wrapper (Restricted Height) -->
+<div class="flex-1 flex h-full overflow-hidden">
 
-    <!-- Navigation / Sidebar Fragment -->
-    <div th:replace="~{nav :: nav}"></div>
+    <!-- 🟢 1. Sidebar (Independent Scroll - Fixed Width) -->
+    <aside class="w-64 flex-shrink-0 h-full overflow-y-auto bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700/60 z-20">
+        <div th:replace="~{nav :: nav}"></div>
+    </aside>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 overflow-y-auto p-6 space-y-6">
+    <!-- 🟢 2. Main Content Area (Independent Scroll) -->
+    <main class="flex-1 h-full overflow-y-auto p-6 space-y-6">
         
         <!-- Page Title & Header Action -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm">
@@ -168,7 +170,7 @@
 
 </div>
 
-<!-- ==================== AUTO-ISSUE CERTIFICATE MODAL (BY BATCH) ==================== -->
+<!-- ==================== AUTO-ISSUE CERTIFICATE MODAL ==================== -->
 <div id="issueModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
     <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl transition-all">
         <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
@@ -178,9 +180,7 @@
             <button onclick="closeIssueModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
 
-        <!-- 🟢 Batch ရွေးချယ်ပြီး Bulk Auto-Issue ပြုလုပ်မည့် Form -->
         <form th:action="@{/admin/certificates/issue-batch}" method="post" class="p-6 space-y-4">
-            
             <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 Certificates will be automatically generated and issued with unique codes and file paths for all <span class="font-semibold text-emerald-600 dark:text-emerald-400">COMPLETED</span> students in the selected batch who haven't received a certificate yet.
             </p>
@@ -268,7 +268,6 @@
         modal.classList.remove('flex');
     }
 
-    // Real-time Search and Status Filter
     function filterCertificates() {
         const searchText = document.getElementById('searchInput').value.toLowerCase();
         const selectedStatus = document.getElementById('statusFilter').value;
@@ -290,14 +289,9 @@
 
             const matchesStatus = selectedStatus === "" || status === selectedStatus;
 
-            if (matchesSearch && matchesStatus) {
-                row.style.display = "";
-            } else {
-                row.style.display = "none";
-            }
+            row.style.display = (matchesSearch && matchesStatus) ? "" : "none";
         });
     }
 </script>
-
 </body>
 </html>

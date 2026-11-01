@@ -2,21 +2,24 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{head :: head}"></head>
 
-<body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
+<!-- 🟢 1. body ကို h-screen နဲ့ overflow-hidden ပေးပြီး Viewport အပြင်မထွက်အောင် ထိန်းထားသည် -->
+<body class="h-screen font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200 overflow-hidden flex flex-col">
 
-    <div id="app" class="min-h-screen flex flex-col">
+    <div id="app" class="h-full flex flex-col overflow-hidden">
         
-        <!-- TOP HEADER BAR -->
+        <!-- TOP HEADER BAR (Fixed Top) -->
         <div th:replace="~{header :: header}"></div>
 
         <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
-        <div class="flex-1 flex overflow-hidden">
+        <div class="flex-1 flex overflow-hidden h-full">
             
-            <!-- DYNAMIC SIDEBAR -->
-            <div th:replace="~{nav :: nav}"></div>
+            <!-- 🟢 2. DYNAMIC SIDEBAR (Fixed Width & Independent Scroll) -->
+            <aside class="w-64 flex-shrink-0 h-full overflow-y-auto bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700/60 z-20">
+                <div th:replace="~{nav :: nav}"></div>
+            </aside>
 
-            <!-- MAIN CONTENT -->
-            <main class="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-900/50 p-6 lg:p-8">
+            <!-- 🟢 3. MAIN CONTENT (Independent Scroll) -->
+            <main class="flex-1 h-full overflow-y-auto bg-slate-50 dark:bg-slate-900/50 p-6 lg:p-8">
                 <div class="max-w-7xl mx-auto space-y-6">
                     <!-- FLASH MESSAGES -->
                     <div th:if="${success}" class="p-4 mb-4 text-sm text-emerald-800 rounded-lg bg-emerald-50 dark:bg-gray-800 dark:text-emerald-400 border border-emerald-200"
@@ -69,12 +72,13 @@
                     </div>
 
                     <!-- ENROLLMENT TABLE PANEL -->
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm overflow-hidden">
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm overflow-hidden mb-8">
                         <div class="p-6 border-b border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
                                 <h2 class="text-lg font-bold text-slate-800 dark:text-white">All Enrollments</h2>
                                 <p class="text-xs text-slate-400 mt-0.5">Search, filter and manage enrollment records.</p>
-                            
+                            </div>
+                        </div>
 
                         <!-- SEARCH / FILTER -->
                         <form class="p-6 bg-slate-50/50 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-700/60 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end" th:action="@{/admin/enrollments}"
@@ -133,58 +137,58 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-200 dark:divide-slate-700/60">
-    <tr th:each="e , index : ${enrollments}" class="hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition">
-        <td class="p-4 font-medium text-slate-600 dark:text-slate-300" th:text="${index.count}">1</td>
-        <td class="p-4">
-            <div class="font-semibold text-slate-800 dark:text-white" th:text="${e.student_name}">Student Name</div>
-        </td>
-        <td class="p-4">
-            <div class="font-medium text-slate-800 dark:text-white" th:text="${e.course_name}">Course</div>
-            <div class="text-slate-400 text-[11px]" th:text="${e.batch_name}">Batch</div>
-        </td>
-        <td class="p-4 font-semibold text-slate-800 dark:text-white whitespace-nowrap"
-            th:text="${e.final_amount != null ? #numbers.formatDecimal(e.final_amount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
-        <td class="p-4 text-slate-600 dark:text-slate-300" th:text="${e.payment_type}">FULL</td>
-        
-        <!-- PAYMENT STATUS & ENROLLMENT STATUS (COMBINED WITH ONE SAVE BUTTON) -->
-        <td class="p-4 whitespace-nowrap" colspan="2">
-           <form th:action="@{/admin/enrollments/update-status}" method="post" class="flex items-center gap-6 m-0">
-                <input type="hidden" name="enrollmentId" th:value="${e.enrollment_id}"> 
-                
-                <!-- Payment Status Dropdown -->
-                <select name="paymentStatus" class="px-2 py-1 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-800 dark:text-white focus:outline-none">
-                    <option value="UNPAID" th:selected="${e.payment_status == 'UNPAID'}">UNPAID</option>
-                    <option value="PARTIAL" th:selected="${e.payment_status == 'PARTIAL'}">PARTIAL</option>
-                    <option value="PAID" th:selected="${e.payment_status == 'PAID'}">PAID</option>
-                    <option value="REFUNDED" th:selected="${e.payment_status == 'REFUNDED'}">REFUNDED</option>
-                </select>
+                                    <tr th:each="e , index : ${enrollments}" class="hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition">
+                                        <td class="p-4 font-medium text-slate-600 dark:text-slate-300" th:text="${index.count}">1</td>
+                                        <td class="p-4">
+                                            <div class="font-semibold text-slate-800 dark:text-white" th:text="${e.student_name}">Student Name</div>
+                                        </td>
+                                        <td class="p-4">
+                                            <div class="font-medium text-slate-800 dark:text-white" th:text="${e.course_name}">Course</div>
+                                            <div class="text-slate-400 text-[11px]" th:text="${e.batch_name}">Batch</div>
+                                        </td>
+                                        <td class="p-4 font-semibold text-slate-800 dark:text-white whitespace-nowrap"
+                                            th:text="${e.final_amount != null ? #numbers.formatDecimal(e.final_amount, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</td>
+                                        <td class="p-4 text-slate-600 dark:text-slate-300" th:text="${e.payment_type}">FULL</td>
+                                        
+                                        <!-- PAYMENT STATUS & ENROLLMENT STATUS -->
+                                        <td class="p-4 whitespace-nowrap" colspan="2">
+                                           <form th:action="@{/admin/enrollments/update-status}" method="post" class="flex items-center gap-6 m-0">
+                                                <input type="hidden" name="enrollmentId" th:value="${e.enrollment_id}"> 
+                                                
+                                                <!-- Payment Status Dropdown -->
+                                                <select name="paymentStatus" class="px-2 py-1 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-800 dark:text-white focus:outline-none">
+                                                    <option value="UNPAID" th:selected="${e.payment_status == 'UNPAID'}">UNPAID</option>
+                                                    <option value="PARTIAL" th:selected="${e.payment_status == 'PARTIAL'}">PARTIAL</option>
+                                                    <option value="PAID" th:selected="${e.payment_status == 'PAID'}">PAID</option>
+                                                    <option value="REFUNDED" th:selected="${e.payment_status == 'REFUNDED'}">REFUNDED</option>
+                                                </select>
 
-                <!-- Enrollment Status Dropdown -->
-                <select name="status" class="px-2 py-1 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-800 dark:text-white focus:outline-none">
-                    <option value="PENDING" th:selected="${e.status == 'PENDING'}">PENDING</option>
-                    <option value="ACTIVE" th:selected="${e.status == 'ACTIVE'}">ACTIVE</option>
-                    <option value="COMPLETED" th:selected="${e.status == 'COMPLETED'}">COMPLETED</option>
-                    <option value="DROPPED" th:selected="${e.status == 'DROPPED'}">DROPPED</option>
-                    <option value="CANCELLED" th:selected="${e.status == 'CANCELLED'}">CANCELLED</option>
-                </select>
+                                                <!-- Enrollment Status Dropdown -->
+                                                <select name="status" class="px-2 py-1 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-800 dark:text-white focus:outline-none">
+                                                    <option value="PENDING" th:selected="${e.status == 'PENDING'}">PENDING</option>
+                                                    <option value="ACTIVE" th:selected="${e.status == 'ACTIVE'}">ACTIVE</option>
+                                                    <option value="COMPLETED" th:selected="${e.status == 'COMPLETED'}">COMPLETED</option>
+                                                    <option value="DROPPED" th:selected="${e.status == 'DROPPED'}">DROPPED</option>
+                                                    <option value="CANCELLED" th:selected="${e.status == 'CANCELLED'}">CANCELLED</option>
+                                                </select>
 
-                <!-- Single Save Button -->
-                <button type="submit" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium text-[11px] transition cursor-pointer">Save</button>
-            </form>
-        </td>
+                                                <!-- Single Save Button -->
+                                                <button type="submit" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium text-[11px] transition cursor-pointer">Save</button>
+                                            </form>
+                                        </td>
 
-        <td class="p-4 text-slate-500 dark:text-slate-400 whitespace-nowrap">
-            <span th:if="${e.enrolled_at != null}" th:text="${#temporals.format(e.enrolled_at, 'yyyy-MM-dd HH:mm')}">2026-01-01</span>
-            <span th:if="${e.enrolled_at == null}">-</span>
-        </td>
-        <td class="p-4 whitespace-nowrap">
-            <a th:href="@{/admin/enrollments/detail/{id}(id=${e.enrollment_id})}"
-                class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg inline-flex items-center gap-1.5 transition text-xs shadow-sm">
-                <i class="fa-solid fa-eye"></i> Detail
-            </a>
-        </td>
-    </tr>
-</tbody>
+                                        <td class="p-4 text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                                            <span th:if="${e.enrolled_at != null}" th:text="${#temporals.format(e.enrolled_at, 'yyyy-MM-dd HH:mm')}">2026-01-01</span>
+                                            <span th:if="${e.enrolled_at == null}">-</span>
+                                        </td>
+                                        <td class="p-4 whitespace-nowrap">
+                                            <a th:href="@{/admin/enrollments/detail/{id}(id=${e.enrollment_id})}"
+                                                class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg inline-flex items-center gap-1.5 transition text-xs shadow-sm">
+                                                <i class="fa-solid fa-eye"></i> Detail
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -286,9 +290,6 @@
         if(themeToggle) {
             themeToggle.addEventListener("click", () => applyTheme(!document.body.classList.contains("light-mode")));
         }
-
-   
-        
     </script>
 </body>
 </html>

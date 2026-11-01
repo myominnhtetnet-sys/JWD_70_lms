@@ -2,21 +2,24 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{head :: head}"></head>
 
-<body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
+<!-- 🟢 1. body ကို h-screen နဲ့ overflow-hidden ပေးပြီး Viewport အပြင်မထွက်အောင် ထိန်းထားသည် -->
+<body class="h-screen font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200 overflow-hidden flex flex-col">
 
-    <div id="app" class="min-h-screen flex flex-col overflow-hidden">
+    <div id="app" class="h-full flex flex-col overflow-hidden">
         
-        <!-- TOP HEADER BAR -->
+        <!-- TOP HEADER BAR (Fixed Top) -->
         <div th:replace="~{header :: header}"></div>
 
         <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
-        <div class="flex-1 flex overflow-hidden">
+        <div class="flex-1 flex overflow-hidden h-full">
             
-            <!-- DYNAMIC SIDEBAR -->
-            <div th:replace="~{nav :: nav}"></div>
+            <!-- 🟢 2. DYNAMIC SIDEBAR (Fixed Width & Independent Scroll) -->
+            <aside class="w-64 flex-shrink-0 h-full overflow-y-auto bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700/60 z-20">
+                <div th:replace="~{nav :: nav}"></div>
+            </aside>
 
-            <!-- MAIN PAGE BODY (Space ဝင်နေတာကို ဖြုတ်ပြီး flex-1 နဲ့ အပြည့်ယူစေရန် ပြင်ထားသည်) -->
-            <main class="flex-1 overflow-y-auto p-8 bg-slate-50 dark:bg-slate-900">
+            <!-- 🟢 3. MAIN PAGE BODY (Independent Scroll) -->
+            <main class="flex-1 h-full overflow-y-auto p-8 bg-slate-50 dark:bg-slate-900">
                 <div class="max-w-7xl mx-auto">
 
                     <!-- HEADER SECTION -->
@@ -55,7 +58,7 @@
                     </div>
 
                     <!-- CATEGORY TABLE CARD -->
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 mb-8">
                         <!-- Table Header -->
                         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
                             <div>

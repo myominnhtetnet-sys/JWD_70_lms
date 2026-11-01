@@ -2,24 +2,27 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{head :: head}"></head>
 
-<body class="h-full font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
+<!-- 🟢 1. Body ကို h-screen နဲ့ overflow-hidden ပေးပြီး Viewport အပြင်မထွက်အောင် ထိန်းထားသည် -->
+<body class="h-screen font-sans text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200 overflow-hidden flex flex-col">
 
-    <div id="app" class="min-h-screen flex flex-col overflow-hidden">
+    <div id="app" class="h-full flex flex-col overflow-hidden">
         
-        <!-- TOP HEADER BAR -->
+        <!-- TOP HEADER BAR (Fixed Top) -->
         <div th:replace="~{header :: header}"></div>
 
         <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
         <div class="flex-1 flex overflow-hidden">
             
-            <!-- DYNAMIC SIDEBAR -->
-            <div th:replace="~{nav :: nav}"></div>
+            <!-- 🟢 2. DYNAMIC SIDEBAR (Fixed Width & Independent Scroll) -->
+            <aside class="w-64 flex-shrink-0 h-full overflow-y-auto bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700/60 z-20">
+                <div th:replace="~{nav :: nav}"></div>
+            </aside>
 
-            <!-- MAIN PAGE BODY (p-8 ထည့်သွင်းပေးထားပြီး အောက်ဖက် Space ရရှိစေရန် ပြင်ဆင်ထားသည်) -->
-            <main class="flex-1 overflow-y-auto p-8 bg-slate-50 dark:bg-slate-900">
+            <!-- 🟢 3. MAIN PAGE BODY (Independent Scroll) -->
+            <main class="flex-1 h-full overflow-y-auto p-8 bg-slate-50 dark:bg-slate-900">
                 <div class="max-w-7xl mx-auto space-y-6">
 
-                    <!-- MAIN CONTENT CARD CONTAINER (စိပ်နေမှုကို ဖယ်ရှားရန် Card ပုံစံ ထည့်သွင်းထားသည်) -->
+                    <!-- MAIN CONTENT CARD CONTAINER -->
                     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
                         
                         <!-- HEADER SECTION -->
@@ -29,7 +32,7 @@
                                 <p class="text-xs text-slate-500 mt-1">Manage all class announcements and updates securely</p>
                             </div>
                             <div class="flex items-center gap-3">
-                                <!-- Modal ဖွင့်မည့် Button (အရင်ကကဲ့သို့ pill ပုံစံ လှပအောင် ပြင်ဆင်ထားသည်) -->
+                                <!-- Modal ဖွင့်မည့် Button -->
                                 <button onclick="openCreateModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-full font-medium text-sm flex items-center gap-2 transition shadow-sm cursor-pointer">
                                     <i class="fa-solid fa-bullhorn text-xs"></i>
                                     New Announcement

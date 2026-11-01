@@ -3,20 +3,23 @@
 
 <head th:replace="~{head :: head}"></head>
 
-<body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen">
-<div class="app min-h-screen flex flex-col">
+<!-- 🟢 1. body ကို h-screen နဲ့ overflow-hidden ပေးပြီး Viewport အပြင်မထွက်အောင် ထိန်းထားသည် -->
+<body class="bg-slate-100 text-slate-800 font-sans antialiased h-screen overflow-hidden flex flex-col">
+<div class="app h-full flex flex-col overflow-hidden">
 
-    <!-- TOP HEADER BAR -->
+    <!-- TOP HEADER BAR (Fixed Top) -->
     <div th:replace="~{header :: header}"></div>
 
     <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
-    <div class="flex-1 flex overflow-hidden">
+    <div class="flex-1 flex overflow-hidden h-full">
         
-        <!-- DYNAMIC SIDEBAR -->
-        <div th:replace="~{nav :: nav}"></div>
+        <!-- 🟢 2. DYNAMIC SIDEBAR (Fixed Width & Independent Scroll) -->
+        <aside class="w-64 flex-shrink-0 h-full overflow-y-auto bg-white border-r border-slate-200 z-20">
+            <div th:replace="~{nav :: nav}"></div>
+        </aside>
 
-        <!-- MAIN SECTION -->
-        <main class="main flex-1 overflow-y-auto p-6 lg:p-8 bg-slate-50">
+        <!-- 🟢 3. MAIN SECTION (Independent Scroll) -->
+        <main class="main flex-1 h-full overflow-y-auto p-6 lg:p-8 bg-slate-50">
 
             <!-- PAGE CONTENT -->
             <div class="max-w-7xl mx-auto">
@@ -61,7 +64,7 @@
                 </div>
 
                 <!-- Users Table Panel -->
-                <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-8">
                     <div class="overflow-x-auto">
                         
                         <!-- 1. ACTIVE USERS TABLE -->
