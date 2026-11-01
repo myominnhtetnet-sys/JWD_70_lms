@@ -73,7 +73,6 @@ public class AnnouncementController {
         model.addAttribute("loggedInRole", roleName);
     }
 
-    // 1. HTML View Page ပြသရန် (URL: /admin/announcements)
     @GetMapping("/admin/announcements")
     public String showAnnouncementsPage(HttpSession session) {
         if (isNotAdmin(session)) {
