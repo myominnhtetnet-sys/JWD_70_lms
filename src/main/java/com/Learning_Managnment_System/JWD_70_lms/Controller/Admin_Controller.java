@@ -21,6 +21,12 @@ public class Admin_Controller {
     @Autowired
     private Admin_Repository adminRepository;
     
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private DashboardService dashboardService;
+    
     private boolean isNotAdmin(HttpSession session) {
         LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
         Object roleIdObj = session.getAttribute("roleId");
@@ -47,7 +53,6 @@ public class Admin_Controller {
             }
             roleId = currentUser.getRole_id();
         } 
-        
         else {
             if (session.getAttribute("fullName") != null) {
                 displayName = (String) session.getAttribute("fullName");
@@ -71,11 +76,7 @@ public class Admin_Controller {
         model.addAttribute("loggedInRole", roleName);
     }
 
-    @Autowired
-    private UserService userService;
-
     @GetMapping({"", "/"})
-    
     public String show(HttpSession session) {
         if (isNotAdmin(session)) {
             return "redirect:/login";
@@ -95,16 +96,53 @@ public String showDashboard(Model model) {
     model.addAttribute("overdues", dashboardService.getOverdueInstallmentsList());
     return "dashboard";
 }
-    
-    @GetMapping("/users")
-    public String listUsers(HttpSession session, Model model) {
+//    
+//    @GetMapping("/users")
+//    public String listUsers(HttpSession session, Model model) {
+//        if (isNotAdmin(session)) {
+//            return "redirect:/login";
+//        }
+//        List<AdminUserBean> users = adminRepository.getAllUsers();
+//        model.addAttribute("users", users);
+//        return "users";
+//    }
+
+@GetMapping("/users")
+public String listUsers(
+        @RequestParam(required = false) Integer roleId,
+        HttpSession session, 
+        Model model) {
+    @GetMapping("/dashboard")
+    public String showDashboard(HttpSession session, Model model) {
         if (isNotAdmin(session)) {
             return "redirect:/login";
         }
-        List<AdminUserBean> users = adminRepository.getAllUsers();
-        model.addAttribute("users", users);
-        return "users";
+        model.addAttribute("activePage", "dashboard");
+        model.addAttribute("banner", dashboardService.getBannerSummary());
+        model.addAttribute("stats", dashboardService.getStatCardsSummary());
+        model.addAttribute("pendingPayments", dashboardService.getPendingPayments());
+        model.addAttribute("batches", dashboardService.getBatchSeatProgress());
+        model.addAttribute("overdues", dashboardService.getOverdueInstallmentsList());
+        return "dashboard";
     }
+    
+    if (isNotAdmin(session)) {
+        return "redirect:/login";
+    }
+
+    List<AdminUserBean> users;
+    
+    // 🟢 Role ID ပါလာပါက ၎င်းအလိုက် Filter လုပ်မည်၊ မပါပါက အားလုံးပြမည်
+    if (roleId != null) {
+        users = adminRepository.getUsersByRoleId(roleId);
+    } else {
+        users = adminRepository.getAllUsers();
+    }
+
+    model.addAttribute("users", users);
+    model.addAttribute("roleId", roleId); // 🟢 Dropdown တွင် ရွေးထားသောတန်ဖိုး မှန်ကန်စွာ ဆက်ပြနေစေရန်
+    return "users";
+}
 
     @GetMapping("/users/search")
     public String searchUsers(
@@ -254,7 +292,6 @@ public String showDashboard(Model model) {
         return "redirect:/admin/users";
     }
 
-    // 🟢 Suspend Method (Comment ဖြုတ်ပြီး ပြန်လည်ပြင်ဆင်ထားသည်)
     @PostMapping("/users/suspend")
     public String suspendUser(
             @RequestParam("userId") int userId,
@@ -316,7 +353,10 @@ public String showDashboard(Model model) {
     }
 
     @GetMapping("/users/trash")
-    public String viewTrashInMain(Model model) {
+    public String viewTrashInMain(HttpSession session, Model model) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
         List<AdminUserBean> deletedUsers = userService.getDeletedUsers();
         model.addAttribute("deletedUsers", deletedUsers);
         model.addAttribute("isTrashView", true); 
@@ -324,7 +364,13 @@ public String showDashboard(Model model) {
     }
 
     @PostMapping("/users/restore")
-    public String restoreUser(@RequestParam("userId") int userId, RedirectAttributes redirectAttributes) {
+    public String restoreUser(
+            @RequestParam("userId") int userId, 
+            HttpSession session, 
+            RedirectAttributes redirectAttributes) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
         userService.restoreUser(userId);
         redirectAttributes.addFlashAttribute("success", "User restored successfully!");
         return "redirect:/admin/users";

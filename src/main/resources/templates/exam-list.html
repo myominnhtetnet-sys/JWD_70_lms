@@ -261,11 +261,24 @@
 
                                         <td class="px-4 py-3 text-center">
                                             <div class="flex items-center justify-center gap-1.5">
-                                                <button type="button" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold transition cursor-pointer" title="View"
-                                                        th:attr="data-id=${exam.examId}, data-title=${exam.title}, data-type=${exam.examType}, data-duration=${exam.durationMin}, data-total=${exam.totalMark}, data-pass=${exam.passMark}, data-attempts=${exam.maxAttempts}, data-status=${exam.status}"
-                                                        onclick="openViewModal(this)">
-                                                    View
-                                                </button>
+                                                <button type="button"
+    class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold transition cursor-pointer"
+    title="View"
+    th:attr="
+        data-id=${exam.examId},
+        data-course=${exam.courseId},
+        data-batch=${exam.batchId},
+        data-title=${exam.title},
+        data-type=${exam.examType},
+        data-duration=${exam.durationMin},
+        data-total=${exam.totalMark},
+        data-pass=${exam.passMark},
+        data-attempts=${exam.maxAttempts},
+        data-status=${exam.status}"
+    onclick="openViewModal(this)">
+
+    View
+</button>
 
                                                 <button type="button" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition cursor-pointer shadow-xs" title="Edit"
                                                         th:attr="data-id=${exam.examId}, data-course=${exam.courseId}, data-batch=${exam.batchId}, data-title=${exam.title}, data-type=${exam.examType}, data-duration=${exam.durationMin}, data-total=${exam.totalMark}, data-pass=${exam.passMark}, data-start=${exam.startAt != null ? #temporals.format(exam.startAt, 'yyyy-MM-dd''T''HH:mm') : ''}, data-end=${exam.endAt != null ? #temporals.format(exam.endAt, 'yyyy-MM-dd''T''HH:mm') : ''}, data-attempts=${exam.maxAttempts}, data-shuffle=${exam.shuffleQuestions}, data-status=${exam.status}"

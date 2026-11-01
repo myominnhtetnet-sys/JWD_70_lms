@@ -1,7 +1,7 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,22 +15,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.Learning_Managnment_System.JWD_70_lms.Service.BatchService;
 import com.Learning_Managnment_System.JWD_70_lms.model.BatchBean.*;
 import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
-
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/admin/batches-manage")
 public class BatchController {
 	
-	private final BatchService batchService;
-
-    public BatchController(BatchService batchService) {
-        this.batchService = batchService;
-    }
+	@Autowired
+	private BatchService batchService;
 
     @ModelAttribute
     public void addCommonAttributes(HttpSession session, Model model) {
