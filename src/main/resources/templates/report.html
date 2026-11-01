@@ -10,265 +10,302 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Fragment Header Replacement (if exists) -->
+    <head th:replace="~{head :: head}"></head>
+
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased">
+<body class="h-screen bg-slate-50 text-slate-800 antialiased transition-colors duration-200 overflow-hidden flex flex-col">
 
-    <div class="flex h-screen overflow-hidden">
+    <div id="app" class="h-full flex flex-col overflow-hidden">
         
-        <!-- EXACT ORIGINAL SIDEBAR NAVIGATION -->
-        <aside class="w-64 bg-slate-950 text-slate-300 flex flex-col justify-between hidden md:flex border-r border-slate-800 overflow-y-auto">
-            <div class="p-4 space-y-6">
-                <!-- Navigation Sections -->
-                <nav class="space-y-1 text-xs font-medium">
-                    <div class="pb-2 px-3 text-[10px] uppercase tracking-wider text-slate-500 font-bold">Main</div>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-chart-pie text-sm"></i> Dashboard
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-users text-sm"></i> Users & Roles
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-user-plus text-sm"></i> Enrollment
-                    </a>
+        <!-- TOP HEADER BAR FRAGMENT -->
+        <div th:replace="~{header :: header}"></div>
 
-                    <div class="pt-4 pb-2 px-3 text-[10px] uppercase tracking-wider text-slate-500 font-bold">Batch Management</div>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-layer-group text-sm"></i> Batches Overview
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-square-plus text-sm"></i> Create Batch
-                    </a>
-
-                    <div class="pt-4 pb-2 px-3 text-[10px] uppercase tracking-wider text-slate-500 font-bold">Academics & Courses</div>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-book text-sm"></i> Course Management
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-screwdriver-wrench text-sm"></i> Course Builder
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-tags text-sm"></i> Categories
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-comments text-sm"></i> Course Reviews
-                    </a>
-
-                    <div class="pt-4 pb-2 px-3 text-[10px] uppercase tracking-wider text-slate-500 font-bold">Financial & Aid</div>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-percent text-sm"></i> Discounts
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-file-invoice text-sm"></i> Installment Rules
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-triangle-exclamation text-sm"></i> Overdue Installments
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-money-bill-transfer text-sm"></i> Payments & Refunds
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-graduation-cap text-sm"></i> Scholarships
-                    </a>
-                    <a th:href="@{/admin/scholarship-applications-review}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-file-shield text-sm"></i> Scholarship Apps
-                    </a>
-
-                    <div class="pt-4 pb-2 px-3 text-[10px] uppercase tracking-wider text-slate-500 font-bold">System & Operations</div>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-award text-sm"></i> Certificates
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-bullhorn text-sm"></i> Announcements
-                    </a>
-                    <a th:href="@{/reports}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-indigo-950 text-indigo-400 font-semibold border border-indigo-800/50 shadow-sm">
-                        <i class="fa-solid fa-chart-line text-sm"></i> Reports
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-shield-halved text-sm"></i> Audit Logs
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        <i class="fa-solid fa-gear text-sm"></i> System Settings
-                    </a>
-                </nav>
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col overflow-y-auto">
+        <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
+        <div class="flex-1 flex overflow-hidden h-full">
             
-            <!-- Top Navbar -->
-            <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-20">
-                <div class="relative w-96">
-                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" placeholder="Search reports, students, logs..." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-11 pr-4 outline-none text-sm">
+            <!-- 🟢 MATCHED DYNAMIC SIDEBAR (Fixed Width, Icons, & Styled Links) -->
+            <aside class="w-64 flex-shrink-0 h-full overflow-y-auto bg-slate-900 border-r border-slate-800 z-20">
+                <!-- If using Thymeleaf Fragment, th:replace="~{nav :: nav}" will load external sidebar -->
+                <div th:replace="~{nav :: nav}">
+                    <!-- Fallback Sidebar Markup matching Scholarship Page Style -->
+                    <div class="p-4 space-y-6">
+                        <nav class="space-y-1 text-sm font-medium">
+                            <!-- Categories -->
+                            <a th:href="@{/admin/categories}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                                <i class="fa-solid fa-layer-group w-5 text-center"></i>
+                                <span>Categories</span>
+                            </a>
+
+                            <!-- Course Reviews -->
+                            <a th:href="@{/admin/course-reviews}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                                <i class="fa-solid fa-star w-5 text-center"></i>
+                                <span>Course Reviews</span>
+                            </a>
+
+                            <!-- Financial & Aid Section -->
+                            <div class="pt-5 pb-2 px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                                Financial & Aid
+                            </div>
+
+                            <a th:href="@{/admin/discounts}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                                <i class="fa-solid fa-tag w-5 text-center"></i>
+                                <span>Discounts</span>
+                            </a>
+
+                            <a th:href="@{/admin/installment-rules}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                                <i class="fa-solid fa-receipt w-5 text-center"></i>
+                                <span>Installment Rules</span>
+                            </a>
+
+                            <a th:href="@{/admin/overdue-installments}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                                <i class="fa-solid fa-triangle-exclamation w-5 text-center"></i>
+                                <span>Overdue Installments</span>
+                            </a>
+
+                            <a th:href="@{/admin/payments-refunds}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                                <i class="fa-solid fa-credit-card w-5 text-center"></i>
+                                <span>Payments & Refunds</span>
+                            </a>
+
+                            <a th:href="@{/admin/scholarships}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                                <i class="fa-solid fa-graduation-cap w-5 text-center"></i>
+                                <span>Scholarships</span>
+                            </a>
+
+                            <a th:href="@{/admin/scholarship-applications-review}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                                <i class="fa-solid fa-file-invoice w-5 text-center"></i>
+                                <span>Scholarship Apps</span>
+                            </a>
+
+                            <!-- System & Operations Section -->
+                            <div class="pt-5 pb-2 px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                                System & Operations
+                            </div>
+
+                            <a th:href="@{/admin/certificates}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                                <i class="fa-solid fa-award w-5 text-center"></i>
+                                <span>Certificates</span>
+                            </a>
+
+                            <a th:href="@{/admin/announcements}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                                <i class="fa-solid fa-bullhorn w-5 text-center"></i>
+                                <span>Announcements</span>
+                            </a>
+
+                            <!-- ACTIVE PAGE: Reports (Bright Indigo Pill with Shadow & White Text) -->
+                            <a th:href="@{/reports}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 transition-all">
+                                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                                <span>Reports</span>
+                            </a>
+
+                            <a th:href="@{/admin/audit-logs}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                                <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i>
+                                <span>Audit Logs</span>
+                            </a>
+
+                            <a th:href="@{/admin/settings}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                                <i class="fa-solid fa-gear w-5 text-center"></i>
+                                <span>System Settings</span>
+                            </a>
+                        </nav>
+                    </div>
                 </div>
+            </aside>
+
+            <!-- Main Content Area (Independent Scroll) -->
+            <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
                 
-                <div class="flex items-center gap-4">
-                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" class="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-500/20" alt="Avatar">
-                    <div>
-                        <div class="font-bold text-sm text-slate-800">Sarah Jenkins</div>
-                        <div class="text-xs text-slate-500">Administrator</div>
+                <!-- Top Navbar -->
+                <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0 z-10">
+                    <div class="relative w-96">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" placeholder="Search reports, students, logs..." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-11 pr-4 outline-none text-sm focus:ring-2 focus:ring-indigo-500/20">
                     </div>
-                </div>
-            </header>
-
-            <!-- Dashboard Content -->
-            <main class="p-8 space-y-6">
-                
-                <!-- Metric Cards Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <span class="text-[11px] font-bold text-slate-400 tracking-wider">TOTAL REPORTS</span>
-                                <h3 class="text-3xl font-bold text-slate-900 mt-1" th:text="${reports != null ? (#lists.size(reports) + 2) : 2}">2</h3>
-                            </div>
-                            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                                <i class="fa-solid fa-file-lines text-base"></i>
-                            </div>
-                        </div>
-                        <div class="mt-4 text-xs font-semibold text-emerald-600">+14 this month</div>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <span class="text-[11px] font-bold text-slate-400 tracking-wider">SCHEDULED JOBS</span>
-                                <h3 class="text-3xl font-bold text-slate-900 mt-1">12</h3>
-                            </div>
-                            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                                <i class="fa-solid fa-calendar-days text-base"></i>
-                            </div>
-                        </div>
-                        <div class="mt-4 text-xs font-medium text-indigo-600">Automated daily</div>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <span class="text-[11px] font-bold text-slate-400 tracking-wider">STORAGE USED</span>
-                                <h3 class="text-3xl font-bold text-slate-900 mt-1">1.4 GB</h3>
-                            </div>
-                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                                <i class="fa-solid fa-database text-base"></i>
-                            </div>
-                        </div>
-                        <div class="mt-4 text-xs font-medium text-slate-500">PDF & CSV exports</div>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <span class="text-[11px] font-bold text-slate-400 tracking-wider">EXPORT SUCCESS RATE</span>
-                                <h3 class="text-3xl font-bold text-slate-900 mt-1">99.9%</h3>
-                            </div>
-                            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                                <i class="fa-solid fa-circle-check text-base"></i>
-                            </div>
-                        </div>
-                        <div class="mt-4 text-xs font-medium text-slate-500">Zero failed queues</div>
-                    </div>
-                </div>
-
-                <!-- Generated Reports Archive Table Section -->
-                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                    <div class="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100">
-                        <div class="flex items-center gap-3">
-                            <h2 class="text-lg font-bold text-slate-900">Generated Reports Archive</h2>
-                            <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-3 py-1 rounded-full">Active Archive</span>
+                    
+                    <div class="flex items-center gap-4">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" class="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-500/20" alt="Avatar">
+                        <div>
+                            <div class="font-bold text-sm text-slate-800">Sarah Jenkins</div>
+                            <div class="text-xs text-slate-500">Administrator</div>
                         </div>
                     </div>
+                </header>
 
-                    <!-- Table -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse text-sm">
-                            <thead>
-                                <tr class="text-[11px] uppercase text-slate-400 font-bold border-b border-slate-100 bg-slate-50/50 tracking-wider">
-                                    <th class="py-3.5 px-6">Report ID</th>
-                                    <th class="py-3.5 px-6">Report Title</th>
-                                    <th class="py-3.5 px-6">Category</th>
-                                    <th class="py-3.5 px-6">Generated By</th>
-                                    <th class="py-3.5 px-6">Date Created</th>
-                                    <th class="py-3.5 px-6">Format</th>
-                                    <th class="py-3.5 px-6 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100 text-slate-600">
-                                
-                                <!-- Static Row 1 -->
-                                <tr class="hover:bg-slate-50/50 transition-colors">
-                                    <td class="py-4 px-6 font-semibold text-slate-800">#RPT-501</td>
-                                    <td class="py-4 px-6 font-bold text-slate-900">Q3 Scholarship Disbursement Summary</td>
-                                    <td class="py-4 px-6 text-slate-600">Financial & Aid</td>
-                                    <td class="py-4 px-6 flex items-center gap-2.5">
-                                        <span class="w-7 h-7 rounded-full bg-indigo-50 text-indigo-600 text-xs flex items-center justify-center font-bold">S</span> Sarah Jenkins
-                                    </td>
-                                    <td class="py-4 px-6 text-slate-500">Oct 14, 2026</td>
-                                    <td class="py-4 px-6"><span class="bg-rose-50 text-rose-600 px-2.5 py-1 rounded-lg text-xs font-bold">PDF</span></td>
-                                    <td class="py-4 px-6 text-right">
-                                        <a th:href="@{/docs/transcript4.pdf}" target="_blank" class="text-indigo-600 hover:underline font-semibold text-xs">View</a>
-                                    </td>
-                                </tr>
+                <!-- Dashboard Content -->
+                <main class="p-8 space-y-6 flex-1 overflow-y-auto bg-slate-50">
+                    <div class="max-w-7xl mx-auto space-y-8">
+                        
+                        <!-- Metric Cards Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                            
+                            <!-- Card 1 -->
+                            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <span class="text-[11px] font-bold text-slate-400 tracking-wider">TOTAL REPORTS</span>
+                                        <h3 class="text-3xl font-bold text-slate-900 mt-1" th:text="${reports != null ? (#lists.size(reports) + 2) : 2}">2</h3>
+                                    </div>
+                                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
+                                        <i class="fa-solid fa-file-lines"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-4 text-xs font-semibold text-emerald-600 flex items-center gap-1">
+                                    <i class="fa-solid fa-arrow-trend-up"></i> +14 this month
+                                </div>
+                            </div>
 
-                                <!-- Static Row 2 -->
-                                <tr class="hover:bg-slate-50/50 transition-colors">
-                                    <td class="py-4 px-6 font-semibold text-slate-800">#RPT-502</td>
-                                    <td class="py-4 px-6 font-bold text-slate-900">JWD_70 Course Attendance Audit</td>
-                                    <td class="py-4 px-6 text-slate-600">Student Attendance</td>
-                                    <td class="py-4 px-6 flex items-center gap-2.5">
-                                        <span class="w-7 h-7 rounded-full bg-indigo-50 text-indigo-600 text-xs flex items-center justify-center font-bold">S</span> System Bot
-                                    </td>
-                                    <td class="py-4 px-6 text-slate-500">Oct 12, 2026</td>
-                                    <td class="py-4 px-6"><span class="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-lg text-xs font-bold">CSV</span></td>
-                                    <td class="py-4 px-6 text-right">
-                                        <a th:href="@{/docs/portfolio3.pdf}" target="_blank" class="text-indigo-600 hover:underline font-semibold text-xs">View</a>
-                                    </td>
-                                </tr>
+                            <!-- Card 2 -->
+                            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <span class="text-[11px] font-bold text-slate-400 tracking-wider">SCHEDULED JOBS</span>
+                                        <h3 class="text-3xl font-bold text-slate-900 mt-1">12</h3>
+                                    </div>
+                                    <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-4 text-xs font-medium text-indigo-600">
+                                    Automated daily
+                                </div>
+                            </div>
 
-                                <!-- Dynamic Database Loop for Scholarship Application Reports -->
-                                <tr th:each="app, iterStat : ${reports}" class="hover:bg-slate-50/50 transition-colors">
-                                    <td class="py-4 px-6 font-semibold text-slate-800" th:text="${'#RPT-50' + (iterStat.count + 2)}">#RPT-503</td>
-                                    <td class="py-4 px-6 font-bold text-slate-900" th:text="${app.scholarshipName != null ? app.scholarshipName + ' Application Report' : 'Scholarship Review Summary'}">Scholarship Report</td>
-                                    <td class="py-4 px-6 text-slate-600">Financial & Aid</td>
-                                    <td class="py-4 px-6 flex items-center gap-2.5">
-                                        <span class="w-7 h-7 rounded-full bg-indigo-50 text-indigo-600 text-xs flex items-center justify-center font-bold" 
-                                              th:text="${app.studentName != null ? #strings.substring(app.studentName,0,1) : 'U'}">U</span> 
-                                        <span th:text="${app.studentName != null ? app.studentName : 'Student'}">Student Name</span>
-                                    </td>
-                                    <td class="py-4 px-6 text-slate-500">Recent</td>
-                                    <td class="py-4 px-6">
-                                        <span class="bg-rose-50 text-rose-600 px-2.5 py-1 rounded-lg text-xs font-bold">PDF</span>
-                                    </td>
-                                    <td class="py-4 px-6 text-right">
-                                        <!-- Uses /view/{id} to bypass IDM download interception -->
-                                        <a th:if="${app.supportingDocument != null and !#strings.isEmpty(app.supportingDocument)}" 
-                                           th:href="@{/admin/scholarship-applications-review/view/{id}(id=${app.applicationId})}" 
-                                           target="_blank" class="text-indigo-600 hover:underline font-semibold text-xs">
-                                            View
-                                        </a>
-                                        <span th:unless="${app.supportingDocument != null and !#strings.isEmpty(app.supportingDocument)}" class="text-slate-400 text-xs">—</span>
-                                    </td>
-                                </tr>
+                            <!-- Card 3 -->
+                            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <span class="text-[11px] font-bold text-slate-400 tracking-wider">STORAGE USED</span>
+                                        <h3 class="text-3xl font-bold text-slate-900 mt-1">1.4 GB</h3>
+                                    </div>
+                                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                                        <i class="fa-solid fa-database"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-4 text-xs font-medium text-slate-500">
+                                    PDF & CSV exports
+                                </div>
+                            </div>
 
-                            </tbody>
-                        </table>
-                    </div>
+                            <!-- Card 4 -->
+                            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <span class="text-[11px] font-bold text-slate-400 tracking-wider">EXPORT SUCCESS RATE</span>
+                                        <h3 class="text-3xl font-bold text-slate-900 mt-1">99.9%</h3>
+                                    </div>
+                                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-4 text-xs font-medium text-slate-500">
+                                    Zero failed queues
+                                </div>
+                            </div>
 
-                    <!-- Pagination Footer -->
-                    <div class="p-4 border-t border-slate-100 flex justify-between items-center text-sm text-slate-500">
-                        <span th:text="${reports != null ? 'Showing ' + (#lists.size(reports) + 2) + ' of ' + (#lists.size(reports) + 2) + ' entries' : 'Showing 2 of 2 entries'}">Showing 2 of 2 entries</span>
-                        <div class="flex items-center gap-2">
-                            <button class="px-3 py-1.5 border border-slate-200 rounded-xl hover:bg-slate-50 font-medium">Previous</button>
-                            <button class="px-3.5 py-1.5 bg-indigo-600 text-white rounded-xl font-medium shadow-sm">1</button>
-                            <button class="px-3 py-1.5 border border-slate-200 rounded-xl hover:bg-slate-50 font-medium">Next</button>
                         </div>
-                    </div>
-                </div>
 
-            </main>
+                        <!-- Generated Reports Archive Table Section -->
+                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden mb-8">
+                            <div class="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100">
+                                <div class="flex items-center gap-3">
+                                    <h2 class="text-lg font-bold text-slate-900">Generated Reports Archive</h2>
+                                    <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-3 py-1 rounded-full">Active Archive</span>
+                                </div>
+                            </div>
+
+                            <!-- Table -->
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-sm">
+                                    <thead>
+                                        <tr class="text-[11px] uppercase text-slate-400 font-bold border-b border-slate-100 bg-slate-50/50 tracking-wider">
+                                            <th class="py-3.5 px-6">Report ID</th>
+                                            <th class="py-3.5 px-6">Report Title</th>
+                                            <th class="py-3.5 px-6">Category</th>
+                                            <th class="py-3.5 px-6">Generated By</th>
+                                            <th class="py-3.5 px-6">Date Created</th>
+                                            <th class="py-3.5 px-6">Format</th>
+                                            <th class="py-3.5 px-6 text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 text-slate-600">
+                                        
+                                        <!-- Static Row 1 -->
+                                        <tr class="hover:bg-slate-50/50 transition-colors">
+                                            <td class="py-4 px-6 font-semibold text-slate-800">#RPT-501</td>
+                                            <td class="py-4 px-6 font-bold text-slate-900">Q3 Scholarship Disbursement Summary</td>
+                                            <td class="py-4 px-6 text-slate-600">Financial & Aid</td>
+                                            <td class="py-4 px-6 flex items-center gap-2.5">
+                                                <span class="w-7 h-7 rounded-full bg-indigo-50 text-indigo-600 text-xs flex items-center justify-center font-bold">S</span> Sarah Jenkins
+                                            </td>
+                                            <td class="py-4 px-6 text-slate-500">Oct 14, 2026</td>
+                                            <td class="py-4 px-6"><span class="bg-rose-50 text-rose-600 px-2.5 py-1 rounded-lg text-xs font-bold">PDF</span></td>
+                                            <td class="py-4 px-6 text-right">
+                                                <a th:href="@{/docs/transcript4.pdf}" target="_blank" class="text-indigo-600 hover:underline font-semibold text-xs">View</a>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Static Row 2 -->
+                                        <tr class="hover:bg-slate-50/50 transition-colors">
+                                            <td class="py-4 px-6 font-semibold text-slate-800">#RPT-502</td>
+                                            <td class="py-4 px-6 font-bold text-slate-900">JWD_70 Course Attendance Audit</td>
+                                            <td class="py-4 px-6 text-slate-600">Student Attendance</td>
+                                            <td class="py-4 px-6 flex items-center gap-2.5">
+                                                <span class="w-7 h-7 rounded-full bg-indigo-50 text-indigo-600 text-xs flex items-center justify-center font-bold">S</span> System Bot
+                                            </td>
+                                            <td class="py-4 px-6 text-slate-500">Oct 12, 2026</td>
+                                            <td class="py-4 px-6"><span class="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-lg text-xs font-bold">CSV</span></td>
+                                            <td class="py-4 px-6 text-right">
+                                                <a th:href="@{/docs/portfolio3.pdf}" target="_blank" class="text-indigo-600 hover:underline font-semibold text-xs">View</a>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Dynamic Database Loop for Scholarship Application Reports -->
+                                        <tr th:each="app, iterStat : ${reports}" class="hover:bg-slate-50/50 transition-colors">
+                                            <td class="py-4 px-6 font-semibold text-slate-800" th:text="${'#RPT-50' + (iterStat.count + 2)}">#RPT-503</td>
+                                            <td class="py-4 px-6 font-bold text-slate-900" th:text="${app.scholarshipName != null ? app.scholarshipName + ' Application Report' : 'Scholarship Review Summary'}">Scholarship Report</td>
+                                            <td class="py-4 px-6 text-slate-600">Financial & Aid</td>
+                                            <td class="py-4 px-6 flex items-center gap-2.5">
+                                                <span class="w-7 h-7 rounded-full bg-indigo-50 text-indigo-600 text-xs flex items-center justify-center font-bold" 
+                                                      th:text="${app.studentName != null ? #strings.substring(app.studentName,0,1) : 'U'}">U</span> 
+                                                <span th:text="${app.studentName != null ? app.studentName : 'Student'}">Student Name</span>
+                                            </td>
+                                            <td class="py-4 px-6 text-slate-500">Recent</td>
+                                            <td class="py-4 px-6">
+                                                <span class="bg-rose-50 text-rose-600 px-2.5 py-1 rounded-lg text-xs font-bold">PDF</span>
+                                            </td>
+                                            <td class="py-4 px-6 text-right">
+                                                <a th:if="${app.supportingDocument != null and !#strings.isEmpty(app.supportingDocument)}" 
+                                                   th:href="@{/admin/scholarship-applications-review/view/{id}(id=${app.applicationId})}" 
+                                                   target="_blank" class="text-indigo-600 hover:underline font-semibold text-xs">
+                                                    View
+                                                </a>
+                                                <span th:unless="${app.supportingDocument != null and !#strings.isEmpty(app.supportingDocument)}" class="text-slate-400 text-xs">—</span>
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination Footer -->
+                            <div class="p-4 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500">
+                                <span th:text="${reports != null ? 'Showing ' + (#lists.size(reports) + 2) + ' of ' + (#lists.size(reports) + 2) + ' entries' : 'Showing 2 of 2 entries'}">Showing 2 of 2 entries</span>
+                                <div class="flex items-center gap-1">
+                                    <button class="px-3 py-1.5 border border-slate-200 rounded-xl hover:bg-slate-50 font-medium cursor-pointer">Previous</button>
+                                    <button class="px-3 py-1.5 bg-indigo-600 text-white rounded-xl font-medium shadow-sm">1</button>
+                                    <button class="px-3 py-1.5 border border-slate-200 rounded-xl hover:bg-slate-50 font-medium cursor-pointer">Next</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </main>
+            </div>
         </div>
     </div>
 
