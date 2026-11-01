@@ -7,6 +7,7 @@ import com.Learning_Managnment_System.JWD_70_lms.model.ScholarshipBean;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -39,5 +40,18 @@ public class ScholarshipService {
 
     public int deleteScholarship(Integer id) {
         return scholarshipRepository.deleteScholarship(id);
+    }
+    
+    @Transactional 
+    public String applyForScholarship(String email, int programId, String reason, String docName) {
+        Integer userId = scholarshipRepository.findUserIdByEmail(email);
+        if (userId == null) return "USER_NOT_FOUND";
+
+        if (scholarshipRepository.hasAlreadyApplied(userId, programId)) {
+            return "DUPLICATE";
+        }
+
+        int rows = scholarshipRepository.insertApplication(userId, programId, reason, docName);
+        return rows > 0 ? "SUCCESS" : "FAILED";
     }
 }

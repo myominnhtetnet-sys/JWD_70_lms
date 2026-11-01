@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Types;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -265,5 +266,107 @@ public class ScholarshipRepository {
 
         return jdbcTemplate.update(sql, scholarshipId);
     }
-    
+    public List<Map<String, Object>> findAvailablePrograms(int userId) {
+       
+        String sql = """
+            SELECT 
+                s.scholarship_id, 
+                s.name AS program_name, 
+                s.sponsor, 
+                s.description, 
+                s.coverage_value AS max_amount 
+            FROM scholarships s
+            WHERE s.is_active = 1
+              AND NOT EXISTS (
+                  SELECT 1 
+                  FROM scholarship_applications sa 
+                  WHERE sa.scholarship_id = s.scholarship_id 
+                    AND sa.user_id = ? 
+                    AND sa.status != 'CANCELLED'
+              )
+            ORDER BY s.scholarship_id DESC
+            """;
+        try {
+            // Passes the active logged-in userId parameter straight into the SQL template hook
+            return jdbcTemplate.queryForList(sql, userId);
+        } catch (Exception e) {
+            System.err.println("❌ REPO ERROR: findAvailablePrograms failed -> " + e.getMessage());
+            return new java.util.ArrayList<>();
+        }
+    }
+
+    /**
+     * Resolves the primary student user ID tied to an email address.
+     */
+    public Integer findUserIdByEmail(String email) {
+        String sql = "SELECT user_id FROM users WHERE email = ? LIMIT 1";
+        try {
+            return jdbcTemplate.queryForObject(sql, Integer.class, email);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 🟢 FIXED: Checks previous application entries accurately across your column keys
+     */
+    public boolean hasAlreadyApplied(int userId, int scholarshipId) {
+        String sql = "SELECT COUNT(*) FROM scholarship_applications WHERE user_id = ? AND scholarship_id = ? AND status != 'CANCELLED'";
+        try {
+            Integer count = jdbcTemplate.queryForObject(sql, Integer.class, userId, scholarshipId);
+            return count != null && count > 0;
+        } catch (Exception e) {
+            System.err.println("❌ REPO ERROR -> hasAlreadyApplied check failed: " + e.getMessage());
+            return false;
+        }
+    }
+
+   
+    /**
+     * 🟢 FIXED: Automatically resolves and binds the student's active batch_id to prevent database insertion crashes!
+     */
+    public int insertApplication(int userId, int scholarshipId, String reason, String documentName) {
+        // 1. First, dynamically fetch the student's active batch code ID from their enrollment entry row
+        Integer activeBatchId = null;
+        try {
+            String batchLookupSql = "SELECT batch_id FROM enrollments WHERE user_id = ? AND LOWER(status) = 'active' LIMIT 1";
+            activeBatchId = jdbcTemplate.queryForObject(batchLookupSql, Integer.class, userId);
+        } catch (Exception e) {
+            System.err.println("⚠️ REPO NOTICE -> No active enrollment batch found for userId " + userId + ". Trying fallback lookup...");
+            try {
+                // Second string fallback: Check any latest submission entry row regardless of string casing flags
+                String fallbackBatchSql = "SELECT batch_id FROM enrollments WHERE user_id = ? ORDER BY enrollment_id DESC LIMIT 1";
+                activeBatchId = jdbcTemplate.queryForObject(fallbackBatchSql, Integer.class, userId);
+            } catch (Exception ex) {
+                activeBatchId = null;
+            }
+        }
+
+        // If no batch_id can be found, print a warning notice
+        if (activeBatchId == null) {
+            System.err.println("🚨 CRITICAL ERROR: Cannot submit application because student has no registered batch_id.");
+            return 0;
+        }
+
+        // 2. 🟢 FIXED: Explicitly insert 'batch_id' into your projection block statement
+        String sql = """
+            INSERT INTO scholarship_applications (
+                user_id, 
+                scholarship_id, 
+                batch_id, 
+                reason, 
+                supporting_document, 
+                status, 
+                created_at
+            ) VALUES (?, ?, ?, ?, ?, 'PENDING', NOW())
+            """;
+        try {
+            return jdbcTemplate.update(sql, userId, scholarshipId, activeBatchId, reason, documentName);
+        } catch (Exception e) {
+            System.err.println("❌ CRITICAL REPO ERROR -> insertApplication failed execution: " + e.getMessage());
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
 }
