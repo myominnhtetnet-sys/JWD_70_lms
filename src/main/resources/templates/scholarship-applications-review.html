@@ -203,12 +203,12 @@
                                                 </p>
                                             </td>
 
-                                            <!-- DOCUMENT COLUMN WITH UPLOAD BUTTON -->
+                                            <!-- DOCUMENT COLUMN WITH VIEW LINK & INLINE UPLOAD BUTTON -->
                                             <td class="py-4 px-6">
                                                 <div class="flex items-center gap-2">
-                                                    <!-- Existing Document Link -->
+                                                    <!-- Uses /view/{id} to prevent download managers from intercepting -->
                                                     <a th:if="${app.supportingDocument != null and !#strings.isEmpty(app.supportingDocument)}" 
-                                                       th:href="@{/admin/scholarship-applications-review/download/{id}(id=${app.applicationId})}" 
+                                                       th:href="@{/admin/scholarship-applications-review/view/{id}(id=${app.applicationId})}" 
                                                        target="_blank"
                                                        class="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-semibold hover:underline truncate max-w-[110px]"
                                                        th:title="${app.supportingDocument}">
@@ -220,7 +220,7 @@
                                                     <span th:unless="${app.supportingDocument != null and !#strings.isEmpty(app.supportingDocument)}" 
                                                           class="text-xs text-slate-400 italic">None</span>
 
-                                                    <!-- Inline Upload Form (Auto-submits on file selection) -->
+                                                    <!-- Inline Upload Button -->
                                                     <form th:action="@{/admin/scholarship-applications-review/upload-inline}" method="POST" enctype="multipart/form-data" class="inline-flex items-center">
                                                         <input type="hidden" name="applicationId" th:value="${app.applicationId}" />
                                                         <label th:for="${'inlineFile-' + app.applicationId}" class="cursor-pointer bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 p-1.5 rounded-lg border border-slate-200 transition text-xs" title="Upload or Replace Document">
@@ -269,7 +269,7 @@
                                                         th:data-amount="${app.approvedAmount}"
                                                         th:data-notes="${app.reviewNotes}"
                                                         th:data-doc="${app.supportingDocument}"
-                                                        th:data-doc-url="@{/admin/scholarship-applications-review/download/{id}(id=${app.applicationId})}"
+                                                        th:data-doc-url="@{/admin/scholarship-applications-review/view/{id}(id=${app.applicationId})}"
                                                         class="bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white font-medium text-xs px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 ml-auto">
                                                     <i class="fa-solid fa-pen-to-square"></i> Review
                                                 </button>
@@ -312,7 +312,6 @@
                 </button>
             </div>
 
-            <!-- Added enctype="multipart/form-data" -->
             <form th:action="@{/admin/scholarship-applications-review/review}" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
                 <input type="hidden" id="modalApplicationId" name="applicationId">
 
@@ -414,7 +413,7 @@
 
             const docContainer = document.getElementById('modalDocContainer');
             if (doc && doc.trim() !== '' && doc.trim() !== 'null') {
-                const targetUrl = docUrl || ('/admin/scholarship-applications-review/download/' + id);
+                const targetUrl = docUrl || ('/admin/scholarship-applications-review/view/' + id);
                 docContainer.innerHTML = `<a href="${targetUrl}" target="_blank" class="text-indigo-600 hover:underline font-semibold flex items-center gap-1.5 max-w-[250px] truncate" title="${doc}"><i class="fa-solid fa-file-lines text-indigo-500"></i> ${doc}</a>`;
             } else {
                 docContainer.innerHTML = `<span class="text-slate-400 italic">No document attached</span>`;

@@ -45,7 +45,6 @@ public class ScholarshipApplicationController {
         try {
             int reviewedByAdminId = 1; 
 
-            // Process document upload if a file was selected in the modal
             if (documentFile != null && !documentFile.isEmpty()) {
                 String originalFilename = documentFile.getOriginalFilename();
                 String uploadDir = "uploads/";
@@ -58,10 +57,7 @@ public class ScholarshipApplicationController {
                 Path destinationPath = Paths.get(uploadDir + uniqueFilename);
                 Files.copy(documentFile.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
 
-                application.setSupportingDocument(uniqueFilename);
-                
-                // Update database supporting document column if method exists
-                // applicationsRepository.updateDocument(application.getApplicationId(), uniqueFilename);
+                applicationsRepository.updateDocument(application.getApplicationId(), uniqueFilename);
             }
 
             applicationsRepository.reviewApplication(
@@ -81,9 +77,6 @@ public class ScholarshipApplicationController {
         return "redirect:/admin/scholarship-applications-review";
     }
 
-    /**
-     * Endpoint for the row-level inline upload button directly inside the table.
-     */
     @PostMapping("/upload-inline")
     public String uploadInlineDocument(
             @RequestParam("applicationId") Long applicationId,
@@ -114,11 +107,11 @@ public class ScholarshipApplicationController {
     }
 
     /**
-     * Serves and streams the actual uploaded supporting document file (PDF, Image, etc.) 
-     * directly to the browser for viewing or downloading.
+     * Endpoint mapped to /view/{id} to prevent download managers (like IDM) from intercepting,
+     * and streams the file inline so it opens directly in the browser tab.
      */
-    @GetMapping("/download/{id}")
-    public ResponseEntity<Resource> downloadDocument(@PathVariable("id") Long id) {
+    @GetMapping("/view/{id}")
+    public ResponseEntity<Resource> viewDocument(@PathVariable("id") Long id) {
         try {
             ScholarshipApplicationsBean app = applicationsRepository.findById(id);
             
@@ -127,7 +120,6 @@ public class ScholarshipApplicationController {
             }
 
             String docPath = app.getSupportingDocument().trim();
-
             Path filePath = Paths.get(docPath).normalize();
 
             if (!Files.exists(filePath)) {
@@ -141,22 +133,22 @@ public class ScholarshipApplicationController {
             Resource resource = new UrlResource(filePath.toUri());
 
             if (!resource.exists() || !resource.isReadable()) {
-                System.err.println("Document file not found at path: " + filePath.toAbsolutePath());
                 return ResponseEntity.notFound().build();
             }
 
-            String contentType = "application/octet-stream";
+            MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
             String filenameLower = docPath.toLowerCase();
+            
             if (filenameLower.endsWith(".pdf")) {
-                contentType = MediaType.APPLICATION_PDF_VALUE;
+                mediaType = MediaType.APPLICATION_PDF;
             } else if (filenameLower.endsWith(".jpg") || filenameLower.endsWith(".jpeg")) {
-                contentType = MediaType.IMAGE_JPEG_VALUE;
+                mediaType = MediaType.IMAGE_JPEG;
             } else if (filenameLower.endsWith(".png")) {
-                contentType = MediaType.IMAGE_PNG_VALUE;
+                mediaType = MediaType.IMAGE_PNG;
             }
 
             return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(contentType))
+                    .contentType(mediaType)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
 

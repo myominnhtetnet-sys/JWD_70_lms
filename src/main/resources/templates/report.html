@@ -18,53 +18,79 @@
 
     <div class="flex h-screen overflow-hidden">
         
-        <!-- Sidebar matching EduPulse LMS Navigation -->
-        <aside class="w-64 bg-slate-950 text-slate-300 flex flex-col justify-between hidden md:flex border-r border-slate-800">
-            <div class="p-4 space-y-6 overflow-y-auto">
+        <!-- EXACT ORIGINAL SIDEBAR NAVIGATION -->
+        <aside class="w-64 bg-slate-950 text-slate-300 flex flex-col justify-between hidden md:flex border-r border-slate-800 overflow-y-auto">
+            <div class="p-4 space-y-6">
                 <!-- Navigation Sections -->
                 <nav class="space-y-1 text-xs font-medium">
+                    <div class="pb-2 px-3 text-[10px] uppercase tracking-wider text-slate-500 font-bold">Main</div>
                     <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        Categories
+                        <i class="fa-solid fa-chart-pie text-sm"></i> Dashboard
                     </a>
                     <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        Course Reviews
+                        <i class="fa-solid fa-users text-sm"></i> Users & Roles
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
+                        <i class="fa-solid fa-user-plus text-sm"></i> Enrollment
+                    </a>
+
+                    <div class="pt-4 pb-2 px-3 text-[10px] uppercase tracking-wider text-slate-500 font-bold">Batch Management</div>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
+                        <i class="fa-solid fa-layer-group text-sm"></i> Batches Overview
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
+                        <i class="fa-solid fa-square-plus text-sm"></i> Create Batch
+                    </a>
+
+                    <div class="pt-4 pb-2 px-3 text-[10px] uppercase tracking-wider text-slate-500 font-bold">Academics & Courses</div>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
+                        <i class="fa-solid fa-book text-sm"></i> Course Management
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
+                        <i class="fa-solid fa-screwdriver-wrench text-sm"></i> Course Builder
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
+                        <i class="fa-solid fa-tags text-sm"></i> Categories
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
+                        <i class="fa-solid fa-comments text-sm"></i> Course Reviews
                     </a>
 
                     <div class="pt-4 pb-2 px-3 text-[10px] uppercase tracking-wider text-slate-500 font-bold">Financial & Aid</div>
                     <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        Discounts
+                        <i class="fa-solid fa-percent text-sm"></i> Discounts
                     </a>
                     <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        Installment Rules
+                        <i class="fa-solid fa-file-invoice text-sm"></i> Installment Rules
                     </a>
                     <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        Overdue Installments
+                        <i class="fa-solid fa-triangle-exclamation text-sm"></i> Overdue Installments
                     </a>
                     <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        Payments & Refunds
+                        <i class="fa-solid fa-money-bill-transfer text-sm"></i> Payments & Refunds
                     </a>
                     <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        Scholarships
+                        <i class="fa-solid fa-graduation-cap text-sm"></i> Scholarships
                     </a>
                     <a th:href="@{/admin/scholarship-applications-review}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        Scholarship Apps
+                        <i class="fa-solid fa-file-shield text-sm"></i> Scholarship Apps
                     </a>
 
                     <div class="pt-4 pb-2 px-3 text-[10px] uppercase tracking-wider text-slate-500 font-bold">System & Operations</div>
                     <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        Certificates
+                        <i class="fa-solid fa-award text-sm"></i> Certificates
                     </a>
                     <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        Announcements
+                        <i class="fa-solid fa-bullhorn text-sm"></i> Announcements
                     </a>
                     <a th:href="@{/reports}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-indigo-950 text-indigo-400 font-semibold border border-indigo-800/50 shadow-sm">
-                        Reports
+                        <i class="fa-solid fa-chart-line text-sm"></i> Reports
                     </a>
                     <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        Audit Logs
+                        <i class="fa-solid fa-shield-halved text-sm"></i> Audit Logs
                     </a>
                     <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition">
-                        System Settings
+                        <i class="fa-solid fa-gear text-sm"></i> System Settings
                     </a>
                 </nav>
             </div>
@@ -74,12 +100,18 @@
         <div class="flex-1 flex flex-col overflow-y-auto">
             
             <!-- Top Navbar -->
-            <header class="bg-white border-b border-slate-200 px-8 py-3.5 flex justify-between items-center">
-                <div class="w-96 relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
-                    </span>
-                    <input type="text" placeholder="Search reports, students, logs..." class="w-full bg-slate-50 text-sm rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 border border-slate-200 transition-all">
+            <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-20">
+                <div class="relative w-96">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" placeholder="Search reports, students, logs..." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-11 pr-4 outline-none text-sm">
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" class="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-500/20" alt="Avatar">
+                    <div>
+                        <div class="font-bold text-sm text-slate-800">Sarah Jenkins</div>
+                        <div class="text-xs text-slate-500">Administrator</div>
+                    </div>
                 </div>
             </header>
 
@@ -88,8 +120,6 @@
                 
                 <!-- Metric Cards Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    
-                    <!-- Card 1 -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
                         <div class="flex justify-between items-start">
                             <div>
@@ -100,12 +130,9 @@
                                 <i class="fa-solid fa-file-lines text-base"></i>
                             </div>
                         </div>
-                        <div class="mt-4 text-xs font-semibold text-emerald-600">
-                            +14 this month
-                        </div>
+                        <div class="mt-4 text-xs font-semibold text-emerald-600">+14 this month</div>
                     </div>
 
-                    <!-- Card 2 -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
                         <div class="flex justify-between items-start">
                             <div>
@@ -116,12 +143,9 @@
                                 <i class="fa-solid fa-calendar-days text-base"></i>
                             </div>
                         </div>
-                        <div class="mt-4 text-xs font-medium text-indigo-600">
-                            Automated daily
-                        </div>
+                        <div class="mt-4 text-xs font-medium text-indigo-600">Automated daily</div>
                     </div>
 
-                    <!-- Card 3 -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
                         <div class="flex justify-between items-start">
                             <div>
@@ -132,12 +156,9 @@
                                 <i class="fa-solid fa-database text-base"></i>
                             </div>
                         </div>
-                        <div class="mt-4 text-xs font-medium text-slate-500">
-                            PDF & CSV exports
-                        </div>
+                        <div class="mt-4 text-xs font-medium text-slate-500">PDF & CSV exports</div>
                     </div>
 
-                    <!-- Card 4 -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
                         <div class="flex justify-between items-start">
                             <div>
@@ -148,11 +169,8 @@
                                 <i class="fa-solid fa-circle-check text-base"></i>
                             </div>
                         </div>
-                        <div class="mt-4 text-xs font-medium text-slate-500">
-                            Zero failed queues
-                        </div>
+                        <div class="mt-4 text-xs font-medium text-slate-500">Zero failed queues</div>
                     </div>
-
                 </div>
 
                 <!-- Generated Reports Archive Table Section -->
@@ -225,8 +243,9 @@
                                         <span class="bg-rose-50 text-rose-600 px-2.5 py-1 rounded-lg text-xs font-bold">PDF</span>
                                     </td>
                                     <td class="py-4 px-6 text-right">
+                                        <!-- Uses /view/{id} to bypass IDM download interception -->
                                         <a th:if="${app.supportingDocument != null and !#strings.isEmpty(app.supportingDocument)}" 
-                                           th:href="@{/admin/scholarship-applications-review/download/{id}(id=${app.applicationId})}" 
+                                           th:href="@{/admin/scholarship-applications-review/view/{id}(id=${app.applicationId})}" 
                                            target="_blank" class="text-indigo-600 hover:underline font-semibold text-xs">
                                             View
                                         </a>
