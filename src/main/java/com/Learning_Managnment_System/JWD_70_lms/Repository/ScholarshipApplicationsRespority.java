@@ -88,6 +88,26 @@ public class ScholarshipApplicationsRespority {
     }
 
     /**
+     * Update only the supporting document filename for a scholarship application (Long ID).
+     */
+    public int updateDocument(Long applicationId, String supportingDocument) {
+        if (applicationId == null) {
+            return 0;
+        }
+        return updateDocument(applicationId.intValue(), supportingDocument);
+    }
+
+    /**
+     * Update only the supporting document filename for a scholarship application (Primitive int ID).
+     */
+    public int updateDocument(int applicationId, String supportingDocument) {
+        String sql = "UPDATE scholarship_applications " +
+                     "SET supporting_document = ?, updated_at = NOW() " +
+                     "WHERE application_id = ?";
+        return jdbcTemplate.update(sql, supportingDocument, applicationId);
+    }
+
+    /**
      * Delete a scholarship application by ID.
      */
     public int deleteApplication(int applicationId) {
