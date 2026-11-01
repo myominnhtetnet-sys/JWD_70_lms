@@ -28,14 +28,9 @@ public class AdminCourseController {
 	
 	@Autowired
     private AdminCourseService courseService;
-
-    // Upload Directory
+	
     private static final String UPLOAD_DIR = "uploads/";
 
-    /**
-     * 🟢 @ModelAttribute ဖြင့် Course Management စာမျက်နှာသို့ ဝင်ရောက်သည့်အခါတိုင်း 
-     * Login ဝင်ထားသော User ၏ အမည်နှင့် Role ကို Header ထဲသို့ အလိုအလျောက် ပို့ပေးခြင်း
-     */
     @ModelAttribute
     public void addCommonAttributes(HttpSession session, Model model) {
         String displayName = "Administrator";
@@ -91,7 +86,6 @@ public class AdminCourseController {
         return ResponseEntity.ok(categories);
     }
 
-    // 4. API: Get Single Course by ID (For View / Edit)
     @GetMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<AdminCourseBean> getCourseByIdApi(@PathVariable("id") Integer id) {
@@ -104,7 +98,6 @@ public class AdminCourseController {
         return ResponseEntity.notFound().build();
     }
 
-    // 5. API: Create Course (with JSON and optional image upload)
     @PostMapping("/api/create")
     @ResponseBody
     public ResponseEntity<?> createCourseApi(
@@ -160,7 +153,6 @@ public class AdminCourseController {
         }
     }
 
-    // 7. API: Delete Course
     @DeleteMapping("/api/delete/{id}")
     @ResponseBody
     public ResponseEntity<?> deleteCourseApi(@PathVariable("id") Integer id) {

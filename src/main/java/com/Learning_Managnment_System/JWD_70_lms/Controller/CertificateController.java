@@ -21,10 +21,7 @@ public class CertificateController {
 	
 	@Autowired
     private CertificateService certificateService;
-	
-    /**
-     * 🛡️ Admin ဟုတ်မဟုတ် စစ်ဆေးသည့် Helper Method
-     */
+
     private boolean isNotAdmin(HttpSession session) {
         LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
         Object roleIdObj = session.getAttribute("roleId");
@@ -36,13 +33,9 @@ public class CertificateController {
             roleId = (int) roleIdObj;
         }
         
-        return roleId != 1; // 1 သည် Administrator ဟု သတ်မှတ်သည်
+        return roleId != 1;
     }
-
-    /**
-     * 🟢 @ModelAttribute ဖြင့် Controller ရှိ Endpoint အားလုံးအတွက် 
-     * Login ဝင်ထားသော User ၏ အမည်နှင့် Role အမည်ကို Model သို့ အလိုအလျောက် ထည့်သွင်းပေးခြင်း
-     */
+    
     @ModelAttribute
     public void addCommonAttributes(HttpSession session, Model model) {
         String displayName = "Administrator";
@@ -101,7 +94,6 @@ public class CertificateController {
             return "redirect:/login";
         }
 
-        // 🟢 Session ထဲမှ Login ဝင်ထားသူ၏ ID ကို ယူ၍ issuedBy အဖြစ် အသုံးပြုခြင်း (မရှိလျှင် default 1)
         Integer issuedBy = 1;
         LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
         if (currentUser != null) {

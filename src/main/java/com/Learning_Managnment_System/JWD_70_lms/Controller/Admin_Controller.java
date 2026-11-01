@@ -20,9 +20,6 @@ public class Admin_Controller {
     @Autowired
     private Admin_Repository adminRepository;
     
-    /**
-     * Admin ဟုတ်မဟုတ် စစ်ဆေးသည့် Helper Method
-     */
     private boolean isNotAdmin(HttpSession session) {
         LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
         Object roleIdObj = session.getAttribute("roleId");
@@ -34,19 +31,14 @@ public class Admin_Controller {
             roleId = (int) roleIdObj;
         }
         
-        return roleId != 1; // 1 သည် Admin ဟု သတ်မှတ်သည်
+        return roleId != 1; 
     }
-
-    /**
-     * 🟢 @ModelAttribute ဖြင့် Controller ရှိ Endpoint အားလုံးအတွက် 
-     * Login ဝင်ထားသော User ၏ အမည်နှင့် Role အမည်ကို Model သို့ အလိုအလျောက် ထည့်သွင်းပေးခြင်း
-     */
+    
     @ModelAttribute
     public void addCommonAttributes(HttpSession session, Model model) {
         String displayName = "Administrator";
         int roleId = 1;
 
-        // 1. Session ထဲမှ "currentUser" (LoginBean) ရှိမရှိ စစ်ဆေးခြင်း
         LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
         if (currentUser != null) {
             if (currentUser.getFull_name() != null) {
@@ -54,7 +46,7 @@ public class Admin_Controller {
             }
             roleId = currentUser.getRole_id();
         } 
-        // 2. သို့မဟုတ် သီးသန့် Session တင်ထားလျှင် ၎င်းတို့ကို ယူခြင်း
+        
         else {
             if (session.getAttribute("fullName") != null) {
                 displayName = (String) session.getAttribute("fullName");
