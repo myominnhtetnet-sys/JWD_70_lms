@@ -53,26 +53,30 @@ public class ScheduleRepository {
     }
 
     public List<Map<String, Object>> getStudentExams(int userId) {
+        // 🟢 FIXED: Added raw 'e.start_at' directly into the SELECT list to completely resolve MySQL Error 3065
+        // 🟢 ALIAS SYNC: Maps both uppercase and lowercase columns for view context mapping safety
+        String sql = """
+            SELECT DISTINCT
+                e.exam_id,
+                e.exam_id AS EXAM_ID,
+                e.title,
+                e.title AS TITLE,
+                e.duration_min,
+                e.duration_min AS DURATION_MIN,
+                e.start_at,
+                COALESCE(DATE_FORMAT(e.start_at, '%Y-%m-%d %H:%i'), 'Flexible Window') AS formatted_start_at
+            FROM exams e
+            INNER JOIN enrollments en ON e.batch_id = en.batch_id
+            WHERE en.user_id = ? 
+              AND LOWER(en.status) = 'active'
+            ORDER BY e.start_at ASC
+            """;
         try {
-         
-            String sql = """
-                SELECT 
-                    ex.exam_id,
-                    ex.exam_title AS title,
-                    c.title AS course_name,
-                    ex.exam_date,
-                    ex.duration_minutes
-                FROM enrollments e
-                JOIN batches b ON e.batch_id = b.batch_id
-                JOIN courses c ON b.course_id = c.course_id
-                JOIN exams ex ON c.course_id = ex.course_id
-                WHERE e.user_id = ?
-                ORDER BY ex.exam_date ASC
-                """;
             return jdbcTemplate.queryForList(sql, userId);
         } catch (Exception e) {
-          
+            System.err.println("❌ CRITICAL: getStudentExams SQL execution crashed: " + e.getMessage());
             return new java.util.ArrayList<>();
         }
     }
+
 }

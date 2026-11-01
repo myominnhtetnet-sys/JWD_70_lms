@@ -282,5 +282,39 @@ public class CourseRepository {
             return jdbcTemplate.queryForList(fallbackSql);
         }
     }
+    
+    public List<Integer> findActiveBatchIdByCourseId(int courseId) {
+        // 🟢 FIXED: Changed status from 'ACTIVE' to match your strict batches table ENUM values ('OPEN' or 'UPCOMING')
+        String sql = "SELECT batch_id FROM batches WHERE course_id = ? AND (status = 'OPEN' OR status = 'UPCOMING') LIMIT 1";
+        return jdbcTemplate.queryForList(sql, Integer.class, courseId);
+    }
+
+    public boolean checkDuplicateEnrollment(int userId, int batchId) {
+        String sql = "SELECT COUNT(*) FROM enrollments WHERE user_id = ? AND batch_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, userId, batchId);
+        return count != null && count > 0;
+    }
+
+    public Double getCoursePriceByCourseId(int courseId) {
+        String sql = "SELECT price FROM courses WHERE course_id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, Double.class, courseId);
+        } catch (Exception e) {
+            return 0.0;
+        }
+    }
+
+    public int insertEnrollment(int userId, int batchId, double price) {
+        // 🟢 FIXED: Explicitly providing values for all non-nullable columns and matching your strict field data types
+        String sql = """
+            INSERT INTO enrollments (
+                user_id, batch_id, enrolled_at, original_amount, 
+                discount_id, discount_amount, scholarship_application_id, scholarship_amount, 
+                final_amount, payment_type, installment_rule_id, payment_status, status, status_reason
+            ) 
+            VALUES (?, ?, NOW(), ?, NULL, 0.00, NULL, 0.00, ?, 'FULL', NULL, 'UNPAID', 'PENDING', NULL)
+            """;
+        return jdbcTemplate.update(sql, userId, batchId, price, price);
+    }
 
 }

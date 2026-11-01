@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.Learning_Managnment_System.JWD_70_lms.Repository.Admin_Repository;
+import com.Learning_Managnment_System.JWD_70_lms.Service.DashboardService;
 import com.Learning_Managnment_System.JWD_70_lms.Service.UserService;
 import com.Learning_Managnment_System.JWD_70_lms.model.AdminUserBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.LoginBean;
@@ -20,9 +21,6 @@ public class Admin_Controller {
     @Autowired
     private Admin_Repository adminRepository;
     
-    /**
-     * Admin ဟုတ်မဟုတ် စစ်ဆေးသည့် Helper Method
-     */
     private boolean isNotAdmin(HttpSession session) {
         LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
         Object roleIdObj = session.getAttribute("roleId");
@@ -34,19 +32,14 @@ public class Admin_Controller {
             roleId = (int) roleIdObj;
         }
         
-        return roleId != 1; // 1 သည် Admin ဟု သတ်မှတ်သည်
+        return roleId != 1; 
     }
-
-    /**
-     * 🟢 @ModelAttribute ဖြင့် Controller ရှိ Endpoint အားလုံးအတွက် 
-     * Login ဝင်ထားသော User ၏ အမည်နှင့် Role အမည်ကို Model သို့ အလိုအလျောက် ထည့်သွင်းပေးခြင်း
-     */
+    
     @ModelAttribute
     public void addCommonAttributes(HttpSession session, Model model) {
         String displayName = "Administrator";
         int roleId = 1;
 
-        // 1. Session ထဲမှ "currentUser" (LoginBean) ရှိမရှိ စစ်ဆေးခြင်း
         LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
         if (currentUser != null) {
             if (currentUser.getFull_name() != null) {
@@ -54,7 +47,7 @@ public class Admin_Controller {
             }
             roleId = currentUser.getRole_id();
         } 
-        // 2. သို့မဟုတ် သီးသန့် Session တင်ထားလျှင် ၎င်းတို့ကို ယူခြင်း
+        
         else {
             if (session.getAttribute("fullName") != null) {
                 displayName = (String) session.getAttribute("fullName");
@@ -90,16 +83,30 @@ public class Admin_Controller {
         return "redirect:/admin/dashboard";
     }
 
-    @GetMapping("/dashboard")
-    public String adminDashboard(HttpSession session, Model model) {
-        if (isNotAdmin(session)) {
-            return "redirect:/login";
-        }
-        List<AdminUserBean> users = adminRepository.getAllUsers();
-        model.addAttribute("users", users);
-        return "dashboard";
-    }
+//    @GetMapping("/dashboard")
+//    public String adminDashboard(HttpSession session, Model model) {
+//        if (isNotAdmin(session)) {
+//            return "redirect:/login";
+//        }
+//        List<AdminUserBean> users = adminRepository.getAllUsers();
+//        model.addAttribute("users", users);
+//        return "dashboard";
+//    }
 
+
+@Autowired
+private DashboardService dashboardService;
+@GetMapping("/dashboard")
+public String showDashboard(Model model) {
+    model.addAttribute("activePage", "dashboard");
+    model.addAttribute("banner", dashboardService.getBannerSummary());
+    model.addAttribute("stats", dashboardService.getStatCardsSummary());
+    model.addAttribute("pendingPayments", dashboardService.getPendingPayments());
+    model.addAttribute("batches", dashboardService.getBatchSeatProgress());
+    model.addAttribute("overdues", dashboardService.getOverdueInstallmentsList());
+    return "dashboard";
+}
+    
     @GetMapping("/users")
     public String listUsers(HttpSession session, Model model) {
         if (isNotAdmin(session)) {
