@@ -84,6 +84,34 @@ public class Admin_Controller {
         return "redirect:/admin/dashboard";
     }
 
+@Autowired
+private DashboardService dashboardService;
+@GetMapping("/dashboard")
+public String showDashboard(Model model) {
+    model.addAttribute("activePage", "dashboard");
+    model.addAttribute("banner", dashboardService.getBannerSummary());
+    model.addAttribute("stats", dashboardService.getStatCardsSummary());
+    model.addAttribute("pendingPayments", dashboardService.getPendingPayments());
+    model.addAttribute("batches", dashboardService.getBatchSeatProgress());
+    model.addAttribute("overdues", dashboardService.getOverdueInstallmentsList());
+    return "dashboard";
+}
+//    
+//    @GetMapping("/users")
+//    public String listUsers(HttpSession session, Model model) {
+//        if (isNotAdmin(session)) {
+//            return "redirect:/login";
+//        }
+//        List<AdminUserBean> users = adminRepository.getAllUsers();
+//        model.addAttribute("users", users);
+//        return "users";
+//    }
+
+@GetMapping("/users")
+public String listUsers(
+        @RequestParam(required = false) Integer roleId,
+        HttpSession session, 
+        Model model) {
     @GetMapping("/dashboard")
     public String showDashboard(HttpSession session, Model model) {
         if (isNotAdmin(session)) {
@@ -98,15 +126,23 @@ public class Admin_Controller {
         return "dashboard";
     }
     
-    @GetMapping("/users")
-    public String listUsers(HttpSession session, Model model) {
-        if (isNotAdmin(session)) {
-            return "redirect:/login";
-        }
-        List<AdminUserBean> users = adminRepository.getAllUsers();
-        model.addAttribute("users", users);
-        return "users";
+    if (isNotAdmin(session)) {
+        return "redirect:/login";
     }
+
+    List<AdminUserBean> users;
+    
+    // 🟢 Role ID ပါလာပါက ၎င်းအလိုက် Filter လုပ်မည်၊ မပါပါက အားလုံးပြမည်
+    if (roleId != null) {
+        users = adminRepository.getUsersByRoleId(roleId);
+    } else {
+        users = adminRepository.getAllUsers();
+    }
+
+    model.addAttribute("users", users);
+    model.addAttribute("roleId", roleId); // 🟢 Dropdown တွင် ရွေးထားသောတန်ဖိုး မှန်ကန်စွာ ဆက်ပြနေစေရန်
+    return "users";
+}
 
     @GetMapping("/users/search")
     public String searchUsers(
