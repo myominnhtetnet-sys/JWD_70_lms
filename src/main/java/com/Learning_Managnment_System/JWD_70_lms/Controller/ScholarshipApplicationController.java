@@ -11,12 +11,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/admin/scholarship-applications-review")
@@ -35,10 +39,30 @@ public class ScholarshipApplicationController {
     @PostMapping("/review")
     public String reviewApplication(
             @ModelAttribute("application") ScholarshipApplicationsBean application,
+            @RequestParam(value = "documentFile", required = false) MultipartFile documentFile,
             RedirectAttributes redirectAttributes) {
 
         try {
             int reviewedByAdminId = 1; 
+
+            // Process document upload if a file was selected in the modal
+            if (documentFile != null && !documentFile.isEmpty()) {
+                String originalFilename = documentFile.getOriginalFilename();
+                String uploadDir = "uploads/";
+                File dir = new File(uploadDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+
+                String uniqueFilename = UUID.randomUUID().toString().substring(0, 8) + "_" + originalFilename;
+                Path destinationPath = Paths.get(uploadDir + uniqueFilename);
+                Files.copy(documentFile.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+
+                application.setSupportingDocument(uniqueFilename);
+                
+                // Update database supporting document column if method exists
+                // applicationsRepository.updateDocument(application.getApplicationId(), uniqueFilename);
+            }
 
             applicationsRepository.reviewApplication(
                 application.getApplicationId(),
@@ -50,9 +74,42 @@ public class ScholarshipApplicationController {
             
             redirectAttributes.addFlashAttribute("successMessage", "Scholarship application review saved successfully.");
         } catch (Exception e) {
+            e.printStackTrace();
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to save application review: " + e.getMessage());
         }
 
+        return "redirect:/admin/scholarship-applications-review";
+    }
+
+    /**
+     * Endpoint for the row-level inline upload button directly inside the table.
+     */
+    @PostMapping("/upload-inline")
+    public String uploadInlineDocument(
+            @RequestParam("applicationId") Long applicationId,
+            @RequestParam("documentFile") MultipartFile documentFile,
+            RedirectAttributes redirectAttributes) {
+        try {
+            if (documentFile != null && !documentFile.isEmpty()) {
+                String originalFilename = documentFile.getOriginalFilename();
+                String uploadDir = "uploads/";
+                File dir = new File(uploadDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+
+                String uniqueFilename = UUID.randomUUID().toString().substring(0, 8) + "_" + originalFilename;
+                Path destinationPath = Paths.get(uploadDir + uniqueFilename);
+                Files.copy(documentFile.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+
+                applicationsRepository.updateDocument(applicationId, uniqueFilename);
+                
+                redirectAttributes.addFlashAttribute("successMessage", "Document uploaded successfully!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to upload document: " + e.getMessage());
+        }
         return "redirect:/admin/scholarship-applications-review";
     }
 
@@ -71,15 +128,12 @@ public class ScholarshipApplicationController {
 
             String docPath = app.getSupportingDocument().trim();
 
-            // 1. Check direct path relative to project root (e.g. ./docs/transcript4.pdf)
             Path filePath = Paths.get(docPath).normalize();
 
-            // 2. Fallback: check inside 'uploads' directory
             if (!Files.exists(filePath)) {
                 filePath = Paths.get("uploads").resolve(docPath).normalize();
             }
 
-            // 3. Fallback: check inside static assets directory
             if (!Files.exists(filePath)) {
                 filePath = Paths.get("src/main/resources/static").resolve(docPath).normalize();
             }
@@ -91,7 +145,6 @@ public class ScholarshipApplicationController {
                 return ResponseEntity.notFound().build();
             }
 
-            // Determine content type dynamically
             String contentType = "application/octet-stream";
             String filenameLower = docPath.toLowerCase();
             if (filenameLower.endsWith(".pdf")) {
