@@ -28,11 +28,10 @@
         <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
         <div class="flex-1 flex overflow-hidden h-full">
             
-            <!-- 🟢 MATCHED DYNAMIC SIDEBAR (Fixed Width, Icons, & Styled Links) -->
+            <!-- DYNAMIC SIDEBAR -->
             <aside class="w-64 flex-shrink-0 h-full overflow-y-auto bg-slate-900 border-r border-slate-800 z-20">
-                <!-- If using Thymeleaf Fragment, th:replace="~{nav :: nav}" will load external sidebar -->
                 <div th:replace="~{nav :: nav}">
-                    <!-- Fallback Sidebar Markup matching Scholarship Page Style -->
+                    <!-- Fallback Sidebar Markup -->
                     <div class="p-4 space-y-6">
                         <nav class="space-y-1 text-sm font-medium">
                             <!-- Categories -->
@@ -97,7 +96,7 @@
                                 <span>Announcements</span>
                             </a>
 
-                            <!-- ACTIVE PAGE: Reports (Bright Indigo Pill with Shadow & White Text) -->
+                            <!-- ACTIVE PAGE: Reports -->
                             <a th:href="@{/reports}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 transition-all">
                                 <i class="fa-solid fa-chart-pie w-5 text-center"></i>
                                 <span>Reports</span>
@@ -120,19 +119,11 @@
             <!-- Main Content Area (Independent Scroll) -->
             <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
                 
-                <!-- Top Navbar -->
+                <!-- Top Navbar (REMOVED SARAH JENKINS PROFILE) -->
                 <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0 z-10">
                     <div class="relative w-96">
                         <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
                         <input type="text" placeholder="Search reports, students, logs..." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-11 pr-4 outline-none text-sm focus:ring-2 focus:ring-indigo-500/20">
-                    </div>
-                    
-                    <div class="flex items-center gap-4">
-                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" class="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-500/20" alt="Avatar">
-                        <div>
-                            <div class="font-bold text-sm text-slate-800">Sarah Jenkins</div>
-                            <div class="text-xs text-slate-500">Administrator</div>
-                        </div>
                     </div>
                 </header>
 
@@ -234,7 +225,7 @@
                                     </thead>
                                     <tbody class="divide-y divide-slate-100 text-slate-600">
                                         
-                                        <!-- Static Row 1 -->
+                                        <!-- Static Row 1 (Will keep Sarah Jenkins as the creator of this specific static report entry) -->
                                         <tr class="hover:bg-slate-50/50 transition-colors">
                                             <td class="py-4 px-6 font-semibold text-slate-800">#RPT-501</td>
                                             <td class="py-4 px-6 font-bold text-slate-900">Q3 Scholarship Disbursement Summary</td>
@@ -264,7 +255,7 @@
                                             </td>
                                         </tr>
 
-                                        <!-- Dynamic Database Loop for Scholarship Application Reports -->
+                                        <!-- Dynamic Database Loop -->
                                         <tr th:each="app, iterStat : ${reports}" class="hover:bg-slate-50/50 transition-colors">
                                             <td class="py-4 px-6 font-semibold text-slate-800" th:text="${'#RPT-50' + (iterStat.count + 2)}">#RPT-503</td>
                                             <td class="py-4 px-6 font-bold text-slate-900" th:text="${app.scholarshipName != null ? app.scholarshipName + ' Application Report' : 'Scholarship Review Summary'}">Scholarship Report</td>

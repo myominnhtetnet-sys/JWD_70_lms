@@ -1,6 +1,7 @@
 package com.Learning_Managnment_System.JWD_70_lms.Service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -47,5 +48,8 @@ public class QuestionService {
 
     public int deleteOptionsByQuestionId(Long questionId) {
         return questionRepository.deleteOptionsByQuestionId(questionId);
+    }
+    public List<Map<String, Object>> getRecentQuestions(int limit) {
+        return questionRepository.getRecentQuestions(limit);
     }
 }

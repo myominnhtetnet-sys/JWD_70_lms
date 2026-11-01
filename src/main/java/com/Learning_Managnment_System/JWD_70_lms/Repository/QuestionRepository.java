@@ -3,7 +3,7 @@ package com.Learning_Managnment_System.JWD_70_lms.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
-
+import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -17,6 +17,7 @@ import com.Learning_Managnment_System.JWD_70_lms.model.QuestionOptionBean;
 @Repository
 public class QuestionRepository {
 
+	
 	private final JdbcTemplate jdbcTemplate;
 	private final QuestionRowMapper questionRowMapper = new QuestionRowMapper();
 	private final QuestionOptionRowMapper questionOptionRowMapper = new QuestionOptionRowMapper();
@@ -218,6 +219,18 @@ public class QuestionRepository {
 
 	    return jdbcTemplate.query(sql, questionRowMapper, courseId);
 	}
-	
-	
+	public List<Map<String, Object>> getRecentQuestions(int limit) {
+		String sql = """
+				SELECT
+				    q.question_id,
+				    q.question_text,
+				    q.question_type,
+				    c.title AS course_title
+				FROM questions q
+				LEFT JOIN courses c ON q.course_id = c.course_id
+				ORDER BY q.question_id DESC
+				LIMIT ?
+				""";
+		return jdbcTemplate.queryForList(sql, limit);
+	}
 }
