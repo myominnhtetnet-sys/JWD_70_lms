@@ -98,37 +98,6 @@
             font-weight: bold;
         }
 
-        .otp-box {
-            background: #f4e9ff;
-
-            border: 2px dashed #8e44ad;
-
-            padding: 15px;
-
-            text-align: center;
-
-            border-radius: 8px;
-
-            margin-bottom: 20px;
-        }
-
-        .otp-label {
-            font-size: 13px;
-            color: #666;
-
-            margin-bottom: 5px;
-        }
-
-        .otp-code {
-            color: #4b176b;
-
-            font-size: 30px;
-
-            font-weight: bold;
-
-            letter-spacing: 5px;
-        }
-
         .error {
             background: #ffe6e6;
 
@@ -229,28 +198,20 @@
 
 <body>
 
-
     <!-- Navbar -->
-
     <div class="navbar">
-
         <div class="logo">
             LMS
         </div>
 
         <a th:href="@{/login}"
            class="home-link">
-
             <i class="fa-solid fa-house"></i>
             Login
-
         </a>
-
     </div>
 
-
     <!-- Main -->
-
     <div class="container">
 
         <h1 class="title">
@@ -258,61 +219,29 @@
         </h1>
 
         <p class="subtitle">
-            Enter the verification code to continue.
+            Enter the verification code sent to your email.
         </p>
 
-
         <!-- Email -->
-
         <div class="email-box"
              th:if="${email != null}">
-
             <i class="fa-solid fa-envelope"></i>
-
             <span th:text="${email}">
                 user@example.com
             </span>
-
         </div>
-
-
-        <!-- Demo OTP -->
-
-        <div class="otp-box"
-             th:if="${generatedCode != null}">
-
-            <div class="otp-label">
-                Your Verification Code
-            </div>
-
-            <div class="otp-code"
-                 th:text="${generatedCode}">
-                123456
-            </div>
-
-        </div>
-
 
         <!-- Error -->
-
         <div class="error"
              th:if="${error != null}"
              th:text="${error}">
         </div>
 
-
-        <!-- IMPORTANT:
-             URL must be /verify-code
-             NOT /verify_code
-        -->
-
         <form th:action="@{/verify-code}"
               th:object="${forgotPassword}"
               method="post">
 
-
             <div class="form-group">
-
                 <label for="code">
                     Verification Code
                 </label>
@@ -323,32 +252,21 @@
                        placeholder="Enter 6 digit code"
                        maxlength="6"
                        autocomplete="off">
-
             </div>
-
 
             <button type="submit"
                     class="verify-btn">
-
                 <i class="fa-solid fa-circle-check"></i>
-
                 Verify Code
-
             </button>
 
         </form>
 
-
         <div class="back-link">
-
             <a th:href="@{/forgot-password}">
-
                 <i class="fa-solid fa-arrow-left"></i>
-
                 Back to Forgot Password
-
             </a>
-
         </div>
 
     </div>

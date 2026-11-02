@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,9 +30,6 @@ public class LoginController {
     
     @Autowired
     StudentDashboardService dashboardService;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @GetMapping("/login")
     public String showLogin(Model model) {
@@ -54,13 +50,13 @@ public class LoginController {
             return "redirect:/login";
         }
         
-        // 🟢 အကောင့် Suspend ဖြစ်နေခြင်း ရှိမရှိ စစ်ဆေးခြင်း
         if ("SUSPENDED".equalsIgnoreCase(user.getStatus())) {
             redirectAttributes.addFlashAttribute("error", "Your account has been suspended");
             return "redirect:/login";
         }
 
         session.setAttribute("currentUser", user);
+        session.setAttribute("userId", user.getUser_id());
         session.setAttribute("roleId", user.getRole_id());
         session.setAttribute("fullName", user.getFull_name());
         session.setAttribute("email", user.getEmail());
@@ -94,7 +90,6 @@ public class LoginController {
         Map<String, Object> dashboardData = dashboardService.getStudentDashboardData(email);
         model.addAllAttributes(dashboardData);
      
-        
         List<AnnouncementBean> recentAnnouncements = announcementService.getLatestAnnouncements(2);
         model.addAttribute("allAnnouncements", recentAnnouncements);
         
