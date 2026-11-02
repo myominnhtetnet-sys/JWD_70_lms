@@ -7,62 +7,231 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
+   
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style> 
+    .apply-card {
+            max-width: 550px;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: #ffffff;
+            width: 100%;
+    
+    </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased font-sans">
 
-    <div class="min-h-screen flex items-center justify-center p-6">
-        <div class="max-w-2xl w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-8 space-y-6">
+    <div class="flex min-h-screen">
+        
+               <!-- Sidebar Navigation Menu (Collapsible Framework via Pure-CSS Animation) -->
+        <aside class="bg-slate-900 text-slate-300 hidden md:block shrink-0 sticky top-0 h-screen border-r border-slate-800 transition-all duration-300 relative group/sidebar">
             
-            <!-- Header -->
-            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+            <!-- 🟢 Pure CSS Toggle Checkbox Engine -->
+            <input type="checkbox" id="sidebar-toggle-check" class="peer hidden" checked />
+            
+            <!-- 🟢 Error-Free Scoped Structural Layout Adjustments -->
+            <style>
+                #sidebar-content-box { width: 256px; }
+                .peer:not(:checked) ~ #sidebar-content-box { width: 72px; }
+                .peer:not(:checked) ~ #sidebar-content-box .hidden-on-collapse { display: none !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box nav a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 { padding: 12px 8px !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a { justify-content: center !important; padding: 10px 0 !important; gap: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .p-4 a i { margin: 0 !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .h-16 { padding: 0 !important; justify-content: center !important; }
+                .peer:not(:checked) ~ #sidebar-content-box .toggle-arrow { transform: rotate(180deg); }
+                .peer:not(:checked) ~ #sidebar-content-box .bars-icon { display: flex !important; }
+            </style>
+
+            <div id="sidebar-content-box" class="flex flex-col justify-between h-full transition-all duration-300 overflow-x-hidden">
                 <div>
-                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-circle-info text-indigo-600"></i> Scholarship Application Details
-                    </h2>
-                    <p class="text-xs text-slate-400 mt-0.5">Review your submitted scholarship information</p>
+                    <!-- Logo & Collapse Button Trigger -->
+                    <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 justify-between relative">
+                        <!-- 🟢 Centered uncollapse bars icon (visible strictly when collapsed) -->
+                        <label for="sidebar-toggle-check" class="bars-icon hidden absolute inset-0 w-full h-full items-center justify-center cursor-pointer text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </label>
+
+                        <div class="flex items-center gap-3 hidden-on-collapse">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
+                                <i class="fa-solid fa-graduation-cap text-lg"></i>
+                            </div>
+                            <div>
+                                <span class="text-base font-bold text-white tracking-wide block leading-none">LearnHub</span>
+                                <small class="text-[11px] font-medium text-slate-400">Student Portal</small>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Collapse Arrow Button (visible on hover) -->
+                        <label for="sidebar-toggle-check" class="cursor-pointer p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all hidden-on-collapse group-hover/sidebar:block">
+                            <i class="fa-solid fa-chevron-left text-xs toggle-arrow transition-transform duration-300"></i>
+                        </label>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-6">
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Menu</div>
+                            <div class="space-y-1">
+                                <a th:href="@{/student}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                                    <i class="fa-solid fa-border-all text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Dashboard</span>
+                                </a>
+                                
+                                <a th:href="@{/student/awards}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                                    <i class="fa-solid fa-graduation-cap text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Grades & Certificates</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Account</div>
+                            <div class="space-y-1">
+                                <!-- Scholarships Menu Link -->
+                                
+                                <a th:href="@{/student/scholarship}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600/90 shadow-sm transition">
+                                    <i class="fa-solid fa-user-graduate text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Scholarships</span>
+                                </a>
+                                <!-- Active Profile Menu Link -->
+                                <a th:href="@{/student/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition text-slate-400">
+                                    <i class="fa-regular fa-user text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">My Profile</span>
+                                </a>
+                            </div>
+                        </div>
+                    </nav>
                 </div>
-                <a th:href="@{/student/scholarship}" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrow-left"></i> Back
+
+                <!-- Logout Action Panel Area -->
+                <div class="p-4 border-t border-slate-800 space-y-3">
+                    <a th:href="@{/logout}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-base shrink-0"></i> <span class="hidden-on-collapse whitespace-nowrap">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+ <!-- Main Content Area -->
+       <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+
+            <!-- Top Header -->
+           <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shrink-0 z-40 shadow-sm">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 leading-tight">Scholarship Programs</h2>
+                    <p class="text-xs text-slate-400 font-medium">Apply for available scholarships or check application status</p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
+                        <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+                            <span th:text="${fullName != null ? #strings.substring(fullName,0,2) : 'ST'}">ST</span>
+                        </div>
+                        <div class="hidden lg:block">
+                            <b class="block text-xs font-bold text-slate-800 leading-none" th:text="${fullName != null ? fullName : 'Student'}">Student</b>
+                            <small class="text-[11px] text-slate-400 font-medium">Student</small>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Details Content Workspace -->
+<main class="flex-1 overflow-y-auto p-6 lg:p-8 bg-slate-100 w-full text-xs">
+    <div class="max-w-2xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        
+        <!-- Premium Workspace Inner Wrapping Card Frame -->
+        <div class="p-6 sm:p-8 space-y-6">
+            
+            <!-- Dynamic Grid Matrix Framework Wrapper -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" th:if="${detail != null}">
+                
+                <!-- Program Name Info Box Block -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/40 space-y-1">
+                    <span class="text-slate-400 font-bold uppercase tracking-wider block text-[10px]" style="letter-spacing: 0.05em;">Program Name</span>
+                    <span class="font-extrabold text-slate-800 text-sm block tracking-tight" th:text="${detail['program_name']}">-</span>
+                </div>
+
+                <!-- Sponsor Info Box Block -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/40 space-y-1">
+                    <span class="text-slate-400 font-bold uppercase tracking-wider block text-[10px]" style="letter-spacing: 0.05em;">Sponsor Organization</span>
+                    <span class="font-extrabold text-slate-800 text-sm block tracking-tight" th:text="${detail['sponsor']}">-</span>
+                </div>
+
+                <!-- Dynamic Review Evaluation Status Info Box Block -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/40 space-y-1.5 flex flex-col justify-between">
+                    <span class="text-slate-400 font-bold uppercase tracking-wider block text-[10px]" style="letter-spacing: 0.05em;">Evaluation Review Status</span>
+                    <div>
+                        <!-- Dynamic conditional class assignments change text accents cleanly based on system state flags -->
+                        <span th:text="${detail['status']}" 
+                              th:class="|inline-block px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wide ${detail['status'] == 'APPROVED' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : (detail['status'] == 'REJECTED' ? 'bg-rose-50 text-rose-700 border border-rose-200/60' : 'bg-amber-50 text-amber-700 border border-amber-200/60')}|">
+                            PENDING
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Approved Funding Allowance Cap Value Amount Block -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/40 space-y-1">
+                    <span class="text-slate-400 font-bold uppercase tracking-wider block text-[10px]" style="letter-spacing: 0.05em;">Approved Funding Value</span>
+                    <span class="font-black text-indigo-600 text-sm block tracking-tight" 
+                          th:text="${detail['approved_amount'] != null ? #numbers.formatDecimal(detail['approved_amount'], 1, 'COMMA', 0, 'POINT') + ' MMK' : 'Pending Administrative Review'}">-</span>
+                </div>
+
+                <!-- Justification Purpose Text Area Column -->
+                <div class="col-span-1 sm:col-span-2 bg-slate-50 p-4 rounded-xl border border-slate-200/40 space-y-1">
+                    <span class="text-slate-400 font-bold uppercase tracking-wider block text-[10px]" style="letter-spacing: 0.05em;">Personal Justification Statement / Reason</span>
+                    <p class="text-slate-700 text-xs font-medium leading-relaxed m-0 whitespace-pre-line" th:text="${detail['reason']}">-</p>
+                </div>
+
+                <!-- Supporting Document File Link Panel Block Frame -->
+                <div class="col-span-1 sm:col-span-2 bg-slate-50 p-4 rounded-xl border border-slate-200/40 space-y-3.5" 
+                     th:if="${detail['supporting_document'] != null and !#strings.isEmpty(detail['supporting_document'])}">
+                    
+                    <div>
+                        <span class="text-slate-400 font-bold uppercase tracking-wider block text-[10px]" style="letter-spacing: 0.05em;">Uploaded Supporting Credentials</span>
+                    </div>
+                    
+                    <!-- Clickable File Action Row Badge Link -->
+                    <a th:href="@{/uploads/scholarships/{file}(file=${detail['supporting_document']})}" 
+                       target="_blank" 
+                       class="flex items-center bg-white border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/10 rounded-xl p-3 text-decoration-none transition-all duration-150 group w-full box-border shadow-sm">
+                        
+                        <!-- Embedded Eye PDF Icon -->
+                        <div class="bg-blue-50 text-blue-600 group-hover:bg-indigo-100 group-hover:text-indigo-600 w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mr-3 transition-colors">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </div>
+                        
+                        <!-- File Name String display block -->
+                        <div class="flex-1 min-w-0 pr-4">
+                            <span class="text-xs font-mono font-bold text-slate-700 group-hover:text-slate-900 truncate block" th:text="${detail['supporting_document']}">document.pdf</span>
+                        </div>
+                        
+                        <span class="text-[11px] font-bold text-slate-400 group-hover:text-indigo-600 transition-colors whitespace-nowrap">Open Document <i class="fa-solid fa-arrow-up-right-from-square text-[9px] ms-0.5"></i></span>
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- Empty State Fallback Record Block -->
+            <div th:if="${detail == null}" class="text-center py-12 text-slate-400 bg-slate-50/50 rounded-xl border border-slate-200 border-dashed">
+                <i class="fa-regular fa-folder-open text-2xl mb-1.5 block text-slate-300"></i>
+                <p class="font-bold text-slate-700 text-sm m-0">Application Details Not Discovered</p>
+                <p class="text-xs text-slate-400 m-0 mt-0.5">We could not load the targeted entry record indices from the registry tables.</p>
+            </div>
+
+            <!-- 🟢 FIXED: The full-width Back button sits independently at the base of the container stack -->
+            <div class="pt-4 border-t border-slate-200/80 w-full flex">
+                <a th:href="@{/student/scholarship}" 
+                   class="w-full bg-slate-800 hover:bg-slate-950 text-white font-bold py-3 rounded-xl text-xs tracking-wide text-decoration-none shadow-sm transition-all border-0 cursor-pointer flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                    <span>Back</span>
                 </a>
             </div>
 
-            <!-- Details Content -->
-            <div class="space-y-4" th:if="${detail != null}">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                    
-                    <div class="bg-slate-50 p-4 rounded-xl space-y-1">
-                        <span class="text-slate-400 font-medium uppercase tracking-wider block text-[10px]">Program Name</span>
-                        <span class="font-bold text-slate-800 text-sm" th:text="${detail['program_name']}">-</span>
-                    </div>
-
-                    <div class="bg-slate-50 p-4 rounded-xl space-y-1">
-                        <span class="text-slate-400 font-medium uppercase tracking-wider block text-[10px]">Sponsor</span>
-                        <span class="font-bold text-slate-800 text-sm" th:text="${detail['sponsor']}">-</span>
-                    </div>
-
-                    <div class="bg-slate-50 p-4 rounded-xl space-y-1">
-                        <span class="text-slate-400 font-medium uppercase tracking-wider block text-[10px]">Status</span>
-                        <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700 uppercase" th:text="${detail['status']}">-</span>
-                    </div>
-
-                    <div class="bg-slate-50 p-4 rounded-xl space-y-1">
-                        <span class="text-slate-400 font-medium uppercase tracking-wider block text-[10px]">Approved Amount</span>
-                        <span class="font-bold text-indigo-600 text-sm" th:text="${detail['approved_amount'] != null ? detail['approved_amount'] + ' MMK' : 'Pending Review'}">-</span>
-                    </div>
-
-                    <div class="col-span-2 bg-slate-50 p-4 rounded-xl space-y-1">
-                        <span class="text-slate-400 font-medium uppercase tracking-wider block text-[10px]">Reason / Note</span>
-                        <p class="text-slate-700 text-xs leading-relaxed" th:text="${detail['reason']}">-</p>
-                    </div>
-
-                    <div class="col-span-2 bg-slate-50 p-4 rounded-xl space-y-1">
-                        <span class="text-slate-400 font-medium uppercase tracking-wider block text-[10px]">Supporting Document</span>
-                        <div class="flex items-center gap-2 mt-1">
-                            <i class="fa-regular fa-file-pdf text-rose-500 text-base"></i>
-                            <span class="text-indigo-600 font-semibold text-xs" th:text="${detail['supporting_document']}">document.pdf</span>
-                        </div>
-                    </div>
+        </div>
+    </div>
+</main>
 
                 </div>
             </div>

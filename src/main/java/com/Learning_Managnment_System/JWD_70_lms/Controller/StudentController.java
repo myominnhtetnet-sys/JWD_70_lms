@@ -1,5 +1,9 @@
 package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,23 +14,24 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
+
 import com.Learning_Managnment_System.JWD_70_lms.Repository.StudentRepository;
 import com.Learning_Managnment_System.JWD_70_lms.Service.StudentService;
+import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/student")
 public class StudentController {
-	 @Autowired
+    
+    @Autowired
     private StudentService studentService;
 
     @Autowired
     private StudentRepository studentRepository;
-
-   
 
     @GetMapping("/home")
     public String show() {        
@@ -40,13 +45,37 @@ public class StudentController {
     }
 
     @PostMapping("/register")
-    public String processRegistration(@ModelAttribute("student") StudentBean student, RedirectAttributes redirectAttributes) {
-        studentService.registerStudent(student); 
-        redirectAttributes.addFlashAttribute("success", "Registration successful! Please login.");
+    public String processRegistration(@ModelAttribute("student") StudentBean student, 
+                                      @RequestParam(value = "profileImageFile", required = false) MultipartFile file, 
+                                      RedirectAttributes redirectAttributes) {
+        try {
+            if (file != null && !file.isEmpty()) {
+                String originalFileName = file.getOriginalFilename();
+                // 🟢 Space များနှင့် အထူးအက္ခရာများကို ဖယ်ရှားပြီး နာမည်သန့်သန့်ဖန်တီးခြင်း
+                String fileName = System.currentTimeMillis() + "_" + originalFileName.replaceAll("\\s+", "_");
+
+                String uploadDir = "src/main/resources/static/images/";
+                Path uploadPath = Paths.get(uploadDir);
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+                
+                Files.copy(file.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+                student.setProfileImage(fileName);
+            } else {
+                // ပုံမထည့်ခဲ့လျှင် Default ပုံ သတ်မှတ်ရန်
+                student.setProfileImage("student.jpg");
+            }
+
+            studentService.registerStudent(student); 
+            redirectAttributes.addFlashAttribute("success", "Registration successful! Please login.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Registration failed!");
+        }
         return "redirect:/login";
     }
 
-    // 🔴 ပြင်ဆင်ရန်: "/student/profile" မှ "/profile" သို့ ပြောင်းပါ
     @GetMapping("/profile")
     public String showProfilePage(HttpSession session, Model model) {
         String email = (String) session.getAttribute("email");
@@ -61,12 +90,13 @@ public class StudentController {
             model.addAttribute("phone", student.get("phone"));
             model.addAttribute("address", student.get("address"));
             model.addAttribute("studentId", student.get("id")); 
+            model.addAttribute("profileImage", student.get("profile_image"));
+            model.addAttribute("timestamp", System.currentTimeMillis());
         }
 
         return "profile";
     }
 
-    // 🔴 ပြင်ဆင်ရန်: "/student/profile/update" မှ "/profile/update" သို့ ပြောင်းပါ
     @PostMapping("/profile/update")
     public String updateProfile(@RequestParam("fullName") String fullName,
                                 @RequestParam(value = "phone", required = false) String phone,
@@ -91,7 +121,39 @@ public class StudentController {
         return "redirect:/student/profile";
     }
 
-    
+    @PostMapping("/profile/update-image")
+    public String updateProfileImage(@RequestParam("profileImage") MultipartFile file,
+                                     HttpSession session,
+                                     RedirectAttributes redirectAttributes) {
+        String email = (String) session.getAttribute("email");
+        if (email == null) {
+            return "redirect:/login";
+        }
+
+        if (!file.isEmpty()) {
+            try {
+                String originalFileName = file.getOriginalFilename();
+                String fileName = System.currentTimeMillis() + "_" + originalFileName.replaceAll("\\s+", "_");
+
+                String uploadDir = "src/main/resources/static/images/";
+                Path uploadPath = Paths.get(uploadDir);
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+                
+                Files.copy(file.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+                studentRepository.updateProfileImage(email, fileName);
+
+                redirectAttributes.addFlashAttribute("success", "Profile picture updated successfully!");
+            } catch (Exception e) {
+                e.printStackTrace();
+                redirectAttributes.addFlashAttribute("error", "Failed to update profile picture.");
+            }
+        }
+
+        return "redirect:/student/profile";
+    }
+
     @PostMapping("/profile/change-password")
     public String changePassword(@RequestParam("currentPassword") String currentPassword,
                                  @RequestParam("newPassword") String newPassword,
@@ -124,5 +186,4 @@ public class StudentController {
 
         return "redirect:/student/profile";
     }
-    
 }

@@ -41,7 +41,10 @@ public class LoginController {
     public String login(@ModelAttribute("login") LoginBean login, HttpSession session,
             RedirectAttributes redirectAttributes) {
         
+        // 🟢 FIXED: 'login.getPassword_hash()' holds the raw text typed into the form input box!
+        // We pass it directly into the repository where passwordEncoder.matches() will evaluate it.
         LoginBean user = loginRepo.login(login.getEmail(), login.getPassword_hash());
+        
         if (user == null) {
             redirectAttributes.addFlashAttribute("error", "Invalid email or password.");
             return "redirect:/login";
@@ -68,6 +71,7 @@ public class LoginController {
 
         return "redirect:/login";
     }
+
 
     @GetMapping("/student")
     public String studentPage(HttpSession session, Model model) {

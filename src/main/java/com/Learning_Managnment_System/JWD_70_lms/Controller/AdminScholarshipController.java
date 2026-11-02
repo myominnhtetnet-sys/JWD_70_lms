@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -74,31 +75,71 @@ public class AdminScholarshipController {
     }
 
 
-    // TODO: Autowire your discount type repository to populate dropdowns
-    // @Autowired
-    // private DiscountTypeRepository discountTypeRepository;
+//    private boolean isNotAdmin(HttpSession session) {
+//        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+//        Object roleIdObj = session.getAttribute("roleId");
+//        
+//        int roleId = 0;
+//        if (currentUser != null) {
+//            roleId = currentUser.getRole_id();
+//        } else if (roleIdObj != null) {
+//            roleId = (int) roleIdObj;
+//        }
+//        
+//        return roleId != 1; 
+//    }
 
-    // =========================================
-    // SCHOLARSHIP LIST
-    // =========================================
+//    @ModelAttribute
+//    public void addCommonAttributes(HttpSession session, Model model) {
+//        String displayName = "Administrator";
+//        int roleId = 1;
+//
+//        LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
+//        if (currentUser != null) {
+//            if (currentUser.getFull_name() != null) {
+//                displayName = currentUser.getFull_name();
+//            }
+//            roleId = currentUser.getRole_id();
+//        } else {
+//            if (session.getAttribute("fullName") != null) {
+//                displayName = (String) session.getAttribute("fullName");
+//            }
+//            if (session.getAttribute("roleId") != null) {
+//                roleId = (int) session.getAttribute("roleId");
+//            }
+//        }
+//
+//        String roleName = "Administrator";
+//        if (roleId == 1) {
+//            roleName = "Administrator";
+//        } else if (roleId == 2) {
+//            roleName = "Instructor";
+//        } else if (roleId == 3) {
+//            roleName = "Student";
+//        }
+//
+//        model.addAttribute("fullName", displayName);
+//        model.addAttribute("loggedInRole", roleName);
+//    }
+
     @GetMapping({"", "/", "/list"})
-    public String listScholarships(Model model) {
+    public String listScholarships(HttpSession session, Model model) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
         List<ScholarshipBean> scholarships = scholarshipRepository.getAllScholarships();
         model.addAttribute("scholarships", scholarships);
         return "Scholarship-list";
     }
-
-    // =========================================
-    // ADD SCHOLARSHIP FORM
-    // =========================================
+    
     @GetMapping("/new")
-    public String showAddForm(Model model) {
+    public String showAddForm(HttpSession session, Model model) {
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
         ScholarshipBean scholarship = new ScholarshipBean();
         scholarship.setIsActive(true); // Default active status
         model.addAttribute("scholarship", scholarship);
-        
-        // Load discount types for the dropdown
-        // model.addAttribute("discountTypes", discountTypeRepository.getAllDiscountTypes());
         
         return "Scholarship-form";
     }
@@ -109,8 +150,13 @@ public class AdminScholarshipController {
     @PostMapping("/save")
     public String saveScholarship(
             @ModelAttribute("scholarship") ScholarshipBean scholarship,
+            HttpSession session,
             RedirectAttributes redirectAttributes,
             Model model) {
+
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
 
         try {
             boolean isNew = scholarship.getScholarshipId() == null || scholarship.getScholarshipId() <= 0;
@@ -126,15 +172,11 @@ public class AdminScholarshipController {
             return "redirect:/admin/scholarships/list";
 
         } catch (DataIntegrityViolationException e) {
-            // Catches both duplicate keys AND foreign key constraint failures
             if (e.getMessage() != null && e.getMessage().contains("fk_scholarships_type")) {
                 model.addAttribute("errorMessage", "Selected discount type does not exist. Please choose a valid type.");
             } else {
                 model.addAttribute("errorMessage", "A database error occurred. The scholarship name or details may already exist.");
             }
-            
-            // CRITICAL: Re-populate dropdown options so the form renders correctly on error return
-            // model.addAttribute("discountTypes", discountTypeRepository.getAllDiscountTypes());
             
             return "Scholarship-form";
         }
@@ -146,7 +188,12 @@ public class AdminScholarshipController {
     @GetMapping("/edit/{id}")
     public String showEditForm(
             @PathVariable("id") Integer id,
+            HttpSession session,
             Model model) {
+
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
 
         ScholarshipBean scholarship = scholarshipRepository.getScholarshipById(id);
 
@@ -155,9 +202,6 @@ public class AdminScholarshipController {
         }
 
         model.addAttribute("scholarship", scholarship);
-        
-        // Load discount types for the dropdown
-        // model.addAttribute("discountTypes", discountTypeRepository.getAllDiscountTypes());
         
         return "Scholarship-form";
     }
@@ -168,18 +212,21 @@ public class AdminScholarshipController {
     @GetMapping("/delete/{id}")
     public String deleteScholarship(
             @PathVariable("id") Integer id,
+            HttpSession session,
             RedirectAttributes redirectAttributes) {
+
+        if (isNotAdmin(session)) {
+            return "redirect:/login";
+        }
 
         try {
             scholarshipRepository.deleteScholarship(id);
             redirectAttributes.addFlashAttribute("successMessage", "Scholarship deleted successfully.");
         } catch (DataIntegrityViolationException e) {
-            // Catches foreign key violations (e.g., student applications tied to this scholarship)[cite: 2]
             redirectAttributes.addFlashAttribute("errorMessage", 
                 "Cannot delete this scholarship because student applications are already linked to it.");
         }
 
         return "redirect:/admin/scholarships/list";
     }
-    
 }

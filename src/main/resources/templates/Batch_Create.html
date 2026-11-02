@@ -2,23 +2,22 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:replace="~{head :: head}"></head>
 
-<!-- 🟢 1. body ကို h-screen နဲ့ overflow-hidden ပေးပြီး Viewport အပြင်မထွက်အောင် ထိန်းထားသည် -->
 <body class="bg-gray-100 text-gray-800 font-sans h-screen overflow-hidden flex flex-col">
 
 <div id="app" class="h-full flex flex-col overflow-hidden">
     
-    <!-- TOP HEADER BAR (Fixed Top) -->
+    <!-- TOP HEADER BAR -->
     <div th:replace="~{header :: header}"></div>
 
-    <!-- MAIN APP CONTENT AREA (Sidebar + Dynamic View) -->
+    <!-- MAIN APP CONTENT AREA -->
     <div class="flex-1 flex overflow-hidden h-full">
         
-        <!-- 🟢 2. DYNAMIC SIDEBAR (Fixed Width & Independent Scroll) -->
+        <!-- DYNAMIC SIDEBAR -->
         <aside class="w-64 flex-shrink-0 h-full overflow-y-auto bg-white border-r border-gray-200 z-20">
             <div th:replace="~{nav :: nav}"></div>
         </aside>
 
-        <!-- 🟢 3. MAIN PAGE BODY (Independent Scroll) -->
+        <!-- MAIN PAGE BODY -->
         <main class="flex-1 h-full overflow-y-auto p-6">
             <div class="max-w-7xl mx-auto">
                 
@@ -35,14 +34,12 @@
 
                 <!-- Search and Filter Bar -->
                 <div class="bg-white rounded-lg shadow-sm p-4 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <!-- Search Input -->
                     <div class="w-full sm:w-96 relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </span>
                         <input type="text" id="searchInput" onkeyup="filterBatches()" placeholder="Search by batch code, title or course..." class="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                     </div>
-                    <!-- Status Filter Dropdown -->
                     <div class="w-full sm:w-auto">
                         <select id="statusFilter" onchange="filterBatches()" class="w-full sm:w-48 border rounded-lg p-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
                             <option value="">All Status</option>
@@ -70,7 +67,6 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y text-sm">
-                                <!-- Database မှ အချက်အလက်များ အစဉ်လိုက် ပေါ်လာမည် -->
                                 <tr th:each="b : ${batches}" class="batch-row hover:bg-gray-50 transition" 
                                     th:data-code="${b.batchCode}" 
                                     th:data-title="${b.title}" 
@@ -88,25 +84,20 @@
                                               th:text="${b.status}"></span>
                                     </td>
                                     <td class="p-4 text-center flex justify-center gap-2">
-                                        <!-- View / Details Link -->
                                         <a th:href="@{/admin/batches/{id}/students(id=${b.batchId})}" title="View Details" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded transition">
                                             <i class="fa-solid fa-eye"></i>
                                         </a>
-                                        <!-- Edit Button -->
                                         <button th:onclick="'openEditModal(' + ${b.batchId} + ')'" title="Edit Batch" class="p-2 text-blue-600 hover:bg-blue-50 rounded transition">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
-                                        <!-- Assign Instructor Button -->
                                         <button th:onclick="'openInstructorModal(' + ${b.batchId} + ')'" title="Assign Instructor" class="p-2 text-purple-600 hover:bg-purple-50 rounded transition">
                                             <i class="fa-solid fa-chalkboard-user"></i>
                                         </button>
-                                        <!-- Delete Button -->
                                         <button th:onclick="'deleteBatch(' + ${b.batchId} + ')'" title="Delete" class="p-2 text-red-600 hover:bg-red-50 rounded transition">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
-                                <!-- အချက်အလက် မရှိသေးပါက ပြသရန် -->
                                 <tr th:if="${#lists.isEmpty(batches)}">
                                     <td colspan="8" class="text-center p-6 text-gray-400">No batches found in database.</td>
                                 </tr>
@@ -177,15 +168,17 @@
     </div>
 </div>
 
-<!-- Assign Instructor Modal -->
+<!-- Assign Instructor Modal (Dropdown ပါဝင်သည်) -->
 <div id="instructorModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-lg w-full max-w-sm p-6 shadow-lg">
         <h3 class="text-lg font-bold text-gray-800 mb-4">Assign Instructor</h3>
         <form id="instructorForm" onsubmit="submitInstructorAssignment(event)">
             <input type="hidden" id="assignBatchId">
             <div class="mb-4">
-                <label class="block text-xs font-semibold mb-1">Instructor ID</label>
-                <input type="number" id="instructorId" required placeholder="Enter Instructor ID" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-purple-500 outline-none">
+                <label class="block text-xs font-semibold mb-1">Select Instructor</label>
+                <select id="instructorId" required class="w-full border rounded p-2 text-sm bg-white focus:ring-2 focus:ring-purple-500 outline-none">
+                    <option value="">-- Choose Instructor --</option>
+                </select>
             </div>
             <div class="flex justify-end gap-2">
                 <button type="button" onclick="closeModal('instructorModal')" class="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200">Cancel</button>
@@ -230,10 +223,29 @@
         }
     }
 
-    function openInstructorModal(batchId) {
+    async function openInstructorModal(batchId) {
         document.getElementById('assignBatchId').value = batchId;
         document.getElementById('instructorForm').reset();
-        document.getElementById('instructorModal').classList.add('hidden');
+        
+        const selectDropdown = document.getElementById('instructorId');
+        selectDropdown.innerHTML = '<option value="">Loading instructors...</option>';
+
+        try {
+            const res = await fetch(`/admin/course-builder/api/instructors`);
+            if (res.ok) {
+                const instructors = await res.json();
+                selectDropdown.innerHTML = '<option value="">-- Choose Instructor --</option>';
+                instructors.forEach(ins => {
+                    selectDropdown.innerHTML += `<option value="${ins.userId || ins.user_id}">${ins.fullName || ins.full_name}</option>`;
+                });
+            } else {
+                selectDropdown.innerHTML = '<option value="">Failed to load instructors</option>';
+            }
+        } catch (err) {
+            console.error('Error loading instructors:', err);
+            selectDropdown.innerHTML = '<option value="">Error loading instructors</option>';
+        }
+
         document.getElementById('instructorModal').classList.remove('hidden');
     }
 

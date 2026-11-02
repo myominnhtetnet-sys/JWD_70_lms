@@ -2,6 +2,7 @@ package com.Learning_Managnment_System.JWD_70_lms.Service;
 
 import com.Learning_Managnment_System.JWD_70_lms.Repository.StudentExamRepository;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamQuestionBean;
+import com.Learning_Managnment_System.JWD_70_lms.model.QuestionOptionBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamBean;
 import com.Learning_Managnment_System.JWD_70_lms.model.ExamAttemptBean;
 import org.springframework.stereotype.Service;
@@ -85,20 +86,33 @@ public class StudentExamService {
             return Collections.emptyList();
         }
 
-        // 🟢 DEDUPLICATION FILTER LAYER: Strips out repeating IDs from the comma-separated string
         String cleanDeduplicatedSequence = Arrays.stream(sequence.split(","))
                 .map(String::trim)
                 .filter(id -> !id.isEmpty() && id.matches("\\d+"))
-                .distinct() // 👈 REMOVES DUPLICATE RECORD ARRAYS PERMANENTLY
+                .distinct()
                 .collect(Collectors.joining(","));
 
         if (cleanDeduplicatedSequence.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // Fetch the perfectly filtered questions. SQL FIELD() ordering handles the shuffle naturally now!
-        return examRepository.findQuestionsBySequence(cleanDeduplicatedSequence);
+        // 1. Fetch base question metadata details records array
+        List<ExamQuestionBean> questions = examRepository.findQuestionsBySequence(cleanDeduplicatedSequence);
+        
+        // 2. 🟢 FIXED: Iterate through each question and populate its child multiple-choice options array list
+        if (questions != null) {
+            for (ExamQuestionBean q : questions) {
+                if (q.getQuestionId() != null) {
+                    List<QuestionOptionBean> options = 
+                        examRepository.findOptionsByQuestionId(q.getQuestionId());
+                    q.setOptions(options); // 👈 Maps the database choices array into the parent question object model
+                }
+            }
+        }
+
+        return questions;
     }
+
 
     public void processDetailedStudentSubmission(int examId, int attemptId, String questionSequence, Function<String, String> parameterResolver) {
         if (questionSequence == null || questionSequence.trim().isEmpty()) {

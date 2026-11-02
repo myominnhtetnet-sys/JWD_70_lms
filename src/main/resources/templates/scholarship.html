@@ -125,70 +125,152 @@
                 </div>
             </header>
 
-           <main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 w-full text-xs bg-slate-50">
+                      <!-- Main Content Area Scroll View Panel -->
+            <main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 bg-slate-50 w-full text-xs">
+                <div class="max-w-5xl mx-auto space-y-8">
 
-                <!-- Application Status / Available List Card -->
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
-                    <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h3 class="text-base font-bold text-slate-800">Your Scholarship Applications</h3>
+                    <!-- Flash Message Feedback Blocks Notification Context Alert Rails -->
+                    <div th:if="${success}" class="p-4 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl shadow-sm animate-fadeIn" th:text="${success}"></div>
+                    <div th:if="${error}" class="p-4 text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-100 rounded-xl shadow-sm animate-fadeIn" th:text="${error}"></div>
+
+                    <!-- ================= SECTION 1: BROWSING AVAILABLE PROGRAMS ================= -->
+                    <div class="space-y-4">
+                        <h2 class="text-xs font-black text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-gift text-indigo-600"></i> Open Funding Tracks Available
+                        </h2>
+                        
+                        <div class="grid grid-cols-1 gap-4" th:if="${programs != null and not #lists.isEmpty(programs)}">
+                            <div th:each="prog : ${programs}" class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5 flex flex-col transition hover:border-slate-300">
+                                
+                                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <!-- Dynamically prints the scholarship program name mapping value -->
+                                            <h3 class="text-sm font-bold text-slate-900" th:text="${prog['program_name']}">Sponsorship Program Title</h3>
+                                            <span class="text-[10px] font-bold bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded" th:text="${prog['sponsor']}">Sponsor Label</span>
+                                        </div>
+                                        <p class="text-xs text-slate-500 leading-relaxed max-w-3xl" th:text="${prog['description']}">Detailed descriptions or criteria parameters regarding this active educational institution grant award track.</p>
+                                        <div class="text-[11px] font-bold text-slate-400 flex items-center gap-1">
+                                            <i class="fa-solid fa-sack-dollar text-slate-300"></i> Max Grant Cap: 
+                                            <!-- Evaluates financial value amounts correctly from your table metrics -->
+                                            <span class="text-indigo-600 font-extrabold" th:text="${prog['max_amount'] != null ? #numbers.formatDecimal(prog['max_amount'], 1, 'COMMA', 0, 'POINT') + ' MMK' : 'Full Waiver Coverage'}">0 MMK</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Action button passes the explicit primary key 'scholarship_id' into the JavaScript toggler -->
+                                    <button type="button" th:onclick="'toggleApplyDrawer(' + ${prog['scholarship_id']} + ')'" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded-xl border-0 cursor-pointer transition self-start md:self-center shadow-sm">
+                                        Apply Now <i class="fa-solid fa-paper-plane text-[9px] ms-0.5"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- Nested Form Drawer Segment (Hidden on load, toggled via Javascript) -->
+<div th:id="'drawer-' + ${prog['scholarship_id']}" class="hidden w-full bg-slate-50 border border-slate-200 rounded-xl p-4 mt-4 animate-fadeIn">
+    
+    <!-- 🟢 FIXED: Added enctype="multipart/form-data" to support binary file transport streams streams -->
+    <form th:action="@{/student/scholarship/apply}" method="POST" enctype="multipart/form-data" class="space-y-3 m-0">
+        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <input type="hidden" name="scholarshipId" th:value="${prog['scholarship_id']}" />
+        
+        <div>
+            <label class="block text-[11px] font-bold text-slate-600 mb-1">Statement of Purpose / Justification Note:</label>
+            <textarea name="reason" rows="3" class="w-full bg-white border border-slate-200 rounded-lg p-2.5 text-xs font-medium text-slate-800 outline-none focus:border-indigo-500 transition" placeholder="Explain your financial context requirements..." required></textarea>
+        </div>
+        
+        <!-- 🟢 FIXED: Transformed text box into a strict native PDF file upload collector picker -->
+        <div>
+            <label class="block text-[11px] font-bold text-slate-600 mb-1">Upload Supporting Document (PDF Format Only):</label>
+            <input type="file" 
+                   name="scholarshipFile" 
+                   accept=".pdf" 
+                   required
+                   class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs font-mono text-slate-700 outline-none focus:border-indigo-500 transition" />
+            <small class="text-[10px] text-slate-400 block mt-1"><i class="fa-solid fa-circle-info"></i> Max file size bounded by application properties thresholds limits (e.g. 5MB).</small>
+        </div>
+        
+        <div class="text-end space-x-1 pt-1">
+            <button type="button" th:onclick="'toggleApplyDrawer(' + ${prog['scholarship_id']} + ')'" class="bg-white border border-slate-200 text-slate-500 hover:bg-slate-100 font-bold px-3 py-1.5 rounded-lg text-xs border cursor-pointer transition">Cancel</button>
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-1.5 rounded-lg text-xs border-0 cursor-pointer shadow-sm transition">Submit Application</button>
+        </div>
+    </form>
+</div>
+
+                            </div>
+                        </div>
+
+                        <!-- Available Programs Empty State Fallback -->
+                        <div th:if="${programs == null or #lists.isEmpty(programs)}" class="bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-400 font-medium shadow-sm">
+                            <i class="fa-regular fa-calendar-xmark d-block text-xl mb-1 text-slate-300"></i> No scholarship programs are currently accepting applications at this time.
+                        </div>
+                    </div>
+                    <!-- ================= SECTION 2: SUBMITTED HISTORY LOG MATRIX ================= -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+                        <div class="border-b border-slate-100 pb-4">
+                            <h3 class="text-base font-bold text-slate-800 flex items-center gap-1.5">
+                                <i class="fa-solid fa-clock-history text-slate-500"></i> Your Scholarship Applications
+                            </h3>
                             <p class="text-xs text-slate-400">Track and review the status of your scholarship submissions.</p>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-slate-600 border-collapse m-0">
+                                <thead class="bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200">
+                                    <tr>
+                                        <th class="p-4 rounded-l-xl">Program Name</th>
+                                        <th class="p-4">Applied Date</th>
+                                        <th class="p-4">Discount %</th>
+                                        <th class="p-4">Status</th>
+                                        <th class="p-4 rounded-r-xl text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <!-- Iterates through student's submitted histories using your precise model properties -->
+                                    <tr th:each="sch : ${scholarships}" class="hover:bg-slate-50/80 transition">
+                                        <td class="p-4 font-semibold text-slate-900" th:text="${sch.programName}">IT Excellence Scholarship</td>
+                                        <td class="p-4 text-slate-500" th:text="${sch.appliedDate}">2026-03-15</td>
+                                        <td class="p-4 font-semibold text-indigo-600" th:text="${sch.discountPercent + '%'}">50%</td>
+                                        <td class="p-4">
+                                            <span th:text="${sch.status}" 
+                                                  th:class="|px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase ${sch.status == 'APPROVED' ? 'bg-emerald-100 text-emerald-700' : (sch.status == 'REJECTED' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700')}|">
+                                                Pending
+                                            </span>
+                                        </td>
+                                        <td class="p-4 text-right">
+                                            <a th:href="@{/student/scholarship/details/{id}(id=${sch.applicationId})}" 
+                                               class="text-xs px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition inline-block text-decoration-none">
+                                               View Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- History Empty State Fallback Row -->
+                                    <tr th:if="${#lists.isEmpty(scholarships)}">
+                                        <td colspan="5" class="text-center py-12 text-slate-400">
+                                            <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3 text-lg">
+                                                <i class="fa-solid fa-folder-open"></i>
+                                            </div>
+                                            <p class="font-semibold text-slate-700 text-sm mb-0.5">No scholarship applications found</p>
+                                            <p class="text-xs text-slate-400">You have not submitted any scholarship applications yet.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs text-slate-600">
-                            <thead class="bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider">
-                                <tr>
-                                    <th class="p-3.5 rounded-l-xl">Program Name</th>
-                                    <th class="p-3.5">Applied Date</th>
-                                    <th class="p-3.5">Discount %</th>
-                                    <th class="p-3.5">Status</th>
-                                    <th class="p-3.5 rounded-r-xl text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                <tr th:each="sch : ${scholarships}" class="hover:bg-slate-50/80 transition">
-                                    <!-- Changed from sch.title to sch.programName -->
-                                    <td class="p-3.5 font-semibold text-slate-900" th:text="${sch.programName}">IT Excellence Scholarship</td>
-                                    
-                                    <!-- Changed from sch.appliedDate to sch.appliedDate -->
-                                    <td class="p-3.5 text-slate-500" th:text="${sch.appliedDate}">2026-03-15</td>
-                                    
-                                    <!-- Changed from sch.discountPercentage to sch.discountPercent -->
-                                    <td class="p-3.5 font-semibold text-indigo-600" th:text="${sch.discountPercent + '%'}">50%</td>
-                                    
-                                    <td class="p-3.5">
-                                        <span th:text="${sch.status}" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700">
-                                            Pending
-                                        </span>
-                                    </td>
-                                    <td class="p-3.5 text-right">
-    <a th:href="@{/student/scholarship/details/{id}(id=${sch.applicationId})}" 
-       class="text-xs px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition inline-block">
-       View Details
-    </a>
-</td>
-                                </tr>
-                                
-                                <!-- Empty State -->
-                                <tr th:if="${#lists.isEmpty(scholarships)}">
-                                    <td colspan="5" class="text-center py-12 text-slate-400">
-                                        <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3 text-lg">
-                                            <i class="fa-solid fa-folder-open"></i>
-                                        </div>
-                                        <p class="font-semibold text-slate-700 text-sm mb-0.5">No scholarship applications found</p>
-                                        <p class="text-xs text-slate-400">You have not submitted any scholarship applications yet.</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
-
             </main>
         </div>
     </div>
 
+    <!-- ⏳ JAVASCRIPT SLIDE DRAWER TOGGLE ENGINE -->
+    <script th:inline="javascript">
+        function toggleApplyDrawer(id) {
+            const el = document.getElementById('drawer-' + id);
+            if (el) {
+                el.classList.toggle('hidden');
+            }
+        }
+    </script>
 </body>
 </html>
+                    
