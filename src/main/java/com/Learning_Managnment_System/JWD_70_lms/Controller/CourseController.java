@@ -18,6 +18,8 @@ import com.Learning_Managnment_System.JWD_70_lms.model.Review;
 import com.Learning_Managnment_System.JWD_70_lms.model.StudentBean;
 
 import jakarta.servlet.http.HttpSession;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -44,27 +46,44 @@ public class CourseController {
         dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
     }
 
-    /**
-     * 🟢 1. FETCH AND FILTER CATALOG PROGRAM DASHBOARDS
-     */
     @GetMapping("/show")
     public String showAndFilterCourses(
-            @ModelAttribute CourseBean filters, 
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "level", required = false) String level,
+            @RequestParam(value = "price", required = false) Double price,
+            @RequestParam(value = "allow_discount", required = false) Integer allowDiscount,
+            @RequestParam(value = "allow_installment", required = false) Integer allowInstallment,
+            @RequestParam(value = "allow_scholarship", required = false) Integer allowScholarship,
             @RequestParam(value = "batchStatus", required = false) String batchStatus, 
             @RequestParam(value = "page", defaultValue = "0") int page, 
             Model model) {
         
+        // 1. Manually instantiate filter settings to populate model attributes accurately
+        CourseBean filters = new CourseBean();
+        filters.setTitle(title);
+        filters.setLevel(level);
+        if (price != null) {
+            filters.setPrice(price);
+        }
+        
+        // Directly map standard numeric properties (unchecked inputs default back to 0)
+        filters.setAllow_discount(allowDiscount != null ? allowDiscount : 0);
+        filters.setAllow_installment(allowInstallment != null ? allowInstallment : 0);
+        filters.setAllow_scholarship(allowScholarship != null ? allowScholarship : 0);
+
         int pageSize = 6;
+        
+        // 2. Fetch queries from execution pipeline layers
         List<CourseBean> courseList = courseService.getFilteredCourses(filters, batchStatus, page, pageSize);
         int totalPages = courseService.getTotalPagesForFilters(filters, batchStatus, pageSize);
         
-        Map<String, List<java.util.Map<String, Object>>> reviewsMap = new java.util.HashMap<>();
-        
+        Map<String, List<Map<String, Object>>> reviewsMap = new HashMap<>();
         for (CourseBean course : courseList) {
             List<Map<String, Object>> reviews = reviewService.getReviewsByCourseId(course.getCourse_id());
             reviewsMap.put(String.valueOf(course.getCourse_id()), reviews);
         }
         
+        // 3. Expose attributes back to Thymeleaf context safely
         model.addAttribute("list", courseList);              
         model.addAttribute("currentPage", page);                           
         model.addAttribute("totalPages", totalPages);      

@@ -197,46 +197,65 @@ public class CourseRepository {
      * the CourseRowMapper expectation and eliminate the SQL Syntax Error completely.
      */
     public List<CourseBean> findFilteredCourses(CourseBean filters, String batchStatus, int page, int pageSize) {
-        StringBuilder sql = new StringBuilder("""
-            SELECT 
-                c.course_id, 
-                c.title, 
-                c.short_description, 
-                c.description, -- 🟢 RESTORED: Maps directly to line 19 of your CourseRowMapper
-                c.level, 
-                c.language, 
-                c.duration_weeks, 
-                c.price, 
-                c.allow_discount, 
-                c.allow_installment, 
-                c.allow_scholarship, 
-                c.thumbnail, 
-                c.status,
-                1 AS category_id,
-                c.slug AS slug
-            FROM learning_db.courses c 
-            JOIN learning_db.batches b ON c.course_id = b.course_id 
-            WHERE c.status = 'PUBLISHED' 
-            """);
-            
-        List<Object> params = new ArrayList<>();
-
-        if (filters.getCategory_id() != null && filters.getCategory_id() != 0) {
-            sql.append("AND c.course_id = ? ");
-            params.add(filters.getCategory_id());
+        StringBuilder sql = new StringBuilder(
+            "SELECT DISTINCT c.* FROM courses c " +
+            "LEFT JOIN batches b ON c.course_id = b.course_id " +
+            "WHERE c.deleted_at IS NULL "
+        );
+        
+        List<Object> args = new ArrayList<>();
+        buildDynamicConditions(sql, args, filters, batchStatus);
+        
+        // Append pagination constraints natively
+        sql.append(" LIMIT ? OFFSET ?");
+        args.add(pageSize);
+        args.add(page * pageSize);
+        
+        try {
+            return jdbcTemplate.query(sql.toString(), new CourseRowMapper(), args.toArray());
+        } catch (Exception e) {
+            System.err.println("❌ REPO ERROR -> findFilteredCourses crashed: " + e.getMessage());
+            return new ArrayList<>();
         }
-        if (batchStatus != null && !batchStatus.isEmpty()) {
-            sql.append("AND b.status = ? ");
-            params.add(batchStatus);
-        }
-
-        sql.append("GROUP BY c.course_id ORDER BY c.course_id ASC LIMIT ? OFFSET ?");
-        params.add(pageSize);
-        params.add(page * pageSize);
-
-        return jdbcTemplate.query(sql.toString(), new CourseRowMapper(), params.toArray());
     }
 
+    
+    private void buildDynamicConditions(StringBuilder sql, List<Object> args, CourseBean filters, String batchStatus) {
+        // 1. Loose Text Search Wildcard Toggler
+        if (filters.getTitle() != null && !filters.getTitle().trim().isEmpty()) {
+            sql.append(" AND LOWER(c.title) LIKE LOWER(?) ");
+            args.add("%" + filters.getTitle().trim() + "%");
+        }
+        
+        // 2. Course Difficulty Level Dropdown
+        if (filters.getLevel() != null && !filters.getLevel().trim().isEmpty()) {
+            sql.append(" AND c.level = ? ");
+            args.add(filters.getLevel().trim());
+        }
+        
+        // 3. Max Budget Numerical Threshold Slider
+        if (filters.getPrice() != null) {
+            sql.append(" AND c.price <= ? ");
+            args.add(filters.getPrice());
+        }
+        
+        // 4. Binary Toggles: Checks your exact snake_case Integer primitive bean properties
+        if (filters.getAllow_discount() != null && filters.getAllow_discount() > 0) {
+            sql.append(" AND c.allow_discount = 1 ");
+        }
+        if (filters.getAllow_installment() != null && filters.getAllow_installment() > 0) {
+            sql.append(" AND c.allow_installment = 1 ");
+        }
+        if (filters.getAllow_scholarship() != null && filters.getAllow_scholarship() > 0) {
+            sql.append(" AND c.allow_scholarship = 1 ");
+        }
+        
+        // 5. Batch Status Enum String Matcher
+        if (batchStatus != null && !batchStatus.trim().isEmpty()) {
+            sql.append(" AND b.status = ? ");
+            args.add(batchStatus.trim());
+        }
+    }
     /**
      * Counts the total items that match a specific combination of filter parameters.
      */

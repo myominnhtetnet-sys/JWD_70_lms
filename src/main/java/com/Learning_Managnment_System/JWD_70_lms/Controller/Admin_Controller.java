@@ -2,6 +2,7 @@ package com.Learning_Managnment_System.JWD_70_lms.Controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,9 @@ public class Admin_Controller {
 
     @Autowired
     private DashboardService dashboardService;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     
     private boolean isNotAdmin(HttpSession session) {
         LoginBean currentUser = (LoginBean) session.getAttribute("currentUser");
@@ -170,6 +174,11 @@ public class Admin_Controller {
         if (user.getStatus() == null || user.getStatus().isBlank()) {
             user.setStatus("ACTIVE");
         }
+      
+        String rawPassword = user.getPassword_hash();
+        String secureHashedPassword = passwordEncoder.encode(rawPassword);
+        user.setPassword_hash(secureHashedPassword);
+
 
         int result = adminRepository.addUser(user);
 
@@ -246,7 +255,7 @@ public class Admin_Controller {
             redirectAttributes.addFlashAttribute("error", "Full name is required.");
             return "redirect:/admin/users";
         }
-
+        
         if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Email is required.");
             return "redirect:/admin/users";

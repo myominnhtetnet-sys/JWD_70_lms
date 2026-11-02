@@ -178,6 +178,81 @@ public List<Map<String, Object>> findLatestAttempt(
             """, enrollmentId, batchId);
     }
 
+//    public void saveDraft(
+//            int enrollmentId,
+//            BigDecimal assignmentScore,
+//            BigDecimal examScore,
+//            BigDecimal attendancePercent,
+//            BigDecimal totalScore,
+//            String gradeLetter,
+//            String result,
+//            int teacherId) {
+//
+//        List<Map<String, Object>> existing = jdbc.queryForList("""
+//            SELECT grade_id, published_at
+//            FROM grades
+//            WHERE enrollment_id = ?
+//            FOR UPDATE
+//            """, enrollmentId);
+//
+//        if (existing.isEmpty()) {
+//            jdbc.update("""
+//                INSERT INTO grades (
+//                    enrollment_id,
+//                    assignment_score,
+//                    exam_score,
+//                    attendance_percent,
+//                    total_score,
+//                    grade_letter,
+//                    result,
+//                    graded_by
+//                )
+//                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+//                """,
+//                enrollmentId,
+//                assignmentScore,
+//                examScore,
+//                attendancePercent,
+//                totalScore,
+//                gradeLetter,
+//                result,
+//                teacherId);
+//
+//            return;
+//        }
+//
+//        if (existing.get(0).get("published_at") != null) {
+//            throw new IllegalArgumentException(
+//                    "Published grades cannot be recalculated.");
+//        }
+//
+//        int updated = jdbc.update("""
+//            UPDATE grades
+//            SET assignment_score = ?,
+//                exam_score = ?,
+//                attendance_percent = ?,
+//                total_score = ?,
+//                grade_letter = ?,
+//                result = ?,
+//                graded_by = ?,
+//                updated_at = CURRENT_TIMESTAMP
+//            WHERE enrollment_id = ?
+//              AND published_at IS NULL
+//            """,
+//            assignmentScore,
+//            examScore,
+//            attendancePercent,
+//            totalScore,
+//            gradeLetter,
+//            result,
+//            teacherId,
+//            enrollmentId);
+//
+//        if (updated != 1) {
+//            throw new IllegalArgumentException(
+//                    "Unable to save draft grade.");
+//        }
+//    }
     public void saveDraft(
             int enrollmentId,
             BigDecimal assignmentScore,
@@ -196,6 +271,8 @@ public List<Map<String, Object>> findLatestAttempt(
             """, enrollmentId);
 
         if (existing.isEmpty()) {
+
+            // New Grade: INSERT
             jdbc.update("""
                 INSERT INTO grades (
                     enrollment_id,
@@ -218,39 +295,38 @@ public List<Map<String, Object>> findLatestAttempt(
                 result,
                 teacherId);
 
-            return;
-        }
+        } else {
 
-        if (existing.get(0).get("published_at") != null) {
-            throw new IllegalArgumentException(
-                    "Published grades cannot be recalculated.");
-        }
+            // Existing Grade: UPDATE
+            // Published ဖြစ်ပြီးသား Grade ကိုလည်း ပြန်တွက်ခွင့်ပေးမယ်။
+            // Recalculate လုပ်ပြီးရင် Draft ပြန်ဖြစ်မယ်။
 
-        int updated = jdbc.update("""
-            UPDATE grades
-            SET assignment_score = ?,
-                exam_score = ?,
-                attendance_percent = ?,
-                total_score = ?,
-                grade_letter = ?,
-                result = ?,
-                graded_by = ?,
-                updated_at = CURRENT_TIMESTAMP
-            WHERE enrollment_id = ?
-              AND published_at IS NULL
-            """,
-            assignmentScore,
-            examScore,
-            attendancePercent,
-            totalScore,
-            gradeLetter,
-            result,
-            teacherId,
-            enrollmentId);
+            int updated = jdbc.update("""
+                UPDATE grades
+                SET assignment_score = ?,
+                    exam_score = ?,
+                    attendance_percent = ?,
+                    total_score = ?,
+                    grade_letter = ?,
+                    result = ?,
+                    graded_by = ?,
+                    published_at = NULL,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE enrollment_id = ?
+                """,
+                assignmentScore,
+                examScore,
+                attendancePercent,
+                totalScore,
+                gradeLetter,
+                result,
+                teacherId,
+                enrollmentId);
 
-        if (updated != 1) {
-            throw new IllegalArgumentException(
-                    "Unable to save draft grade.");
+            if (updated != 1) {
+                throw new IllegalArgumentException(
+                        "Unable to update grade.");
+            }
         }
     }
 
