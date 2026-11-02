@@ -81,37 +81,48 @@ public class StudentExamService {
      * Cleans, sanitizes, and deduplicates the sequence string before compiling the database call.
      * This guarantees that each exam question card is generated exactly once on your frontend sheet.
      */
-    public List<ExamQuestionBean> buildShuffledQuestions(String sequence) {
-        if (sequence == null || sequence.trim().isEmpty()) {
-            return Collections.emptyList();
-        }
 
-        String cleanDeduplicatedSequence = Arrays.stream(sequence.split(","))
-                .map(String::trim)
-                .filter(id -> !id.isEmpty() && id.matches("\\d+"))
-                .distinct()
-                .collect(Collectors.joining(","));
+public List<ExamQuestionBean> buildShuffledQuestions(
+        int examId, String sequence) {
 
-        if (cleanDeduplicatedSequence.isEmpty()) {
-            return Collections.emptyList();
-        }
+    if (sequence == null || sequence.trim().isEmpty()) {
+        return Collections.emptyList();
+    }
 
-        // 1. Fetch base question metadata details records array
-        List<ExamQuestionBean> questions = examRepository.findQuestionsBySequence(cleanDeduplicatedSequence);
-        
-        // 2. 🟢 FIXED: Iterate through each question and populate its child multiple-choice options array list
-        if (questions != null) {
-            for (ExamQuestionBean q : questions) {
-                if (q.getQuestionId() != null) {
-                    List<QuestionOptionBean> options = 
-                        examRepository.findOptionsByQuestionId(q.getQuestionId());
-                    q.setOptions(options); // 👈 Maps the database choices array into the parent question object model
-                }
+    String cleanDeduplicatedSequence = Arrays.stream(sequence.split(","))
+            .map(String::trim)
+            .filter(id -> !id.isEmpty() && id.matches("\\d+"))
+            .distinct()
+            .collect(Collectors.joining(","));
+
+    if (cleanDeduplicatedSequence.isEmpty()) {
+        return Collections.emptyList();
+    }
+
+    // Fetch questions for this exam only
+    List<ExamQuestionBean> questions =
+            examRepository.findQuestionsBySequence(
+                    examId, cleanDeduplicatedSequence
+            );
+
+    // Load options for each question
+    if (questions != null) {
+        for (ExamQuestionBean q : questions) {
+            if (q.getQuestionId() != null) {
+
+                List<QuestionOptionBean> options =
+                        examRepository.findOptionsByQuestionId(
+                                q.getQuestionId()
+                        );
+
+                q.setOptions(options);
             }
         }
-
-        return questions;
     }
+
+    return questions;
+}
+
 
 
     public void processDetailedStudentSubmission(int examId, int attemptId, String questionSequence, Function<String, String> parameterResolver) {

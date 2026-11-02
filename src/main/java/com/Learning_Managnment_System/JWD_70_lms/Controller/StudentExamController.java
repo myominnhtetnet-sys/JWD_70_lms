@@ -107,7 +107,10 @@ public class StudentExamController {
         }
         
         attemptId = examService.createNewAttemptSession(examId, enrollmentId, currentAttemptNo);
-        List<ExamQuestionBean> questions = examService.buildShuffledQuestions(targetedQuestionSequence);
+        List<ExamQuestionBean> questions =
+                examService.buildShuffledQuestions(
+                        examId, targetedQuestionSequence
+                );
 
         model.addAttribute("exam", exam);
         model.addAttribute("examId", examId);

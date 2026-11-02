@@ -214,4 +214,41 @@ public class StudentExamRepository {
         }
     }
 
+public List<ExamQuestionBean> findQuestionsBySequence(
+        int examId, String cleanDeduplicatedSequence) {
+
+    String sql =
+        "SELECT " +
+        "eq.exam_id, " +
+        "eq.question_id, " +
+        "q.question_text, " +
+        "q.question_type, " +
+        "MAX(eq.mark) AS mark, " +
+        "MIN(eq.sort_order) AS sort_order " +
+        "FROM exam_questions eq " +
+        "INNER JOIN questions q " +
+        "ON eq.question_id = q.question_id " +
+        "WHERE eq.exam_id = ? " +
+        "AND eq.question_id IN (" + cleanDeduplicatedSequence + ") " +
+        "GROUP BY eq.exam_id, eq.question_id, " +
+        "q.question_text, q.question_type " +
+        "ORDER BY FIELD(eq.question_id, " +
+        cleanDeduplicatedSequence + ")";
+
+    try {
+        return jdbcTemplate.query(
+            sql,
+            new ExamQuestionRowMapper(),
+            examId
+        );
+
+    } catch (Exception e) {
+        System.err.println(
+            "REPOSITORY ERROR -> " + e.getMessage()
+        );
+        return java.util.Collections.emptyList();
+    }
+}
+
+
 }
