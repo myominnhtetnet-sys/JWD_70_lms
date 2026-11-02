@@ -210,10 +210,9 @@ to {
 									class="fa-solid fa-square-poll-vertical text-base shrink-0 w-4 text-center"></i>
 									<span class="hidden-on-collapse whitespace-nowrap">Exam
 										Results</span>
-								</a> <a href="/teacher/final-grades"
-									class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
-									<i
-									class="fa-solid fa-graduation-cap text-base shrink-0 w-4 text-center"></i>
+								</a> 
+								<a href="/teacher/final-grades" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+									<i class="fa-solid fa-graduation-cap text-base shrink-0 w-4 text-center"></i>
 									<span class="hidden-on-collapse whitespace-nowrap">Final
 										Grades</span>
 								</a>
@@ -323,12 +322,10 @@ to {
 									<path d="M16 14.2A5 5 0 0 1 21.5 19" /></svg>
 							</div>
 							<div>
-								<div class="text-xs font-bold text-slate-400 uppercase">Active
-									Batches</div>
+								<div class="text-xs font-bold text-slate-400 uppercase">Active Batches</div>
 								<div class="text-2xl font-bold text-slate-900 mt-0.5"
 									th:text="${batches != null ? batches.size() : 0}">0</div>
-								<div class="text-xs font-medium text-slate-500 mt-0.5">Assigned
-									to you</div>
+								<div class="text-xs font-medium text-slate-500 mt-0.5">Assigned to you</div>
 							</div>
 						</div>
 
@@ -343,8 +340,7 @@ to {
 									<path d="M8 7h8" /></svg>
 							</div>
 							<div>
-								<div class="text-xs font-bold text-slate-400 uppercase">Assigned
-									Courses</div>
+								<div class="text-xs font-bold text-slate-400 uppercase">Assigned Courses</div>
 								<div class="text-2xl font-bold text-slate-900 mt-0.5"
 									th:text="${courses != null ? courses.size() : 0}">0</div>
 								<div class="text-xs font-medium text-slate-500 mt-0.5">Assigned

@@ -92,7 +92,11 @@
     <groupId>jakarta.persistence</groupId>
     <artifactId>jakarta.persistence-api</artifactId>
 </dependency>
-		
+<!-- 10.Real Email -->
+		<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-mail</artifactId>
+</dependency>
 	</dependencies>
 
 	<build>

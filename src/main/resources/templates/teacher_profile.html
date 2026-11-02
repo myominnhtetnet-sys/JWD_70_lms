@@ -106,17 +106,17 @@
                                 </a>
                             </div>
                         </div>
-
-                        <!-- Account Section -->
-                        <div class="pt-4 border-t border-slate-800">
-                            <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Account</div>
-                            <div class="space-y-1">
-                                <a th:href="@{/teacher/profile}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-slate-800 transition relative">
-                                    <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-blue-500 rounded-r-full"></span>
-                                    <i class="fa-regular fa-user text-base shrink-0 w-4 text-center"></i> <span class="hidden-on-collapse whitespace-nowrap">Profile</span>
-                                </a>
-                            </div>
-                        </div>
+<!-- ================= ACCOUNT SECTION ================= -->
+<div class="pt-4 border-t border-slate-800">
+    <div class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 hidden-on-collapse">Account</div>
+    <div class="space-y-1">
+        <a th:href="@{/teacher/profile}" 
+           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 transition">
+            <i class="fa-regular fa-user text-base shrink-0 w-4 text-center"></i> 
+            <span class="hidden-on-collapse whitespace-nowrap">Profile</span>
+        </a>
+    </div>
+</div>
                     </nav>
                 </div>
 
@@ -159,7 +159,6 @@
                         <p class="text-xs text-slate-500 font-medium" th:text="${email}">instructor@edupulse.com</p>
                         <div class="pt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
                             <span class="px-3 py-1 text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full">Active Instructor</span>
-                            <span class="px-3 py-1 text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 rounded-full" th:text="${teacherId != null ? 'TCH-' + teacherId : 'TCH-001'}">TCH-001</span>
                         </div>
                     </div>
                 </div>
