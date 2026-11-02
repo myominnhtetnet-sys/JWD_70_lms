@@ -123,11 +123,27 @@ public class EnrollmentRepository {
     }
 
     // 3. Payment History ယူရန်
+ // Payment History များကို Method နာမည်ပါ ဖမ်းယူရန်
     public List<PaymentBean> getPaymentsByEnrollmentId(int enrollmentId) {
-        String sql = "SELECT * FROM payments WHERE enrollment_id = ? ORDER BY payment_date DESC";
+        String sql = """
+            SELECT 
+                p.payment_id,
+                p.enrollment_id,
+                p.payment_method_id,
+                p.payment_date,
+                p.amount,
+                p.transaction_no,
+                p.status,
+                pm.name AS payment_method_name
+            FROM payments p
+            LEFT JOIN payment_methods pm 
+                ON p.payment_method_id = pm.payment_method_id
+            WHERE p.enrollment_id = ? 
+            ORDER BY p.payment_date DESC
+            """;
+        
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(PaymentBean.class), enrollmentId);
     }
-
     // =====================================================
     // GET ALL ENROLLMENTS
     // =====================================================
